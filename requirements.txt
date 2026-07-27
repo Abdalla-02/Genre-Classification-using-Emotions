@@ -1,0 +1,39 @@
+# ── Bachelorarbeit: Filmgenre-Klassifikation ──────────────────────────────
+# Python 3.10 oder 3.11 empfohlen (Kompatibilität mit torch + transformers)
+# Installation: pip install -r requirements.txt --break-system-packages
+# (in einer virtuellen Umgebung ohne --break-system-packages)
+
+# ── Core Data Science ──────────────────────────────────────────────────────
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.1
+scikit-learn==1.5.1
+
+# ── Visualisierung ──────────────────────────────────────────────────────────
+matplotlib==3.9.1
+seaborn==0.13.2
+
+# ── Audio-Verarbeitung ───────────────────────────────────────────────────────
+librosa==0.10.2
+soundfile==0.12.1
+
+# ── Deep Learning (PyTorch-Ökosystem — bewusst EIN Framework für alle Modelle)
+torch==2.3.1
+torchaudio==2.3.1
+transformers==4.43.3          # für AST via HuggingFace (MIT/ast-finetuned-audioset)
+
+# ── Audio-Embeddings (PyTorch-Varianten, um TensorFlow zu vermeiden) ────────
+torchopenl3==0.6.0            # PyTorch-Port von OpenL3 (statt TF-Original)
+
+# ── Experiment-Tracking & Reproduzierbarkeit ────────────────────────────────
+joblib==1.4.2
+tqdm==4.66.4
+
+# ── Jupyter (für explorative Analyse) ───────────────────────────────────────
+jupyterlab==4.2.4
+ipykernel==6.29.5
+
+# ── Optional: falls YAMNet via TensorFlow benötigt wird ─────────────────────
+# WARNUNG: separate Umgebung empfohlen, siehe README_ENV.md
+# tensorflow==2.16.1
+# tensorflow-hub==0.16.1
