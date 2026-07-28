@@ -1,85 +1,120 @@
-# Python-Umgebung — Setup-Anleitung
+# Bachelor Thesis Project: Audio-Based Film Genre and Emotion Recognition
 
-## Warum eine isolierte Umgebung?
+This repository forms the foundation for the implementation of the bachelor thesis and contains a reproducible Python environment together with a clear project structure for data processing, modeling, and evaluation.
 
-Ohne virtuelle Umgebung installierst du Pakete global — das führt schnell zu Versionskonflikten
-zwischen Projekten und macht deine Ergebnisse für andere (und dich selbst in drei Monaten)
-schwer reproduzierbar. Für eine Bachelorarbeit ist eine sauber dokumentierte Umgebung Teil der
-wissenschaftlichen Nachvollziehbarkeit.
+## Goal
 
-## Option A: venv (einfach, kein extra Tool nötig)
+The project focuses on the analysis of audio-based data for the classification of film genres and emotions. The structure is designed to keep experiments organized, reproducible, and easy to extend.
 
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate          # Linux/Mac
-# .venv\Scripts\activate           # Windows
+## Core Principles
 
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+- Reproducibility: dependencies are explicitly defined.
+- Isolated environment: dependencies are not installed globally.
+- Clean structure: data, code, notebooks, and results are kept separate.
+- Scientific traceability: experiments should be documented and easy to follow.
 
-## Option B: conda (empfohlen, wenn du bereits Anaconda/Miniconda nutzt)
+## Requirements
+
+- Python 3.11
+- pip or conda
+- Optional: NVIDIA GPU for faster training runs
+
+## Quick Start
+
+### Option 1: Conda (recommended)
+
+If Conda or Mambaforge is installed:
 
 ```bash
 conda env create -f environment.yml
 conda activate ba-genre-emotion
 ```
 
-## Wichtiger Hinweis: PyTorch vs. TensorFlow
+### Option 2: Virtual Environment with venv
 
-AST, MusiCNN und torchopenl3 laufen alle auf **PyTorch** — bewusst so gewählt, damit du nur
-ein Deep-Learning-Framework brauchst. Falls du YAMNet (TensorFlow-basiert) unbedingt als
-zusätzliche Baseline testen willst, empfehle ich eine **zweite, separate Umgebung**:
+On Windows:
 
-```bash
-python3.11 -m venv .venv-tf
-source .venv-tf/bin/activate
-pip install tensorflow==2.16.1 tensorflow-hub==0.16.1 numpy pandas
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-Mische niemals torch und tensorflow in derselben Umgebung ohne Not — die CUDA-Versionsanforderungen
-kollidieren häufig und die Fehlersuche kostet unnötig Zeit, die du für die Experimente brauchst.
+If PowerShell script execution is blocked:
 
-## Dependency-Management: Best Practices für die Thesis
-
-1. **Versionen immer fest pinnen** (`==`, nicht `>=`) — sonst installiert sich in drei Monaten
-   eine andere Version und deine Ergebnisse sind evtl. nicht mehr exakt reproduzierbar.
-2. **requirements.txt / environment.yml ins Git-Repository committen** — das ist Teil deiner
-   methodischen Nachvollziehbarkeit (kannst du auch im Anhang der Thesis erwähnen).
-3. **Nach jeder größeren Änderung aktualisieren:**
-   ```bash
-   pip freeze > requirements_freeze.txt   # exakter Snapshot aller installierten Pakete
-   ```
-   Das unterscheidet sich von `requirements.txt` (deine bewusst gewählten Top-Level-Pakete) —
-   `requirements_freeze.txt` enthält zusätzlich alle transitiven Abhängigkeiten. Für die Thesis
-   reicht meist die kuratierte `requirements.txt`.
-4. **Random Seeds fixieren** für Reproduzierbarkeit (gehört strenggenommen nicht zum
-   Dependency-Management, ist aber genauso wichtig):
-   ```python
-   import random, numpy as np, torch
-   SEED = 42
-   random.seed(SEED)
-   np.random.seed(SEED)
-   torch.manual_seed(SEED)
-   ```
-
-## Projektstruktur-Empfehlung
-
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
-thesis-project/
-├── environment.yml / requirements.txt
-├── README_ENV.md
+
+## Project Structure
+
+```text
+Implementation/
+├── environment.yml          # Conda environment
+├── requirements.txt         # Python dependencies
+├── README.md                # Project description and setup
 ├── data/
-│   ├── raw/              # Original-CSVs, nie verändern
-│   └── processed/        # bereinigte/erweiterte Daten
+│   ├── raw/                 # Original data; leave unchanged
+│   └── processed/           # Preprocessed or cleaned data
 ├── src/
-│   ├── features/         # Feature-Extraktion (AST, OpenL3, ...)
-│   ├── models/            # Emotion-Regression, Genre-Klassifikation
-│   └── evaluation/        # Metriken, GroupKFold, Plots
-├── notebooks/              # explorative Analyse (Cohen's d, Visualisierungen)
-├── results/                # Modell-Outputs, Metriken, Plots
-└── thesis/                 # LaTeX/Word-Dateien der schriftlichen Arbeit
+│   ├── features/            # Feature extraction
+│   ├── models/              # Model implementations
+│   └── evaluation/          # Metrics, plots, analysis
+├── notebooks/              # Exploratory analysis and visualizations
+├── results/                 # Model outputs, plots, logs
+└── thesis/                  # LaTeX or Word files for the written thesis
 ```
 
-Diese Struktur trennt sauber zwischen Rohdaten, Code und Ergebnissen — hilfreich, wenn der
-Betreuer nach Reproduzierbarkeit fragt.
+## Data Organization
+
+- Raw data should be stored in [data/raw](data/raw).
+- Processed data should be placed in [data/processed](data/processed).
+- Results and plots should be saved in [results](results).
+- Raw data should not be modified directly; intermediate outputs should be stored in processed.
+
+## Reproducibility
+
+For a robust scientific workflow, the following practices are recommended:
+
+1. Pin versions rather than using loose version ranges.
+2. Keep dependencies in the repository.
+3. Set random seeds explicitly.
+4. Document important configurations and parameters.
+5. Store results in a traceable way.
+
+Example for fixed seeds:
+
+```python
+import random
+import numpy as np
+import torch
+
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+```
+
+## Dependencies and Notes
+
+The current configuration relies mainly on PyTorch and related libraries. This choice is intentional so the main components can work within a single deep-learning framework.
+
+If additional baselines using TensorFlow are required, they should ideally be placed in a separate environment to avoid version conflicts.
+
+## Recommended Workflow
+
+1. Create and activate the environment.
+2. Place data in [data/raw](data/raw).
+3. Implement preprocessing and feature extraction in [src/features](src/features).
+4. Develop models in [src/models](src/models).
+5. Generate evaluations and plots in [src/evaluation](src/evaluation) or [notebooks](notebooks).
+6. Save outputs in [results](results).
+
+## VS Code Recommendation
+
+When using Visual Studio Code, point the interpreter to the created virtual environment so that Python and Jupyter tools work correctly.
+
+## Note
+
+This repository should be understood as a project starter. The actual implementation of the models and experiments can be added gradually into the designated folders.
