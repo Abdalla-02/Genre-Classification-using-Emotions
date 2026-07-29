@@ -39,7 +39,7 @@ def main() -> None:
     print(f"  engineered features present ({len(config.FEATURE_COLS)}): {config.FEATURE_COLS}")
     _check_audio(df1, "set1")
 
-    print("\n=== Set 2 (cross-dataset, Exp 4) ===")
+    print("\n=== Set 2 (Set1-vs-Set2 diff analysis, Exp 4) ===")
     df2 = load_set2()
     print(f"  clips={len(df2)}  soundtracks={df2['soundtrack'].nunique()}")
     print("  multi-label positive counts:")

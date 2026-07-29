@@ -26,7 +26,7 @@ from src.features import AstEmbedder, extract_embeddings  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
 
-def _run(df, set_name: str, embedder: AstEmbedder) -> None:
+def _run(df, set_name: str, embedder: AstEmbedder | None) -> None:
     t = time.time()
     X, durations = extract_embeddings(df, set_name, embedder=embedder)
     config.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
@@ -44,8 +44,9 @@ def main() -> None:
     args = ap.parse_args()
 
     set_seed()
-    print("Loading AST model ...")
-    embedder = AstEmbedder()
+    # Lazy: the AST model is loaded only on the first cache miss (see extract_embeddings),
+    # so re-runs with a full cache (e.g. to regenerate durations) skip the model load.
+    embedder = None
 
     # Extract ALL 360 Set 1 clips (clean=False): the genre experiments use the 346
     # cleaned subset, but Experiment 5 (TARGET) needs the full balanced 360. The

@@ -75,7 +75,7 @@ def extract_embeddings(
 
         if cache_file.is_file():
             embeddings[i] = np.load(cache_file)
-            dur = np.nan  # not recomputed from cache; see durations_from_audio()
+            dur = librosa.get_duration(path=path)  # cheap header read; keep CSV complete
         else:
             if embedder is None:
                 embedder = AstEmbedder()
