@@ -1,0 +1,127 @@
+"""AST (Audio Spectrogram Transformer) embedding extraction.
+
+Each clip is decoded to 16 kHz mono, passed through
+``MIT/ast-finetuned-audioset-10-10-0.4593`` and mean-pooled over the time/sequence
+axis to a single 768-dim embedding. Embeddings are cached to disk per clip so the
+(one-time, CPU-bound) extraction is never repeated.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import librosa
+import numpy as np
+import pandas as pd
+import torch
+from tqdm import tqdm
+
+from src import config
+
+AST_CHECKPOINT = "MIT/ast-finetuned-audioset-10-10-0.4593"
+EMBED_DIM = 768
+
+
+class AstEmbedder:
+    """Lazy wrapper around the AST feature extractor + model (eval, no-grad)."""
+
+    def __init__(self, checkpoint: str = AST_CHECKPOINT):
+        from transformers import ASTFeatureExtractor, ASTModel
+
+        self.feature_extractor = ASTFeatureExtractor.from_pretrained(checkpoint)
+        self.model = ASTModel.from_pretrained(checkpoint)
+        self.model.eval()
+        self.sampling_rate = self.feature_extractor.sampling_rate
+
+    @torch.no_grad()
+    def embed_waveform(self, waveform: np.ndarray) -> np.ndarray:
+        inputs = self.feature_extractor(
+            waveform, sampling_rate=self.sampling_rate, return_tensors="pt"
+        )
+        out = self.model(**inputs)
+        # mean-pool the last hidden state over the sequence (time) axis
+        return out.last_hidden_state.mean(dim=1).squeeze(0).cpu().numpy()
+
+    def load_audio(self, path: str | Path) -> np.ndarray:
+        waveform, _ = librosa.load(path, sr=self.sampling_rate, mono=True)
+        return waveform
+
+
+def extract_embeddings(
+    df: pd.DataFrame,
+    set_name: str,
+    embedder: AstEmbedder | None = None,
+    cache_dir: Path = config.EMBEDDINGS_DIR,
+    number_col: str = "number",
+    path_col: str = "audio_path",
+) -> tuple[np.ndarray, pd.DataFrame]:
+    """Return an ``(n_clips, 768)`` embedding matrix aligned to ``df`` row order,
+    plus a durations DataFrame (``number``, ``duration_sec``).
+
+    Per-clip embeddings are cached at ``cache_dir/<set_name>/<number:03d>.npy`` and
+    reused on subsequent runs (safe to interrupt and resume).
+    """
+    clip_dir = Path(cache_dir) / set_name
+    clip_dir.mkdir(parents=True, exist_ok=True)
+
+    embeddings = np.empty((len(df), EMBED_DIM), dtype=np.float32)
+    durations: list[dict] = []
+
+    for i, row in enumerate(tqdm(df.itertuples(index=False), total=len(df),
+                                 desc=f"AST {set_name}")):
+        number = getattr(row, number_col)
+        path = getattr(row, path_col)
+        cache_file = clip_dir / f"{int(number):03d}.npy"
+
+        if cache_file.is_file():
+            embeddings[i] = np.load(cache_file)
+            dur = np.nan  # not recomputed from cache; see durations_from_audio()
+        else:
+            if embedder is None:
+                embedder = AstEmbedder()
+            waveform = embedder.load_audio(path)
+            dur = len(waveform) / embedder.sampling_rate
+            emb = embedder.embed_waveform(waveform).astype(np.float32)
+            np.save(cache_file, emb)
+            embeddings[i] = emb
+        durations.append({"number": int(number), "duration_sec": dur})
+
+    return embeddings, pd.DataFrame(durations)
+
+
+def assemble_from_cache(
+    df: pd.DataFrame,
+    set_name: str,
+    cache_dir: Path = config.EMBEDDINGS_DIR,
+    number_col: str = "number",
+) -> np.ndarray:
+    """Assemble an ``(n_clips, 768)`` matrix from the per-clip cache, in ``df`` order.
+
+    Raises ``FileNotFoundError`` listing any clips whose embedding is not cached, so
+    experiments never silently train on a partial matrix.
+    """
+    clip_dir = Path(cache_dir) / set_name
+    numbers = df[number_col].astype(int).tolist()
+    missing = [n for n in numbers if not (clip_dir / f"{n:03d}.npy").is_file()]
+    if missing:
+        raise FileNotFoundError(
+            f"{len(missing)} cached embeddings missing for '{set_name}' "
+            f"(run notebooks/extract_features.py): {missing[:10]}"
+            + (" ..." if len(missing) > 10 else "")
+        )
+    return np.vstack([np.load(clip_dir / f"{n:03d}.npy") for n in numbers]).astype(
+        np.float32
+    )
+
+
+def durations_from_audio(
+    df: pd.DataFrame, sr: int = 16000, path_col: str = "audio_path",
+    number_col: str = "number",
+) -> pd.DataFrame:
+    """Compute clip durations (seconds) directly from the audio files."""
+    rows = []
+    for row in tqdm(df.itertuples(index=False), total=len(df), desc="durations"):
+        path = getattr(row, path_col)
+        dur = librosa.get_duration(path=path)
+        rows.append({"number": int(getattr(row, number_col)), "duration_sec": dur})
+    return pd.DataFrame(rows)
