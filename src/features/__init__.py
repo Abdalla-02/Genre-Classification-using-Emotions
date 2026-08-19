@@ -12,6 +12,7 @@ from src.features.ast_extractor import (
     durations_from_audio,
     extract_embeddings,
 )
+from src.features.clap_extractor import CLAP_CHECKPOINT, CLAP_EMBED_DIM, ClapEmbedder
 from src.features.loader import (
     add_derived_features,
     genre_matrix,
@@ -27,9 +28,12 @@ __all__ = [
     "genre_matrix",
     # embeddings
     "AstEmbedder",
+    "ClapEmbedder",
     "extract_embeddings",
     "assemble_from_cache",
     "durations_from_audio",
     "AST_CHECKPOINT",
     "EMBED_DIM",
+    "CLAP_CHECKPOINT",
+    "CLAP_EMBED_DIM",
 ]

@@ -101,6 +101,12 @@ def _load(csv_path, audio_dir, clean: bool) -> pd.DataFrame:
     if missing:
         raise ValueError(f"{csv_path.name}: missing expected columns {missing}")
 
+    # Drop rows with no clip number (e.g. trailing blank rows that spreadsheet editors
+    # append), then make the key a clean int. Guards the whole pipeline against such
+    # junk rows.
+    df = df[df["number"].notna()].copy()
+    df["number"] = df["number"].astype(int)
+
     # normalise the discrete-emotion TARGET label (strip stray whitespace, e.g.
     # "HIGH TENSION " -> "HIGH TENSION") and expose the audio path for every clip.
     if "TARGET" in df.columns:

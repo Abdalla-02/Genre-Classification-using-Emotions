@@ -51,6 +51,28 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = _resolve_data_root()
 EEROLA_DIR = DATA_ROOT / _EEROLA_REL
 
+
+def _resolve_blockbuster_dir():
+    """Locate the Ma et al. (2021) Blockbuster supplement (features only, no audio).
+
+    Checks $BLOCKBUSTER_DIR, then a data/ copy, then the sibling 'Related Work' tree.
+    Returns None if not found (the loader raises a clear error only when actually used).
+    """
+    env = os.environ.get("BLOCKBUSTER_DIR")
+    rel = Path("Related Work") / "Blockbuster-Dataset" / "journal.pone.0249957.s004"
+    candidates = [
+        Path(env) if env else None,
+        DATA_ROOT / "raw" / "Blockbuster" / "journal.pone.0249957.s004",
+        DATA_ROOT.parent.parent / rel,  # <thesis>/Related Work/...
+    ]
+    for cand in candidates:
+        if cand and (cand / "mir_feature_names.csv").is_file():
+            return cand.resolve()
+    return None
+
+
+BLOCKBUSTER_DIR = _resolve_blockbuster_dir()
+
 SET1_CSV = EEROLA_DIR / "mean_ratings_set1_enriched.csv"
 SET2_CSV = EEROLA_DIR / "mean_ratings_set2_enriched.csv"
 AUDIO_SET1 = EEROLA_DIR / "audio" / "set1"
@@ -61,7 +83,8 @@ AUDIO_1MIN = EEROLA_DIR / "audio" / "1min"
 # (data/processed/Eerola_DB/...) so each dataset's derivatives sit together; embedding
 # caches can be large -> kept next to the (git-ignored) data. Results live in the repo.
 PROCESSED_DIR = DATA_ROOT / "processed" / "Eerola_DB"
-EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings"  # per-clip caches: embeddings/<set>/<n>.npy
+EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings"  # AST per-clip caches: embeddings/<set>/<n>.npy
+CLAP_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_clap"  # CLAP baseline, same layout
 RESULTS_DIR = REPO_ROOT / "results"
 
 # --------------------------------------------------------------------------- #

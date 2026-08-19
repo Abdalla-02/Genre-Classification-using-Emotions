@@ -50,43 +50,47 @@ class AstEmbedder:
 def extract_embeddings(
     df: pd.DataFrame,
     set_name: str,
-    embedder: AstEmbedder | None = None,
+    embedder=None,
     cache_dir: Path = config.EMBEDDINGS_DIR,
     number_col: str = "number",
     path_col: str = "audio_path",
+    make_embedder=None,
+    label: str = "AST",
 ) -> tuple[np.ndarray, pd.DataFrame]:
-    """Return an ``(n_clips, 768)`` embedding matrix aligned to ``df`` row order,
+    """Return an ``(n_clips, embed_dim)`` embedding matrix aligned to ``df`` row order,
     plus a durations DataFrame (``number``, ``duration_sec``).
 
-    Per-clip embeddings are cached at ``cache_dir/<set_name>/<number:03d>.npy`` and
-    reused on subsequent runs (safe to interrupt and resume).
+    Model-agnostic: ``embedder`` only needs ``load_audio(path)``, ``embed_waveform(y)``
+    and ``sampling_rate`` (see AstEmbedder / ClapEmbedder). Per-clip embeddings are
+    cached at ``cache_dir/<set_name>/<number:03d>.npy`` and reused on later runs
+    (safe to interrupt/resume). ``make_embedder`` lazily builds the model on the first
+    cache miss (defaults to AstEmbedder) so a fully-cached re-run loads nothing.
     """
     clip_dir = Path(cache_dir) / set_name
     clip_dir.mkdir(parents=True, exist_ok=True)
 
-    embeddings = np.empty((len(df), EMBED_DIM), dtype=np.float32)
+    embeddings: list[np.ndarray] = []
     durations: list[dict] = []
 
-    for i, row in enumerate(tqdm(df.itertuples(index=False), total=len(df),
-                                 desc=f"AST {set_name}")):
+    for row in tqdm(df.itertuples(index=False), total=len(df), desc=f"{label} {set_name}"):
         number = getattr(row, number_col)
         path = getattr(row, path_col)
         cache_file = clip_dir / f"{int(number):03d}.npy"
 
         if cache_file.is_file():
-            embeddings[i] = np.load(cache_file)
+            embeddings.append(np.load(cache_file))
             dur = librosa.get_duration(path=path)  # cheap header read; keep CSV complete
         else:
             if embedder is None:
-                embedder = AstEmbedder()
+                embedder = (make_embedder or AstEmbedder)()
             waveform = embedder.load_audio(path)
             dur = len(waveform) / embedder.sampling_rate
             emb = embedder.embed_waveform(waveform).astype(np.float32)
             np.save(cache_file, emb)
-            embeddings[i] = emb
+            embeddings.append(emb)
         durations.append({"number": int(number), "duration_sec": dur})
 
-    return embeddings, pd.DataFrame(durations)
+    return np.vstack(embeddings).astype(np.float32), pd.DataFrame(durations)
 
 
 def assemble_from_cache(
