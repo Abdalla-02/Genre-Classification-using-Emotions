@@ -85,6 +85,10 @@ AUDIO_1MIN = EEROLA_DIR / "audio" / "1min"
 PROCESSED_DIR = DATA_ROOT / "processed" / "Eerola_DB"
 EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings"  # AST per-clip caches: embeddings/<set>/<n>.npy
 CLAP_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_clap"  # CLAP baseline, same layout
+# AST per-window embeddings: embeddings_ast_windows/<set>/<n>.npy holds an
+# (n_windows, 768) stack (10.24 s windows, 50% overlap) so full-clip pooling
+# strategies (first/center/mean/max) can be compared without re-running AST.
+WINDOW_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_ast_windows"
 RESULTS_DIR = REPO_ROOT / "results"
 
 # --------------------------------------------------------------------------- #

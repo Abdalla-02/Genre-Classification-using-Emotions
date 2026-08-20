@@ -219,3 +219,4 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+data/processed/Eerola_DB/embeddings_ast_windows/

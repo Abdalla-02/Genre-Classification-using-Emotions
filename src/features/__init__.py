@@ -11,6 +11,8 @@ from src.features.ast_extractor import (
     assemble_from_cache,
     durations_from_audio,
     extract_embeddings,
+    extract_window_embeddings,
+    pool_windows,
 )
 from src.features.clap_extractor import CLAP_CHECKPOINT, CLAP_EMBED_DIM, ClapEmbedder
 from src.features.loader import (
@@ -31,6 +33,8 @@ __all__ = [
     "ClapEmbedder",
     "extract_embeddings",
     "assemble_from_cache",
+    "extract_window_embeddings",
+    "pool_windows",
     "durations_from_audio",
     "AST_CHECKPOINT",
     "EMBED_DIM",
