@@ -192,6 +192,28 @@ flattens — "more data helps" is supported, "how much" is an extrapolation. Tie
 rare-genre point: a larger dataset would rescue Biography/Documentary (n<25), but not
 Adventure (no emotional signature).
 
+## 7f. Genre-subset reframing (done)
+
+Literature (6 papers, `genre_subset_literature.md`): genre count scales with dataset
+size (~100 films -> 4-6 genres: Austin, Ma; 10k films -> 18: Mangolin). Our corpus is
+smaller than all of them, so 5-6 genres is scale-appropriate; the closest analogue
+(Ma 2021, 110 film soundtracks) reduced IMDb's 24 genres to 6.
+
+Experiment (`notebooks/exp_genre_subset.py`): 5-genre subset {Action, Crime, Drama,
+Comedy, Horror} (329 clips with >=1 of the 5), GroupKFold, LogReg:
+
+| | Macro-F1 (8) | Macro-F1 (5-subset) |
+|---|---|---|
+| WITH emotion | 0.272 | **0.388** |
+| WITHOUT (AST) | 0.258 | 0.323 |
+| dummy | 0.102 | 0.164 |
+
+On the subset emotion (0.388) exceeds AST (0.323) by +0.064 -- larger and consistent, but
+NOT significant at 5 folds (paired-t p=0.16, underpowered). **Metric caveat:** Exact Match
+and Hamming are uninformative here (the dummy scores best on both, due to balanced
+over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justification in
+`genre_subset.tex`. Report both full-8 and subset-5 transparently.
+
 ## 8. Planned next
 
 - **#4 literature:** synthesise prior findings on the emotion↔genre link (film-music

@@ -1,0 +1,37 @@
+% =============================================================================
+% Ready-to-paste LaTeX: justification for reporting on a curated genre subset.
+% Uses bib keys present in library.bib (austin2010characterization,
+% ma2021computational, mangolin2020multimodal, behrouzi2023multimodal). Sharma et al.
+% (2021) and Bhattacharjee et al. (2024) are referenced in prose only -- add bib entries
+% and \cite them if you want those citations. Placement: Methods/evaluation, where the
+% genre set is defined, or as a paragraph preceding the subset results.
+% =============================================================================
+
+\paragraph{Genre subset.}
+The number of genres modelled in prior work on genre classification from film audio
+scales closely with the size of the dataset. At a scale comparable to the corpus used
+here, studies restrict themselves to a small set of well-attested genres:
+\citet{austin2010characterization} model four genres (Action, Horror, Romance, Drama)
+over 98 films, and \citet{ma2021computational} -- working, as in this thesis, from film
+soundtracks rather than trailers -- deliberately reduce the 24 genres listed by IMDb to
+six (Action, Comedy, Drama, Horror, Romance, Science Fiction) for their 110-film corpus.
+Larger studies retain far more genres precisely because their sample sizes support it:
+\citet{behrouzi2023multimodal} use nine genres over 3{,}500 trailers (while additionally
+reporting a reduced four-genre subset), and \citet{mangolin2020multimodal} use the full
+eighteen-genre taxonomy over 10{,}594 films, retaining genres as rare as one appearing in
+only 119 titles. Rare genres such as Biography, Documentary and Adventure appear only in
+these large-scale datasets.
+
+The corpus used in this thesis (346 clips from 43 soundtracks) is smaller than any of
+these studies, so an eight-genre target is comparatively ambitious. Three of the eight
+genres are both rare in this literature and poorly supported in the data: Biography and
+Documentary are represented by fewer than 25 clips each, and Adventure -- as the
+effect-size analysis in Section~\ref{subsec:emotion_genre} shows -- possesses no
+distinctive emotional signature ($|d|\le0.25$) and is therefore not recoverable from
+emotional features at any dataset size. Following the precedent of
+\citet{ma2021computational} and \citet{austin2010characterization}, results are therefore
+reported both on the full eight-genre set and on a curated five-genre subset -- Action,
+Crime, Drama, Comedy and Horror -- comprising the genres that are both established in the
+literature and carry a measurable emotional signature in this corpus. The full set
+documents the limitations imposed by rare and affectively indistinct genres; the subset
+characterises performance on the genres for which the emotion-based approach is applicable.
