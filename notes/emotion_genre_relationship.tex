@@ -1,0 +1,92 @@
+% =============================================================================
+% Ready-to-paste LaTeX: "The Relationship Between Musical Emotion and Film Genre"
+% Uses citation keys already present in bib/library.bib. Placement: fits either as a
+% subsection deepening Section~\ref{sec:fund_motivation_theory} (Fundamentals) or as the
+% exploratory-analysis subsection in the Methods chapter (it reports the Cohen's d
+% analysis that answers RQ2a). Adjust \subsection -> \section and the \label as needed.
+% Cohen's d values are from the exploratory analysis on the 346-clip Set 1 corpus and are
+% consistent with the Horror/Action figures already reported in the Fundamentals chapter.
+% =============================================================================
+
+\subsection{The Relationship Between Musical Emotion and Film Genre}
+\label{subsec:emotion_genre}
+
+The premise that film music encodes genre-appropriate emotion, established on
+theoretical grounds in Section~\ref{sec:fund_motivation_theory}
+\citep{gorbman1987unheard,juslin2013everyday}, raises a more specific empirical
+question: \emph{which} emotional qualities characterise \emph{which} genres, and how
+consistently? Both the prior literature and the exploratory analysis conducted for this
+thesis converge on a clear, if uneven, answer.
+
+Empirical work on genre classification from film music has repeatedly observed that the
+strength of the music--genre link is not uniform across genres. \citet{austin2010characterization}
+report that high-intensity genres such as Action and Horror are markedly more separable
+by their musical scores than narrative-driven genres such as Drama and Romance, and
+attribute the residual confusion to the fact that individual cues within a labelled genre
+may musically resemble a different genre. A parallel observation recurs in the music
+emotion recognition (MER) literature: the surveys of \citet{kim2010music} and
+\citet{kang2025there} document the persistent ``valence problem'', whereby arousal is
+recovered from audio far more reliably than valence. This is directly relevant to genre,
+because several genres are distinguished less by their level of arousal than by their
+valence and by their discrete-emotion content. As \citet{eerola2011comparison} note for
+the very corpus used here, Action and Horror occupy a nearly identical region of the
+valence--arousal space -- negative valence combined with high arousal -- so a purely
+dimensional description conflates them; it is the discrete emotion categories, and fear
+in particular, that carry the information needed to separate them.
+
+To quantify these relationships on the present corpus, the effect size (Cohen's $d$) of
+each of the eight emotion ratings was computed between the clips belonging to a given
+genre and those not belonging to it. The dominant emotional signature of each genre is
+summarised in Table~\ref{tab:emotion_genre_signatures}. A coherent picture emerges. Fear
+is the single strongest discriminator across the genre set: it sharply separates the
+threat-oriented genres (Horror, $d\approx+0.75$; Crime, $d\approx+0.40$) from the
+light-hearted ones (Comedy, $d\approx-0.61$). Valence forms a second axis, distinguishing
+the more positively toned genres (Drama, $d\approx+0.57$; Comedy) from the negatively
+toned ones (Horror, $d\approx-0.63$; Action). Each of these genres thus possesses an
+interpretable affective fingerprint that is consistent with film-scoring convention:
+Horror is defined by fear, Comedy by the \emph{absence} of fear together with positive
+valence, Drama by elevated valence, and Action by high tension combined with an absence
+of cheerfulness.
+
+\begin{table}[t]
+  \centering
+  \caption{Dominant emotional signature of each genre on Set~1, measured by the effect
+    size (Cohen's $d$) of the emotion rating between clips of that genre and all others.
+    Positive $d$ indicates the emotion is elevated for the genre; negative $d$ indicates
+    it is suppressed.}
+  \label{tab:emotion_genre_signatures}
+  \begin{tabular}{llr}
+    \hline
+    Genre       & Dominant emotion (direction) & Cohen's $d$ \\
+    \hline
+    Horror      & fear (high)          & $+0.75$ \\
+    Biography   & happiness (high)     & $+0.67$ \\
+    Comedy      & fear (low)           & $-0.61$ \\
+    Drama       & valence (high)       & $+0.57$ \\
+    Documentary & anger (low)          & $-0.51$ \\
+    Action      & happiness (low)      & $-0.50$ \\
+    Crime       & fear (high)          & $+0.40$ \\
+    Adventure   & --- (none $|d|>0.25$) & $\phantom{+}0.25$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+The same analysis also delimits where the relationship breaks down. Adventure exhibits no
+distinctive emotional signature -- no single emotion reaches an effect size of $|d|=0.25$
+-- which reflects its tendency to co-occur with, and share the affective palette of,
+several other genres rather than possessing one of its own. This absence is not a
+measurement artefact but a substantive property of the genre, and it anticipates the
+finding (Chapter~\ref{ch:evaluation}) that Adventure is the genre least predictable from
+emotional features. More broadly, the uneven strength of the signatures in
+Table~\ref{tab:emotion_genre_signatures} mirrors the asymmetry first reported by
+\citet{austin2010characterization}: genres with a pronounced, conventionalised affective
+identity (Horror, Comedy, Drama, Action) are recoverable from emotion, whereas genres
+defined more by narrative or setting than by a characteristic emotional tone are not.
+
+Taken together, these results support the use of perceived emotion as an
+\emph{interpretable} intermediate representation rather than merely a predictive one. The
+per-genre signatures are not only statistically detectable but also semantically
+transparent and consistent with established film-music practice, so that a genre
+prediction grounded in them can be explained in terms of the emotions the score expresses
+-- an explanatory link that a direct mapping from low-level audio to genre does not
+afford.
