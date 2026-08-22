@@ -4,7 +4,7 @@ Supervisor task: compare VGGish and MFCC features (from the Blockbuster dataset)
 Same Binary-Relevance classifiers and metrics as the Eerola genre experiment; 5-fold
 KFold (films are independent, so no grouping needed).
 
-Run:  python notebooks/exp_blockbuster.py
+Run:  python experiments/exp_blockbuster.py
 """
 
 from __future__ import annotations

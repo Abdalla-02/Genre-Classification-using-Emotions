@@ -41,7 +41,7 @@ data (AUC/Cohen's d): **Action, Crime, Drama, Comedy, Horror.** Drop Adventure (
 signature), Biography (n=24), Documentary (n=17) -- these are rare in the literature AND
 rare/unpredictable here.
 
-Experiment (`notebooks/exp_genre_subset.py`, 329 clips, GroupKFold, LogReg):
+Experiment (`experiments/exp_genre_subset.py`, 329 clips, GroupKFold, LogReg):
 
 | | Macro-F1 (8 genres) | Macro-F1 (5-genre subset) |
 |---|---|---|

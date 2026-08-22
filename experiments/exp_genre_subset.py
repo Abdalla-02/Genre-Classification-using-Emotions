@@ -5,7 +5,7 @@ one of the five genres (mirrors Ma et al.). Compares WITH-emotion (11) vs AST (7
 Macro-F1, Exact Match (subset accuracy) and Hamming loss under GroupKFold, against the
 full 8-genre result.
 
-Run:  python notebooks/exp_genre_subset.py
+Run:  python experiments/exp_genre_subset.py
 """
 
 from __future__ import annotations

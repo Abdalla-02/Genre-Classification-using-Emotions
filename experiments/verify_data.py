@@ -1,6 +1,6 @@
 """Sanity-check the data pipeline: load + clean Set 1/2, verify counts, check audio.
 
-Run from anywhere:  python notebooks/verify_data.py
+Run from anywhere:  python experiments/verify_data.py
 """
 
 from __future__ import annotations

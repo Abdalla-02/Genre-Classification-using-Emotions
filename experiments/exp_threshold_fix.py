@@ -6,7 +6,7 @@ out-of-fold (GroupKFold) probabilities for balanced vs unbalanced LogReg on the
 WITH-emotion features, then sweep the decision threshold and report Macro-F1, macro
 precision/recall, and predicted labels/clip.
 
-Run:  python notebooks/exp_threshold_fix.py
+Run:  python experiments/exp_threshold_fix.py
 """
 
 from __future__ import annotations

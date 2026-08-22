@@ -125,7 +125,7 @@ def assemble_from_cache(
     if missing:
         raise FileNotFoundError(
             f"{len(missing)} cached embeddings missing for '{set_name}' "
-            f"(run notebooks/extract_features.py): {missing[:10]}"
+            f"(run experiments/extract_features.py): {missing[:10]}"
             + (" ..." if len(missing) > 10 else "")
         )
     return np.vstack([np.load(clip_dir / f"{n:03d}.npy") for n in numbers]).astype(

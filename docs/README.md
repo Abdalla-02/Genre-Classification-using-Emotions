@@ -103,7 +103,7 @@ is a reportable Methods result.
 ## 7b. RQ3 — which emotions predict which genres (done)
 
 Per-genre LogReg coefficients + RF importances + Cohen's d agree on an emotional
-signature per genre (`notebooks/exp_emotion_genre.py`):
+signature per genre (`experiments/exp_emotion_genre.py`):
 
 | Genre | Signature | Cohen's d |
 |-------|-----------|-----------|
@@ -124,14 +124,14 @@ emotion, which explains its near-chance predictability.** Caveat: tiny-n genres
 
 ## 7c. Error analysis & why the score is what it is (done)
 
-`notebooks/exp_error_analysis.py` — per-genre FP/FN breakdown (WITH emotion, GroupKFold).
+`experiments/exp_error_analysis.py` — per-genre FP/FN breakdown (WITH emotion, GroupKFold).
 Diagnosis: the balanced LogReg predicts **3.49 labels/clip vs 1.87 true** (heavy
 over-prediction) → low precision. Rare genres are essentially never caught (Biography
 100% FN, Documentary 94% FN); Adventure fails both ways (no emotional signature).
 Contrast: the AST baseline predicts a realistic 1.85 labels/clip but *misses* the
 distinctive rare genres (Horror recall 0.68→0.21, Comedy 0.62→0.12).
 
-`notebooks/exp_threshold_fix.py` — tested whether curbing the over-prediction helps:
+`experiments/exp_threshold_fix.py` — tested whether curbing the over-prediction helps:
 
 | Config | pred/clip | Macro-F1 |
 |--------|-----------|----------|
@@ -170,7 +170,7 @@ film-level aggregation -> 0.34.
 
 ## 7e. Would more data help? Learning curve (done)
 
-`notebooks/exp_learning_curve.py` — train on increasing fractions of the films
+`experiments/exp_learning_curve.py` — train on increasing fractions of the films
 (subsampled by soundtrack), Macro-F1 on the GroupKFold held-out folds.
 
 | Train data | ~clips | Emotion Macro-F1 | AST Macro-F1 |
@@ -199,7 +199,7 @@ size (~100 films -> 4-6 genres: Austin, Ma; 10k films -> 18: Mangolin). Our corp
 smaller than all of them, so 5-6 genres is scale-appropriate; the closest analogue
 (Ma 2021, 110 film soundtracks) reduced IMDb's 24 genres to 6.
 
-Experiment (`notebooks/exp_genre_subset.py`): 5-genre subset {Action, Crime, Drama,
+Experiment (`experiments/exp_genre_subset.py`): 5-genre subset {Action, Crime, Drama,
 Comedy, Horror} (329 clips with >=1 of the 5), GroupKFold, LogReg:
 
 | | Macro-F1 (8) | Macro-F1 (5-subset) |
@@ -226,7 +226,7 @@ over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justi
 - `src/features/` — data loading/cleaning, AST + CLAP extraction, Blockbuster loader
 - `src/models/` — multi-label classifiers
 - `src/evaluation/` — metrics + cross-validated scoring
-- `notebooks/` — runnable experiments (`exp_genre`, `exp_blockbuster`, `exp5_target`,
+- `experiments/` — runnable experiments (`exp_genre`, `exp_blockbuster`, `exp5_target`,
   `exp_clip_length`, `clip_length_analysis`, `verify_data`, `extract_features`)
-- `notes/` — this log + `clip_length_literature.md`
+- `docs/` — this log + `clip_length_literature.md`
 - `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, AST-windows)

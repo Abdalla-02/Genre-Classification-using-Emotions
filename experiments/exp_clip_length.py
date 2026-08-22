@@ -11,7 +11,7 @@ Configs:
 Downstream: Experiment 5 (TARGET, 12-class, GroupKFold) and the direct genre baseline
 (AST -> 8-genre multi-label, GroupKFold Macro-F1).
 
-Run:  python notebooks/exp_clip_length.py
+Run:  python experiments/exp_clip_length.py
 """
 
 from __future__ import annotations

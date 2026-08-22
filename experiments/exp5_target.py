@@ -6,7 +6,7 @@ harder multi-label genre work. Reports Accuracy and Macro-F1 under both
 StratifiedKFold and GroupKFold(by soundtrack); the gap between them quantifies
 film-identity leakage (the same GroupKFold-vs-Stratified logic used for genre).
 
-Run (after notebooks/extract_features.py):  python notebooks/exp5_target.py
+Run (after experiments/extract_features.py):  python experiments/exp5_target.py
 """
 
 from __future__ import annotations

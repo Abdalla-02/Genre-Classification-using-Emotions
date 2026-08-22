@@ -1,8 +1,8 @@
 """Extract & cache audio embeddings for Set 1 (and optionally Set 2).
 
 Run from anywhere:
-  python notebooks/extract_features.py                 # AST (primary), Set 1
-  python notebooks/extract_features.py --model clap --set2   # CLAP baseline, both sets
+  python experiments/extract_features.py                 # AST (primary), Set 1
+  python experiments/extract_features.py --model clap --set2   # CLAP baseline, both sets
 
 Outputs (under DATA_ROOT/processed/Eerola_DB/):
   embeddings[_clap]/<set>/<number>.npy   per-clip embedding (cache, resumable)

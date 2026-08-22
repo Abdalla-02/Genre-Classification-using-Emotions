@@ -8,7 +8,7 @@ Three complementary views on the WITH-emotion (ground-truth) data, cross-checked
 
 Fit on all 346 clips (this is an interpretability analysis, not a prediction estimate).
 
-Run:  python notebooks/exp_emotion_genre.py
+Run:  python experiments/exp_emotion_genre.py
 """
 
 from __future__ import annotations

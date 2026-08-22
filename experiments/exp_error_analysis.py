@@ -5,7 +5,7 @@ For each genre reports, from out-of-fold predictions:
   positives that are wrong), FPR (=negatives wrongly flagged), F1.
 Run for WITH-emotion (11 ground-truth features) and the WITHOUT/AST baseline (768-d).
 
-Run:  python notebooks/exp_error_analysis.py
+Run:  python experiments/exp_error_analysis.py
 """
 
 from __future__ import annotations

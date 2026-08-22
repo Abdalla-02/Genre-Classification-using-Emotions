@@ -5,7 +5,7 @@ preserved), evaluates Macro-F1 on the held-out GroupKFold folds, for the emotion
 and AST (768) feature sets. A still-rising curve at 100% => the dataset size limits
 performance (more data would help); a flat curve => signal-limited.
 
-Run:  python notebooks/exp_learning_curve.py
+Run:  python experiments/exp_learning_curve.py
 """
 
 from __future__ import annotations
