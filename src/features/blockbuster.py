@@ -27,8 +27,9 @@ _MFCC_PREFIXES = ("mfcc", "deltamfcc", "deltadeltamfcc")
 def _require_dir():
     if config.BLOCKBUSTER_DIR is None:
         raise FileNotFoundError(
-            "Blockbuster dataset not found. Set $BLOCKBUSTER_DIR to the folder "
-            "containing 'mir_feature_names.csv' (the journal.pone.0249957.s004 supplement)."
+            "Blockbuster dataset not found. Place the Ma et al. (2021) feature supplement "
+            "(the files including 'mir_feature_names.csv') in data/raw/Blockbuster_DB/, "
+            "or set the BLOCKBUSTER_DIR environment variable to its location."
         )
     return config.BLOCKBUSTER_DIR
 

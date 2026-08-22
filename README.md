@@ -50,7 +50,9 @@ Implementation/
 ├── requirements.txt          # Python dependencies (pip)
 ├── README.md                 # This file
 ├── data/
-│   ├── raw/Eerola_DB/        # Audio + enriched rating CSVs (git-ignored, not redistributed)
+│   ├── raw/
+│   │   ├── Eerola_DB/        # Audio + enriched rating CSVs (primary dataset)
+│   │   └── Blockbuster_DB/   # Ma et al. 2021 VGGish/MIR features (external baseline)
 │   └── processed/Eerola_DB/  # Cached embeddings (AST, CLAP), matrices, durations
 ├── src/
 │   ├── config.py             # Paths, constants, expected dataset counts
@@ -58,19 +60,21 @@ Implementation/
 │   ├── features/             # Data loading/cleaning + AST/CLAP/Blockbuster feature extraction
 │   ├── models/               # Multi-label genre classifiers
 │   └── evaluation/           # Metrics + cross-validated scoring
-├── experiments/              # Runnable experiment scripts (extraction, classification, analyses)
+├── experiments/              # experiment scripts (extraction, classification, analyses)
 ├── docs/                     # Progress log, literature reviews, thesis LaTeX snippets
 └── results/                  # Generated plots and outputs
 ```
 
 ## Data
 
-- Raw data (audio + enriched rating CSVs) belongs in `data/raw/Eerola_DB/` and is
-  **git-ignored** (not redistributed).
+- Raw data is **git-ignored** (not redistributed) and lives under `data/raw/`:
+  - `Eerola_DB/` — the primary dataset: clip audio + enriched rating CSVs.
+  - `Blockbuster_DB/` — Ma et al. (2021) pre-extracted VGGish/MIR features (no audio),
+    used only for the external VGGish-vs-MFCC baseline (`experiments/exp_blockbuster.py`).
 - Derived data (cached embeddings, matrices, durations) is written to
   `data/processed/Eerola_DB/` and reused across runs — never re-extracted per run.
-- `src/config.py` resolves the data root automatically; set the `THESIS_DATA_ROOT`
-  environment variable to override.
+- `src/config.py` resolves the data root automatically; set `THESIS_DATA_ROOT` to
+  override the Eerola root, or `BLOCKBUSTER_DIR` to override the Blockbuster location.
 
 ## Running
 

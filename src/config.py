@@ -55,15 +55,17 @@ EEROLA_DIR = DATA_ROOT / _EEROLA_REL
 def _resolve_blockbuster_dir():
     """Locate the Ma et al. (2021) Blockbuster supplement (features only, no audio).
 
-    Checks $BLOCKBUSTER_DIR, then a data/ copy, then the sibling 'Related Work' tree.
-    Returns None if not found (the loader raises a clear error only when actually used).
+    Primary location is ``data/raw/Blockbuster_DB`` (parallels ``data/raw/Eerola_DB``);
+    ``$BLOCKBUSTER_DIR`` overrides, and a legacy fallback to a sibling 'Related Work' tree
+    is kept for backward compatibility. Returns None if not found (the loader raises a
+    clear error only when actually used).
     """
     env = os.environ.get("BLOCKBUSTER_DIR")
-    rel = Path("Related Work") / "Blockbuster-Dataset" / "journal.pone.0249957.s004"
+    legacy = Path("Related Work") / "Blockbuster-Dataset" / "journal.pone.0249957.s004"
     candidates = [
         Path(env) if env else None,
-        DATA_ROOT / "raw" / "Blockbuster" / "journal.pone.0249957.s004",
-        DATA_ROOT.parent.parent / rel,  # <thesis>/Related Work/...
+        DATA_ROOT / "raw" / "Blockbuster_DB",     # in-project, parallels Eerola_DB
+        DATA_ROOT.parent.parent / legacy,          # legacy: sibling 'Related Work' tree
     ]
     for cand in candidates:
         if cand and (cand / "mir_feature_names.csv").is_file():

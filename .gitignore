@@ -1,5 +1,6 @@
-# raw data
+# Large sized datasets
 data/raw/*/*
+data/processed/Eerola_DB/embeddings_ast_windows/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -219,4 +220,3 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
-data/processed/Eerola_DB/embeddings_ast_windows/
