@@ -87,6 +87,12 @@ AUDIO_1MIN = EEROLA_DIR / "audio" / "1min"
 PROCESSED_DIR = DATA_ROOT / "processed" / "Eerola_DB"
 EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings"  # AST per-clip caches: embeddings/<set>/<n>.npy
 CLAP_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_clap"  # CLAP baseline, same layout
+# VGGish (128-d, postprocessed to match Blockbuster's VGGish space) -- the shared
+# feature used to bridge Eerola and Blockbuster for cross-dataset emotion prediction.
+VGGISH_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_vggish"
+# librosa hand-crafted MIR features (MFCC/chroma/spectral/...) -- a classic-MER baseline
+# for emotion regression (NOT Blockbuster's MATLAB MIR, so not a cross-dataset bridge).
+MIR_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_mir"
 # AST per-window embeddings: embeddings_ast_windows/<set>/<n>.npy holds an
 # (n_windows, 768) stack (10.24 s windows, 50% overlap) so full-clip pooling
 # strategies (first/center/mean/max) can be compared without re-running AST.

@@ -15,6 +15,8 @@ from src.features.ast_extractor import (
     pool_windows,
 )
 from src.features.clap_extractor import CLAP_CHECKPOINT, CLAP_EMBED_DIM, ClapEmbedder
+from src.features.mir_extractor import MirEmbedder
+from src.features.vggish_extractor import VGGISH_EMBED_DIM, VggishEmbedder
 from src.features.loader import (
     add_derived_features,
     genre_matrix,
@@ -31,6 +33,9 @@ __all__ = [
     # embeddings
     "AstEmbedder",
     "ClapEmbedder",
+    "VggishEmbedder",
+    "VGGISH_EMBED_DIM",
+    "MirEmbedder",
     "extract_embeddings",
     "assemble_from_cache",
     "extract_window_embeddings",

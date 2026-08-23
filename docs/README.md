@@ -23,8 +23,13 @@ taken (with justification), and what is planned next. Kept up to date as work pr
 
 - **Primary:** AST (Audio Spectrogram Transformer, `MIT/ast-finetuned-audioset`), 128-dim
   log-mel input, mean-pooled to one **768-dim** embedding per clip. 10.24 s window.
-- **Baseline embedding:** CLAP (HTS-AT audio encoder), 512-dim — a same-approach
-  (spectrogram-transformer) alternative to AST, to test whether results are AST-specific.
+- **Baselines:** CLAP (HTS-AT audio encoder, 512-dim; extracted, not yet used in a genre
+  comparison), **VGGish** (128-dim, postprocessed — the shared feature with Blockbuster,
+  see §10), and **librosa-MIR** (103-dim hand-crafted MFCC/chroma/spectral, a classic-MER
+  baseline). All four extractors share one interface and cache to `data/processed/`.
+- **Note:** for *emotion* prediction (§9), with a non-linear regressor AST and VGGish tie
+  (~0.56 R^2); VGGish is used for the cross-dataset bridge only because it is reproducible on
+  Blockbuster (§10), not because AST is weaker.
 - **Clip-length investigation (see §6).**
 
 ## 3. Experiments implemented & results
@@ -65,7 +70,7 @@ number uses **ground-truth** ratings → it is the ceiling of the emotion→genr
 
 ## 5. Literature: clip length (supervisor #3, done)
 
-Full comparison saved in `clip_length_literature.md`. Summary: prior work uses **5–60 s**
+Full comparison saved in `literature/clip_length_literature.md`. Summary: prior work uses **5–60 s**
 segments with **30 s the de-facto standard** (Kim 2010; Kang & Herremans 2025; Bhattacharjee
 2024 shows 30 s empirically optimal). Our clips (10–31 s, mean 17 s) fall within range;
 the AST 10.24 s window sits at the lower-but-established end.
@@ -96,9 +101,9 @@ is a reportable Methods result.
 | 1 | VGGish vs MFCC (Blockbuster) | ✅ done |
 | 2 | Genre classification (with vs without emotion) | ✅ done (first pass) |
 | 3 | Clip length in the literature | ✅ done |
-| 4 | Emotion–genre relationship | ▶ empirical RQ3 **done** (below); literature half next |
+| 4 | Emotion–genre relationship | ✅ done — empirical RQ3 (§7b) + literature (`latex/emotion_genre_relationship.tex`) |
 | 5 | Content chapters | ⬜ writing (student) |
-| 6 | Emotion regression | ⬜ deferred (if time) |
+| 6 | Emotion regression | ✅ done (§9) — AST vs VGGish vs MIR, + cross-dataset bridge (§10) |
 
 ## 7b. RQ3 — which emotions predict which genres (done)
 
@@ -194,7 +199,7 @@ Adventure (no emotional signature).
 
 ## 7f. Genre-subset reframing (done)
 
-Literature (6 papers, `genre_subset_literature.md`): genre count scales with dataset
+Literature (6 papers, `literature/genre_subset_literature.md`): genre count scales with dataset
 size (~100 films -> 4-6 genres: Austin, Ma; 10k films -> 18: Mangolin). Our corpus is
 smaller than all of them, so 5-6 genres is scale-appropriate; the closest analogue
 (Ma 2021, 110 film soundtracks) reduced IMDb's 24 genres to 6.
@@ -212,21 +217,85 @@ On the subset emotion (0.388) exceeds AST (0.323) by +0.064 -- larger and consis
 NOT significant at 5 folds (paired-t p=0.16, underpowered). **Metric caveat:** Exact Match
 and Hamming are uninformative here (the dummy scores best on both, due to balanced
 over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justification in
-`genre_subset.tex`. Report both full-8 and subset-5 transparently.
+`latex/genre_subset.tex`. Report both full-8 and subset-5 transparently.
+
+## 9. Experiment 1 — emotion regression (done)
+
+`experiments/exp_emotion_regression.py` (feature comparison) and `exp_emotion_improve.py`
+(regressor comparison). **The regressor matters greatly:** on VGGish, Ridge gives mean
+R^2 = 0.37, SVR-RBF 0.54, **RandomForest 0.56** — so RF is used throughout. Feature
+comparison (RF, GroupKFold, mean R^2 over the 8 emotions, 360 clips):
+
+| Feature (RandomForest) | mean R^2 |
+|------------------------|----------|
+| AST-768 | 0.560 |
+| VGGish-128 | 0.558 |
+| MIR-librosa (103) | 0.490 |
+
+Findings: with a non-linear regressor **AST and VGGish tie (~0.56)** and MIR is slightly
+behind. (The earlier "VGGish >> AST for emotion" was an artifact of the linear Ridge
+baseline overfitting AST's 768 dims.) Emotion is moderately predictable — 0.56 is within the
+MER range (cf. Kang & Herremans 2025); arousal-type emotions are easiest, happy/sad hardest
+(the MER "valence problem"). VGGish remains the feature for the cross-dataset bridge (§10)
+because it is the only one reproducible on Blockbuster, **not** because AST is weak.
+
+## 10. Cross-dataset emotion bridge + "is emotion special?" control (done)
+
+`experiments/exp_blockbuster_emotion.py`, `exp_emotion_improve.py`. VGGish is the one
+feature both datasets produce identically. A VGGish->8-emotion **RandomForest** regressor is
+trained on all Eerola and applied to predict emotions on the target set; genre is then
+classified from the 11 emotion features. The key control is **PCA-8(VGGish)** — a generic
+8-d compression — to test whether the *emotion* bottleneck beats any low-dimensional one.
+
+**Eerola, 5-genre subset (GroupKFold):**
+
+| Approach | Macro-F1 |
+|----------|----------|
+| **VGGish -> PREDICTED emotion(11) -> genre (RF)** | **0.406** |
+| ground-truth emotion(11) -> genre (ceiling) | 0.388 |
+| PCA-8(VGGish) [control] | 0.350 |
+| VGGish-128 direct | 0.328 |
+| emotion + VGGish fusion | 0.313 |
+| dummy | 0.164 |
+
+**Blockbuster, 6 genres (KFold):** direct VGGish 0.582; predicted-emotion 0.565; PCA-8
+control 0.559; random-8 0.482; dummy 0.058.
+
+Conclusions (corrected from the earlier Ridge-based, over-tempered version):
+- **On the primary Eerola set the emotion bottleneck is genuinely best:** predicted-emotion
+  (0.406) beats the PCA-8 control (0.350) and the direct embedding (0.328), and matches the
+  ground-truth ceiling (0.388) — so it is *not* merely an interpretable relabelling of a
+  generic compression. On the easier Blockbuster it essentially ties PCA-8 (0.565 vs 0.559).
+- **Predicted ~ ground-truth** (0.406 vs 0.388): RF-predicted emotions are as
+  genre-informative as the human ratings (likely denoising the per-clip ratings).
+- **Fusion (emotion + VGGish) hurts** (0.313) — the two are not complementary.
+- **Face validity (Blockbuster, cross-dataset):** horror->fear (+0.99), romance->tender
+  (+1.05), comedy->happy, drama->tender, action->anger — textbook-correct; the transferred
+  emotions are meaningful, not noise.
+- **Caveats:** 5-fold margins (~±0.05) make "beats control" suggestive, not significant;
+  Blockbuster has no ground-truth emotions to validate the predictions directly.
+
+This answers RQ2b with the *predicted* pipeline on both datasets and rules out the "any 8-d
+bottleneck" alternative on the primary set.
 
 ## 8. Planned next
 
-- **#4 literature:** synthesise prior findings on the emotion↔genre link (film-music
-  theory + empirical MER/genre work).
-- **Later / if time:** emotion regression (Exp 1) to run the full predicted-emotion
-  pipeline; optional Blockbuster extensions (full 140-MIR, mean+std pooling).
+- **Content chapters** (#5) — student.
+- **Complete RQ2b on Eerola:** run the predicted-emotion pipeline on Eerola itself
+  (VGGish -> predicted emotion -> genre vs the AST baseline), to mirror the Blockbuster
+  bridge on the primary dataset.
+- **CLAP** is extracted but still unused in any comparison — wire it into the genre
+  experiment or drop it.
+- Optional: Blockbuster extensions (full 140-MIR, mean+std pooling); Set 1 vs Set 2 diff.
 
 ## Repository map
 
-- `src/features/` — data loading/cleaning, AST + CLAP extraction, Blockbuster loader
+- `src/features/` — data loading/cleaning; AST, CLAP, VGGish, MIR extractors; Blockbuster loader
 - `src/models/` — multi-label classifiers
 - `src/evaluation/` — metrics + cross-validated scoring
-- `experiments/` — runnable experiments (`exp_genre`, `exp_blockbuster`, `exp5_target`,
-  `exp_clip_length`, `clip_length_analysis`, `verify_data`, `extract_features`)
-- `docs/` — this log + `clip_length_literature.md`
-- `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, AST-windows)
+- `experiments/` — runnable experiments: `verify_data`, `extract_features`, `exp5_target`,
+  `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`, `exp_error_analysis`,
+  `exp_threshold_fix`, `exp_learning_curve`, `exp_clip_length`, `clip_length_analysis`,
+  `exp_blockbuster`, `exp_emotion_regression`, `exp_blockbuster_emotion`
+- `docs/` — this log; `docs/literature/` (literature reviews); `docs/latex/` (LaTeX snippets)
+- `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, VGGish, MIR, AST-windows)
