@@ -58,6 +58,32 @@ class _SingleClassSafe(BaseEstimator, ClassifierMixin):
             return np.full(X.shape[0], self._constant, dtype=int)
         return self._fitted.predict(X)
 
+    def predict_proba(self, X):
+        """Probabilities, with a degenerate one-column-per-class answer if the training
+        fold had a single class (so threshold analyses can use this wrapper too)."""
+        if self._constant is not None:
+            p = np.zeros((X.shape[0], 2), dtype=float)
+            p[:, int(self._constant)] = 1.0
+            return p
+        return self._fitted.predict_proba(X)
+
+
+def build_binary_logreg(C: float = 1.0, balanced: bool = True):
+    """The single-genre logistic regression used throughout, as a scaled pipeline.
+
+    This is the ONE definition of the thesis's logistic regression. ``build_classifier``
+    wraps it for the multi-label case; experiments that need per-genre probabilities or
+    coefficients (threshold analysis, RQ3 signatures) call it directly instead of
+    re-declaring their own estimator, so a change here reaches every experiment.
+    """
+    return Pipeline([
+        ("scale", StandardScaler()),
+        ("clf", LogisticRegression(
+            C=C, max_iter=2000,
+            class_weight="balanced" if balanced else None,
+            random_state=config.SEED)),
+    ])
+
 
 def build_classifier(name: str, C: float = 1.0):
     """Return a fresh (unfitted) estimator that maps features -> (n, 8) label matrix.

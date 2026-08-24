@@ -18,17 +18,20 @@ from pathlib import Path
 
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, genre_matrix, load_set1  # noqa: E402
+from src.models import build_binary_logreg  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
 FEATS = config.FEATURE_COLS       # 11 (8 emotions + 3 engineered)
 EMO = config.EMOTIONS             # 8 emotions (RQ3 focus)
+
+
+RQ3_C = 0.003  # value selected by the nested CV in Section 11b
 
 
 def cohens_d(a, b):
@@ -48,8 +51,12 @@ def main():
     print("LR coef (signed, standardized) | RF importance | Cohen's d (emotions only)\n")
     for j, g in enumerate(G):
         y = Y[:, j]
-        lr = LogisticRegression(max_iter=2000, class_weight="balanced",
-                                random_state=config.SEED).fit(Xz, y)
+        # shared definition (src.models.build_binary_logreg) so these coefficients come
+        # from the same estimator the reported results use. C matches the value the
+        # nested CV selects in Section 11b -- at the sklearn default the coefficients are
+        # inflated by under-regularisation, though the ranking is largely unchanged.
+        lr_pipe = build_binary_logreg(C=RQ3_C, balanced=True).fit(Xz, y)
+        lr = lr_pipe.named_steps["clf"]
         rf = RandomForestClassifier(n_estimators=400, class_weight="balanced",
                                     random_state=config.SEED, n_jobs=-1).fit(Xz, y)
         coef = dict(zip(FEATS, lr.coef_[0]))

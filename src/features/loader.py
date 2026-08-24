@@ -161,3 +161,91 @@ def load_set2(clean: bool = True) -> pd.DataFrame:
     columns but are not part of the 8-emotion feature set shared with Set 1.
     """
     return _load(config.SET2_CSV, config.AUDIO_SET2, clean=clean)
+
+
+# --------------------------------------------------------------------------- #
+# Set 1 <-> Set 2 correspondence (Experiment 4)
+# --------------------------------------------------------------------------- #
+# Set 2 re-rates excerpts drawn from Set 1, but the two CSVs use INDEPENDENT clip
+# numbering: Set 2's ``number`` is unrelated to Set 1's. The correspondence lives in
+# Set 2's ``link`` column, which holds the Set 1 ``number``.
+#
+# This was verified against the audio (not just the metadata): full-lag normalised
+# cross-correlation between each Set 2 clip and its linked Set 1 clip gives a median of
+# 0.964 (10th pct 0.792), against a median of 0.027 for randomly paired clips -- 109 of
+# 110 rows sit far above the null distribution's 99th percentile. Joining on ``number``
+# instead produces a table that looks valid but is meaningless (mean rating correlation
+# 0.157; soundtrack labels agree for 2.7% of rows).
+LINK_MISMATCH_SET2 = [17]  # only row whose audio does not match its link (see above)
+
+
+def align_sets(set1: pd.DataFrame | None = None,
+               set2: pd.DataFrame | None = None,
+               drop_mismatches: bool = True,
+               average_repeats: bool = True) -> pd.DataFrame:
+    """Join Set 2 onto Set 1 via ``link``; return one row per matched excerpt.
+
+    Emotion columns are suffixed ``_set1`` / ``_set2``. ``beauty``/``liking`` (Set 2 only)
+    are carried through unsuffixed.
+
+    Seven Set 1 clips are linked by TWO Set 2 rows each -- repeat trials presented twice
+    to the same panel. ``average_repeats=True`` averages them (one row per excerpt, the
+    right unit for a between-panel comparison); ``False`` keeps them, which is what
+    :func:`repeat_pairs` needs for the within-panel estimate.
+    """
+    s1 = load_set1(clean=False) if set1 is None else set1
+    s2 = load_set2(clean=False) if set2 is None else set2
+    if "link" not in s2.columns:
+        raise ValueError("Set 2 has no 'link' column - cannot align to Set 1")
+
+    s2 = s2[s2["link"].notna()].copy()
+    s2["link"] = s2["link"].astype(int)
+    if drop_mismatches:
+        s2 = s2[~s2["number"].isin(LINK_MISMATCH_SET2)]
+
+    s1i = s1.set_index("number")
+    missing = sorted(set(s2["link"]) - set(s1i.index))
+    if missing:
+        raise ValueError(f"Set 2 links not present in Set 1: {missing}")
+
+    cols = config.EMOTIONS
+    out = pd.DataFrame({"set1_number": s2["link"].to_numpy(),
+                        "set2_number": s2["number"].to_numpy()})
+    for c in cols:
+        out[f"{c}_set1"] = s1i.loc[s2["link"], c].to_numpy(dtype=float)
+        out[f"{c}_set2"] = s2[c].to_numpy(dtype=float)
+    for extra in ("Beauty", "Liking", "beauty", "liking"):
+        if extra in s2.columns:
+            out[extra.lower()] = pd.to_numeric(s2[extra], errors="coerce").to_numpy()
+    out["soundtrack"] = s1i.loc[s2["link"], "soundtrack"].to_numpy()
+
+    if average_repeats:
+        agg = {c: "mean" for c in out.columns
+               if c not in ("set1_number", "set2_number", "soundtrack")}
+        agg["soundtrack"] = "first"
+        out = out.groupby("set1_number", as_index=False).agg(agg)
+    return out.reset_index(drop=True)
+
+
+def repeat_pairs(set2: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Return the Set 2 repeat trials: excerpts rated twice by the SAME panel.
+
+    Seven Set 1 clips are linked by two Set 2 rows each (after dropping the one audio
+    mismatch). Comparing those two ratings isolates *within-panel* measurement noise,
+    whereas Set 1 vs Set 2 additionally contains the between-panel difference.
+    Columns are suffixed ``_a`` / ``_b``.
+    """
+    s2 = load_set2(clean=False) if set2 is None else set2
+    s2 = s2[s2["link"].notna()].copy()
+    s2["link"] = s2["link"].astype(int)
+    s2 = s2[~s2["number"].isin(LINK_MISMATCH_SET2)]
+    counts = s2["link"].value_counts()
+    rows = []
+    for link in sorted(counts[counts == 2].index):
+        a, b = (s2[s2["link"] == link].iloc[0], s2[s2["link"] == link].iloc[1])
+        row = {"set1_number": link, "set2_a": int(a["number"]), "set2_b": int(b["number"]),
+               "soundtrack": a["soundtrack"]}
+        for c in config.EMOTIONS:
+            row[f"{c}_a"] = float(a[c]); row[f"{c}_b"] = float(b[c])
+        rows.append(row)
+    return pd.DataFrame(rows)

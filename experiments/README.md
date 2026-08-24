@@ -16,8 +16,9 @@ where each result is recorded and discussed.
 | Script | Purpose | Log |
 |---|---|---|
 | `verify_data.py` | Integrity check: clip/soundtrack/label counts, audio present | §1 |
-| `extract_features.py` | Extract + cache AST / CLAP embeddings (`--model`, `--set2`) | §2 |
+| `extract_features.py` | Extract + cache embeddings: `--model ast\|clap\|vggish\|mir` | §2 |
 | `clip_length_analysis.py` | Clip-duration distribution of the corpus | §5 |
+| `exp4_rating_reliability.py` | Exp 4: Set 1 vs Set 2 rating reliability + ceiling | §13 |
 
 ## emotion — stage 1, audio -> emotion
 | Script | Purpose | Log |
@@ -38,6 +39,7 @@ where each result is recorded and discussed.
 |---|---|---|
 | `exp_error_analysis.py` | Per-genre false positives / negatives | §7c |
 | `exp_threshold_fix.py` | Does curbing over-prediction help? (no) | §7c |
+| `exp_model_search.py` | Does any other model/feature combination beat the baseline? (no) | §7d |
 | `exp_learning_curve.py` | Would more data help? (yes, still rising) | §7e |
 | `exp_clip_length.py` | Full-clip windowed pooling vs the 10.24 s window | §6 |
 
@@ -56,4 +58,5 @@ where each result is recorded and discussed.
 the scripts in `genre/` and `cross_dataset/`: it re-scores the same arms over 50
 leakage-safe folds instead of 5 and reports confidence intervals. Where the two disagree,
 quote §11. It is also the only script that writes machine-readable output
-(`results/statistical_power.json`, containing every per-fold score).
+(`results/statistical_power.json`). `diagnostics/exp_model_search.py` likewise writes
+`results/model_search.json`.

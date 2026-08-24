@@ -1,11 +1,13 @@
 """Extract & cache audio embeddings for Set 1 (and optionally Set 2).
 
 Run from anywhere:
-  python experiments/features/extract_features.py                 # AST (primary), Set 1
-  python experiments/features/extract_features.py --model clap --set2   # CLAP baseline, both sets
+  python experiments/features/extract_features.py                       # AST (primary), Set 1
+  python experiments/features/extract_features.py --model clap --set2   # CLAP, both sets
+  python experiments/features/extract_features.py --model vggish        # VGGish (cross-dataset bridge)
+  python experiments/features/extract_features.py --model mir           # hand-crafted MIR
 
 Outputs (under DATA_ROOT/processed/Eerola_DB/):
-  embeddings[_clap]/<set>/<number>.npy   per-clip embedding (cache, resumable)
+  embeddings[_clap|_vggish|_mir]/<set>/<number>.npy   per-clip embedding (cache)
   <set>_<model>.npy                      (n_clips, dim) matrix in cleaned-DataFrame order
   <set>_numbers.npy                      clip numbers aligned to the matrix rows
   <set>_durations.csv                    clip durations (seconds; model-independent)
@@ -26,6 +28,8 @@ from src import config  # noqa: E402
 from src.features import (  # noqa: E402
     AstEmbedder,
     ClapEmbedder,
+    MirEmbedder,
+    VggishEmbedder,
     extract_embeddings,
     load_set1,
     load_set2,
@@ -33,9 +37,15 @@ from src.features import (  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
 # model tag -> (embedder class, per-clip cache dir, display label)
+# All four extractors share the AstEmbedder interface (load_audio / embed_waveform /
+# sampling_rate), so they all drop into extract_embeddings unchanged. VGGish and MIR were
+# previously reachable only from ad-hoc code, which left their caches -- consumed by the
+# emotion-regression and cross-dataset experiments -- unreproducible from the repository.
 MODELS = {
     "ast": (AstEmbedder, config.EMBEDDINGS_DIR, "AST"),
     "clap": (ClapEmbedder, config.CLAP_EMBEDDINGS_DIR, "CLAP"),
+    "vggish": (VggishEmbedder, config.VGGISH_EMBEDDINGS_DIR, "VGGish"),
+    "mir": (MirEmbedder, config.MIR_EMBEDDINGS_DIR, "MIR"),
 }
 
 

@@ -152,12 +152,18 @@ distinctive rare genres (Horror recall 0.68→0.21, Comedy 0.62→0.12).
 
 `experiments/diagnostics/exp_threshold_fix.py` — tested whether curbing the over-prediction helps:
 
-| Config | pred/clip | Macro-F1 |
-|--------|-----------|----------|
-| balanced thr 0.5 (current) | 3.49 | **0.281** (best) |
-| balanced thr 0.6 | 1.85 | 0.203 |
-| unbalanced thr 0.5 | 1.04 | 0.118 |
-| per-genre tuned (optimistic ceiling) | — | 0.350 |
+| Config | pred/clip | Macro-F1 (C=1.0) | Macro-F1 (tuned C=0.003) |
+|--------|-----------|------------------|--------------------------|
+| balanced thr 0.5 (current) | 3.49 / 3.68 | **0.281** (best) | **0.295** (best) |
+| balanced thr 0.6 | 1.85 / 0.40 | 0.203 | 0.053 |
+| balanced thr 0.7 | 0.67 / 0.00 | 0.091 | 0.000 |
+| unbalanced thr 0.5 | 1.04 / 1.00 | 0.118 | 0.102 |
+| per-genre tuned (optimistic ceiling) | — | 0.350 | 0.356 |
+
+Re-run at the tuned operating point (§11b) the conclusion is **unchanged and stronger**:
+raising the threshold collapses Macro-F1 to 0.053 (vs 0.203 at C=1.0), because the
+regularised model's probabilities are compressed toward 0.5. Curbing over-prediction is
+even less viable than first reported.
 
 **Result: the fix makes it worse.** Reducing over-prediction cuts recall on the rare
 distinctive genres (Horror/Comedy F1 → 0) and collapses toward predicting only Drama.
@@ -166,26 +172,62 @@ genuine data/signal limits (rare genres n=17–24, no signature for Adventure, g
 overlap), **not** a calibration mistake. Only per-genre threshold tuning shows headroom
 (~0.35), and only as an optimistic upper bound.
 
-## 7d. Accuracy-improvement search (done)
+## 7d. Accuracy-improvement search (done — REVISED, see the correction below)
 
-Tested standard levers for multi-label + imbalance + small n; Macro-F1 (GroupKFold,
-WITH-emotion unless noted). **None beats the baseline (0.281).**
+`experiments/diagnostics/exp_model_search.py`, results in `results/model_search.json`.
+8 genres, 5x5 repeated GroupKFold by film, Macro-F1.
 
-| Approach | Macro-F1 |
-|----------|----------|
-| LogReg + emotion (baseline) | **0.281** |
-| LogReg + AST | 0.277 |
-| Emotion + AST fusion (768) | 0.261 |
-| Emotion + PCA-AST fusion (best) | 0.279 |
-| HistGradientBoosting | 0.244 |
-| Classifier Chains | 0.225 |
+> **Correction (2026-08-24).** The table originally recorded here had **no source script
+> in the repository** — it could not be re-derived or re-checked, and its AST figure
+> (0.277) contradicted §3's figure (0.258) for what should have been the same
+> measurement. It was also measured entirely at sklearn's default `C=1.0`, which §11b
+> later showed to be the *worst* setting for every feature set here. The claim that
+> **"0.281 is a robust ceiling" was therefore wrong**: proper regularisation alone
+> reaches 0.299. The comparison has been rewritten as a runnable experiment and is
+> reported below at both operating points. The *qualitative* conclusion survives — nothing
+> beats plain LogReg on the 11 emotion features — but the numbers and the strength of the
+> claims change.
 
-Findings: fusion hurts (AST adds noise once film-leakage removed); classifier chains hurt
-(empirically confirms the thesis's rejection of chains for small n); gradient boosting
-overfits. The 0.28 is a **robust ceiling** confirmed from four angles (audit, error
-analysis, threshold test, model/feature search). The only honest ways to a higher number
-are reframings, not model fixes: **genre-subset (5 learnable genres) -> 0.394**, or
-film-level aggregation -> 0.34.
+| Approach | A: default C=1.0 | B: nested-CV tuned | Δ |
+|---|---|---|---|
+| **LogReg + emotion(11)** (baseline) | 0.275 | **0.299** [0.284, 0.313] | +0.024 |
+| emotion + PCA-8(AST) fusion (19) | 0.254 | 0.277 [0.257, 0.298] | +0.023 |
+| LogReg + AST(768) | 0.245 | 0.260 [0.251, 0.269] | +0.015 |
+| emotion + AST fusion (779) | 0.244 | 0.260 [0.249, 0.272] | +0.017 |
+| ClassifierChain(LogReg) + emotion | 0.214 | 0.252 [0.240, 0.263] | +0.038 |
+| HistGradientBoosting + emotion | 0.198 | 0.198 [0.191, 0.206] | ±0.000 |
+
+Against the **tuned** baseline (Nadeau–Bengio corrected, 25 folds):
+
+| Alternative | diff vs baseline | p | wins |
+|---|---|---|---|
+| emotion + PCA-8(AST) fusion | −0.021 | 0.213 | 16% |
+| emotion + AST fusion | −0.038 | 0.072 | 16% |
+| LogReg + AST | −0.039 | 0.076 | 12% |
+| ClassifierChain | −0.047 | **0.024** | 12% |
+| HistGradientBoosting | −0.100 | **<0.001** | 0% |
+
+### What survives, and what changes
+
+- **Survives: nothing beats the baseline.** Every alternative scores below plain LogReg on
+  the 11 emotion features, and each wins at most 16% of the 25 folds.
+- **Survives strongly: gradient boosting overfits** (−0.100, p<0.001) — the clearest
+  negative result in the table, and unaffected by regularisation since it has no `C`.
+- **Changed: the ceiling is 0.299, not 0.281.** Tuning `C` — a lever the original search
+  never tested — beats the number that was called a robust ceiling. "Robust ceiling
+  confirmed from four angles" was an overstatement; the honest claim is that *no
+  alternative model or feature combination improves on a properly regularised baseline.*
+- **Weakened: "fusion hurts".** At the tuned operating point fusion and the AST baseline
+  are **not significantly worse** than the emotion baseline (p=0.072 and p=0.076); PCA
+  fusion is nowhere near significance (p=0.213). Say "no combination improves on emotion
+  features alone", not "adding AST actively hurts".
+- **Weakened: "chains hurt".** Classifier chains gain the most from tuning (+0.038); the
+  original margin was inflated by under-regularisation. They are still significantly
+  worse (p=0.024), so the thesis's rejection of chains at small *n* stands, but on a
+  smaller margin than first reported.
+
+The routes to a materially higher number remain reframings rather than model fixes:
+the 5-genre subset (§7f, §11b) or film-level aggregation.
 
 ## 7e. Would more data help? Learning curve (done)
 
@@ -433,7 +475,7 @@ Note: `C=0.003` is the grid's lower edge for most arms, so the optimum may lie b
 widening the grid is a loose end, though the flatness between 0.003 and 0.01 in the manual
 sweep suggests little is left on the table.
 
-## 12. Known defects in the feature-extraction script (found, not yet fixed)
+## 12. Defects found during review (status noted per item)
 
 Discovered while verifying paths after the `experiments/` reorganisation. **Neither affects
 any result reported in this log** — both concern artifacts that nothing reads — but both are
@@ -457,37 +499,167 @@ traps for anyone reading the repository later.
    `clip_length_analysis.py` (`durations_from_audio`, computed fresh) and are unaffected.
    *Fix:* use one method for both branches.
 
+3. **[FIXED] VGGish and MIR caches were unreproducible.** `VggishEmbedder` and
+   `MirEmbedder` existed and were exported but were instantiated by no script:
+   `extract_features.py` registered only `ast` and `clap`. Four experiments *consume*
+   those caches — including the §10 cross-dataset bridge and the §11 predicted-emotion
+   arm, i.e. the RQ2b answer — so the central result could not have been rebuilt from the
+   repository if the cache were lost. Both are now registered
+   (`--model vggish`, `--model mir`) and verified to reproduce the cached matrices
+   (360x128 and 360x103).
+4. **[FIXED] The logistic regression had four separate definitions.**
+   `exp_threshold_fix` and `exp_emotion_genre` constructed their own `LogisticRegression`,
+   so changes to `build_classifier` (such as the `C` parameter added in §11b) never
+   reached them. Both now call the single shared factory
+   `src.models.build_binary_logreg`, and `_SingleClassSafe` gained `predict_proba` so the
+   threshold analysis can use the shared wrapper. (`exp5_target` and the Exp-5 half of
+   `exp_clip_length` keep their own estimator deliberately: those solve a *single-label
+   12-class balanced* task, where the multi-label binary-relevance model does not apply.)
+5. **[OPEN] Most experiments still print results instead of writing them.** Only
+   `exp_statistical_power`, `exp_model_search` write JSON to `results/`. This is the
+   mechanism that let §7d's unreproducible table sit in this log undetected.
+6. **[OPEN] Short debug runs overwrite the authoritative results files.**
+   `exp_statistical_power.py --repeats 2` silently replaces `results/statistical_power.json`.
+
+## 13. Experiment 4 — rating reliability, Set 1 vs Set 2 (done)
+
+`experiments/features/exp4_rating_reliability.py`; alignment helpers in
+`src/features/loader.py` (`align_sets`, `repeat_pairs`).
+
+Set 2 re-rates 110 excerpts drawn from Set 1 with a **different listener panel**, giving
+two independent measurements of the same music. That yields the one quantity Set 1 alone
+cannot provide: **how much of the emotion signal is real and how much is rating noise** —
+which bounds how well any audio model could predict these ratings.
+
+### The clip correspondence (a trap worth documenting)
+
+The two CSVs number clips **independently**. The correspondence is Set 2's **`link`**
+column, which holds the Set 1 `number`. Joining on `number` instead produces a table that
+looks perfectly valid and is meaningless: mean rating correlation 0.157, soundtrack labels
+agreeing on 2.7% of rows.
+
+The `link` mapping was verified **against the audio**, not just the metadata: full-lag
+normalised cross-correlation between each Set 2 clip and its linked Set 1 clip has median
+**0.964** (10th pct 0.792) against median **0.027** for randomly paired clips; 109 of 110
+rows sit far above the null's 99th percentile. The single failure (Set 2 #17) is dropped.
+Seven Set 1 clips are linked by two Set 2 rows each — **repeat trials**, the same excerpt
+presented twice to the same panel — which give a separate within-panel estimate. Averaging
+those leaves **102 matched excerpts from 38 soundtracks**.
+
+### Q1 — between-panel agreement (n=102)
+
+| Emotion | r | ICC(C,1) consistency | ICC(A,1) agreement | bias (Set2−Set1) |
+|---|---|---|---|---|
+| valence | 0.876 | 0.871 | 0.707 | +1.13 |
+| energy | 0.905 | 0.859 | 0.618 | +1.40 |
+| tension | 0.945 | 0.913 | 0.736 | +1.23 |
+| anger | 0.922 | 0.919 | 0.918 | +0.10 |
+| fear | 0.933 | 0.931 | 0.929 | +0.17 |
+| happy | 0.930 | 0.926 | 0.926 | +0.06 |
+| sad | 0.877 | 0.869 | 0.822 | +0.60 |
+| tender | 0.908 | 0.891 | 0.886 | +0.21 |
+| **MEAN** | **0.912** | **0.897** | **0.818** | +0.61 |
+
+High r and ICC(C,1) with a clearly lower ICC(A,1) means the panels **rank excerpts the
+same way but use the scale differently** — and the gap is confined to the three
+dimensional scales.
+
+### Q1b — within-panel noise (7 repeat trials)
+
+Mean r = **0.988**, ICC(A,1) = **0.987**, bias ≈ 0 on every emotion. The excerpts are
+therefore *not* intrinsically ambiguous: presented twice to the same panel they get
+essentially the same ratings. **The entire between-panel gap is a panel/context effect,
+not clip ambiguity.** Caveat: n=7, and a repeat within one session is not fully
+independent (listeners may recall the excerpt), so this is an upper bound on
+within-panel reliability — treat as indicative.
+
+### Q2 — the disagreement is a scale shift, not disagreement about content
+
+| | mean shift | Cohen's d | p (paired t) |
+|---|---|---|---|
+| **dimensional** (valence, energy, tension) | **+1.25** | 0.68–0.89 | 1e-24 … 1e-31 |
+| **discrete** (anger, fear, happy, tender) | **+0.23** | 0.03–0.12 | mostly n.s. |
+| sad (discrete, exception) | +0.60 | 0.34 | 1e-09 |
+
+Set 2's panel used the *bipolar* scales about 1.25 points higher while agreeing almost
+exactly on *how much anger/fear/happiness* they heard. After independently z-scoring each
+set — which is what `StandardScaler` inside the classifier pipeline does — the mean
+absolute difference falls to **0.305 SD**. So the shift is an offset/scaling of the
+response scale that the modelling pipeline already removes; it is a reporting caveat, not
+a threat to the results.
+
+### Q3 — the reliability ceiling (the headline)
+
+A predictor cannot correlate with a noisy target better than the target correlates with
+itself. Treating the between-panel consistency as a parallel-forms reliability `r_xx`, the
+maximum attainable R² is `r_xx`. (Consistency rather than absolute agreement is the right
+reliability here: the model is scored by R² against *one* set's ratings, and a constant
+offset between panels does not reduce the variance explainable within a set.)
+
+| | mean R² |
+|---|---|
+| Ceiling implied by rating reliability | **0.897** |
+| Achieved (RandomForest on AST, §9) | 0.560 |
+| **Fraction of attainable variance reached** | **62%** |
+
+Two conclusions, and the second is the uncomfortable one:
+
+1. **R² ≈ 1.0 was never achievable** — the honest reference point for the emotion
+   regression is ~0.90, not 1.0. Reporting 0.56 against a ceiling of 0.90 is a materially
+   different claim from reporting it against 1.0.
+2. **Rating noise does NOT explain the model's shortfall.** At 62% of attainable variance
+   there is real headroom left in the audio representation. This *closes off* the
+   convenient excuse that the ratings are too noisy to predict — the limitation is the
+   features/model, not the labels. It is consistent with §7e (learning curves still
+   rising) and argues the same way: more/better data and representation, not a different
+   classifier.
+
+### Q4 — beauty / liking (Set 2 only, descriptive)
+
+`beauty` correlates −0.81 with tension, −0.74 with fear, +0.78 with tender, +0.63 with
+valence; `liking` follows the same pattern more weakly. Perceived beauty in film music
+tracks calm positive affect. Not used as a model input anywhere.
+
 ## 8. Planned next
 
 - **Content chapters** (#5) — student; the LaTeX snippets in `docs/latex/` are ready to fold in.
 - **More films** — §11 shows the remaining non-significance is corpus-bound, not
   resampling-bound (p_limit > 0.05 with infinite repeats), and §7e shows both learning
   curves still rising. Extending the corpus is the only lever left on the headline claims.
-- **Known defects (see §12):** `extract_features.py` writes three artifacts nothing reads,
-  one of which (`set1_ast.npy`) disagrees with the per-clip cache the experiments actually
-  use; and clip durations differ by ~0.09 s depending on whether the cache was warm.
-  Neither affects any reported result, but both should be fixed or deleted.
-- **Optional:** Set 1 vs Set 2 diff (Exp 4); Blockbuster full-140-MIR / mean+std pooling;
-  emotion-regressor tuning (only the classifier's C is tuned so far); widen the C grid
-  below 0.003.
+- **Remaining defects (§12, items 1-2 and 5-6 still open):** `extract_features.py` writes
+  three artifacts nothing reads, one of which (`set1_ast.npy`) disagrees with the per-clip
+  cache the experiments actually use; clip durations differ by ~0.09 s depending on whether
+  the cache was warm; most experiments still only print their results; and a short debug
+  run of `exp_statistical_power` overwrites the authoritative results file. None affects a
+  reported result. Items 3-4 (VGGish/MIR reproducibility, the duplicated logistic-regression
+  definitions) are fixed.
+- **Tests** — there are none beyond the loader's count assertions. Three cheap ones would
+  pay for themselves: loader counts, `align_sets` invariants (102 rows, link integrity),
+  and `RepeatedGroupKFold` never splitting a film across folds.
+- **Optional:** Blockbuster full-140-MIR / mean+std pooling; emotion-regressor tuning
+  (only the classifier's C is tuned so far); widen the C grid below 0.003.
+  ~~Set 1 vs Set 2 diff (Exp 4)~~ — done, see §13.
 
 ## Repository map
 
 - `src/features/` — data loading/cleaning; AST, CLAP, VGGish, MIR extractors; Blockbuster loader
-- `src/models/` — multi-label classifiers; `select_logreg_C` (inner-CV hyperparameter
-  selection for nested CV)
+- `src/models/` — multi-label classifiers; `build_binary_logreg` (the single shared
+  definition of the thesis's logistic regression); `select_logreg_C` (inner-CV
+  hyperparameter selection for nested CV)
 - `src/evaluation/` — metrics + cross-validated scoring; `repeated.py` (RepeatedGroupKFold,
   Nadeau-Bengio corrected t-test, per-repeat CIs)
 - `experiments/` — runnable experiments, grouped by pipeline stage (index +
   per-script purpose in `experiments/README.md`). Run from the repository root.
-  - `features/` — `verify_data`, `extract_features`, `clip_length_analysis`
+  - `features/` — `verify_data`, `extract_features`, `clip_length_analysis`,
+    `exp4_rating_reliability`
   - `emotion/` — `exp_emotion_regression`, `exp_emotion_improve`
   - `genre/` — `exp5_target`, `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`
-  - `diagnostics/` — `exp_error_analysis`, `exp_threshold_fix`, `exp_learning_curve`,
-    `exp_clip_length`
+  - `diagnostics/` — `exp_error_analysis`, `exp_threshold_fix`, `exp_model_search`,
+    `exp_learning_curve`, `exp_clip_length`
   - `cross_dataset/` — `exp_blockbuster`, `exp_blockbuster_emotion`
   - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
     `genre` / `cross_dataset`)
 - `docs/` — this log; `docs/literature/` (literature reviews); `docs/latex/` (LaTeX snippets)
 - `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, VGGish, MIR, AST-windows)
-- `results/` — machine-readable experiment output (`statistical_power.json`: every per-fold score)
+- `results/` — machine-readable experiment output (`statistical_power.json`,
+  `model_search.json`: every per-fold score)
