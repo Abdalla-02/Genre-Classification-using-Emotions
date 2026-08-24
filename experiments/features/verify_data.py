@@ -1,6 +1,6 @@
 """Sanity-check the data pipeline: load + clean Set 1/2, verify counts, check audio.
 
-Run from anywhere:  python experiments/verify_data.py
+Run from anywhere:  python experiments/features/verify_data.py
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, genre_matrix, load_set1, load_set2  # noqa: E402

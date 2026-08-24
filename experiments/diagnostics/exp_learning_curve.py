@@ -5,7 +5,7 @@ preserved), evaluates Macro-F1 on the held-out GroupKFold folds, for the emotion
 and AST (768) feature sets. A still-rising curve at 100% => the dataset size limits
 performance (more data would help); a flat curve => signal-limited.
 
-Run:  python experiments/exp_learning_curve.py
+Run:  python experiments/diagnostics/exp_learning_curve.py
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import numpy as np
 from sklearn.metrics import f1_score
 from sklearn.model_selection import GroupKFold
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, assemble_from_cache, genre_matrix, load_set1  # noqa: E402

@@ -8,7 +8,7 @@ Three complementary views on the WITH-emotion (ground-truth) data, cross-checked
 
 Fit on all 346 clips (this is an interpretability analysis, not a prediction estimate).
 
-Run:  python experiments/exp_emotion_genre.py
+Run:  python experiments/genre/exp_emotion_genre.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, genre_matrix, load_set1  # noqa: E402

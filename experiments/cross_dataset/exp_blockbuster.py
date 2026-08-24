@@ -4,7 +4,7 @@ Supervisor task: compare VGGish and MFCC features (from the Blockbuster dataset)
 Same Binary-Relevance classifiers and metrics as the Eerola genre experiment; 5-fold
 KFold (films are independent, so no grouping needed).
 
-Run:  python experiments/exp_blockbuster.py
+Run:  python experiments/cross_dataset/exp_blockbuster.py
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src.evaluation import evaluate  # noqa: E402
 from src.features.blockbuster import load_blockbuster  # noqa: E402

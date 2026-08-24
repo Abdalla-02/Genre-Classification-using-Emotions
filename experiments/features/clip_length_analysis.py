@@ -9,7 +9,7 @@ script tests for such an association on the cleaned Set 1.
     with a Bonferroni-corrected significance threshold;
   * a boxplot saved to results/clip_length_by_genre.png.
 
-Run:  python experiments/clip_length_analysis.py
+Run:  python experiments/features/clip_length_analysis.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import matplotlib  # noqa: E402
 

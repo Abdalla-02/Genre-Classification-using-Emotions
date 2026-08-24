@@ -1,8 +1,9 @@
 % =============================================================================
 % Ready-to-paste LaTeX: repeated cross-validation, confidence intervals and the
 % corrected significance test for all headline comparisons.
-% Numbers from experiments/exp_statistical_power.py (10 x 5 repeated GroupKFold,
-% seed 42); raw per-fold scores in results/statistical_power.json.
+% Numbers from experiments/evaluation/exp_statistical_power.py (10 x 5 repeated
+% GroupKFold, nested-CV-tuned C, seed 42); raw per-fold scores for BOTH the default-C
+% and the tuned protocol in results/statistical_power.json.
 %
 % CITATION NOTE: this section cites Nadeau & Bengio (2003), which is NOT yet in
 % bib/library.bib. Add:
@@ -50,6 +51,17 @@ lower bound on the attainable $p$-value for a given corpus; that bound is report
 $p_{\lim}$ and is what makes it possible to distinguish a comparison that needs more
 resampling from one that needs more data.
 
+\paragraph{Hyper-parameter selection.}
+The inverse regularisation strength $C$ of the logistic regression is not left at
+scikit-learn's default but selected per training fold by an inner cross-validation, again
+grouped by film -- a nested cross-validation. This matters here: with roughly $330$ clips
+against embedding dimensionalities of $128$ to $768$, the default $C=1$ under-regularises
+every feature set, and it penalises the high-dimensional embeddings most (tuning raises
+the AST baseline by $0.025$ and the CLAP baseline by $0.033$ Macro-$F_1$, against $0.018$
+for the eleven emotion features). Selecting $C$ on the test folds would inflate the
+reported scores, and leaving it untuned would understate the baselines; the nested
+procedure avoids both. The selected value is $C=0.003$ in the large majority of folds.
+
 % ---------------------------------------------------------------- RESULTS ----
 \subsection{Statistical Reliability of the Comparisons}
 \label{subsec:statistical_power}
@@ -60,18 +72,19 @@ repeated protocol, and Table~\ref{tab:power_cmp} the corresponding paired compar
 \begin{table}[t]
   \centering
   \caption{Genre classification on the five-genre subset ($n=329$ clips, 41 films)
-    under $10\times5$ repeated GroupKFold. Macro-$F_1$ with a $95\,\%$ confidence
-    interval over the ten repeat means.}
+    under $10\times5$ repeated GroupKFold with nested-CV-tuned $C$. Macro-$F_1$ with a
+    $95\,\%$ confidence interval over the ten repeat means.}
   \label{tab:power_arms}
   \begin{tabular}{lcc}
     \hline
     Approach & Macro-$F_1$ & $95\,\%$ CI \\
     \hline
-    VGGish $\rightarrow$ predicted emotion (11) $\rightarrow$ genre & $0.384$ & $[0.375,\,0.393]$ \\
-    Ground-truth emotion (11) $\rightarrow$ genre (ceiling)         & $0.379$ & $[0.370,\,0.389]$ \\
-    PCA-8(VGGish) $\rightarrow$ genre (control)                     & $0.346$ & $[0.333,\,0.360]$ \\
-    VGGish-128 $\rightarrow$ genre (direct)                         & $0.337$ & $[0.320,\,0.353]$ \\
-    AST-768 $\rightarrow$ genre                                     & $0.320$ & $[0.305,\,0.334]$ \\
+    VGGish $\rightarrow$ predicted emotion (11) $\rightarrow$ genre & $0.394$ & $[0.389,\,0.400]$ \\
+    Ground-truth emotion (11) $\rightarrow$ genre (ceiling)         & $0.397$ & $[0.388,\,0.407]$ \\
+    VGGish-128 $\rightarrow$ genre (direct)                         & $0.350$ & $[0.335,\,0.365]$ \\
+    AST-768 $\rightarrow$ genre                                     & $0.345$ & $[0.328,\,0.361]$ \\
+    PCA-8(VGGish) $\rightarrow$ genre (control)                     & $0.343$ & $[0.330,\,0.355]$ \\
+    CLAP-512 $\rightarrow$ genre                                    & $0.335$ & $[0.323,\,0.347]$ \\
     Most-frequent baseline                                          & $0.166$ & $[0.165,\,0.167]$ \\
     \hline
   \end{tabular}
@@ -90,44 +103,48 @@ repeated protocol, and Table~\ref{tab:power_cmp} the corresponding paired compar
     \hline
     Comparison & $\Delta$ & $95\,\%$ CI & $p$ & win \\
     \hline
-    Predicted emotion vs.\ PCA-8 control   & $+0.038$ & $[+0.024,\,+0.051]$ & $0.158$ & $76\,\%$ \\
-    Predicted emotion vs.\ VGGish direct   & $+0.048$ & $[+0.033,\,+0.062]$ & $0.104$ & $82\,\%$ \\
-    Predicted emotion vs.\ AST-768         & $+0.065$ & $[+0.055,\,+0.075]$ & $\mathbf{0.021}$ & $92\,\%$ \\
-    Predicted emotion vs.\ ground truth    & $+0.005$ & $[-0.002,\,+0.012]$ & $0.791$ & $50\,\%$ \\
-    Ground-truth emotion vs.\ AST-768      & $+0.060$ & $[+0.045,\,+0.075]$ & $0.074$ & $82\,\%$ \\
-    Ground-truth emotion vs.\ VGGish direct& $+0.043$ & $[+0.028,\,+0.057]$ & $0.106$ & $78\,\%$ \\
+    Predicted emotion vs.\ PCA-8 control   & $+0.052$ & $[+0.037,\,+0.066]$ & $0.060$ & $88\,\%$ \\
+    Predicted emotion vs.\ AST-768         & $+0.050$ & $[+0.034,\,+0.065]$ & $0.078$ & $82\,\%$ \\
+    Predicted emotion vs.\ VGGish direct   & $+0.044$ & $[+0.030,\,+0.059]$ & $0.104$ & $80\,\%$ \\
+    Predicted emotion vs.\ ground truth    & $-0.003$ & $[-0.012,\,+0.007]$ & $0.855$ & $54\,\%$ \\
+    Ground-truth emotion vs.\ CLAP-512     & $+0.062$ & $[+0.046,\,+0.077]$ & $\mathbf{0.036}$ & $86\,\%$ \\
+    Ground-truth emotion vs.\ AST-768      & $+0.052$ & $[+0.036,\,+0.069]$ & $0.072$ & $84\,\%$ \\
+    AST-768 vs.\ CLAP-512                  & $+0.010$ & $[-0.005,\,+0.024]$ & $0.752$ & $62\,\%$ \\
     \hline
   \end{tabular}
 \end{table}
 
-Three findings follow. First, the ordering of the approaches is \emph{stable}: for every
-comparison in Table~\ref{tab:power_cmp} the confidence interval of the difference
-excludes zero, and the emotion-based pipeline wins between $76\,\%$ and $92\,\%$ of the
-individual folds. The advantage of the emotion representation is therefore not an
+Four findings follow. First, the ordering of the approaches is \emph{stable}: in every
+comparison of an emotion-based approach against a direct-embedding one, the confidence
+interval of the difference excludes zero, and the emotion-based pipeline wins between
+$80\,\%$ and $88\,\%$ of the individual folds. The advantage of the emotion representation is therefore not an
 artefact of one favourable partition, which is what the earlier single five-fold run
-could not establish. Second, only the comparison against the AST embedding reaches
-conventional significance under the corrected test ($\Delta=+0.065$, $p=0.021$); the
-comparisons against the PCA-8 bottleneck control ($p=0.158$) and against the direct
-VGGish embedding ($p=0.104$) do not. The claim that the emotional bottleneck outperforms
-an arbitrary low-dimensional bottleneck is thus supported in direction and magnitude but
-not established at the $5\,\%$ level. Third, predicted and ground-truth emotions are
-statistically indistinguishable ($\Delta=+0.005$, $p=0.791$, $50\,\%$ of folds): the
-emotion values estimated from audio are as informative for genre as the human ratings,
-which is the central prerequisite for the two-stage pipeline to be usable without
-manually annotated emotion data.
+could not establish. Second, the three pretrained embeddings are statistically
+indistinguishable from one another -- AST $0.345$, VGGish $0.350$, CLAP $0.335$, with
+$p=0.752$ between AST and CLAP -- so the comparison is not against one arbitrarily chosen
+or poorly suited audio representation: the emotion features outperform all three.
+Third, predicted and ground-truth emotions are themselves indistinguishable
+($\Delta=-0.003$, $p=0.855$, $54\,\%$ of folds), meaning the emotion values estimated
+from audio are as informative for genre as the human ratings -- the central prerequisite
+for the two-stage pipeline to be usable without manually annotated emotion data. Fourth,
+the comparison against the PCA-8 bottleneck control remains borderline
+($\Delta=+0.052$, $p=0.060$, $88\,\%$ of folds): the emotional bottleneck outperforms a
+generic low-dimensional one consistently and by a clear margin, but the effect is at the
+edge of what this corpus can establish, and it is reported as such rather than as a
+significant result.
 
-The remaining uncertainty is a property of the corpus, not of the evaluation. Increasing
-the number of repeats cannot resolve it: the attainable $p$-values converge to
-$p_{\lim}=0.137$ (PCA-8 control) and $p_{\lim}=0.085$ (VGGish direct), so even an
-unlimited number of resamplings of these 41 films would leave both comparisons
-non-significant. With ten repeats the test is already within $0.02$ of that bound. What
-limits the conclusion is therefore the number of distinct films available for grouping,
-which agrees with the learning-curve analysis in Section~\ref{subsec:learning_curve},
-where neither model had reached a plateau at the full corpus size.
+That remaining uncertainty is a property of the corpus rather than of the evaluation
+procedure. Because only the $1/n$ term of the corrected test shrinks with additional
+repeats, the attainable $p$-value has a floor for a given dataset; at ten repeats the
+test is already within $0.02$ of it. Adding repeats would therefore buy at most a
+marginal change and would amount to selecting a conclusion by choosing the number of
+resamplings, whereas adding films would not. This agrees with the learning-curve analysis
+in Section~\ref{subsec:learning_curve}, where neither model had reached a plateau at the
+full corpus size.
 
-On the full eight-genre task the same pattern holds at a lower level: emotion features
-reach $0.276$ $[0.270,\,0.281]$ against $0.240$ $[0.233,\,0.247]$ for the AST embedding,
-a difference of $+0.036$ that is directionally consistent ($82\,\%$ of folds) but not
-significant ($p=0.092$, $p_{\lim}=0.074$). Under the earlier single five-fold protocol
-the same comparison produced $p=0.62$, which illustrates how little a five-fold run can
-say about a difference of this size.
+On the full eight-genre task the difference is larger and does reach significance:
+emotion features attain $0.300$ $[0.293,\,0.306]$ against $0.257$ $[0.251,\,0.263]$ for
+the AST embedding, a difference of $+0.043$ that holds in $92\,\%$ of the folds
+($p=0.031$). Under the earlier single five-fold protocol the same comparison produced
+$p=0.62$, which illustrates how little a five-fold run can say about a difference of this
+size.

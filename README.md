@@ -60,7 +60,13 @@ Implementation/
 │   ├── features/             # Data loading/cleaning + AST/CLAP/Blockbuster feature extraction
 │   ├── models/               # Multi-label genre classifiers
 │   └── evaluation/           # Metrics + cross-validated scoring
-├── experiments/              # experiment scripts (extraction, classification, analyses)
+├── experiments/              # Runnable experiments, mirroring the src/ layout
+│   ├── features/             # Data checks + embedding extraction
+│   ├── emotion/              # Stage 1: audio -> emotion
+│   ├── genre/                # Stage 2: emotion -> genre
+│   ├── diagnostics/          # Error analysis, thresholds, learning curve, clip length
+│   ├── cross_dataset/        # Transfer to the Blockbuster dataset
+│   └── evaluation/           # Repeated CV, confidence intervals, significance tests
 ├── docs/                     # Progress log, literature reviews, thesis LaTeX snippets
 └── results/                  # Generated plots and outputs
 ```
@@ -70,7 +76,7 @@ Implementation/
 - Raw data is **git-ignored** (not redistributed) and lives under `data/raw/`:
   - `Eerola_DB/` — the primary dataset: clip audio + enriched rating CSVs.
   - `Blockbuster_DB/` — Ma et al. (2021) pre-extracted VGGish/MIR features (no audio),
-    used only for the external VGGish-vs-MFCC baseline (`experiments/exp_blockbuster.py`).
+    used only for the external VGGish-vs-MFCC baseline (`experiments/cross_dataset/exp_blockbuster.py`).
 - Derived data (cached embeddings, matrices, durations) is written to
   `data/processed/Eerola_DB/` and reused across runs — never re-extracted per run.
 - `src/config.py` resolves the data root automatically; set `THESIS_DATA_ROOT` to
@@ -81,9 +87,10 @@ Implementation/
 Experiments are plain Python scripts, runnable from the project root, e.g.:
 
 ```bash
-python experiments/verify_data.py            # load + clean + assert dataset counts
-python experiments/extract_features.py       # extract & cache AST embeddings (Set 1)
-python experiments/exp_genre.py              # genre classification: with vs without emotion
+python experiments/features/verify_data.py          # load + clean + assert dataset counts
+python experiments/features/extract_features.py     # extract & cache AST embeddings (Set 1)
+python experiments/genre/exp_genre.py               # genre classification: with vs without emotion
+python experiments/evaluation/exp_statistical_power.py   # repeated CV + significance (headline numbers)
 ```
 
 See `docs/README.md` (the progress log) for the full list of experiments and their results.

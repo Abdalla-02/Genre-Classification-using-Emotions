@@ -4,7 +4,7 @@
   Q3  can emotion give better genre classification -- incl. emotion+VGGish fusion.
 GroupKFold by film throughout.
 
-Run:  python experiments/exp_emotion_improve.py
+Run:  python experiments/emotion/exp_emotion_improve.py
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate  # noqa: E402

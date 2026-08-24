@@ -6,7 +6,7 @@ predicted emotions -> genre. Includes the key controls -- PCA-8 and a random-8 p
 of VGGish -> genre -- to test whether the *emotion* bottleneck beats a generic 8-d
 compression, and a face-validity check of the predicted emotions per genre.
 
-Run:  python experiments/exp_blockbuster_emotion.py
+Run:  python experiments/cross_dataset/exp_blockbuster_emotion.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.random_projection import GaussianRandomProjection
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate  # noqa: E402

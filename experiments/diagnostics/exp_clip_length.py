@@ -11,7 +11,7 @@ Configs:
 Downstream: Experiment 5 (TARGET, 12-class, GroupKFold) and the direct genre baseline
 (AST -> 8-genre multi-label, GroupKFold Macro-F1).
 
-Run:  python experiments/exp_clip_length.py
+Run:  python experiments/diagnostics/exp_clip_length.py
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from sklearn.model_selection import GroupKFold, cross_val_predict
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate  # noqa: E402

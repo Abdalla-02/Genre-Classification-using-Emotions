@@ -6,7 +6,7 @@ harder multi-label genre work. Reports Accuracy and Macro-F1 under both
 StratifiedKFold and GroupKFold(by soundtrack); the gap between them quantifies
 film-identity leakage (the same GroupKFold-vs-Stratified logic used for genre).
 
-Run (after experiments/extract_features.py):  python experiments/exp5_target.py
+Run (after experiments/features/extract_features.py):  python experiments/genre/exp5_target.py
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from sklearn.model_selection import GroupKFold, StratifiedKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import assemble_from_cache, load_set1  # noqa: E402

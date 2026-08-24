@@ -1,8 +1,8 @@
 """Extract & cache audio embeddings for Set 1 (and optionally Set 2).
 
 Run from anywhere:
-  python experiments/extract_features.py                 # AST (primary), Set 1
-  python experiments/extract_features.py --model clap --set2   # CLAP baseline, both sets
+  python experiments/features/extract_features.py                 # AST (primary), Set 1
+  python experiments/features/extract_features.py --model clap --set2   # CLAP baseline, both sets
 
 Outputs (under DATA_ROOT/processed/Eerola_DB/):
   embeddings[_clap]/<set>/<number>.npy   per-clip embedding (cache, resumable)
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import (  # noqa: E402

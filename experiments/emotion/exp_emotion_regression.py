@@ -2,10 +2,10 @@
 
 Compares the thesis-primary AST (768-d) against VGGish (128-d, the cross-dataset bridge
 feature) and librosa-MIR on predicting the 8 human emotion ratings. RandomForest regression
-(the best regressor -- see experiments/exp_emotion_improve.py), GroupKFold by film, R^2 and
+(the best regressor -- see experiments/emotion/exp_emotion_improve.py), GroupKFold by film, R^2 and
 RMSE per emotion (scale 1-9).
 
-Run:  python experiments/exp_emotion_regression.py
+Run:  python experiments/emotion/exp_emotion_regression.py
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GroupKFold, cross_val_predict
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import assemble_from_cache, load_set1  # noqa: E402

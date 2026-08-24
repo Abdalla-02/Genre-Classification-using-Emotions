@@ -6,7 +6,7 @@ out-of-fold (GroupKFold) probabilities for balanced vs unbalanced LogReg on the
 WITH-emotion features, then sweep the decision threshold and report Macro-F1, macro
 precision/recall, and predicted labels/clip.
 
-Run:  python experiments/exp_threshold_fix.py
+Run:  python experiments/diagnostics/exp_threshold_fix.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, genre_matrix, load_set1  # noqa: E402

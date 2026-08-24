@@ -121,6 +121,14 @@ PRIMARY_GENRES = [
     "Horror",
 ]
 
+# The curated 5-genre reporting subset: the genres that are both established at this
+# corpus scale in the literature (Austin 2010: 4 genres; Ma 2021: 6 from 110 films) and
+# carry a measurable emotional signature here. Adventure, Biography and Documentary are
+# excluded -- the first has no emotional signature (|d|<=0.25), the other two have n<25.
+# A clip joins the subset if it carries at least one of these five ("any-present" rule,
+# mirroring the 8-genre inclusion rule) -> 329 clips from 41 films.
+GENRE_SUBSET = ["Action", "Crime", "Drama", "Comedy", "Horror"]
+
 # Genres present in the raw IMDb annotations but excluded from modelling because
 # they are too rare (documented in the thesis). A clip is dropped only if it has
 # NO primary genre at all (see loader: "any-primary-present" inclusion rule).

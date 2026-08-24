@@ -122,7 +122,7 @@ is a reportable Methods result.
 ## 7b. RQ3 — which emotions predict which genres (done)
 
 Per-genre LogReg coefficients + RF importances + Cohen's d agree on an emotional
-signature per genre (`experiments/exp_emotion_genre.py`):
+signature per genre (`experiments/genre/exp_emotion_genre.py`):
 
 | Genre | Signature | Cohen's d |
 |-------|-----------|-----------|
@@ -143,14 +143,14 @@ emotion, which explains its near-chance predictability.** Caveat: tiny-n genres
 
 ## 7c. Error analysis & why the score is what it is (done)
 
-`experiments/exp_error_analysis.py` — per-genre FP/FN breakdown (WITH emotion, GroupKFold).
+`experiments/diagnostics/exp_error_analysis.py` — per-genre FP/FN breakdown (WITH emotion, GroupKFold).
 Diagnosis: the balanced LogReg predicts **3.49 labels/clip vs 1.87 true** (heavy
 over-prediction) → low precision. Rare genres are essentially never caught (Biography
 100% FN, Documentary 94% FN); Adventure fails both ways (no emotional signature).
 Contrast: the AST baseline predicts a realistic 1.85 labels/clip but *misses* the
 distinctive rare genres (Horror recall 0.68→0.21, Comedy 0.62→0.12).
 
-`experiments/exp_threshold_fix.py` — tested whether curbing the over-prediction helps:
+`experiments/diagnostics/exp_threshold_fix.py` — tested whether curbing the over-prediction helps:
 
 | Config | pred/clip | Macro-F1 |
 |--------|-----------|----------|
@@ -189,7 +189,7 @@ film-level aggregation -> 0.34.
 
 ## 7e. Would more data help? Learning curve (done)
 
-`experiments/exp_learning_curve.py` — train on increasing fractions of the films
+`experiments/diagnostics/exp_learning_curve.py` — train on increasing fractions of the films
 (subsampled by soundtrack), Macro-F1 on the GroupKFold held-out folds.
 
 | Train data | ~clips | Emotion Macro-F1 | AST Macro-F1 |
@@ -218,7 +218,7 @@ size (~100 films -> 4-6 genres: Austin, Ma; 10k films -> 18: Mangolin). Our corp
 smaller than all of them, so 5-6 genres is scale-appropriate; the closest analogue
 (Ma 2021, 110 film soundtracks) reduced IMDb's 24 genres to 6.
 
-Experiment (`experiments/exp_genre_subset.py`): 5-genre subset {Action, Crime, Drama,
+Experiment (`experiments/genre/exp_genre_subset.py`): 5-genre subset {Action, Crime, Drama,
 Comedy, Horror} (329 clips with >=1 of the 5), GroupKFold, LogReg:
 
 | | Macro-F1 (8) | Macro-F1 (5-subset) |
@@ -236,7 +236,7 @@ over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justi
 
 ## 9. Experiment 1 — emotion regression (done)
 
-`experiments/exp_emotion_regression.py` (feature comparison) and `exp_emotion_improve.py`
+`experiments/emotion/exp_emotion_regression.py` (feature comparison) and `exp_emotion_improve.py`
 (regressor comparison). **The regressor matters greatly:** on VGGish, Ridge gives mean
 R^2 = 0.37, SVR-RBF 0.54, **RandomForest 0.56** — so RF is used throughout. Feature
 comparison (RF, GroupKFold, mean R^2 over the 8 emotions, 360 clips):
@@ -256,7 +256,7 @@ because it is the only one reproducible on Blockbuster, **not** because AST is w
 
 ## 10. Cross-dataset emotion bridge + "is emotion special?" control (done)
 
-`experiments/exp_blockbuster_emotion.py`, `exp_emotion_improve.py`. VGGish is the one
+`experiments/cross_dataset/exp_blockbuster_emotion.py`, `exp_emotion_improve.py`. VGGish is the one
 feature both datasets produce identically. A VGGish->8-emotion **RandomForest** regressor is
 trained on all Eerola and applied to predict emotions on the target set; genre is then
 classified from the 11 emotion features. The key control is **PCA-8(VGGish)** — a generic
@@ -298,7 +298,7 @@ bottleneck" alternative on the primary set.
 
 ## 11. Statistical power — repeated CV + confidence intervals (done)
 
-`experiments/exp_statistical_power.py`, `src/evaluation/repeated.py`, results in
+`experiments/evaluation/exp_statistical_power.py`, `src/evaluation/repeated.py`, results in
 `results/statistical_power.json`, LaTeX in `latex/statistical_power.tex`.
 
 **The problem this fixes.** Every comparison above rested on ONE 5-fold GroupKFold run.
@@ -327,6 +327,7 @@ Two statistics, both standard for repeated CV:
 | PCA-8(VGGish) [control] | 0.346 | [0.333, 0.360] |
 | VGGish-128 direct | 0.337 | [0.320, 0.353] |
 | AST-768 | 0.320 | [0.305, 0.334] |
+| CLAP-512 | 0.303 | [0.285, 0.320] |
 | dummy | 0.166 | [0.165, 0.167] |
 
 | Comparison | diff | 95% CI of diff | p (corrected) | p_limit | win |
@@ -344,9 +345,11 @@ single-5-fold run reported p=0.62 for this same comparison.)
 
 ### What this establishes
 
-1. **The ordering is stable, not a lucky split.** Every difference CI excludes zero and
-   the emotion pipeline wins 76–92% of the 50 folds. This is the claim the single 5-fold
-   run could not support, and it is now firm.
+1. **The ordering is stable, not a lucky split.** In every emotion-vs-embedding
+   comparison the difference CI excludes zero and the emotion pipeline wins 76–92% of
+   the 50 folds. (The predicted-vs-ground-truth CI straddles zero, which is the
+   intended result there — see point 3.) This is the claim the single 5-fold run
+   could not support, and it is now firm.
 2. **Only emotion vs AST is significant** under the corrected test (+0.065, p=0.021).
    Predicted-emotion vs the PCA-8 bottleneck control (p=0.158) and vs direct VGGish
    (p=0.104) are **not** — direction and magnitude are supported, 5%-level significance
@@ -366,27 +369,125 @@ ground-truth 0.388 → 0.379, PCA-8 0.350 → 0.346, VGGish 0.328 → 0.337, AST
 8-genre emotion 0.272 → 0.276 / AST 0.258 → 0.240. The single-run 0.406 was an optimistic
 partition (and used full-data PCA); **the repeated-CV numbers supersede it everywhere.**
 
+### 11b. Hyperparameter tuning (nested CV) + CLAP baseline
+
+Section A above uses sklearn's default `C=1.0`. That default turned out to be the **worst**
+setting for every feature set (all of them prefer `C<=0.1`) — with n≈330 clips against
+128–768 embedding dimensions the model was badly under-regularised. Tuning `C` on the test
+folds would be cheating, so Section B chooses it by an **inner GroupKFold inside each
+training fold** (nested CV, `src/models/select_logreg_C`). The inner loop is grouped by
+film too — otherwise C gets tuned against film-identity leakage and comes out too weak.
+
+**CLAP** (extracted long ago, never used) is now a third embedding baseline. It is the
+weakest of the three, but that is exactly its value: the direct-audio baseline is no
+longer a single model a reader can dismiss as a poor choice.
+
+| Arm | A: default C=1.0 | B: nested-CV tuned | Δ | C picked |
+|---|---|---|---|---|
+| VGGish → PREDICTED emotion(11) | 0.384 | **0.394** [0.389, 0.400] | +0.010 | 0.003 |
+| ground-truth emotion(11) [ceiling] | 0.379 | **0.397** [0.388, 0.407] | +0.018 | 0.003 |
+| VGGish-128 direct | 0.337 | 0.350 [0.335, 0.365] | +0.013 | 0.003 |
+| AST-768 | 0.320 | 0.345 [0.328, 0.361] | +0.025 | 0.003 |
+| PCA-8(VGGish) [control] | 0.346 | 0.343 [0.330, 0.355] | −0.004 | 0.1 |
+| CLAP-512 | 0.303 | 0.335 [0.323, 0.347] | +0.033 | 0.003 |
+| dummy | 0.166 | 0.166 | ±0.000 | — |
+
+Tuned paired comparisons (5-genre subset):
+
+| Comparison | diff | 95% CI | p | p_limit | win |
+|---|---|---|---|---|---|
+| predicted-emotion vs PCA-8 control | +0.052 | [+0.037, +0.066] | 0.060 | 0.045 | 88% |
+| predicted-emotion vs AST-768 | +0.050 | [+0.034, +0.065] | 0.078 | 0.061 | 82% |
+| predicted-emotion vs VGGish direct | +0.044 | [+0.030, +0.059] | 0.104 | 0.085 | 80% |
+| predicted-emotion vs ground truth | −0.003 | [−0.012, +0.007] | 0.855 | 0.848 | 54% |
+| ground-truth emotion vs CLAP-512 | +0.062 | [+0.046, +0.077] | **0.036** | 0.025 | 86% |
+| ground-truth emotion vs AST-768 | +0.052 | [+0.036, +0.069] | 0.072 | 0.056 | 84% |
+| AST-768 vs CLAP-512 | +0.010 | [−0.005, +0.024] | 0.752 | 0.741 | 62% |
+
+**Full 8 genres, tuned:** emotion **0.300** [0.293, 0.306] vs AST **0.257** [0.251, 0.263];
+diff +0.043, **p=0.031 (significant)**, p_limit=0.021, wins 92% of folds.
+
+### What tuning changes
+
+1. **The 8-genre claim becomes significant.** emotion vs AST goes p=0.62 (old single
+   5-fold) → 0.092 (repeated) → **0.031 (repeated + tuned)**. This is now a defensible
+   headline result rather than a hedge.
+2. **Tuning helps the baselines more than emotion** (CLAP +0.033, AST +0.025 vs emotion
+   +0.018) — as expected, high-dimensional embeddings suffer most from under-regularisation.
+   The 5-genre emotion-vs-AST gap *narrows* slightly (0.060 → 0.052). Conclusions are
+   unchanged, which is the point of checking: **the result is not an artefact of untuned
+   baselines.**
+3. **The three modern embeddings are statistically indistinguishable from each other**
+   (AST 0.345, VGGish 0.350, CLAP 0.335; AST vs CLAP p=0.752). Emotion features beat all
+   three. This is a much more robust framing than "emotion beats AST".
+4. **Predicted ≈ ground-truth still holds** (−0.003, p=0.855) — the tuned pipeline does not
+   depend on human emotion ratings.
+5. **Borderline, do not overclaim:** predicted-emotion vs the PCA-8 control is p=0.060 with
+   p_limit=0.045. Because p_limit sits just below 0.05, more repeats *would* eventually push
+   it under the threshold — but that is arbitrating a conclusion by choosing the repeat
+   count, so it is reported as **borderline**, not significant. The honest statement is that
+   the emotion bottleneck beats a generic 8-d bottleneck consistently (88% of folds) at
+   roughly the 5–6% level.
+
+Note: `C=0.003` is the grid's lower edge for most arms, so the optimum may lie below it;
+widening the grid is a loose end, though the flatness between 0.003 and 0.01 in the manual
+sweep suggests little is left on the table.
+
+## 12. Known defects in the feature-extraction script (found, not yet fixed)
+
+Discovered while verifying paths after the `experiments/` reorganisation. **Neither affects
+any result reported in this log** — both concern artifacts that nothing reads — but both are
+traps for anyone reading the repository later.
+
+1. **`set1_ast.npy` disagrees with the per-clip cache.** `features/extract_features.py`
+   writes `<set>_<model>.npy`, `<set>_numbers.npy` and `<set>_durations.csv`, but **no code
+   reads any of them**: every experiment calls `assemble_from_cache()`, which reads the
+   per-clip `embeddings/set1/*.npy` files. The committed `set1_ast.npy` differs from the
+   stack of per-clip caches (max abs diff 3.35), i.e. it is stale — written from an earlier
+   extraction run and never refreshed when the per-clip caches were regenerated. Re-running
+   the script rewrites it and produces a large git diff on a file no experiment uses.
+   *Fix:* delete the three write-only artifacts, or have `assemble_from_cache` read the
+   matrix so there is one source of truth.
+
+2. **Clip durations depend on whether the cache was warm.** In `extract_embeddings`, a cache
+   *miss* records `len(waveform)/sampling_rate` (decoded length) while a cache *hit* records
+   `librosa.get_duration(path=...)` (mp3 header). These differ systematically by ~0.089 s per
+   clip (encoder delay/padding). The committed CSV holds decoded values; any re-run now
+   produces header values. The clip-length numbers quoted in §5 come from
+   `clip_length_analysis.py` (`durations_from_audio`, computed fresh) and are unaffected.
+   *Fix:* use one method for both branches.
+
 ## 8. Planned next
 
 - **Content chapters** (#5) — student; the LaTeX snippets in `docs/latex/` are ready to fold in.
 - **More films** — §11 shows the remaining non-significance is corpus-bound, not
   resampling-bound (p_limit > 0.05 with infinite repeats), and §7e shows both learning
   curves still rising. Extending the corpus is the only lever left on the headline claims.
-- **CLAP** — extracted but still unused in any comparison; wire it in or drop it.
+- **Known defects (see §12):** `extract_features.py` writes three artifacts nothing reads,
+  one of which (`set1_ast.npy`) disagrees with the per-clip cache the experiments actually
+  use; and clip durations differ by ~0.09 s depending on whether the cache was warm.
+  Neither affects any reported result, but both should be fixed or deleted.
 - **Optional:** Set 1 vs Set 2 diff (Exp 4); Blockbuster full-140-MIR / mean+std pooling;
-  emotion-regressor hyperparameter tuning beyond the RF default.
+  emotion-regressor tuning (only the classifier's C is tuned so far); widen the C grid
+  below 0.003.
 
 ## Repository map
 
 - `src/features/` — data loading/cleaning; AST, CLAP, VGGish, MIR extractors; Blockbuster loader
-- `src/models/` — multi-label classifiers
+- `src/models/` — multi-label classifiers; `select_logreg_C` (inner-CV hyperparameter
+  selection for nested CV)
 - `src/evaluation/` — metrics + cross-validated scoring; `repeated.py` (RepeatedGroupKFold,
   Nadeau-Bengio corrected t-test, per-repeat CIs)
-- `experiments/` — runnable experiments: `verify_data`, `extract_features`, `exp5_target`,
-  `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`, `exp_error_analysis`,
-  `exp_threshold_fix`, `exp_learning_curve`, `exp_clip_length`, `clip_length_analysis`,
-  `exp_blockbuster`, `exp_emotion_regression`, `exp_blockbuster_emotion`,
-  `exp_statistical_power`
+- `experiments/` — runnable experiments, grouped by pipeline stage (index +
+  per-script purpose in `experiments/README.md`). Run from the repository root.
+  - `features/` — `verify_data`, `extract_features`, `clip_length_analysis`
+  - `emotion/` — `exp_emotion_regression`, `exp_emotion_improve`
+  - `genre/` — `exp5_target`, `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`
+  - `diagnostics/` — `exp_error_analysis`, `exp_threshold_fix`, `exp_learning_curve`,
+    `exp_clip_length`
+  - `cross_dataset/` — `exp_blockbuster`, `exp_blockbuster_emotion`
+  - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
+    `genre` / `cross_dataset`)
 - `docs/` — this log; `docs/literature/` (literature reviews); `docs/latex/` (LaTeX snippets)
 - `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, VGGish, MIR, AST-windows)
 - `results/` — machine-readable experiment output (`statistical_power.json`: every per-fold score)

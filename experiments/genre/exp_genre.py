@@ -13,7 +13,7 @@ Two gaps isolate the cause of inflation: leakage = (kfold - group); the strat ga
 adds any stratification effect. A paired t-test across folds checks whether WITH beats
 WITHOUT (underpowered at 5 folds -- reported with that caveat).
 
-Run:  python experiments/exp_genre.py
+Run:  python experiments/genre/exp_genre.py
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import ttest_rel
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate_folds  # noqa: E402

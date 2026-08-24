@@ -5,7 +5,7 @@ For each genre reports, from out-of-fold predictions:
   positives that are wrong), FPR (=negatives wrongly flagged), F1.
 Run for WITH-emotion (11 ground-truth features) and the WITHOUT/AST baseline (768-d).
 
-Run:  python experiments/exp_error_analysis.py
+Run:  python experiments/diagnostics/exp_error_analysis.py
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.model_selection import GroupKFold, cross_val_predict
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.features import add_derived_features, assemble_from_cache, genre_matrix, load_set1  # noqa: E402
