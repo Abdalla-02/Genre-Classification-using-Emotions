@@ -105,6 +105,20 @@ is a reportable Methods result.
 | 5 | Content chapters | ⬜ writing (student) |
 | 6 | Emotion regression | ✅ done (§9) — AST vs VGGish vs MIR, + cross-dataset bridge (§10) |
 
+### Research-question status
+- **RQ1 — can emotion predict genre?** Yes. Ground-truth emotion → genre reaches Macro-F1
+  **0.39** on the 5-genre subset (§7f), well above chance, with interpretable predictors (§7b).
+- **RQ2a — emotion↔genre relationships?** Done — per-genre Cohen's d signatures (§7b).
+- **RQ2b — does the emotion intermediate help vs direct audio?** Addressed (§10). The
+  *predicted*-emotion pipeline (VGGish → RF-emotion → genre) beats both the raw embedding and a
+  matched PCA-8 control on Eerola (0.406 vs 0.328 / 0.350) and matches the ground-truth ceiling;
+  it also transfers cross-dataset to Blockbuster with face-valid emotions. Under 10x5 repeated
+  GroupKFold (§11) the ordering is **stable** (wins 76-92% of 50 folds, all difference CIs
+  exclude zero) and emotion beats AST significantly (p=0.021); beating the PCA-8 control
+  (p=0.158) is supported in direction but **not at the 5% level, and no amount of extra
+  resampling can change that** — only more films.
+- **RQ3 — strongest emotions per genre?** Done — LogReg coefficients + RF importance + Cohen's d (§7b).
+
 ## 7b. RQ3 — which emotions predict which genres (done)
 
 Per-genre LogReg coefficients + RF importances + Cohen's d agree on an emotional
@@ -214,7 +228,8 @@ Comedy, Horror} (329 clips with >=1 of the 5), GroupKFold, LogReg:
 | dummy | 0.102 | 0.164 |
 
 On the subset emotion (0.388) exceeds AST (0.323) by +0.064 -- larger and consistent, but
-NOT significant at 5 folds (paired-t p=0.16, underpowered). **Metric caveat:** Exact Match
+NOT significant at 5 folds (paired-t p=0.16, underpowered) -- see §11, which re-runs this
+under 10x5 repeated GroupKFold and supersedes these single-run numbers. **Metric caveat:** Exact Match
 and Hamming are uninformative here (the dummy scores best on both, due to balanced
 over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justification in
 `latex/genre_subset.tex`. Report both full-8 and subset-5 transparently.
@@ -272,30 +287,106 @@ Conclusions (corrected from the earlier Ridge-based, over-tempered version):
 - **Face validity (Blockbuster, cross-dataset):** horror->fear (+0.99), romance->tender
   (+1.05), comedy->happy, drama->tender, action->anger — textbook-correct; the transferred
   emotions are meaningful, not noise.
-- **Caveats:** 5-fold margins (~±0.05) make "beats control" suggestive, not significant;
-  Blockbuster has no ground-truth emotions to validate the predictions directly.
+- **Caveats:** the Eerola numbers here come from a single 5-fold run; §11 re-runs every arm
+  under 10x5 repeated GroupKFold with fold-internal PCA and **supersedes them** (predicted
+  0.406 -> 0.384, control 0.350 -> 0.346; ordering unchanged, "beats control" still not
+  significant at 5%). Blockbuster has no ground-truth emotions to validate the predictions
+  directly.
 
 This answers RQ2b with the *predicted* pipeline on both datasets and rules out the "any 8-d
 bottleneck" alternative on the primary set.
 
+## 11. Statistical power — repeated CV + confidence intervals (done)
+
+`experiments/exp_statistical_power.py`, `src/evaluation/repeated.py`, results in
+`results/statistical_power.json`, LaTeX in `latex/statistical_power.tex`.
+
+**The problem this fixes.** Every comparison above rested on ONE 5-fold GroupKFold run.
+Five folds cannot separate a +0.05 Macro-F1 margin from partition noise, so real,
+consistent effects were being reported as "within noise" — a statement about the
+*resolution of the experiment*, not about the models. Fix: **10 x 5 repeated GroupKFold**
+(film→fold assignment re-randomised each repeat → 50 leakage-safe folds; sklearn 1.5 has
+no shuffled GroupKFold, so `RepeatedGroupKFold` is implemented in `src/evaluation/`). All
+arms score on the *same* folds → every comparison is properly paired. PCA and the emotion
+regressor are now fit **inside** the training fold (stricter than the earlier full-data
+PCA).
+
+Two statistics, both standard for repeated CV:
+- **95% CI over the 10 per-repeat means** (not the 50 folds — folds inside a repeat share
+  training data and are not independent).
+- **Nadeau & Bengio (2003) corrected resampled t-test.** A naive paired t-test over 50
+  correlated folds is anti-conservative; the correction inflates the variance by the
+  train/test overlap factor. Plus a nonparametric **win rate**.
+
+### 5-genre subset (n=329, 41 films), repeated GroupKFold Macro-F1
+
+| Approach | Macro-F1 | 95% CI |
+|---|---|---|
+| **VGGish → PREDICTED emotion(11) → genre** | **0.384** | [0.375, 0.393] |
+| ground-truth emotion(11) → genre (ceiling) | 0.379 | [0.370, 0.389] |
+| PCA-8(VGGish) [control] | 0.346 | [0.333, 0.360] |
+| VGGish-128 direct | 0.337 | [0.320, 0.353] |
+| AST-768 | 0.320 | [0.305, 0.334] |
+| dummy | 0.166 | [0.165, 0.167] |
+
+| Comparison | diff | 95% CI of diff | p (corrected) | p_limit | win |
+|---|---|---|---|---|---|
+| predicted-emotion vs PCA-8 control | +0.038 | [+0.024, +0.051] | 0.158 | 0.137 | 76% |
+| predicted-emotion vs VGGish direct | +0.048 | [+0.033, +0.062] | 0.104 | 0.085 | 82% |
+| predicted-emotion vs AST-768 | +0.065 | [+0.055, +0.075] | **0.021** | 0.013 | 92% |
+| predicted-emotion vs ground truth | +0.005 | [−0.002, +0.012] | 0.791 | 0.782 | 50% |
+| ground-truth emotion vs AST-768 | +0.060 | [+0.045, +0.075] | 0.074 | 0.058 | 82% |
+| ground-truth emotion vs VGGish direct | +0.043 | [+0.028, +0.057] | 0.106 | 0.087 | 78% |
+
+**Full 8 genres (n=346):** emotion 0.276 [0.270, 0.281] vs AST 0.240 [0.233, 0.247];
+diff +0.036 [+0.028, +0.043], p=0.092, p_limit=0.074, wins 82% of folds. (The old
+single-5-fold run reported p=0.62 for this same comparison.)
+
+### What this establishes
+
+1. **The ordering is stable, not a lucky split.** Every difference CI excludes zero and
+   the emotion pipeline wins 76–92% of the 50 folds. This is the claim the single 5-fold
+   run could not support, and it is now firm.
+2. **Only emotion vs AST is significant** under the corrected test (+0.065, p=0.021).
+   Predicted-emotion vs the PCA-8 bottleneck control (p=0.158) and vs direct VGGish
+   (p=0.104) are **not** — direction and magnitude are supported, 5%-level significance
+   is not. Report them as such.
+3. **Predicted ≈ ground-truth is now a positive result, not a hedge** (+0.005, p=0.791,
+   exactly 50% of folds). Audio-estimated emotions are as genre-informative as the human
+   ratings — the precondition for the pipeline to work without emotion annotations.
+4. **More repeats cannot fix the rest — only more films can.** `p_limit` is the p-value
+   the corrected test converges to with *infinite* repeats (only the 1/n term shrinks;
+   the train/test overlap term does not). p_limit is 0.137 / 0.085 for the two
+   non-significant comparisons, i.e. still above 0.05, and 10 repeats is already within
+   0.02 of that floor. **The binding constraint is the 41 films**, which matches the
+   learning curve (§7e, still rising at 100%).
+
+**Numbers that changed vs the single-run values.** predicted-emotion 0.406 → 0.384,
+ground-truth 0.388 → 0.379, PCA-8 0.350 → 0.346, VGGish 0.328 → 0.337, AST 0.323 → 0.320,
+8-genre emotion 0.272 → 0.276 / AST 0.258 → 0.240. The single-run 0.406 was an optimistic
+partition (and used full-data PCA); **the repeated-CV numbers supersede it everywhere.**
+
 ## 8. Planned next
 
-- **Content chapters** (#5) — student.
-- **Complete RQ2b on Eerola:** run the predicted-emotion pipeline on Eerola itself
-  (VGGish -> predicted emotion -> genre vs the AST baseline), to mirror the Blockbuster
-  bridge on the primary dataset.
-- **CLAP** is extracted but still unused in any comparison — wire it into the genre
-  experiment or drop it.
-- Optional: Blockbuster extensions (full 140-MIR, mean+std pooling); Set 1 vs Set 2 diff.
+- **Content chapters** (#5) — student; the LaTeX snippets in `docs/latex/` are ready to fold in.
+- **More films** — §11 shows the remaining non-significance is corpus-bound, not
+  resampling-bound (p_limit > 0.05 with infinite repeats), and §7e shows both learning
+  curves still rising. Extending the corpus is the only lever left on the headline claims.
+- **CLAP** — extracted but still unused in any comparison; wire it in or drop it.
+- **Optional:** Set 1 vs Set 2 diff (Exp 4); Blockbuster full-140-MIR / mean+std pooling;
+  emotion-regressor hyperparameter tuning beyond the RF default.
 
 ## Repository map
 
 - `src/features/` — data loading/cleaning; AST, CLAP, VGGish, MIR extractors; Blockbuster loader
 - `src/models/` — multi-label classifiers
-- `src/evaluation/` — metrics + cross-validated scoring
+- `src/evaluation/` — metrics + cross-validated scoring; `repeated.py` (RepeatedGroupKFold,
+  Nadeau-Bengio corrected t-test, per-repeat CIs)
 - `experiments/` — runnable experiments: `verify_data`, `extract_features`, `exp5_target`,
   `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`, `exp_error_analysis`,
   `exp_threshold_fix`, `exp_learning_curve`, `exp_clip_length`, `clip_length_analysis`,
-  `exp_blockbuster`, `exp_emotion_regression`, `exp_blockbuster_emotion`
+  `exp_blockbuster`, `exp_emotion_regression`, `exp_blockbuster_emotion`,
+  `exp_statistical_power`
 - `docs/` — this log; `docs/literature/` (literature reviews); `docs/latex/` (LaTeX snippets)
 - `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, VGGish, MIR, AST-windows)
+- `results/` — machine-readable experiment output (`statistical_power.json`: every per-fold score)

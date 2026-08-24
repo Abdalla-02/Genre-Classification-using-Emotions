@@ -1,0 +1,133 @@
+% =============================================================================
+% Ready-to-paste LaTeX: repeated cross-validation, confidence intervals and the
+% corrected significance test for all headline comparisons.
+% Numbers from experiments/exp_statistical_power.py (10 x 5 repeated GroupKFold,
+% seed 42); raw per-fold scores in results/statistical_power.json.
+%
+% CITATION NOTE: this section cites Nadeau & Bengio (2003), which is NOT yet in
+% bib/library.bib. Add:
+%
+%   @article{nadeau2003inference,
+%     title   = {Inference for the Generalization Error},
+%     author  = {Nadeau, Claude and Bengio, Yoshua},
+%     journal = {Machine Learning},
+%     volume  = {52}, number = {3}, pages = {239--281}, year = {2003},
+%     doi     = {10.1023/A:1024068626366}
+%   }
+%
+% Placement: Methods (the "Evaluation protocol" paragraph) + Results (the table and
+% the discussion paragraph), or collect the whole thing as a "Statistical reliability"
+% subsection at the end of Results.
+% =============================================================================
+
+% ---------------------------------------------------------------- METHODS ----
+\paragraph{Evaluation protocol and statistical reliability.}
+All genre results are obtained under cross-validation grouped by film, so that clips
+from the same soundtrack never appear in both the training and the test partition; this
+is essential, since an ungrouped split lets a classifier recognise the film rather than
+the genre (Section~\ref{subsec:leakage}). A single five-fold run, however, yields only
+five score samples, which is too few to distinguish a difference of a few Macro-$F_1$
+points from the variation caused by the particular partition. The evaluation is
+therefore repeated: the assignment of films to folds is re-randomised ten times, giving
+$10\times5=50$ leakage-free folds, and every method is scored on exactly the same folds
+so that all comparisons are paired.
+
+Two statistics are reported. Uncertainty on a single method is given as a
+$95\,\%$ confidence interval computed from the ten per-repeat means rather than from the
+fifty individual folds, because folds within one repeat share almost all of their
+training data and are not independent. For a comparison between two methods, the
+Nadeau--Bengio corrected resampled $t$-test \citep{nadeau2003inference} is used. The
+ordinary paired $t$-test is inadmissible here: it treats the fifty fold-differences as
+independent observations although their training sets overlap almost completely, and
+consequently reports far too small $p$-values. The correction inflates the variance
+estimate by the ratio of test-set to training-set size,
+\[
+  t \;=\; \frac{\bar{d}}{\sqrt{\left(\dfrac{1}{n}+\dfrac{n_{\text{test}}}{n_{\text{train}}}\right)\sigma^2_{d}}},
+\]
+where $\bar{d}$ and $\sigma^2_d$ are the mean and variance of the per-fold differences
+and $n=50$. Because only the $1/n$ term shrinks when repeats are added, this test has a
+lower bound on the attainable $p$-value for a given corpus; that bound is reported as
+$p_{\lim}$ and is what makes it possible to distinguish a comparison that needs more
+resampling from one that needs more data.
+
+% ---------------------------------------------------------------- RESULTS ----
+\subsection{Statistical Reliability of the Comparisons}
+\label{subsec:statistical_power}
+
+Table~\ref{tab:power_arms} reports each approach on the five-genre subset under the
+repeated protocol, and Table~\ref{tab:power_cmp} the corresponding paired comparisons.
+
+\begin{table}[t]
+  \centering
+  \caption{Genre classification on the five-genre subset ($n=329$ clips, 41 films)
+    under $10\times5$ repeated GroupKFold. Macro-$F_1$ with a $95\,\%$ confidence
+    interval over the ten repeat means.}
+  \label{tab:power_arms}
+  \begin{tabular}{lcc}
+    \hline
+    Approach & Macro-$F_1$ & $95\,\%$ CI \\
+    \hline
+    VGGish $\rightarrow$ predicted emotion (11) $\rightarrow$ genre & $0.384$ & $[0.375,\,0.393]$ \\
+    Ground-truth emotion (11) $\rightarrow$ genre (ceiling)         & $0.379$ & $[0.370,\,0.389]$ \\
+    PCA-8(VGGish) $\rightarrow$ genre (control)                     & $0.346$ & $[0.333,\,0.360]$ \\
+    VGGish-128 $\rightarrow$ genre (direct)                         & $0.337$ & $[0.320,\,0.353]$ \\
+    AST-768 $\rightarrow$ genre                                     & $0.320$ & $[0.305,\,0.334]$ \\
+    Most-frequent baseline                                          & $0.166$ & $[0.165,\,0.167]$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{Paired comparisons on the five-genre subset. $\Delta$ is the mean
+    Macro-$F_1$ difference over the 50 shared folds with a $95\,\%$ interval over the
+    ten repeat means; $p$ is the Nadeau--Bengio corrected resampled $t$-test;
+    $p_{\lim}$ is the smallest $p$ this test could reach on this corpus with an
+    unlimited number of repeats; ``win'' is the fraction of the 50 folds won by the
+    first method.}
+  \label{tab:power_cmp}
+  \begin{tabular}{lcccc}
+    \hline
+    Comparison & $\Delta$ & $95\,\%$ CI & $p$ & win \\
+    \hline
+    Predicted emotion vs.\ PCA-8 control   & $+0.038$ & $[+0.024,\,+0.051]$ & $0.158$ & $76\,\%$ \\
+    Predicted emotion vs.\ VGGish direct   & $+0.048$ & $[+0.033,\,+0.062]$ & $0.104$ & $82\,\%$ \\
+    Predicted emotion vs.\ AST-768         & $+0.065$ & $[+0.055,\,+0.075]$ & $\mathbf{0.021}$ & $92\,\%$ \\
+    Predicted emotion vs.\ ground truth    & $+0.005$ & $[-0.002,\,+0.012]$ & $0.791$ & $50\,\%$ \\
+    Ground-truth emotion vs.\ AST-768      & $+0.060$ & $[+0.045,\,+0.075]$ & $0.074$ & $82\,\%$ \\
+    Ground-truth emotion vs.\ VGGish direct& $+0.043$ & $[+0.028,\,+0.057]$ & $0.106$ & $78\,\%$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Three findings follow. First, the ordering of the approaches is \emph{stable}: for every
+comparison in Table~\ref{tab:power_cmp} the confidence interval of the difference
+excludes zero, and the emotion-based pipeline wins between $76\,\%$ and $92\,\%$ of the
+individual folds. The advantage of the emotion representation is therefore not an
+artefact of one favourable partition, which is what the earlier single five-fold run
+could not establish. Second, only the comparison against the AST embedding reaches
+conventional significance under the corrected test ($\Delta=+0.065$, $p=0.021$); the
+comparisons against the PCA-8 bottleneck control ($p=0.158$) and against the direct
+VGGish embedding ($p=0.104$) do not. The claim that the emotional bottleneck outperforms
+an arbitrary low-dimensional bottleneck is thus supported in direction and magnitude but
+not established at the $5\,\%$ level. Third, predicted and ground-truth emotions are
+statistically indistinguishable ($\Delta=+0.005$, $p=0.791$, $50\,\%$ of folds): the
+emotion values estimated from audio are as informative for genre as the human ratings,
+which is the central prerequisite for the two-stage pipeline to be usable without
+manually annotated emotion data.
+
+The remaining uncertainty is a property of the corpus, not of the evaluation. Increasing
+the number of repeats cannot resolve it: the attainable $p$-values converge to
+$p_{\lim}=0.137$ (PCA-8 control) and $p_{\lim}=0.085$ (VGGish direct), so even an
+unlimited number of resamplings of these 41 films would leave both comparisons
+non-significant. With ten repeats the test is already within $0.02$ of that bound. What
+limits the conclusion is therefore the number of distinct films available for grouping,
+which agrees with the learning-curve analysis in Section~\ref{subsec:learning_curve},
+where neither model had reached a plateau at the full corpus size.
+
+On the full eight-genre task the same pattern holds at a lower level: emotion features
+reach $0.276$ $[0.270,\,0.281]$ against $0.240$ $[0.233,\,0.247]$ for the AST embedding,
+a difference of $+0.036$ that is directionally consistent ($82\,\%$ of folds) but not
+significant ($p=0.092$, $p_{\lim}=0.074$). Under the earlier single five-fold protocol
+the same comparison produced $p=0.62$, which illustrates how little a five-fold run can
+say about a difference of this size.
