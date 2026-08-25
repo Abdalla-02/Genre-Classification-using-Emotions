@@ -19,6 +19,7 @@ from src.features.mir_extractor import MirEmbedder
 from src.features.vggish_extractor import VGGISH_EMBED_DIM, VggishEmbedder
 from src.features.loader import (
     add_derived_features,
+    build_emotion_features,
     genre_matrix,
     load_set1,
     load_set2,
@@ -29,6 +30,7 @@ __all__ = [
     "load_set1",
     "load_set2",
     "add_derived_features",
+    "build_emotion_features",
     "genre_matrix",
     # embeddings
     "AstEmbedder",

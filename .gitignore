@@ -1,6 +1,7 @@
 # Large sized datasets
 data/raw/*/*
 data/processed/Eerola_DB/embeddings/ast_windows/
+results/*.partial.json
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

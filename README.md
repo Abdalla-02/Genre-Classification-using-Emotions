@@ -1,7 +1,10 @@
 # Bachelor Thesis: Film-Genre Classification from Emotional Features of Soundtracks
 
 Implementation for the bachelor thesis *"Filmgenre-Klassifikation anhand emotionaler
-Merkmale von Soundtracks."* The project investigates whether emotional features extracted
+Merkmale von Soundtracks"* (German; "Film-genre classification from emotional features of
+soundtracks"). The thesis itself is written in German; **everything in this repository --
+code, comments, documentation and the LaTeX snippets under `docs/latex/` -- is in
+English.** The project investigates whether emotional features extracted
 from film soundtracks can predict film genre, and whether modelling emotion as an
 interpretable intermediate step offers an advantage over classifying genre directly from
 audio.
@@ -53,11 +56,11 @@ Implementation/
 │   ├── raw/
 │   │   ├── Eerola_DB/        # Audio + enriched rating CSVs (primary dataset)
 │   │   └── Blockbuster_DB/   # Ma et al. 2021 VGGish/MIR features (external baseline)
-│   └── processed/Eerola_DB/  # Cached embeddings (AST, CLAP), matrices, durations
+│   └── processed/Eerola_DB/  # embeddings/<model>/<set>/ per-clip caches (committed)
 ├── src/
 │   ├── config.py             # Paths, constants, expected dataset counts
 │   ├── utils.py              # Reproducibility (seeding)
-│   ├── features/             # Data loading/cleaning + AST/CLAP/Blockbuster feature extraction
+│   ├── features/             # Data loading/cleaning + AST/CLAP/VGGish/MIR/Blockbuster features
 │   ├── models/               # Multi-label genre classifiers
 │   └── evaluation/           # Metrics + cross-validated scoring
 ├── experiments/              # Runnable experiments, mirroring the src/ layout
@@ -68,7 +71,7 @@ Implementation/
 │   ├── cross_dataset/        # Transfer to the Blockbuster dataset
 │   └── evaluation/           # Repeated CV, confidence intervals, significance tests
 ├── docs/                     # Progress log, literature reviews, thesis LaTeX snippets
-└── results/                  # Generated plots and outputs
+└── results/                  # Machine-readable experiment output (JSON) + plots
 ```
 
 ## Data
@@ -101,12 +104,14 @@ See `docs/README.md` (the progress log) for the full list of experiments and the
 
 1. Dependencies are pinned in `requirements.txt`.
 2. Random seeds are fixed everywhere (`SEED = 42`, see `src/utils.py`).
-3. Embeddings and derived matrices are cached to `data/processed/` for exact re-runs.
+3. Per-clip embeddings are cached to `data/processed/` and committed, so a clone
+   reproduces every result without re-running any model over the audio.
 4. Cross-validation is grouped by film (`GroupKFold` on `soundtrack`) to prevent leakage.
 
 ## Dependencies and Notes
 
-The stack is PyTorch-only by design (AST and CLAP via `transformers`), so all components
-share a single deep-learning framework. TensorFlow-based baselines (e.g. YAMNet) are
+The stack is PyTorch-only by design (AST and CLAP via `transformers`, VGGish via
+`torchvggish`; the hand-crafted MIR baseline uses `librosa` and needs no framework), so all
+learned components share a single deep-learning framework. TensorFlow-based baselines (e.g. YAMNet) are
 deliberately avoided to prevent dependency conflicts; if ever needed, they should live in
 a separate environment.

@@ -26,18 +26,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate  # noqa: E402
-from src.features import assemble_from_cache, genre_matrix, load_set1  # noqa: E402
+from src.features import (  # noqa: E402
+    assemble_from_cache,
+    build_emotion_features,
+    genre_matrix,
+    load_set1,
+)
 from src.models import build_classifier  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
 SUBSET = ["Action", "Crime", "Drama", "Comedy", "Horror"]
-
-
-def build_11(E):
-    d = {e: E[:, i] for i, e in enumerate(config.EMOTIONS)}
-    return np.column_stack([E, d["valence"] * d["energy"],
-                            np.mean([d["anger"], d["fear"], d["tension"], d["sad"]], 0),
-                            np.mean([d["happy"], d["tender"], d["valence"]], 0)])
 
 
 def gf1(X, Y, g, s):
@@ -90,16 +88,16 @@ def main():
     for tr, te in GroupKFold(5).split(Xv, Y, g):
         from sklearn.base import clone
         r = clone(best_reg).fit(Xv[tr], Emo[tr])
-        clf = build_classifier("logreg").fit(build_11(r.predict(Xv[tr])), Y[tr])
-        pred[te] = np.asarray(clf.predict(build_11(r.predict(Xv[te]))))
+        clf = build_classifier("logreg").fit(build_emotion_features(r.predict(Xv[tr])), Y[tr])
+        pred[te] = np.asarray(clf.predict(build_emotion_features(r.predict(Xv[te]))))
     oof_pipe = f1_score(Y, pred, average="macro", zero_division=0)
 
     print(f"\nQ2/Q3  5-genre subset {SUBSET} (n={len(dfk)}, GroupKFold Macro-F1)")
     print("-" * 60)
-    print(f"  {'ground-truth emotion(11) -> genre (ceiling)':45}{gf1(build_11(Emo), Y, g, s):.3f}")
+    print(f"  {'ground-truth emotion(11) -> genre (ceiling)':45}{gf1(build_emotion_features(Emo), Y, g, s):.3f}")
     print(f"  {'VGGish -> PREDICTED emotion(11) -> genre ('+best_name+')':45}{oof_pipe:.3f}")
     print(f"  {'emotion(11) + VGGish(128) fusion [Q3]':45}"
-          f"{gf1(np.hstack([build_11(Emo), Xv]), Y, g, s):.3f}")
+          f"{gf1(np.hstack([build_emotion_features(Emo), Xv]), Y, g, s):.3f}")
     print(f"  {'VGGish-128 -> genre (direct)':45}{gf1(Xv, Y, g, s):.3f}")
     print(f"  {'PCA-8(VGGish) -> genre [control]':45}{gf1(pca8, Y, g, s):.3f}")
     print(f"  {'dummy':45}{evaluate(Xv, Y, g, s, 'dummy', 'group')['macro_f1'][0]:.3f}")

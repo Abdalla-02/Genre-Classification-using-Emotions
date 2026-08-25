@@ -208,7 +208,13 @@ def main():
     out["comparisons_vs_tuned_baseline"] = cmp_rows
 
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    path = config.RESULTS_DIR / "model_search.json"
+    # A reduced run (fewer repeats than the default, or --quick) is a debug run:
+    # write it to a scratch name so it cannot silently replace the canonical
+    # results file that the progress log and the LaTeX snippets quote.
+    full = args.repeats >= 5
+    path = config.RESULTS_DIR / ("model_search.json" if full else "model_search.partial.json")
+    if not full:
+        print("  (reduced run -> written to a .partial.json scratch file)")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"\nwrote {path}")
 

@@ -24,16 +24,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
 from src.evaluation import evaluate  # noqa: E402
-from src.features import assemble_from_cache, load_set1  # noqa: E402
+from src.features import assemble_from_cache, build_emotion_features, load_set1  # noqa: E402
 from src.features.blockbuster import load_blockbuster  # noqa: E402
 from src.utils import set_seed  # noqa: E402
-
-
-def build_11(E):
-    d = {e: E[:, i] for i, e in enumerate(config.EMOTIONS)}
-    return np.column_stack([E, d["valence"] * d["energy"],
-                            np.mean([d["anger"], d["fear"], d["tension"], d["sad"]], 0),
-                            np.mean([d["happy"], d["tender"], d["valence"]], 0)])
 
 
 def kf1(X, Y):
@@ -60,7 +53,7 @@ def main():
     print(f"{'approach (KFold, Macro-F1)':45}{'F1':>7}")
     print("-" * 52)
     print(f"{'VGGish-128 -> genre (direct)':45}{kf1(Xb, Yb):>7.3f}")
-    print(f"{'VGGish -> predicted emotion(11) -> genre':45}{kf1(build_11(Eb), Yb):>7.3f}")
+    print(f"{'VGGish -> predicted emotion(11) -> genre':45}{kf1(build_emotion_features(Eb), Yb):>7.3f}")
     print(f"{'PCA-8(VGGish) -> genre  [control]':45}{kf1(pca8, Yb):>7.3f}")
     print(f"{'random-8(VGGish) -> genre  [control]':45}{kf1(rand8, Yb):>7.3f}")
     print(f"{'dummy':45}"

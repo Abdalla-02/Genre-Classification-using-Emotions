@@ -92,6 +92,23 @@ def add_derived_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def build_emotion_features(E: np.ndarray) -> np.ndarray:
+    """Array form of :func:`add_derived_features`: (n, 8) emotions -> (n, 11) features.
+
+    Needed wherever the 8 emotions are *predicted* rather than read from the ratings CSV
+    (the audio -> emotion -> genre pipeline), so there is no DataFrame to extend. Column
+    order matches ``config.FEATURE_COLS`` exactly, and the two are verified to agree
+    numerically -- keep them in sync if either changes.
+    """
+    d = {e: E[:, i] for i, e in enumerate(config.EMOTIONS)}
+    return np.column_stack([
+        E,
+        d["valence"] * d["energy"],
+        np.mean([d["anger"], d["fear"], d["tension"], d["sad"]], axis=0),
+        np.mean([d["happy"], d["tender"], d["valence"]], axis=0),
+    ])
+
+
 def _load(csv_path, audio_dir, clean: bool) -> pd.DataFrame:
     df = pd.read_csv(csv_path)
     df = _canonicalise_columns(df)

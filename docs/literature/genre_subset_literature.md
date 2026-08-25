@@ -28,7 +28,7 @@ Rare genres (Biography, Documentary, Adventure) appear ONLY in the large-data st
 Horror (all 6 papers), Comedy, Romance, Sci-Fi (5/6), then Crime/Thriller (3/6).
 
 ## Where this thesis sits
-This corpus (47 soundtracks / 346 clips) is **smaller than every study above** (Austin
+This corpus (43 soundtracks / 346 clips) is **smaller than every study above** (Austin
 98 films/1728 tracks; Ma 110 films). By the field's own precedent, 8 genres is high for
 this scale; **5-6 is scale-appropriate.** The closest analogue, **Ma et al. (2021)** --
 same domain (film soundtracks), 110 films -- deliberately reduced IMDb's 24 genres to 6.
@@ -53,6 +53,15 @@ On the subset, emotion (0.388) exceeds AST (0.323), diff +0.064 -- a larger and
 consistent gap, though not statistically significant at 5 folds (paired-t p=0.16,
 underpowered). Report BOTH the full-8 and the 5-genre numbers transparently; the subset is
 the primary result, the full-8 documents the rare-genre limitation.
+
+> **Superseded numbers.** The table above is the original single 5-fold run at the
+> sklearn-default `C=1.0`, kept here because the surrounding argument (how many genres a
+> corpus of this size supports) does not depend on it. For any number quoted in the
+> thesis use section 11b of `docs/README.md` instead: under 10x5 repeated GroupKFold with
+> nested-CV-tuned regularisation the 5-genre figures are emotion **0.397** vs AST
+> **0.345**, and the 8-genre figures are **0.300** vs **0.257** (p=0.031, significant --
+> the "underpowered / not significant" note above reflects the old 5-fold protocol, not
+> the current evidence).
 
 Note: this corpus lacks Romance and Sci-Fi (two of the field's most common genres),
 reflecting the Eerola corpus's genre coverage vs trailer datasets.

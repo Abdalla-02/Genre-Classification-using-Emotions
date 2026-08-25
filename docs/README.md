@@ -23,8 +23,8 @@ taken (with justification), and what is planned next. Kept up to date as work pr
 
 - **Primary:** AST (Audio Spectrogram Transformer, `MIT/ast-finetuned-audioset`), 128-dim
   log-mel input, mean-pooled to one **768-dim** embedding per clip. 10.24 s window.
-- **Baselines:** CLAP (HTS-AT audio encoder, 512-dim; extracted, not yet used in a genre
-  comparison), **VGGish** (128-dim, postprocessed — the shared feature with Blockbuster,
+- **Baselines:** CLAP (HTS-AT audio encoder, 512-dim; now a full genre baseline and the
+  weakest of the three embeddings, see §11b), **VGGish** (128-dim, postprocessed — the shared feature with Blockbuster,
   see §10), and **librosa-MIR** (103-dim hand-crafted MFCC/chroma/spectral, a classic-MER
   baseline). All four extractors share one interface and cache to `data/processed/`.
 - **Note:** for *emotion* prediction (§9), with a non-linear regressor AST and VGGish tie
@@ -38,7 +38,12 @@ All genre results use **GroupKFold by film** (leakage-safe) as the reported metr
 StratifiedKFold / plain KFold as leaky comparators to quantify data leakage. Metrics:
 Exact Match, Hamming Loss, **Macro-F1** (the fair metric under class imbalance).
 
-| Exp | Question | Result (headline) |
+> **Protocol note.** This table is the ORIGINAL single 5-fold GroupKFold run at
+> sklearn's default `C=1.0`. It is kept because early write-ups quote it, but
+> **§11/§11b supersede it** — every arm has since been re-scored over 50 leakage-safe
+> folds with nested-CV-tuned regularisation. Quote §11b in the thesis.
+
+| Exp | Question | Result (headline, single 5-fold, C=1.0) |
 |-----|----------|-------------------|
 | **5 — TARGET sanity check** | embedding → 12 balanced emotion categories | ~0.22 GroupKFold acc vs 0.083 chance → pipeline works end-to-end |
 | **Genre: WITH emotion** | 11 ground-truth emotion features → genre (RQ1) | Macro-F1 **0.272** (LogReg) vs 0.102 dummy → emotions do predict genre |
@@ -52,12 +57,23 @@ film* a clip came from. The 11 emotion features barely leak (+0.05 gap). So emot
 features **generalise across films; raw AST embeddings partly memorise film identity.**
 This is a strong argument for the interpretable emotion intermediate.
 
-### Honest caveat on WITH vs WITHOUT
-Under leakage-safe evaluation the emotion (0.272) vs AST (0.258) difference is **within
-fold-noise** (paired t-test p=0.62 for LogReg; classifier-dependent). We therefore claim
-*"emotion features are competitive with 768-dim AST embeddings while being interpretable
-and far more leakage-robust,"* NOT that emotion strictly beats AST. Note the WITH-emotion
-number uses **ground-truth** ratings → it is the ceiling of the emotion→genre path.
+### WITH vs WITHOUT — SUPERSEDED, see §11b
+This section used to conclude that the emotion (0.272) vs AST (0.258) difference was
+**within fold-noise** (paired t-test p=0.62), and that we could therefore claim only that
+*"emotion features are competitive with AST embeddings"* — not that emotion beats AST.
+
+**That conclusion no longer holds.** The p=0.62 came from a single 5-fold run at the
+default `C=1.0`: five samples cannot resolve a difference of this size, and the default
+regularisation handicapped the high-dimensional AST arm more than the 11-feature emotion
+arm. Under 10x5 repeated GroupKFold with nested-CV-tuned `C` (§11b) the same comparison
+gives **0.300 vs 0.257, diff +0.043, p=0.031, winning 92% of the 50 folds** — a
+significant advantage for the emotion features. The progression
+**p=0.62 -> 0.092 (repeated) -> 0.031 (repeated + tuned)** is itself a useful
+methodological illustration; it is written up in `latex/statistical_power.tex`.
+
+Still true: the WITH-emotion number uses **ground-truth** ratings, so it is the ceiling of
+the emotion->genre path. The *predicted*-emotion pipeline (§10, §11b) is the honest
+end-to-end figure, and it matches that ceiling.
 
 ## 4. Models & methodology (done)
 
@@ -107,16 +123,24 @@ is a reportable Methods result.
 
 ### Research-question status
 - **RQ1 — can emotion predict genre?** Yes. Ground-truth emotion → genre reaches Macro-F1
-  **0.39** on the 5-genre subset (§7f), well above chance, with interpretable predictors (§7b).
+  **0.397** on the 5-genre subset and **0.300** on all 8 (§11b, the authoritative protocol),
+  against dummy floors of 0.166 and 0.101, with interpretable predictors (§7b).
 - **RQ2a — emotion↔genre relationships?** Done — per-genre Cohen's d signatures (§7b).
-- **RQ2b — does the emotion intermediate help vs direct audio?** Addressed (§10). The
-  *predicted*-emotion pipeline (VGGish → RF-emotion → genre) beats both the raw embedding and a
-  matched PCA-8 control on Eerola (0.406 vs 0.328 / 0.350) and matches the ground-truth ceiling;
-  it also transfers cross-dataset to Blockbuster with face-valid emotions. Under 10x5 repeated
-  GroupKFold (§11) the ordering is **stable** (wins 76-92% of 50 folds, all difference CIs
-  exclude zero) and emotion beats AST significantly (p=0.021); beating the PCA-8 control
-  (p=0.158) is supported in direction but **not at the 5% level, and no amount of extra
-  resampling can change that** — only more films.
+- **RQ2b — does the emotion intermediate help vs direct audio?** Yes on the full task,
+  borderline on the subset. All figures below are §11b (10x5 repeated GroupKFold,
+  nested-CV-tuned C — quote these, not the older single-run numbers in §3/§10):
+  - **8 genres: significant.** Emotion 0.300 vs AST 0.257, +0.043, **p=0.031**, winning
+    92% of 50 folds.
+  - **5-genre subset: consistent but borderline.** The predicted-emotion pipeline (VGGish
+    → RF-emotion → genre, 0.394) leads the PCA-8 control (0.343, +0.052, p=0.060, 88% of
+    folds), the AST baseline (0.345, +0.050, p=0.078) and direct VGGish (0.350, +0.044,
+    p=0.104). Direction and magnitude are stable; 5%-level significance is not reached.
+    Note `p_limit`=0.045 for the control comparison, i.e. *below* 0.05 — unlike the
+    untuned protocol, more repeats could eventually cross the threshold, which is why it
+    is reported as borderline rather than as either result.
+  - **The bottleneck costs nothing.** Predicted vs ground-truth emotion is
+    −0.003 (p=0.855), so the pipeline does not depend on human ratings.
+  - It also transfers cross-dataset to Blockbuster with face-valid emotions (§10).
 - **RQ3 — strongest emotions per genre?** Done — LogReg coefficients + RF importance + Cohen's d (§7b).
 
 ## 7b. RQ3 — which emotions predict which genres (done)
@@ -276,6 +300,11 @@ and Hamming are uninformative here (the dummy scores best on both, due to balanc
 over-prediction under imbalance) -- report Macro-F1 as the headline. LaTeX justification in
 `latex/genre_subset.tex`. Report both full-8 and subset-5 transparently.
 
+> *(There is no section 8. It was originally "Planned next"; that now sits
+> un-numbered at the end as **Next steps**. Section numbers are stable labels —
+> they are referenced from `docs/latex/` and from the thesis — so the gap is kept
+> rather than renumbering 9-13.)*
+
 ## 9. Experiment 1 — emotion regression (done)
 
 `experiments/emotion/exp_emotion_regression.py` (feature comparison) and `exp_emotion_improve.py`
@@ -362,6 +391,10 @@ Two statistics, both standard for repeated CV:
 
 ### 5-genre subset (n=329, 41 films), repeated GroupKFold Macro-F1
 
+*(All tables in §11 use sklearn's default `C=1.0`. §11b re-runs the same arms with
+nested-CV-tuned `C` and is the protocol to quote; §11 is kept so the effect of tuning
+is visible.)*
+
 | Approach | Macro-F1 | 95% CI |
 |---|---|---|
 | **VGGish → PREDICTED emotion(11) → genre** | **0.384** | [0.375, 0.393] |
@@ -399,12 +432,16 @@ single-5-fold run reported p=0.62 for this same comparison.)
 3. **Predicted ≈ ground-truth is now a positive result, not a hedge** (+0.005, p=0.791,
    exactly 50% of folds). Audio-estimated emotions are as genre-informative as the human
    ratings — the precondition for the pipeline to work without emotion annotations.
-4. **More repeats cannot fix the rest — only more films can.** `p_limit` is the p-value
-   the corrected test converges to with *infinite* repeats (only the 1/n term shrinks;
-   the train/test overlap term does not). p_limit is 0.137 / 0.085 for the two
-   non-significant comparisons, i.e. still above 0.05, and 10 repeats is already within
-   0.02 of that floor. **The binding constraint is the 41 films**, which matches the
-   learning curve (§7e, still rising at 100%).
+4. **At this operating point, more repeats cannot fix the rest — only more films can.**
+   `p_limit` is the p-value the corrected test converges to with *infinite* repeats (only
+   the 1/n term shrinks; the train/test overlap term does not). Here p_limit is
+   0.137 / 0.085 for the two non-significant comparisons, i.e. still above 0.05, and 10
+   repeats is already within 0.02 of that floor, so the binding constraint is the 41 films
+   — consistent with the learning curve (§7e, still rising at 100%).
+   **Caveat: this conclusion is specific to the default `C`.** Once `C` is tuned (§11b)
+   the predicted-emotion vs PCA-8 comparison has p_limit=0.045, *below* 0.05 — so under
+   that protocol additional repeats could in principle cross the threshold. §11b reports
+   it as borderline rather than resolving it by choosing a repeat count.
 
 **Numbers that changed vs the single-run values.** predicted-emotion 0.406 → 0.384,
 ground-truth 0.388 → 0.379, PCA-8 0.350 → 0.346, VGGish 0.328 → 0.337, AST 0.323 → 0.320,
@@ -417,7 +454,7 @@ Section A above uses sklearn's default `C=1.0`. That default turned out to be th
 setting for every feature set (all of them prefer `C<=0.1`) — with n≈330 clips against
 128–768 embedding dimensions the model was badly under-regularised. Tuning `C` on the test
 folds would be cheating, so Section B chooses it by an **inner GroupKFold inside each
-training fold** (nested CV, `src/models/select_logreg_C`). The inner loop is grouped by
+training fold** (nested CV, `select_logreg_C` in `src/models/classifiers.py`). The inner loop is grouped by
 film too — otherwise C gets tuned against film-identity leakage and comes out too weak.
 
 **CLAP** (extracted long ago, never used) is now a third embedding baseline. It is the
@@ -549,6 +586,14 @@ Seven Set 1 clips are linked by two Set 2 rows each — **repeat trials**, the s
 presented twice to the same panel — which give a separate within-panel estimate. Averaging
 those leaves **102 matched excerpts from 38 soundtracks**.
 
+> **Do not confuse this 102 with the other one.** §1 reports Set 2 cleaning to *also*
+> 102 clips (110 minus 6 with no IMDb genre minus 2 with no primary genre, spanning 36
+> soundtracks). That is a pure numerical coincidence: this 102 comes from a different
+> filter (110 minus the 1 audio mismatch, then averaging 7 repeat pairs) and is a
+> *different set of clips* — the two overlap in 101 rows, with 1 unique to the cleaned
+> set and 8 unique to the aligned set. The soundtrack counts differ (36 vs 38) because
+> the cleaned set uses Set 2's own labels while the aligned set inherits Set 1's.
+
 ### Q1 — between-panel agreement (n=102)
 
 | Emotion | r | ICC(C,1) consistency | ICC(A,1) agreement | bias (Set2−Set1) |
@@ -623,7 +668,7 @@ Two conclusions, and the second is the uncomfortable one:
 valence; `liking` follows the same pattern more weakly. Perceived beauty in film music
 tracks calm positive affect. Not used as a model input anywhere.
 
-## 8. Planned next
+## Next steps
 
 - **Content chapters** (#5) — student; the LaTeX snippets in `docs/latex/` are ready to fold in.
 - **More films** — §11 shows the remaining non-significance is corpus-bound, not

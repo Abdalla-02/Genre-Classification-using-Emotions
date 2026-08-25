@@ -4,6 +4,12 @@
 % library.bib (kang2025there, kim2010music, ma2021computational, choi2017transfer,
 % eerola2011comparison). Numbers from experiments/emotion/exp_emotion_regression.py,
 % exp_emotion_improve.py and exp_blockbuster_emotion.py (RandomForest regressor).
+%
+% PROTOCOL: the Eerola column of tab:emotion_transfer comes from the repeated-CV,
+% nested-CV-tuned run (results/statistical_power.json) so that it agrees with
+% statistical_power.tex. Do NOT reintroduce the older single-five-fold figures
+% (0.406 / 0.388 / 0.350 / 0.328) -- they came from one partition at the sklearn-default
+% C and contradict this table. The Blockbuster column is a single five-fold run.
 % =============================================================================
 
 \subsection{Predicting Emotion from Audio Embeddings}
@@ -60,29 +66,36 @@ projection, an eight-component PCA of the VGGish features was included as a cont
 \begin{table}[t]
   \centering
   \caption{Genre classification through the predicted-emotion bottleneck versus the raw
-    embedding and an eight-dimensional PCA control (logistic regression, Macro-F1).}
+    embedding and an eight-dimensional PCA control (logistic regression, Macro-F1). The
+    Eerola column is the $10\times5$ repeated GroupKFold result with nested-CV-tuned
+    regularisation (Section~\ref{subsec:statistical_power}); the Blockbuster column is a
+    single five-fold run, the only measurement available for that corpus.}
   \label{tab:emotion_transfer}
   \begin{tabular}{lrr}
     \hline
     Approach & Eerola (5 genres) & Blockbuster (6 genres) \\
     \hline
-    predicted emotion $\rightarrow$ genre & \textbf{0.406} & 0.565 \\
-    ground-truth emotion $\rightarrow$ genre & 0.388 & --- \\
-    PCA-8 $\rightarrow$ genre (control) & 0.350 & 0.559 \\
-    raw VGGish $\rightarrow$ genre & 0.328 & 0.582 \\
-    most-frequent baseline & 0.164 & 0.058 \\
+    predicted emotion $\rightarrow$ genre & \textbf{0.394} & 0.565 \\
+    ground-truth emotion $\rightarrow$ genre & 0.397 & --- \\
+    PCA-8 $\rightarrow$ genre (control) & 0.343 & 0.559 \\
+    raw VGGish $\rightarrow$ genre & 0.350 & 0.582 \\
+    most-frequent baseline & 0.166 & 0.058 \\
     \hline
   \end{tabular}
 \end{table}
 
 Table~\ref{tab:emotion_transfer} yields three results. First, on the primary Eerola corpus
-the predicted-emotion bottleneck ($0.406$) exceeds both the raw embedding ($0.328$) and the
-PCA-8 control ($0.350$): the eight emotions retain more genre-relevant signal than an
+the predicted-emotion bottleneck ($0.394$) exceeds both the PCA-8 control ($0.343$) and the
+raw embedding ($0.350$): the eight emotions retain more genre-relevant signal than an
 arbitrary eight-dimensional compression, so the representation is not merely an interpretable
-relabelling of a generic bottleneck. On the easier, film-level Blockbuster task the emotion
-bottleneck instead ties the control ($0.565$ vs $0.559$). Second, the predicted emotions are
-as genre-informative as the human ratings ($0.406$ vs the ground-truth ceiling $0.388$),
-suggesting the regressor recovers -- and denoises -- the genre-relevant emotional content. A
+relabelling of a generic bottleneck. The margin over the control is consistent, holding in
+$88\,\%$ of the $50$ folds, but only borderline in significance ($p=0.060$,
+Section~\ref{subsec:statistical_power}), and it is reported as such. On the easier,
+film-level Blockbuster task the emotion bottleneck instead ties the control
+($0.565$ vs $0.559$). Second, the predicted emotions are as genre-informative as the human
+ratings ($0.394$ against a ground-truth ceiling of $0.397$, a difference that is not
+significant, $p=0.855$), so the regressor recovers the genre-relevant emotional content
+without requiring manual annotation. A
 naive fusion of the emotion features with the raw embedding did not help ($0.313$). Third,
 the transferred emotions are face-valid: on Blockbuster, the films of a genre deviate from
 the mean predicted emotion exactly as film-scoring convention predicts -- horror toward fear

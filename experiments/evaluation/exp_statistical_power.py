@@ -53,7 +53,13 @@ from src.evaluation.repeated import (  # noqa: E402
     repeat_ci,
     win_rate,
 )
-from src.features import add_derived_features, assemble_from_cache, genre_matrix, load_set1  # noqa: E402
+from src.features import (  # noqa: E402
+    add_derived_features,
+    assemble_from_cache,
+    build_emotion_features,
+    genre_matrix,
+    load_set1,
+)
 from src.models import build_classifier, select_logreg_C  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
@@ -70,14 +76,6 @@ DUMMY = "dummy"
 # Arms. Each returns predictions for one fold; everything an arm learns (emotion
 # regressor, PCA, chosen C, classifier) is fit on the TRAINING fold only.
 # --------------------------------------------------------------------------- #
-def build_11(E: np.ndarray) -> np.ndarray:
-    """8 raw emotions -> the 11-feature genre-stage input (same recipe as elsewhere)."""
-    d = {e: E[:, i] for i, e in enumerate(config.EMOTIONS)}
-    return np.column_stack([E, d["valence"] * d["energy"],
-                            np.mean([d["anger"], d["fear"], d["tension"], d["sad"]], 0),
-                            np.mean([d["happy"], d["tender"], d["valence"]], 0)])
-
-
 def _fit_logreg(Xtr, Ytr, gtr, tune: bool, record: list):
     """Fit the BR logistic regression, optionally choosing C by inner GroupKFold."""
     C = select_logreg_C(Xtr, Ytr, gtr) if tune else 1.0
@@ -121,7 +119,7 @@ def arm_predicted_emotion(X, Emo, n_estimators=300, tune=False):
     def run(Y, tr, te, groups):
         reg = RandomForestRegressor(n_estimators=n_estimators, random_state=config.SEED,
                                     n_jobs=-1).fit(X[tr], Emo[tr])
-        Ztr, Zte = build_11(reg.predict(X[tr])), build_11(reg.predict(X[te]))
+        Ztr, Zte = build_emotion_features(reg.predict(X[tr])), build_emotion_features(reg.predict(X[te]))
         clf = _fit_logreg(Ztr, Y[tr], groups[tr], tune, record)
         return np.asarray(clf.predict(Zte))
     run.record = record
@@ -312,7 +310,13 @@ def main():
                     "per_fold": {k: v.tolist() for k, v in s8.items()}}
 
     config.RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    path = config.RESULTS_DIR / "statistical_power.json"
+    # A reduced run (fewer repeats than the default, or --quick) is a debug run:
+    # write it to a scratch name so it cannot silently replace the canonical
+    # results file that the progress log and the LaTeX snippets quote.
+    full = args.repeats >= N_REPEATS and not args.quick
+    path = config.RESULTS_DIR / ("statistical_power.json" if full else "statistical_power.partial.json")
+    if not full:
+        print("  (reduced run -> written to a .partial.json scratch file)")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"\nwrote {path}")
 
