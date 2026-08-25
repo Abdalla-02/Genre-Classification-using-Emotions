@@ -6,11 +6,14 @@ Run from anywhere:
   python experiments/features/extract_features.py --model vggish        # VGGish (cross-dataset bridge)
   python experiments/features/extract_features.py --model mir           # hand-crafted MIR
 
-Outputs (under DATA_ROOT/processed/Eerola_DB/):
-  embeddings[_clap|_vggish|_mir]/<set>/<number>.npy   per-clip embedding (cache)
-  <set>_<model>.npy                      (n_clips, dim) matrix in cleaned-DataFrame order
-  <set>_numbers.npy                      clip numbers aligned to the matrix rows
-  <set>_durations.csv                    clip durations (seconds; model-independent)
+Output (under DATA_ROOT/processed/Eerola_DB/):
+  embeddings/<model>/<set>/<number>.npy   per-clip embedding cache, resumable
+
+That per-clip cache is the ONLY output and the single source of truth. Experiments build
+the (n_clips, dim) matrix on demand with ``assemble_from_cache``. An earlier version also
+wrote a concatenated matrix, a numbers index and a durations CSV next to it; nothing read
+any of them, and the matrix drifted out of sync with the caches it came from, so a re-run
+produced a large diff on a file no experiment used.
 """
 
 from __future__ import annotations
@@ -20,7 +23,6 @@ import sys
 import time
 from pathlib import Path
 
-import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -55,18 +57,14 @@ def _all_cached(df, set_name: str, cache_dir: Path) -> bool:
 
 
 def _run(df, set_name: str, model: str, embedder) -> None:
+    """Fill the per-clip cache for one model/set. That cache is the only output."""
     _cls, cache_dir, label = MODELS[model]
     t = time.time()
-    X, durations = extract_embeddings(
+    X, _durations = extract_embeddings(
         df, set_name, embedder=embedder, cache_dir=cache_dir, label=label
     )
-    config.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    np.save(config.PROCESSED_DIR / f"{set_name}_{model}.npy", X)
-    np.save(config.PROCESSED_DIR / f"{set_name}_numbers.npy",
-            df["number"].to_numpy(dtype=int))
-    durations.to_csv(config.PROCESSED_DIR / f"{set_name}_durations.csv", index=False)
-    print(f"[{model}/{set_name}] embeddings {X.shape} in {time.time() - t:.1f}s "
-          f"-> {config.PROCESSED_DIR / f'{set_name}_{model}.npy'}")
+    print(f"[{model}/{set_name}] {X.shape} cached in {time.time() - t:.1f}s "
+          f"-> {cache_dir / set_name}")
 
 
 def main() -> None:

@@ -85,18 +85,33 @@ AUDIO_1MIN = EEROLA_DIR / "audio" / "1min"
 # (data/processed/Eerola_DB/...) so each dataset's derivatives sit together; embedding
 # caches can be large -> kept next to the (git-ignored) data. Results live in the repo.
 PROCESSED_DIR = DATA_ROOT / "processed" / "Eerola_DB"
-EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings"  # AST per-clip caches: embeddings/<set>/<n>.npy
-CLAP_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_clap"  # CLAP baseline, same layout
+
+# All cached embeddings live under one root, one sub-directory per model, each holding
+# per-clip caches as <model>/<set>/<number>.npy:
+#
+#   embeddings/ast/set1/001.npy          768-d AST, the primary representation
+#   embeddings/clap/set1/001.npy         512-d CLAP baseline
+#   embeddings/vggish/set1/001.npy       128-d VGGish (the cross-dataset bridge)
+#   embeddings/mir/set1/001.npy          103-d hand-crafted librosa MIR
+#   embeddings/ast_windows/set1/001.npy  (n_windows, 768) stack, git-ignored (large)
+#
+# These per-clip files are the SINGLE SOURCE OF TRUTH: every experiment reads them via
+# ``assemble_from_cache``. No concatenated matrix is written alongside them -- an earlier
+# layout did, and the copy silently drifted out of sync with the caches it was derived
+# from while nothing actually read it.
+EMBEDDINGS_ROOT = PROCESSED_DIR / "embeddings"
+EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "ast"           # primary (AST, 768-d)
+CLAP_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "clap"     # CLAP baseline (512-d)
 # VGGish (128-d, postprocessed to match Blockbuster's VGGish space) -- the shared
 # feature used to bridge Eerola and Blockbuster for cross-dataset emotion prediction.
-VGGISH_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_vggish"
+VGGISH_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "vggish"
 # librosa hand-crafted MIR features (MFCC/chroma/spectral/...) -- a classic-MER baseline
 # for emotion regression (NOT Blockbuster's MATLAB MIR, so not a cross-dataset bridge).
-MIR_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_mir"
-# AST per-window embeddings: embeddings_ast_windows/<set>/<n>.npy holds an
-# (n_windows, 768) stack (10.24 s windows, 50% overlap) so full-clip pooling
-# strategies (first/center/mean/max) can be compared without re-running AST.
-WINDOW_EMBEDDINGS_DIR = PROCESSED_DIR / "embeddings_ast_windows"
+MIR_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "mir"
+# AST per-window embeddings: an (n_windows, 768) stack per clip (10.24 s windows, 50%
+# overlap) so full-clip pooling strategies (first/center/mean/max) can be compared
+# without re-running AST.
+WINDOW_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "ast_windows"
 RESULTS_DIR = REPO_ROOT / "results"
 
 # --------------------------------------------------------------------------- #

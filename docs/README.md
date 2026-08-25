@@ -481,23 +481,26 @@ Discovered while verifying paths after the `experiments/` reorganisation. **Neit
 any result reported in this log** — both concern artifacts that nothing reads — but both are
 traps for anyone reading the repository later.
 
-1. **`set1_ast.npy` disagrees with the per-clip cache.** `features/extract_features.py`
-   writes `<set>_<model>.npy`, `<set>_numbers.npy` and `<set>_durations.csv`, but **no code
-   reads any of them**: every experiment calls `assemble_from_cache()`, which reads the
-   per-clip `embeddings/set1/*.npy` files. The committed `set1_ast.npy` differs from the
+1. **[FIXED] `set1_ast.npy` disagreed with the per-clip cache.** `features/extract_features.py`
+   used to write `<set>_<model>.npy`, `<set>_numbers.npy` and `<set>_durations.csv`, but
+   **no code read any of them**: every experiment calls `assemble_from_cache()`, which reads
+   the per-clip embedding files. The committed `set1_ast.npy` differed from the
    stack of per-clip caches (max abs diff 3.35), i.e. it is stale — written from an earlier
    extraction run and never refreshed when the per-clip caches were regenerated. Re-running
    the script rewrites it and produces a large git diff on a file no experiment uses.
-   *Fix:* delete the three write-only artifacts, or have `assemble_from_cache` read the
-   matrix so there is one source of truth.
+   *Fixed 2026-08-24:* all ten write-only artifacts deleted and no longer written;
+   `data/processed/` reorganised to `embeddings/<model>/<set>/` so the per-clip caches are
+   unambiguously the single source of truth.
 
-2. **Clip durations depend on whether the cache was warm.** In `extract_embeddings`, a cache
+2. **[FIXED] Clip durations depended on whether the cache was warm.** In `extract_embeddings`, a cache
    *miss* records `len(waveform)/sampling_rate` (decoded length) while a cache *hit* records
    `librosa.get_duration(path=...)` (mp3 header). These differ systematically by ~0.089 s per
    clip (encoder delay/padding). The committed CSV holds decoded values; any re-run now
    produces header values. The clip-length numbers quoted in §5 come from
    `clip_length_analysis.py` (`durations_from_audio`, computed fresh) and are unaffected.
-   *Fix:* use one method for both branches.
+   *Fixed 2026-08-24:* the durations CSV is no longer written at all, so the two code
+   paths can no longer disagree in a persisted file. Clip-length figures come from
+   `clip_length_analysis.py`, which computes durations fresh from the audio.
 
 3. **[FIXED] VGGish and MIR caches were unreproducible.** `VggishEmbedder` and
    `MirEmbedder` existed and were exported but were instantiated by no script:
@@ -660,6 +663,9 @@ tracks calm positive affect. Not used as a model input anywhere.
   - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
     `genre` / `cross_dataset`)
 - `docs/` — this log; `docs/literature/` (literature reviews); `docs/latex/` (LaTeX snippets)
-- `data/processed/Eerola_DB/` — cached embeddings (AST, CLAP, VGGish, MIR, AST-windows)
+- `data/processed/Eerola_DB/embeddings/<model>/<set>/` — per-clip embedding caches, one
+  folder per model (`ast`, `clap`, `vggish`, `mir`, `ast_windows`); the single source of
+  truth, read via `assemble_from_cache` (layout documented in `src/config.py`).
+  Download instructions for the raw data are in `data/raw/README.md`.
 - `results/` — machine-readable experiment output (`statistical_power.json`,
   `model_search.json`: every per-fold score)

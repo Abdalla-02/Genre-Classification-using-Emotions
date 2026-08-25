@@ -77,8 +77,10 @@ Implementation/
   - `Eerola_DB/` — the primary dataset: clip audio + enriched rating CSVs.
   - `Blockbuster_DB/` — Ma et al. (2021) pre-extracted VGGish/MIR features (no audio),
     used only for the external VGGish-vs-MFCC baseline (`experiments/cross_dataset/exp_blockbuster.py`).
-- Derived data (cached embeddings, matrices, durations) is written to
-  `data/processed/Eerola_DB/` and reused across runs — never re-extracted per run.
+- Derived data (per-clip embedding caches) is written to
+  `data/processed/Eerola_DB/embeddings/<model>/<set>/` and reused across runs — never
+  re-extracted per run. It is committed, so experiments run straight after a clone.
+  See `data/raw/README.md` for the raw-data download.
 - `src/config.py` resolves the data root automatically; set `THESIS_DATA_ROOT` to
   override the Eerola root, or `BLOCKBUSTER_DIR` to override the Blockbuster location.
 

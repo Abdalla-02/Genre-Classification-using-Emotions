@@ -1,6 +1,6 @@
 # Large sized datasets
 data/raw/*/*
-data/processed/Eerola_DB/embeddings_ast_windows/
+data/processed/Eerola_DB/embeddings/ast_windows/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
