@@ -1,0 +1,92 @@
+% =============================================================================
+% Ready-to-paste LaTeX: Experiment 4 -- reliability of the emotion ratings
+% (Set 1 vs Set 2) and the ceiling it places on the audio -> emotion regression.
+% Numbers from experiments/features/exp4_rating_reliability.py.
+%
+% Uses bib keys already in library.bib: eerola2011comparison, kang2025there.
+% Placement: a subsection in Results just BEFORE the emotion-regression results
+% (it sets the reference point against which R^2 = 0.56 should be read), or in
+% Discussion as a limitations/validity subsection.
+% =============================================================================
+
+\subsection{Reliability of the Emotion Ratings}
+\label{subsec:rating_reliability}
+
+The emotion ratings are the target of the first pipeline stage, so their reliability
+determines how well any audio model could possibly perform. The dataset of
+\citet{eerola2011comparison} permits a direct estimate: its second set re-rates excerpts
+drawn from the first with a different listener panel, giving two independent measurements
+of the same musical material. The correspondence between the sets is carried by a
+reference column in the second set rather than by clip number, which the two sets assign
+independently; the mapping was verified acoustically by full-lag normalised
+cross-correlation between each pair of audio files (median $0.964$, against $0.027$ for
+randomly paired clips), and the single excerpt whose audio did not match its reference was
+excluded. Seven excerpts occur twice within the second set, presented twice to the same
+panel; averaging these leaves $102$ matched excerpts from $38$ soundtracks. (This count
+coincides with the number of Set~2 clips that survive genre-based cleaning elsewhere in
+this work, but the two sets are not identical: they are obtained by different filters
+and overlap in $101$ of their rows.)
+
+\begin{table}[t]
+  \centering
+  \caption{Agreement between the two listener panels on the same $102$ excerpts.
+    ICC(C,1) treats a constant offset between panels as irrelevant (do they rank
+    excerpts alike?), ICC(A,1) counts it as disagreement (do they give the same
+    numbers?). Bias is the mean difference in rating points on the $1$--$9$ scale.}
+  \label{tab:rating_reliability}
+  \begin{tabular}{lcccc}
+    \hline
+    Emotion & $r$ & ICC(C,1) & ICC(A,1) & Bias \\
+    \hline
+    Valence & $0.876$ & $0.871$ & $0.707$ & $+1.13$ \\
+    Energy  & $0.905$ & $0.859$ & $0.618$ & $+1.40$ \\
+    Tension & $0.945$ & $0.913$ & $0.736$ & $+1.23$ \\
+    Anger   & $0.922$ & $0.919$ & $0.918$ & $+0.10$ \\
+    Fear    & $0.933$ & $0.931$ & $0.929$ & $+0.17$ \\
+    Happy   & $0.930$ & $0.926$ & $0.926$ & $+0.06$ \\
+    Sad     & $0.877$ & $0.869$ & $0.822$ & $+0.60$ \\
+    Tender  & $0.908$ & $0.891$ & $0.886$ & $+0.21$ \\
+    \hline
+    Mean    & $0.912$ & $0.897$ & $0.818$ & $+0.61$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Agreement is high throughout (mean $r=0.912$), but the two intraclass coefficients
+diverge: consistency averages $0.897$ while absolute agreement averages only $0.818$, and
+the difference is confined to the three bipolar scales -- valence, energy and tension --
+where the second panel rated systematically about $1.25$ points higher
+($d=0.68$--$0.89$, $p<10^{-23}$). On the five discrete emotion intensities the two panels
+differ by $0.06$--$0.21$ points, mostly not significantly. The panels therefore agree
+closely about \emph{what} they hear and differ in \emph{how they use the response scale}.
+This distinction matters for the modelling: after standardising each set independently --
+which is what the classifier pipeline does to its inputs -- the mean absolute difference
+falls to $0.305$ standard deviations, so the shift is absorbed by the preprocessing rather
+than propagating into the results.
+
+Excerpts presented twice to the \emph{same} panel are reproduced almost exactly (mean
+$r=0.988$ over the seven repeat trials, with negligible bias), indicating that the
+excerpts themselves are not intrinsically ambiguous and that the between-panel difference
+reflects panel and context rather than uncertainty about the stimuli. This estimate rests
+on only seven excerpts and on repetitions within a single session, so it should be read as
+an upper bound on within-panel reliability.
+
+\paragraph{Consequences for the emotion regression.}
+A predictor cannot correlate with a noisy target more strongly than the target correlates
+with itself. Treating the between-panel consistency as a parallel-forms reliability
+$r_{xx}$, the largest attainable coefficient of determination is $r_{xx}$ itself, here
+$0.897$ on average. Consistency rather than absolute agreement is the appropriate
+quantity, since the regression is scored against a single set's ratings and a constant
+offset between panels does not reduce the variance explainable within that set. The random
+forest reaches a mean $R^2$ of $0.560$ (Section~\ref{subsec:emotion_regression}), that is
+about $62\,\%$ of the attainable variance.
+
+Two conclusions follow. First, a coefficient of determination near unity was never
+achievable, so $0.560$ should be read against a ceiling of roughly $0.90$ rather than
+against $1.0$. Second, and less comfortably, rating noise does \emph{not} account for the
+shortfall: with more than a third of the attainable variance still unexplained, the
+limiting factor is the audio representation and the amount of training data rather than
+the quality of the labels. This agrees with the learning-curve analysis in
+Section~\ref{subsec:learning_curve}, where performance had not plateaued at the full
+corpus size, and it is consistent with the range reported for music emotion recognition
+generally \citep{kang2025there}.

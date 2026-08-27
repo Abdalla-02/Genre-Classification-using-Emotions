@@ -1,38 +1,37 @@
-# Bachelor Thesis Project: Audio-Based Film Genre and Emotion Recognition
+# Bachelor Thesis: Film-Genre Classification from Emotional Features of Soundtracks
 
-This repository forms the foundation for the implementation of the bachelor thesis and contains a reproducible Python environment together with a clear project structure for data processing, modeling, and evaluation.
+Implementation for the bachelor thesis *"Filmgenre-Klassifikation anhand emotionaler
+Merkmale von Soundtracks"* (German; "Film-genre classification from emotional features of
+soundtracks"). The thesis itself is written in German; **everything in this repository --
+code, comments, documentation and the LaTeX snippets under `docs/latex/` -- is in
+English.** The project investigates whether emotional features extracted
+from film soundtracks can predict film genre, and whether modelling emotion as an
+interpretable intermediate step offers an advantage over classifying genre directly from
+audio.
 
 ## Goal
 
-The project focuses on the analysis of audio-based data for the classification of film genres and emotions. The structure is designed to keep experiments organized, reproducible, and easy to extend.
+Analyse audio-based data for film-genre and emotion recognition. The structure keeps data,
+code, experiments, and results separate, reproducible, and easy to extend.
 
 ## Core Principles
 
-- Reproducibility: dependencies are explicitly defined.
-- Isolated environment: dependencies are not installed globally.
-- Clean structure: data, code, notebooks, and results are kept separate.
-- Scientific traceability: experiments should be documented and easy to follow.
+- Reproducibility: pinned dependencies, fixed random seeds, cached embeddings.
+- Isolated environment: dependencies live in a local virtual environment, not global.
+- Clean structure: data, source code, experiments, documentation, and results separated.
+- Scientific traceability: experiments are self-contained scripts and are documented in `docs/`.
 
 ## Requirements
 
-- Python 3.11
-- pip or conda
-- Optional: NVIDIA GPU for faster training runs
+- Python 3.11 or 3.12
+- pip (dependencies in `requirements.txt`)
+- Optional: NVIDIA GPU for faster embedding extraction (CPU works; embeddings are cached)
 
 ## Quick Start
 
-### Option 1: Conda (recommended)
+Create and activate a virtual environment, then install dependencies.
 
-If Conda or Mambaforge is installed:
-
-```bash
-conda env create -f environment.yml
-conda activate ba-genre-emotion
-```
-
-### Option 2: Virtual Environment with venv
-
-On Windows:
+On Windows (PowerShell):
 
 ```powershell
 python -m venv .venv
@@ -51,70 +50,68 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ```text
 Implementation/
-├── environment.yml          # Conda environment
-├── requirements.txt         # Python dependencies
-├── README.md                # Project description and setup
+├── requirements.txt          # Python dependencies (pip)
+├── README.md                 # This file
 ├── data/
-│   ├── raw/                 # Original data; leave unchanged
-│   └── processed/           # Preprocessed or cleaned data
+│   ├── raw/
+│   │   ├── Eerola_DB/        # Audio + enriched rating CSVs (primary dataset)
+│   │   └── Blockbuster_DB/   # Ma et al. 2021 VGGish/MIR features (external baseline)
+│   └── processed/Eerola_DB/  # embeddings/<model>/<set>/ per-clip caches (committed)
 ├── src/
-│   ├── features/            # Feature extraction
-│   ├── models/              # Model implementations
-│   └── evaluation/          # Metrics, plots, analysis
-├── notebooks/              # Exploratory analysis and visualizations
-├── results/                 # Model outputs, plots, logs
-└── thesis/                  # LaTeX or Word files for the written thesis
+│   ├── config.py             # Paths, constants, expected dataset counts
+│   ├── utils.py              # Reproducibility (seeding)
+│   ├── features/             # Data loading/cleaning + AST/CLAP/VGGish/MIR/Blockbuster features
+│   ├── models/               # Multi-label genre classifiers
+│   └── evaluation/           # Metrics + cross-validated scoring
+├── experiments/              # Runnable experiments, mirroring the src/ layout
+│   ├── features/             # Data checks + embedding extraction
+│   ├── emotion/              # Stage 1: audio -> emotion
+│   ├── genre/                # Stage 2: emotion -> genre
+│   ├── diagnostics/          # Error analysis, thresholds, learning curve, clip length
+│   ├── cross_dataset/        # Transfer to the Blockbuster dataset
+│   └── evaluation/           # Repeated CV, confidence intervals, significance tests
+├── docs/                     # Progress log, literature reviews, thesis LaTeX snippets
+└── results/                  # Machine-readable experiment output (JSON) + plots
 ```
 
-## Data Organization
+## Data
 
-- Raw data should be stored in [data/raw](data/raw).
-- Processed data should be placed in [data/processed](data/processed).
-- Results and plots should be saved in [results](results).
-- Raw data should not be modified directly; intermediate outputs should be stored in processed.
+- Raw data is **git-ignored** (not redistributed) and lives under `data/raw/`:
+  - `Eerola_DB/` — the primary dataset: clip audio + enriched rating CSVs.
+  - `Blockbuster_DB/` — Ma et al. (2021) pre-extracted VGGish/MIR features (no audio),
+    used only for the external VGGish-vs-MFCC baseline (`experiments/cross_dataset/exp_blockbuster.py`).
+- Derived data (per-clip embedding caches) is written to
+  `data/processed/Eerola_DB/embeddings/<model>/<set>/` and reused across runs — never
+  re-extracted per run. It is committed, so experiments run straight after a clone.
+  See `data/raw/README.md` for the raw-data download.
+- `src/config.py` resolves the data root automatically; set `THESIS_DATA_ROOT` to
+  override the Eerola root, or `BLOCKBUSTER_DIR` to override the Blockbuster location.
+
+## Running
+
+Experiments are plain Python scripts, runnable from the project root, e.g.:
+
+```bash
+python experiments/features/verify_data.py          # load + clean + assert dataset counts
+python experiments/features/extract_features.py     # extract & cache AST embeddings (Set 1)
+python experiments/genre/exp_genre.py               # genre classification: with vs without emotion
+python experiments/evaluation/exp_statistical_power.py   # repeated CV + significance (headline numbers)
+```
+
+See `docs/README.md` (the progress log) for the full list of experiments and their results.
 
 ## Reproducibility
 
-For a robust scientific workflow, the following practices are recommended:
-
-1. Pin versions rather than using loose version ranges.
-2. Keep dependencies in the repository.
-3. Set random seeds explicitly.
-4. Document important configurations and parameters.
-5. Store results in a traceable way.
-
-Example for fixed seeds:
-
-```python
-import random
-import numpy as np
-import torch
-
-SEED = 42
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-```
+1. Dependencies are pinned in `requirements.txt`.
+2. Random seeds are fixed everywhere (`SEED = 42`, see `src/utils.py`).
+3. Per-clip embeddings are cached to `data/processed/` and committed, so a clone
+   reproduces every result without re-running any model over the audio.
+4. Cross-validation is grouped by film (`GroupKFold` on `soundtrack`) to prevent leakage.
 
 ## Dependencies and Notes
 
-The current configuration relies mainly on PyTorch and related libraries. This choice is intentional so the main components can work within a single deep-learning framework.
-
-If additional baselines using TensorFlow are required, they should ideally be placed in a separate environment to avoid version conflicts.
-
-## Recommended Workflow
-
-1. Create and activate the environment.
-2. Place data in [data/raw](data/raw).
-3. Implement preprocessing and feature extraction in [src/features](src/features).
-4. Develop models in [src/models](src/models).
-5. Generate evaluations and plots in [src/evaluation](src/evaluation) or [notebooks](notebooks).
-6. Save outputs in [results](results).
-
-## VS Code Recommendation
-
-When using Visual Studio Code, point the interpreter to the created virtual environment so that Python and Jupyter tools work correctly.
-
-## Note
-
-This repository should be understood as a project starter. The actual implementation of the models and experiments can be added gradually into the designated folders.
+The stack is PyTorch-only by design (AST and CLAP via `transformers`, VGGish via
+`torchvggish`; the hand-crafted MIR baseline uses `librosa` and needs no framework), so all
+learned components share a single deep-learning framework. TensorFlow-based baselines (e.g. YAMNet) are
+deliberately avoided to prevent dependency conflicts; if ever needed, they should live in
+a separate environment.

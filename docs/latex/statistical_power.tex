@@ -1,0 +1,150 @@
+% =============================================================================
+% Ready-to-paste LaTeX: repeated cross-validation, confidence intervals and the
+% corrected significance test for all headline comparisons.
+% Numbers from experiments/evaluation/exp_statistical_power.py (10 x 5 repeated
+% GroupKFold, nested-CV-tuned C, seed 42); raw per-fold scores for BOTH the default-C
+% and the tuned protocol in results/statistical_power.json.
+%
+% CITATION NOTE: this section cites Nadeau & Bengio (2003), which is NOT yet in
+% bib/library.bib. Add:
+%
+%   @article{nadeau2003inference,
+%     title   = {Inference for the Generalization Error},
+%     author  = {Nadeau, Claude and Bengio, Yoshua},
+%     journal = {Machine Learning},
+%     volume  = {52}, number = {3}, pages = {239--281}, year = {2003},
+%     doi     = {10.1023/A:1024068626366}
+%   }
+%
+% Placement: Methods (the "Evaluation protocol" paragraph) + Results (the table and
+% the discussion paragraph), or collect the whole thing as a "Statistical reliability"
+% subsection at the end of Results.
+% =============================================================================
+
+% ---------------------------------------------------------------- METHODS ----
+\paragraph{Evaluation protocol and statistical reliability.}
+All genre results are obtained under cross-validation grouped by film, so that clips
+from the same soundtrack never appear in both the training and the test partition; this
+is essential, since an ungrouped split lets a classifier recognise the film rather than
+the genre (Section~\ref{subsec:leakage}). A single five-fold run, however, yields only
+five score samples, which is too few to distinguish a difference of a few Macro-$F_1$
+points from the variation caused by the particular partition. The evaluation is
+therefore repeated: the assignment of films to folds is re-randomised ten times, giving
+$10\times5=50$ leakage-free folds, and every method is scored on exactly the same folds
+so that all comparisons are paired.
+
+Two statistics are reported. Uncertainty on a single method is given as a
+$95\,\%$ confidence interval computed from the ten per-repeat means rather than from the
+fifty individual folds, because folds within one repeat share almost all of their
+training data and are not independent. For a comparison between two methods, the
+Nadeau--Bengio corrected resampled $t$-test \citep{nadeau2003inference} is used. The
+ordinary paired $t$-test is inadmissible here: it treats the fifty fold-differences as
+independent observations although their training sets overlap almost completely, and
+consequently reports far too small $p$-values. The correction inflates the variance
+estimate by the ratio of test-set to training-set size,
+\[
+  t \;=\; \frac{\bar{d}}{\sqrt{\left(\dfrac{1}{n}+\dfrac{n_{\text{test}}}{n_{\text{train}}}\right)\sigma^2_{d}}},
+\]
+where $\bar{d}$ and $\sigma^2_d$ are the mean and variance of the per-fold differences
+and $n=50$. Because only the $1/n$ term shrinks when repeats are added, this test has a
+lower bound on the attainable $p$-value for a given corpus; that bound is reported as
+$p_{\lim}$ and is what makes it possible to distinguish a comparison that needs more
+resampling from one that needs more data.
+
+\paragraph{Hyper-parameter selection.}
+The inverse regularisation strength $C$ of the logistic regression is not left at
+scikit-learn's default but selected per training fold by an inner cross-validation, again
+grouped by film -- a nested cross-validation. This matters here: with roughly $330$ clips
+against embedding dimensionalities of $128$ to $768$, the default $C=1$ under-regularises
+every feature set, and it penalises the high-dimensional embeddings most (tuning raises
+the AST baseline by $0.025$ and the CLAP baseline by $0.033$ Macro-$F_1$, against $0.018$
+for the eleven emotion features). Selecting $C$ on the test folds would inflate the
+reported scores, and leaving it untuned would understate the baselines; the nested
+procedure avoids both. The selected value is $C=0.003$ in the large majority of folds.
+
+% ---------------------------------------------------------------- RESULTS ----
+\subsection{Statistical Reliability of the Comparisons}
+\label{subsec:statistical_power}
+
+Table~\ref{tab:power_arms} reports each approach on the five-genre subset under the
+repeated protocol, and Table~\ref{tab:power_cmp} the corresponding paired comparisons.
+
+\begin{table}[t]
+  \centering
+  \caption{Genre classification on the five-genre subset ($n=329$ clips, 41 films)
+    under $10\times5$ repeated GroupKFold with nested-CV-tuned $C$. Macro-$F_1$ with a
+    $95\,\%$ confidence interval over the ten repeat means.}
+  \label{tab:power_arms}
+  \begin{tabular}{lcc}
+    \hline
+    Approach & Macro-$F_1$ & $95\,\%$ CI \\
+    \hline
+    VGGish $\rightarrow$ predicted emotion (11) $\rightarrow$ genre & $0.394$ & $[0.389,\,0.400]$ \\
+    Ground-truth emotion (11) $\rightarrow$ genre (ceiling)         & $0.397$ & $[0.388,\,0.407]$ \\
+    VGGish-128 $\rightarrow$ genre (direct)                         & $0.350$ & $[0.335,\,0.365]$ \\
+    AST-768 $\rightarrow$ genre                                     & $0.345$ & $[0.328,\,0.361]$ \\
+    PCA-8(VGGish) $\rightarrow$ genre (control)                     & $0.343$ & $[0.330,\,0.355]$ \\
+    CLAP-512 $\rightarrow$ genre                                    & $0.335$ & $[0.323,\,0.347]$ \\
+    Most-frequent baseline                                          & $0.166$ & $[0.165,\,0.167]$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{Paired comparisons on the five-genre subset. $\Delta$ is the mean
+    Macro-$F_1$ difference over the 50 shared folds with a $95\,\%$ interval over the
+    ten repeat means; $p$ is the Nadeau--Bengio corrected resampled $t$-test;
+    $p_{\lim}$ is the smallest $p$ this test could reach on this corpus with an
+    unlimited number of repeats; ``win'' is the fraction of the 50 folds won by the
+    first method.}
+  \label{tab:power_cmp}
+  \begin{tabular}{lcccc}
+    \hline
+    Comparison & $\Delta$ & $95\,\%$ CI & $p$ & win \\
+    \hline
+    Predicted emotion vs.\ PCA-8 control   & $+0.052$ & $[+0.037,\,+0.066]$ & $0.060$ & $88\,\%$ \\
+    Predicted emotion vs.\ AST-768         & $+0.050$ & $[+0.034,\,+0.065]$ & $0.078$ & $82\,\%$ \\
+    Predicted emotion vs.\ VGGish direct   & $+0.044$ & $[+0.030,\,+0.059]$ & $0.104$ & $80\,\%$ \\
+    Predicted emotion vs.\ ground truth    & $-0.003$ & $[-0.012,\,+0.007]$ & $0.855$ & $54\,\%$ \\
+    Ground-truth emotion vs.\ CLAP-512     & $+0.062$ & $[+0.046,\,+0.077]$ & $\mathbf{0.036}$ & $86\,\%$ \\
+    Ground-truth emotion vs.\ AST-768      & $+0.052$ & $[+0.036,\,+0.069]$ & $0.072$ & $84\,\%$ \\
+    AST-768 vs.\ CLAP-512                  & $+0.010$ & $[-0.005,\,+0.024]$ & $0.752$ & $62\,\%$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Four findings follow. First, the ordering of the approaches is \emph{stable}: in every
+comparison of an emotion-based approach against a direct-embedding one, the confidence
+interval of the difference excludes zero, and the emotion-based pipeline wins between
+$80\,\%$ and $88\,\%$ of the individual folds. The advantage of the emotion representation is therefore not an
+artefact of one favourable partition, which is what the earlier single five-fold run
+could not establish. Second, the three pretrained embeddings are statistically
+indistinguishable from one another -- AST $0.345$, VGGish $0.350$, CLAP $0.335$, with
+$p=0.752$ between AST and CLAP -- so the comparison is not against one arbitrarily chosen
+or poorly suited audio representation: the emotion features outperform all three.
+Third, predicted and ground-truth emotions are themselves indistinguishable
+($\Delta=-0.003$, $p=0.855$, $54\,\%$ of folds), meaning the emotion values estimated
+from audio are as informative for genre as the human ratings -- the central prerequisite
+for the two-stage pipeline to be usable without manually annotated emotion data. Fourth,
+the comparison against the PCA-8 bottleneck control remains borderline
+($\Delta=+0.052$, $p=0.060$, $88\,\%$ of folds): the emotional bottleneck outperforms a
+generic low-dimensional one consistently and by a clear margin, but the effect is at the
+edge of what this corpus can establish, and it is reported as such rather than as a
+significant result.
+
+That remaining uncertainty is a property of the corpus rather than of the evaluation
+procedure. Because only the $1/n$ term of the corrected test shrinks with additional
+repeats, the attainable $p$-value has a floor for a given dataset; at ten repeats the
+test is already within $0.02$ of it. Adding repeats would therefore buy at most a
+marginal change and would amount to selecting a conclusion by choosing the number of
+resamplings, whereas adding films would not. This agrees with the learning-curve analysis
+in Section~\ref{subsec:learning_curve}, where neither model had reached a plateau at the
+full corpus size.
+
+On the full eight-genre task the difference is larger and does reach significance:
+emotion features attain $0.300$ $[0.293,\,0.306]$ against $0.257$ $[0.251,\,0.263]$ for
+the AST embedding, a difference of $+0.043$ that holds in $92\,\%$ of the folds
+($p=0.031$). Under the earlier single five-fold protocol the same comparison produced
+$p=0.62$, which illustrates how little a five-fold run can say about a difference of this
+size.
