@@ -1,6 +1,9 @@
 # Large sized datasets
 data/raw/*/*
 data/processed/Eerola_DB/embeddings/ast_windows/
+# per-layer wav2vec2 stacks (13 x 768 per clip, ~13 MB): a diagnostic artifact for the
+# layer sweep only; the chosen layer is cached as a normal embedding alongside it
+data/processed/Eerola_DB/embeddings/wav2vec2/layers_set1/
 results/*.partial.json
 
 ### Python ###
@@ -221,3 +224,8 @@ ehthumbs_vista.db
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
+
+# isolated environment for the MusiCNN feasibility test (TensorFlow; see docs/current_state.md)
+.venv-musicnn/
+# MusiCNN .h5 weights: 3.3 MB each, re-downloaded automatically by extract_musicnn.py
+data/processed/musicnn_checkpoints/
