@@ -93,6 +93,10 @@ PROCESSED_DIR = DATA_ROOT / "processed" / "Eerola_DB"
 #   embeddings/clap/set1/001.npy         512-d CLAP baseline
 #   embeddings/vggish/set1/001.npy       128-d VGGish (the cross-dataset bridge)
 #   embeddings/mir/set1/001.npy          103-d hand-crafted librosa MIR
+#   embeddings/wav2vec2/set1/001.npy     768-d wav2vec 2.0, the waveform-domain baseline
+#   embeddings/musicnn/set1/001.npy      200-d MusiCNN (music-tagging pretraining)
+#   embeddings/wav2vec2/layers_set1/001.npy  (13, 768) all layers, git-ignored (large);
+#                                        used only by the layer-sweep control
 #   embeddings/ast_windows/set1/001.npy  (n_windows, 768) stack, git-ignored (large)
 #
 # These per-clip files are the SINGLE SOURCE OF TRUTH: every experiment reads them via
@@ -108,6 +112,16 @@ VGGISH_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "vggish"
 # librosa hand-crafted MIR features (MFCC/chroma/spectral/...) -- a classic-MER baseline
 # for emotion regression (NOT Blockbuster's MATLAB MIR, so not a cross-dataset bridge).
 MIR_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "mir"
+# wav2vec 2.0 (768-d) -- the WAVEFORM-domain baseline. Every other representation here
+# is computed from a spectrogram; wav2vec 2.0 convolves the raw sample sequence, so it
+# separates "learned embeddings do not beat emotion features" from "mel spectrograms do
+# not beat emotion features" (supervisor request #3).
+W2V_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "wav2vec2"
+# MusiCNN (200-d penultimate layer) -- the only representation pretrained on MUSIC
+# tagging rather than general audio events or speech. Extracted by a SEPARATE TensorFlow
+# environment (experiments/features/extract_musicnn.py); nothing in src/ imports
+# TensorFlow, the two sides meet only at this cache directory.
+MUSICNN_EMBEDDINGS_DIR = EMBEDDINGS_ROOT / "musicnn"
 # AST per-window embeddings: an (n_windows, 768) stack per clip (10.24 s windows, 50%
 # overlap) so full-clip pooling strategies (first/center/mean/max) can be compared
 # without re-running AST.
@@ -143,6 +157,21 @@ PRIMARY_GENRES = [
 # A clip joins the subset if it carries at least one of these five ("any-present" rule,
 # mirroring the 8-genre inclusion rule) -> 329 clips from 41 films.
 GENRE_SUBSET = ["Action", "Crime", "Drama", "Comedy", "Horror"]
+
+# The SHARED genre space with the Blockbuster corpus (Ma et al. 2021) -- the label space
+# used for every cross-dataset comparison, so that "train on Eerola, test on Blockbuster"
+# is a fair test of the same classifier on the same classes (supervisor request #4).
+#
+# These are exactly Ma et al.'s six reduced genres. Their reduction rule was recovered
+# from their published film_genre_master_list.csv and is the *identity* rule: a film
+# carries reduced genre g iff g appears in its raw IMDb genre list (verified on 110/110
+# films, zero mismatches). That is the same "any-present" rule already used for the
+# 8-genre Eerola target, so the two corpora can be relabelled into one space without any
+# dataset-specific heuristic.
+#
+# Order is fixed and shared by both datasets' target matrices -- never reorder, or the
+# columns of a model trained on one corpus stop meaning the same thing on the other.
+SHARED_GENRES = ["action", "drama", "comedy", "sci-fi", "romance", "horror"]
 
 # Genres present in the raw IMDb annotations but excluded from modelling because
 # they are too rare (documented in the thesis). A clip is dropped only if it has
@@ -186,3 +215,16 @@ SET1_FIRST_GENRE_COUNTS = {
 }
 
 SET2_EXPECTED_CLIPS = 102  # 110 total: -6 no genre, -2 with no primary genre
+
+# Expected counts for Set 1 relabelled into SHARED_GENRES (any-present rule).
+# Asserted in the loader like the 8-genre counts, so drift fails loudly.
+SET1_SHARED_EXPECTED_CLIPS = 319
+SET1_SHARED_EXPECTED_SOUNDTRACKS = 41
+SET1_SHARED_LABEL_COUNTS = {
+    "action": 103,
+    "drama": 239,
+    "comedy": 40,
+    "sci-fi": 19,
+    "romance": 51,
+    "horror": 28,
+}

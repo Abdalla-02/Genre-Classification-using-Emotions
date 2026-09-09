@@ -17,18 +17,27 @@ from src.features.ast_extractor import (
 from src.features.clap_extractor import CLAP_CHECKPOINT, CLAP_EMBED_DIM, ClapEmbedder
 from src.features.mir_extractor import MirEmbedder
 from src.features.vggish_extractor import VGGISH_EMBED_DIM, VggishEmbedder
+from src.features.wav2vec_extractor import (
+    W2V_CHECKPOINT,
+    W2V_EMBED_DIM,
+    Wav2VecEmbedder,
+)
 from src.features.loader import (
     add_derived_features,
     build_emotion_features,
     genre_matrix,
     load_set1,
+    load_set1_shared,
     load_set2,
+    shared_genre_matrix,
 )
 
 __all__ = [
     # dataset
     "load_set1",
+    "load_set1_shared",
     "load_set2",
+    "shared_genre_matrix",
     "add_derived_features",
     "build_emotion_features",
     "genre_matrix",
@@ -38,6 +47,9 @@ __all__ = [
     "VggishEmbedder",
     "VGGISH_EMBED_DIM",
     "MirEmbedder",
+    "Wav2VecEmbedder",
+    "W2V_CHECKPOINT",
+    "W2V_EMBED_DIM",
     "extract_embeddings",
     "assemble_from_cache",
     "extract_window_embeddings",
