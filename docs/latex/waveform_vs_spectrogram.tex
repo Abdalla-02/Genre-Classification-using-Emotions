@@ -1,0 +1,140 @@
+% =============================================================================
+% Ready-to-paste LaTeX: the waveform-domain representation (wav2vec 2.0) against the
+% spectrogram-based ones. Answers the supervisor request "try a waveform extractor,
+% not just spectrogram".
+%
+% Numbers from experiments/features/exp_waveform_vs_spectrogram.py
+% (results/waveform_vs_spectrogram.json) and experiments/features/exp_w2v_layer_sweep.py
+% (results/w2v_layer_sweep.json), seed 42.
+%
+% Placement: the feature-extraction part of the Methods chapter for the first
+% subsection, and the Results chapter for the two tables. The layer-selection
+% subsection can be moved to an appendix if space is tight, but it should be kept
+% somewhere -- it is the control that makes the negative result defensible.
+%
+% CITATION NOTE: uses baevski2020wav2vec, not yet in bib/library.bib. Add:
+%
+%   @inproceedings{baevski2020wav2vec,
+%     title     = {wav2vec 2.0: A Framework for Self-Supervised Learning of Speech
+%                  Representations},
+%     author    = {Baevski, Alexei and Zhou, Yuhao and Mohamed, Abdelrahman and
+%                  Auli, Michael},
+%     booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+%     volume    = {33}, pages = {12449--12460}, year = {2020}
+%   }
+% =============================================================================
+
+\section{Waveform versus Spectrogram Representations}
+\label{sec:waveform}
+
+Each of the audio representations examined so far begins by converting the signal into a
+time--frequency image. AST and CLAP operate on log-mel spectrograms, VGGish on log-mel
+patches, and the hand-crafted baseline on descriptors derived from the short-time Fourier
+transform. The comparison between emotion features and learned audio embeddings has
+therefore only been conducted against \emph{spectrogram} front-ends, which leaves open the
+objection that the limitation lies in the mel representation rather than in the idea of
+classifying genre directly from audio.
+
+To close that gap, wav2vec 2.0 \citep{baevski2020wav2vec} is added as a fifth
+representation. Its feature encoder is a stack of one-dimensional convolutions applied
+directly to the raw 16\,kHz sample sequence; no spectral transform occurs at any stage.
+The self-supervised base checkpoint is used rather than an ASR fine-tune, whose
+representations are specialised toward phonetic content. Excerpt length
+(10.24\,s), temporal mean pooling and output dimensionality (768) are identical to AST, so
+that the two differ only in their front-end.
+
+One confound must be stated plainly, because it constrains what the comparison can show.
+wav2vec 2.0 was pretrained on read speech, whereas AST and VGGish were pretrained on
+AudioSet, which contains music. The comparison therefore varies the input domain and the
+pretraining corpus simultaneously, and a poor result for wav2vec 2.0 cannot be attributed
+to the waveform front-end alone.
+
+\subsection{Selecting the Layer to Pool}
+
+A self-supervised model's final layers specialise toward its own pretraining objective, so
+pooling the last hidden state --- the obvious default --- is not necessarily the best
+choice for a task the model was never trained on. All thirteen hidden states were
+therefore evaluated on the emotion-regression task under the protocol used elsewhere
+(random-forest regression, film-grouped cross-validation, mean $R^2$ across the eight
+emotions). Performance peaks at the output of the second transformer block
+($R^2 = 0.324$) and declines monotonically thereafter to $R^2 = 0.161$ at the final
+(twelfth) block, with the convolutional encoder output alone already reaching $0.292$.
+
+The choice of layer is thus worth a factor of two --- larger than the effect this thesis
+sets out to measure --- and reporting the final layer by default would have understated
+the waveform representation substantially. The second block is used in all results below.
+It is
+selected on the emotion-regression task and then held fixed; it is not tuned against any
+genre result.
+
+\subsection{Results}
+
+Table~\ref{tab:waveform_stage1} reports emotion regression, the metric by which feature
+extractors are ranked (Section~\ref{sec:evaluation_protocol}). The waveform representation
+recovers markedly less of the emotion-rating variance than any spectrogram-based
+alternative, and less even than the 103-dimensional hand-crafted baseline. The deficit is
+uniform across the eight emotions rather than concentrated in any one of them.
+
+\begin{table}[t]
+  \centering
+  \caption{Emotion regression by audio representation (random forest, film-grouped
+    cross-validation, mean $R^2$ over the eight emotions, $n=360$ clips). The ceiling
+    column expresses each score as a fraction of the $R^2 = 0.897$ implied by the
+    inter-panel reliability of the ratings.}
+  \label{tab:waveform_stage1}
+  \begin{tabular}{llrrrr}
+    \hline
+    Representation & Input domain & Dim. & $R^2$ & RMSE & \% ceiling \\
+    \hline
+    CLAP           & log-mel spectrogram & 512 & .561 & 1.22 & 62 \\
+    AST            & log-mel spectrogram & 768 & .560 & 1.22 & 62 \\
+    VGGish         & log-mel spectrogram & 128 & .558 & 1.23 & 62 \\
+    Hand-crafted MIR & STFT descriptors  & 103 & .490 & 1.31 & 55 \\
+    \textbf{wav2vec 2.0} & \textbf{raw waveform} & 768 & \textbf{.323} & 1.52 & 36 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:waveform_stage2} reports genre classification on the five-genre subset. Two
+results stand out, and the second is the more important of the two.
+
+\begin{table}[t]
+  \centering
+  \caption{Genre classification by representation (five-genre subset, $5\times5$ repeated
+    film-grouped cross-validation, nested-CV-tuned regularisation, macro-$F_1$ with a
+    95\,\% interval over the per-repeat means).}
+  \label{tab:waveform_stage2}
+  \begin{tabular}{lrl}
+    \hline
+    Approach & Macro-$F_1$ & 95\,\% CI \\
+    \hline
+    Emotion (11), ground-truth ratings                       & .391 & [.376, .407] \\
+    \textbf{wav2vec 2.0 $\rightarrow$ predicted emotion (11)} & \textbf{.376} & [.367, .384] \\
+    VGGish-128, direct                                        & .342 & [.322, .363] \\
+    Hand-crafted MIR, direct                                  & .339 & [.322, .355] \\
+    AST-768, direct                                           & .338 & [.306, .371] \\
+    CLAP-512, direct                                          & .335 & [.314, .355] \\
+    \textbf{wav2vec 2.0, direct}                              & \textbf{.300} & [.286, .313] \\
+    \hline
+  \end{tabular}
+\end{table}
+
+First, used directly, the waveform representation is the weakest of the five
+($0.300$). Its shortfall against the spectrogram embeddings is not statistically
+significant, however ($+0.035$ to $+0.043$, $p = 0.12$--$0.19$), which is itself
+informative: the genre task discriminates far less sharply between representations than
+emotion regression does, where the same five differ by a factor of $1.7$. This supports
+both the choice of $R^2$ as the metric for ranking feature extractors and the conclusion
+of Section~\ref{sec:error_analysis} that genre classification on this corpus operates near
+a noise ceiling that a better representation cannot lift.
+
+Second, and centrally, \emph{the emotion bottleneck rescues the weakest representation}.
+Routed through predicted emotions, wav2vec 2.0 rises from last place to second, reaching
+$0.376$ --- above every directly used embedding, including the spectrogram-based ones, and
+statistically indistinguishable from the ground-truth emotion ceiling
+($+0.016$, $p = 0.304$). The improvement over its own direct use is $+0.076$
+($p = 0.003$), and it holds on \emph{all} 25 cross-validation folds. The benefit of the
+emotion intermediate is therefore not a property of one particular embedding: it is
+largest precisely where the underlying representation is weakest, which is the behaviour
+expected of a bottleneck that discards representation-specific detail and retains only
+perceptually meaningful structure.

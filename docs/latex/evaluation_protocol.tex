@@ -1,0 +1,194 @@
+% =============================================================================
+% Ready-to-paste LaTeX: the evaluation protocol and the metrics.
+% Answers supervisor request #2 -- "explain the process of the evaluation, and which
+% metrics produced the feature-extraction accuracy".
+%
+% Placement: the Methods chapter, as its own section immediately before the Results.
+% Every number quoted here is reproduced by experiments/evaluation/exp_statistical_power.py
+% (results/statistical_power.json), experiments/emotion/exp_emotion_regression.py and
+% experiments/cross_dataset/exp_zero_shot.py (results/zero_shot.json).
+%
+% CITATION NOTE: uses nadeau2003inference (BibTeX entry given in statistical_power.tex)
+% and the standard multi-label metric references. If the following are not yet in
+% bib/library.bib, add:
+%
+%   @article{sokolova2009systematic,
+%     title   = {A Systematic Analysis of Performance Measures for Classification Tasks},
+%     author  = {Sokolova, Marina and Lapalme, Guy},
+%     journal = {Information Processing \& Management},
+%     volume  = {45}, number = {4}, pages = {427--437}, year = {2009},
+%     doi     = {10.1016/j.ipm.2009.03.002}
+%   }
+% =============================================================================
+
+\section{Evaluation Protocol}
+\label{sec:evaluation_protocol}
+
+Because this thesis compares a two-stage pipeline against a direct one, the evaluation
+has to answer two different questions with two different kinds of metric, and it has to
+do so under a resampling scheme that neither flatters nor penalises either architecture.
+This section states the protocol in full: what is measured at each stage, which metric is
+used and why, how the data are split, how hyperparameters are chosen, and how differences
+between systems are tested for significance.
+
+\subsection{What is evaluated, and with which metric}
+
+The pipeline decomposes into two stages that are evaluated separately and then
+end-to-end.
+
+\paragraph{Stage 1: audio $\rightarrow$ emotion (regression).}
+Each audio representation is judged by how well it predicts the eight human emotion
+ratings. Since the ratings are continuous values on a 1--9 scale, this is a regression
+problem, and the metric is the coefficient of determination $R^2$, computed
+\emph{separately for each of the eight emotions} and then averaged. $R^2$ is reported
+rather than a correlation because it is defined against the variance of the target and is
+therefore interpretable as the proportion of rating variance the audio features recover:
+$R^2 = 0$ is the performance of always predicting the training mean, and negative values
+are possible and meaningful. The root mean squared error (RMSE) is reported alongside it,
+expressed in rating points, because $R^2$ alone does not convey whether an error is
+practically large; an RMSE of $1.0$ means the model is typically one scale point away.
+
+\textbf{This mean $R^2$ is the metric referred to as ``feature-extraction accuracy''.} It
+is what ranks the five audio representations against one another
+(Table~\ref{tab:feature_ranking} in Chapter~\ref{ch:evaluation}), because it measures
+exactly the property the pipeline needs from a representation: how much affective
+information it carries. The genre metrics below cannot serve this purpose, since they
+also confound the quality of the second-stage classifier.
+
+\paragraph{Stage 2: emotion $\rightarrow$ genre (multi-label classification).}
+A film belongs to several genres at once, so genre prediction is multi-label: the target
+is a binary vector, and the model may be partly right. Three metrics are computed, and
+they are not interchangeable:
+
+\begin{itemize}
+  \item \textbf{Macro-F1} -- the F1 score computed per genre and then averaged with equal
+    weight per genre. This is the headline metric.
+  \item \textbf{Exact-match ratio} (subset accuracy) -- the fraction of clips whose entire
+    genre vector is predicted correctly. Strict, and reported for completeness.
+  \item \textbf{Hamming loss} -- the fraction of individual label decisions that are wrong.
+\end{itemize}
+
+Macro-F1 is the headline because the genre distribution is severely imbalanced (Drama
+appears on 239 of 346 clips, Documentary on 17). Under such imbalance the other two
+metrics reward a model for ignoring the rare genres: a trivial classifier that always
+predicts the most frequent label set attains a \emph{better} exact-match ratio and a
+\emph{better} Hamming loss than every real model tested here, while being useless. Macro
+averaging is the standard remedy \citep{sokolova2009systematic}, since it gives a genre
+with 17 positives the same weight as one with 239 and therefore cannot be gamed by
+neglecting the minority classes. All three numbers are reported in the results tables so
+that this behaviour is visible rather than hidden.
+
+For the cross-corpus comparison with \citet{ma2021computational}, macro-averaged
+precision and recall are reported next to macro-F1, matching their reporting format: F1
+alone cannot distinguish a model that over-predicts (recall high, precision low) from one
+that under-predicts, and the two failure modes call for different remedies.
+
+\paragraph{Sanity check.}
+Before either stage is interpreted, the extraction pipeline is verified end-to-end on a
+deliberately easy auxiliary task: predicting the corpus's own 12 balanced discrete emotion
+categories from the embedding. Because the classes are balanced and single-label, plain
+accuracy is appropriate there, and chance is exactly $1/12 = 0.083$. Scoring well above
+chance confirms that the cached embeddings are aligned with their labels and carry
+signal --- a check that would have caught a silent indexing error before it propagated
+into the main results.
+
+\subsection{Choice of baselines}
+
+Every reported score is accompanied by a floor, and the correct floor depends on the
+question being asked. Two are used, and the difference matters when comparing against
+published work:
+
+\begin{itemize}
+  \item \textbf{Most-frequent baseline} --- always predicts the single most common label
+    set. This is the appropriate floor for exact-match and Hamming loss, where it is
+    surprisingly hard to beat.
+  \item \textbf{Frequency-based random baseline} --- predicts each genre independently at
+    random with probability equal to its base rate. Its expected macro-F1 is approximately
+    the mean base rate, which makes it a much higher and more honest floor for macro-F1.
+\end{itemize}
+
+\citet{ma2021computational} report the second of these (macro-F1 $0.32$ on their corpus)
+and the first separately (macro-F1 $0.19$). Comparing our results against the wrong one of
+the two would misstate the margin by more than a tenth of an F1 point, so both are
+computed on both corpora.
+
+\subsection{Data splitting: grouping by film}
+
+The corpus contains 346 clips drawn from only 43 films, with several clips per film. A
+random split therefore places clips of the \emph{same} film in both the training and the
+test set, and since clips from one film share instrumentation, orchestration and
+recording characteristics --- and share their genre label by construction --- a model can
+score well by recognising the film rather than by learning anything about genre.
+
+All reported results consequently use \textbf{GroupKFold cross-validation grouped by
+film}, so that every clip of a given film falls entirely on one side of the split. The
+size of the effect this controls was measured directly rather than assumed: evaluated
+with an ungrouped split, the AST baseline reaches a macro-F1 of $0.44$, against $0.26$
+under grouping. Roughly forty percent of its apparent performance is film memorisation.
+The emotion features lose far less ($+0.05$), which is itself a substantive finding and is
+discussed in Chapter~\ref{ch:evaluation}. Ungrouped splits are reported \emph{only} in
+that comparison, explicitly labelled as leaky, and never as a result.
+
+\subsection{Repeated cross-validation and hyperparameter selection}
+
+A single five-fold split yields five scores, which is far too few to resolve differences
+of the size at stake here (a few hundredths of macro-F1); early versions of this analysis
+consequently mislabelled real and consistent effects as ``within noise'', which is a
+statement about the resolution of the experiment rather than about the models. The
+protocol is therefore \textbf{$10\times5$ repeated GroupKFold}: the assignment of films to
+folds is re-randomised in each of ten repeats, giving 50 leakage-safe folds. Every system
+being compared is scored on the \emph{same} folds, so all comparisons are properly paired.
+
+Hyperparameters are selected by \textbf{nested cross-validation}. The inverse
+regularisation strength $C$ of the logistic regression is chosen by an inner GroupKFold
+\emph{within each training fold}, so the test fold never participates in the choice.
+The inner loop is grouped by film as well: tuned on an ungrouped inner split, $C$ is
+selected against film-identity leakage and comes out systematically too weak. This step
+is not cosmetic --- sklearn's default $C=1.0$ turned out to be the worst setting for every
+feature set, and it handicapped the high-dimensional embedding baselines more than the
+eleven-dimensional emotion features, i.e.\ in the direction that would have flattered this
+thesis's hypothesis. Any dimensionality reduction (PCA) and the Stage-1 emotion regressor
+are likewise fitted inside the training fold only.
+
+\subsection{Significance testing}
+
+Two statistics accompany every headline comparison.
+
+Confidence intervals are computed over the \textbf{ten per-repeat means} rather than over
+the 50 individual folds, because folds within a repeat share training data and are not
+independent observations.
+
+For paired comparisons, a naive $t$-test over the 50 folds is anti-conservative for the
+same reason: resampled folds overlap, so the variance of the difference is underestimated
+and $p$-values come out too small. The \textbf{corrected resampled $t$-test} of
+\citet{nadeau2003inference} is used instead, which inflates the variance estimate by the
+train/test overlap factor. A nonparametric \textbf{win rate} --- the fraction of the 50
+folds on which one system beats the other --- is reported alongside it, since it makes no
+distributional assumption and is easy to interpret.
+
+One further quantity is reported for non-significant comparisons: the limiting $p$-value
+$p_{\text{limit}}$ that the corrected test converges to as the number of repeats grows
+without bound. Only the $1/n$ term of the corrected variance shrinks with more repeats;
+the overlap term does not. When $p_{\text{limit}} > 0.05$, no amount of additional
+resampling can make the comparison significant and only a larger corpus can --- which
+distinguishes a genuinely underpowered corpus from an under-resampled experiment.
+
+\subsection{Cross-corpus evaluation}
+
+The transfer experiment (Section~\ref{sec:zero_shot}) replaces cross-validation with a
+strict train-on-one, test-on-the-other design: models are fitted on the Eerola corpus
+alone and applied to all 110 films of the Blockbuster corpus, whose labels are used only
+for scoring. Because the two corpora annotate different genre inventories, both are first
+relabelled into a single shared six-genre space, so that the classifier being transferred
+predicts exactly the same classes it was trained on. Where a Stage-2 classifier is trained
+on \emph{predicted} emotions, those predictions are produced out-of-fold on the training
+corpus, so that the classifier is fitted on the same noisy quantity it will encounter at
+test time rather than on near-perfect in-sample predictions.
+
+\subsection{Reproducibility}
+
+All random seeds are fixed at 42; audio embeddings are extracted once, cached per clip and
+version-controlled, so every result is reproducible from a clone without re-running any
+neural network over the audio. Each experiment is a self-contained script, and the
+headline experiments write their complete per-fold scores to machine-readable JSON so that
+reported aggregates can be re-derived independently of the prose.

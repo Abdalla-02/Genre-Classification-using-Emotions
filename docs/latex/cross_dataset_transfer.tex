@@ -1,0 +1,273 @@
+% =============================================================================
+% Ready-to-paste LaTeX: the shared genre space and the zero-shot cross-corpus
+% transfer experiment. Answers supervisor requests:
+%   "test on Blockbuster without training on it, train on Eerola, and compare with
+%    the results of the paper itself"
+%   "the classifier has to have the same genre classes in both datasets to be fair"
+%
+% Numbers from experiments/cross_dataset/exp_zero_shot.py (results/zero_shot.json),
+% seed 42. Ma et al. figures are quoted from their Table 4.
+%
+% Placement: a Results section of its own ("Cross-Corpus Generalisation"), after the
+% in-domain results. The label \label{sec:zero_shot} is referenced from
+% docs/latex/evaluation_protocol.tex.
+%
+% CITATION NOTE: uses ma2021computational (already in bib/library.bib) and
+% eerola2011genrespecific (BibTeX entry in emotion_genre_relationship.tex).
+% =============================================================================
+
+\section{Cross-Corpus Generalisation}
+\label{sec:zero_shot}
+
+All results reported so far are cross-validated within a single corpus. That design can
+establish that a representation carries genre information, but not that the information
+is a property of film music rather than of this particular collection of 43 films. The
+experiment in this section addresses that directly: a classifier is trained on the Eerola
+corpus alone and applied, without any further fitting, to the 110 films of the Blockbuster
+corpus of \citet{ma2021computational}. It also provides the first opportunity to compare
+against an externally published result on the same data.
+
+\subsection{Constructing a Shared Genre Space}
+\label{subsec:shared_genres}
+
+A model can only be transferred between two corpora if it predicts the same classes in
+both. The two corpora do not annotate the same genre inventory: the Eerola target used up
+to this point comprises eight genres including Crime, Adventure, Biography and
+Documentary, none of which exist in the Blockbuster annotation, while Blockbuster includes
+Sci-Fi and Romance, which are not among the eight. Both corpora are therefore relabelled
+into a single shared space of six genres --- Action, Drama, Comedy, Sci-Fi, Romance and
+Horror.
+
+These six are not chosen here but adopted from \citet{ma2021computational}, and the
+mapping they used to obtain them was recovered from their published film--genre master
+list rather than reconstructed by assumption. It is the identity mapping: a film carries
+reduced genre $g$ if and only if $g$ occurs in its raw IMDb genre list, which holds for
+all 110 of their films without exception. Since this coincides with the ``any-present''
+inclusion rule already applied to the Eerola annotations
+(Section~\ref{subsec:genre_labels}), both corpora enter the shared space under the same
+rule and without any corpus-specific heuristic. Applying it to Eerola retains 319 of the
+360 clips, drawn from 41 films; the resulting label distributions are given in
+Table~\ref{tab:shared_space}.
+
+\begin{table}[t]
+  \centering
+  \caption{The shared six-genre label space. Both corpora are relabelled under the same
+    ``any-present'' rule, so the same classifier can be trained on one and applied to the
+    other.}
+  \label{tab:shared_space}
+  \begin{tabular}{lrr}
+    \hline
+    Genre   & Eerola (clips) & Blockbuster (films) \\
+    \hline
+    Action  & 103 & 55 \\
+    Drama   & 239 & 44 \\
+    Comedy  &  40 & 37 \\
+    Sci-Fi  &  19 & 36 \\
+    Romance &  51 & 13 \\
+    Horror  &  28 & 11 \\
+    \hline
+    Total   & 319 clips (41 films) & 110 films \\
+    \hline
+  \end{tabular}
+\end{table}
+
+VGGish is the one representation both corpora provide identically --- extracted here for
+the Eerola clips, published by \citeauthor{ma2021computational} for the Blockbuster films
+--- and the two feature spaces are numerically compatible, both being the standard
+post-processed 128-dimensional VGGish embedding with per-dimension means correlating at
+$r=0.97$. A model fitted in one space can therefore be evaluated in the other.
+
+\subsection{Reproducing the Published Result}
+
+A transfer score cannot be interpreted without knowing what in-domain performance looks
+like on the target corpus, and in particular without establishing that any shortfall is
+attributable to the transfer rather than to a weak classifier. The protocol of
+\citet{ma2021computational} --- leave-one-film-out cross-validation over the 110 films,
+with precision, recall and $F_1$ computed per genre and macro-averaged --- was therefore
+reproduced using the simple pipeline of this thesis: mean-pooled VGGish features and a
+binary-relevance logistic regression. The result, macro-$F_1 = 0.620$, falls within the
+range of $0.61$--$0.65$ that \citeauthor{ma2021computational} report for their VGGish
+models, and both of their baselines reproduce to within $0.03$
+(Table~\ref{tab:blockbuster_reference}). The pipeline is thus validated against an
+external published result before being asked to transfer.
+
+\begin{table}[t]
+  \centering
+  \caption{In-domain reference performance on the Blockbuster corpus
+    (leave-one-film-out, macro-averaged). Published values are quoted from
+    \citet{ma2021computational}, Table~4.}
+  \label{tab:blockbuster_reference}
+  \begin{tabular}{lrrr}
+    \hline
+    Model & Prec. & Rec. & $F_1$ \\
+    \hline
+    \citeauthor{ma2021computational}: VGGish, single-attention (their best) & .60 & .73 & .65 \\
+    \citeauthor{ma2021computational}: VGGish, average pooling               & .55 & .78 & .62 \\
+    \citeauthor{ma2021computational}: VGGish, $k$NN Simple-MI               & .64 & .59 & .61 \\
+    \citeauthor{ma2021computational}: MIR, SVM Simple-MI                    & .60 & .52 & .56 \\
+    \textbf{This thesis: VGGish + logistic regression}          & .569 & .705 & \textbf{.620} \\
+    \hline
+    Random-guess baseline (published / reproduced)              & .32 / .294 & .32 / .293 & .32 / .292 \\
+    Plurality-label baseline (published / reproduced)           & .14 / .138 & .34 / .333 & .19 / .193 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+The two baselines deserve a remark, because they are not interchangeable and the
+literature uses both. The \emph{plurality} baseline always predicts the single most
+frequent label set and reaches macro-$F_1 = 0.19$; the \emph{random-guess} baseline
+predicts each genre independently at its base rate and reaches $0.32$, since the expected
+macro-$F_1$ of such a predictor is approximately the mean base rate. Reporting a result
+against the weaker of the two would overstate its margin by more than a tenth of an $F_1$
+point, so both are computed throughout.
+
+\subsection{Zero-Shot Transfer}
+
+Every model in Table~\ref{tab:zero_shot} is fitted on the Eerola corpus alone and used to
+predict all 110 Blockbuster films; no Blockbuster label participates in training. Where
+the genre classifier consumes predicted emotions, those predictions are generated
+out-of-fold on the training corpus, so that the classifier is fitted on the same noisy
+estimates it will encounter at test time rather than on in-sample predictions that would
+be unrealistically accurate. Because a single train--test split provides no fold structure
+over which to form a confidence interval, the margins are quantified by a paired bootstrap
+over the 110 target films, with both arms re-scored on each of 2000 resamples.
+
+\begin{table}[t]
+  \centering
+  \caption{Zero-shot transfer: trained on Eerola, evaluated on all 110 Blockbuster films.
+    The in-domain reference from Table~\ref{tab:blockbuster_reference} is repeated for
+    orientation.}
+  \label{tab:zero_shot}
+  \begin{tabular}{lrrr}
+    \hline
+    Approach (trained on Eerola only) & Prec. & Rec. & $F_1$ \\
+    \hline
+    VGGish $\rightarrow$ predicted emotion (11), \textbf{per cue} & .488 & .651 & \textbf{.511} \\
+    \quad the same, applied at film level                           & .450 & .637 & .482 \\
+    Emotion (11) $\rightarrow$ genre, classifier fitted on ratings  & .445 & .474 & .434 \\
+    PCA-8(VGGish) $\rightarrow$ genre (bottleneck control)          & .534 & .467 & .421 \\
+    VGGish-128 $\rightarrow$ genre (direct)                         & .576 & .442 & .407 \\
+    Random-guess baseline                                           & .294 & .293 & .292 \\
+    \hline
+    \emph{In-domain reference (trained on Blockbuster)}             & \emph{.569} & \emph{.705} & \emph{.620} \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{Paired bootstrap over the 110 target films (2000 resamples), macro-$F_1$
+    differences under zero-shot transfer.}
+  \label{tab:zero_shot_bootstrap}
+  \begin{tabular}{lrrr}
+    \hline
+    Comparison & Diff. & 95\,\% CI & $p$ \\
+    \hline
+    Predicted emotion vs.\ VGGish direct & $+0.106$ & $[+0.015, +0.186]$ & $\mathbf{0.018}$ \\
+    Predicted emotion vs.\ PCA-8 control & $+0.092$ & $[+0.009, +0.171]$ & $\mathbf{0.032}$ \\
+    Film-level emotion vs.\ VGGish direct & $+0.077$ & $[-0.007, +0.152]$ & $0.066$ \\
+    PCA-8 control vs.\ VGGish direct     & $+0.014$ & $[-0.032, +0.062]$ & $0.572$ \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Four observations follow.
+
+First, genre information transfers across the corpora at all. The best transferred model
+reaches macro-$F_1 = 0.482$ against a random-guess floor of $0.292$, recovering
+approximately $78\,\%$ of the $0.620$ obtained with in-domain training --- and it does so
+despite a substantial change in the unit of analysis, since each training row is a
+single ten-second excerpt while each test row aggregates the cues of an entire film. What
+the models have learned is therefore a property of film music generally, not of the
+43-film Eerola collection.
+
+Second, and centrally for RQ2b, \emph{the emotion bottleneck transfers better than the
+representation it is derived from}. The predicted-emotion pipeline exceeds the direct
+VGGish classifier by $+0.106$ macro-$F_1$ ($p = 0.018$), a margin roughly twice the
+$+0.04$--$0.05$ observed in-domain (Section~\ref{sec:statistical_power}). All figures use
+the conservative of the two feature-scaling regimes, namely the one in which the baseline
+performs better; under the alternative the same margin is $+0.116$ ($p<0.001$). This is the setting
+in which an interpretable intermediate should be expected to help most: an emotion value
+denotes the same perceptual quantity in both corpora, whereas an arbitrary embedding
+dimension does not, and a classifier trained on the latter partly learns the idiosyncratic
+scaling of its training corpus.
+
+Third, this interpretation is supported by an ablation of the feature scaling.
+Re-standardising each corpus using its own statistics --- an unsupervised adaptation that
+uses no labels --- changes the direct embedding ($0.407 \rightarrow 0.394$) and the PCA
+control ($0.421 \rightarrow 0.413$), but leaves the emotion pipeline unchanged at
+$0.482$. Because emotion values are expressed in rating units rather than in embedding
+units, the domain shift is absorbed by the representation itself.
+
+Fourth, the advantage is not merely an effect of dimensionality reduction. Compressing the
+same embedding to eight principal components yields only $+0.014$ over the raw features
+($p = 0.572$), whereas compressing it to eight \emph{emotions} yields $+0.106$. The direct
+comparison between the two bottlenecks favours emotion by $+0.092$
+($p = 0.032$). Every in-domain version of this comparison was borderline at best; under
+transfer it is unambiguous. It is therefore the \emph{emotion} bottleneck that helps, not
+merely \emph{a} bottleneck --- which is the specific claim RQ2b makes.
+
+Between the two granularities lies a third observation. Predicting emotion for each cue
+and averaging the resulting emotion vectors outperforms averaging the embedding first and
+predicting once ($0.511$ vs $0.482$; in-domain the same change is worth $+0.059$,
+$p = 0.020$). A cue is a single piece of film music of median 19\,s, i.e.\ the same kind of
+object as an Eerola excerpt, whereas a film-level mean over some 39 cues is not. Applying
+the emotion model at the granularity it was trained on is thus not a detail but a
+measurable part of the method.
+
+\subsection{Do the Emotion--Genre Signatures Replicate?}
+\label{subsec:signature_replication}
+
+The per-genre emotional signatures of Section~\ref{subsec:emotion_genre} were derived on
+the Eerola corpus from human ratings. Whether they describe film music or merely that
+corpus is a question the second dataset can answer. The Eerola-trained regressor predicts
+emotions for each of the 4664 Blockbuster cues, and the same effect sizes are recomputed
+there; since no Blockbuster annotation exists or is used, any agreement is transfer rather
+than fitting.
+
+\begin{table}[t]
+  \centering
+  \caption{Replication of the per-genre emotional signatures on the Blockbuster corpus.
+    $r(d)$ is the correlation between the two corpora's eight Cohen's $d$ values for that
+    genre; sign agreement counts the emotions whose direction matches.}
+  \label{tab:signature_replication}
+  \begin{tabular}{lrrll}
+    \hline
+    Genre & $r(d)$ & Sign agr. & Eerola top & Blockbuster top \
+    \hline
+    Romance & $+0.99$ & 100\,\% & $+$valence & $-$anger \
+    Action  & $+0.97$ &  88\,\% & $-$happy   & $+$anger \
+    Sci-Fi  & $+0.97$ & 100\,\% & $+$anger   & $+$anger \
+    Horror  & $+0.95$ &  88\,\% & $+$fear    & $+$fear \
+    Drama   & $+0.80$ & 100\,\% & $+$valence & $-$energy \
+    Comedy  & $+0.59$ &  75\,\% & $-$fear    & $+$happy \
+    \hline
+    \textbf{Pooled (48 cells)} & $\mathbf{+0.84}$ & \textbf{92\,\%} & & \
+    \hline
+  \end{tabular}
+\end{table}
+
+The signatures replicate. Across all 48 genre-by-emotion combinations the two corpora's
+effect sizes correlate at $r = 0.84$ with $92\,\%$ sign agreement, and horror is defined by
+fear in both. Where the single strongest emotion differs, it is a near-tie within a
+signature of the same overall shape: action is low-valence, high-anger and low-happiness in
+both corpora, and only the ranking of anger against happiness differs.
+
+One caveat concerns magnitude rather than pattern. Measured per film, the Blockbuster
+effect sizes are roughly twice the Eerola ones, because averaging some 39 cues per film
+shrinks within-group variance and thereby inflates $d$. The cue-level estimates, computed
+on the unit comparable to an Eerola excerpt, are of the same order as the originals
+(horror--fear $+0.55$ against $+0.78$). What transfers is the structure of the
+emotion--genre relationship, not the absolute effect size.
+
+This is the strongest available evidence that the interpretability claim of this thesis
+generalises beyond its own corpus: the affective fingerprints are a property of film
+scoring practice rather than of one listener panel.
+
+Finally, the magnitude of the drop from in-domain to transferred performance
+($0.620 \rightarrow 0.482$) is itself consistent with the music literature.
+\citet{eerola2011genrespecific} found that models of musical emotion generalise
+considerably worse across musical repertoires than within them, explaining $16\,\%$ of
+valence variance across genres against $43\,\%$ within. That the same asymmetry appears
+one level up, in genre prediction, suggests it is a structural property of the
+emotion--genre relationship rather than an artefact of either corpus.

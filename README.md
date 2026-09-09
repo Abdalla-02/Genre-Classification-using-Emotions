@@ -60,7 +60,7 @@ Implementation/
 ├── src/
 │   ├── config.py             # Paths, constants, expected dataset counts
 │   ├── utils.py              # Reproducibility (seeding)
-│   ├── features/             # Data loading/cleaning + AST/CLAP/VGGish/MIR/Blockbuster features
+│   ├── features/             # Data loading/cleaning + AST/CLAP/VGGish/wav2vec2/MIR/Blockbuster features
 │   ├── models/               # Multi-label genre classifiers
 │   └── evaluation/           # Metrics + cross-validated scoring
 ├── experiments/              # Runnable experiments, mirroring the src/ layout
@@ -70,7 +70,8 @@ Implementation/
 │   ├── diagnostics/          # Error analysis, thresholds, learning curve, clip length
 │   ├── cross_dataset/        # Transfer to the Blockbuster dataset
 │   └── evaluation/           # Repeated CV, confidence intervals, significance tests
-├── docs/                     # Progress log, literature reviews, thesis LaTeX snippets
+├── docs/                     # current_state.md (supervisor briefing), progress log,
+│                             # literature reviews, thesis LaTeX
 └── results/                  # Machine-readable experiment output (JSON) + plots
 ```
 
@@ -96,9 +97,13 @@ python experiments/features/verify_data.py          # load + clean + assert data
 python experiments/features/extract_features.py     # extract & cache AST embeddings (Set 1)
 python experiments/genre/exp_genre.py               # genre classification: with vs without emotion
 python experiments/evaluation/exp_statistical_power.py   # repeated CV + significance (headline numbers)
+python experiments/cross_dataset/exp_zero_shot.py        # train on Eerola, test on Blockbuster (zero-shot)
 ```
 
-See `docs/README.md` (the progress log) for the full list of experiments and their results.
+`docs/current_state.md` is the short supervisor-facing briefing (notes, definitions,
+metrics, headline results). `docs/README.md` is the full progress log with every
+experiment. `results/README.md` explains the machine-readable output in `results/`,
+which `python experiments/show_results.py` renders as Markdown tables.
 
 ## Reproducibility
 
@@ -110,8 +115,8 @@ See `docs/README.md` (the progress log) for the full list of experiments and the
 
 ## Dependencies and Notes
 
-The stack is PyTorch-only by design (AST and CLAP via `transformers`, VGGish via
-`torchvggish`; the hand-crafted MIR baseline uses `librosa` and needs no framework), so all
+The stack is PyTorch-only by design (AST, CLAP and wav2vec 2.0 via `transformers`, VGGish
+via `torchvggish`; the hand-crafted MIR baseline uses `librosa` and needs no framework), so all
 learned components share a single deep-learning framework. TensorFlow-based baselines (e.g. YAMNet) are
 deliberately avoided to prevent dependency conflicts; if ever needed, they should live in
 a separate environment.

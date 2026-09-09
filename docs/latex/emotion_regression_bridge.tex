@@ -9,7 +9,10 @@
 % nested-CV-tuned run (results/statistical_power.json) so that it agrees with
 % statistical_power.tex. Do NOT reintroduce the older single-five-fold figures
 % (0.406 / 0.388 / 0.350 / 0.328) -- they came from one partition at the sklearn-default
-% C and contradict this table. The Blockbuster column is a single five-fold run.
+% C and contradict this table. The BLOCKBUSTER column is likewise now the repeated-CV,
+% nested-CV-tuned run with per-cue emotion bridging (results/blockbuster_deep.json,
+% progress log section 17); do not reintroduce the older single-five-fold figures there
+% either (0.565 / 0.559 / 0.582).
 % =============================================================================
 
 \subsection{Predicting Emotion from Audio Embeddings}
@@ -67,19 +70,24 @@ projection, an eight-component PCA of the VGGish features was included as a cont
   \centering
   \caption{Genre classification through the predicted-emotion bottleneck versus the raw
     embedding and an eight-dimensional PCA control (logistic regression, Macro-F1). The
-    Eerola column is the $10\times5$ repeated GroupKFold result with nested-CV-tuned
-    regularisation (Section~\ref{subsec:statistical_power}); the Blockbuster column is a
-    single five-fold run, the only measurement available for that corpus.}
+    Both columns are $10\times5$ repeated cross-validation with nested-CV-tuned
+    regularisation. \textbf{The two columns are not comparable to one another} --- they
+    differ in label space (5 vs 6 genres), in unit (a 10\,s excerpt vs a whole film) and
+    in chance level (a base-rate random guess scores $0.233$ on the left and $0.295$ on
+    the right). Compare \emph{within} a column only; the like-for-like cross-corpus
+    comparison is Table~\ref{tab:zero_shot}.}
   \label{tab:emotion_transfer}
   \begin{tabular}{lrr}
     \hline
     Approach & Eerola (5 genres) & Blockbuster (6 genres) \\
     \hline
-    predicted emotion $\rightarrow$ genre & \textbf{0.394} & 0.565 \\
+    predicted emotion $\rightarrow$ genre & \textbf{0.394} & \textbf{0.616} \\
     ground-truth emotion $\rightarrow$ genre & 0.397 & --- \\
-    PCA-8 $\rightarrow$ genre (control) & 0.343 & 0.559 \\
-    raw VGGish $\rightarrow$ genre & 0.350 & 0.582 \\
-    most-frequent baseline & 0.166 & 0.058 \\
+    PCA-8 $\rightarrow$ genre (control) & 0.343 & 0.587 \\
+    raw VGGish $\rightarrow$ genre & 0.350 & 0.593 \\
+    full hand-crafted MIR (140) $\rightarrow$ genre & --- & 0.585 \\
+    most-frequent baseline & 0.166 & 0.035 \\
+    base-rate random guess & 0.233 & 0.295 \\
     \hline
   \end{tabular}
 \end{table}
@@ -91,8 +99,11 @@ arbitrary eight-dimensional compression, so the representation is not merely an 
 relabelling of a generic bottleneck. The margin over the control is consistent, holding in
 $88\,\%$ of the $50$ folds, but only borderline in significance ($p=0.060$,
 Section~\ref{subsec:statistical_power}), and it is reported as such. On the easier,
-film-level Blockbuster task the emotion bottleneck instead ties the control
-($0.565$ vs $0.559$). Second, the predicted emotions are as genre-informative as the human
+film-level Blockbuster task the emotion bottleneck leads the control nominally but not
+significantly ($0.616$ vs $0.587$, $p=0.369$), so it is reported there as competitive
+rather than superior. Notably, the full 140-feature hand-crafted MIR set ($0.585$) is
+statistically indistinguishable from the VGGish embedding ($0.593$, $p=0.787$) on that
+corpus, so no claim of a learned-embedding advantage is made. Second, the predicted emotions are as genre-informative as the human
 ratings ($0.394$ against a ground-truth ceiling of $0.397$, a difference that is not
 significant, $p=0.855$), so the regressor recovers the genre-relevant emotional content
 without requiring manual annotation. A
