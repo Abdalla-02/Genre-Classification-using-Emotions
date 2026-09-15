@@ -22,6 +22,17 @@ Implementation complete. Open item: content chapters.
 | D | The classifier must have the **same genre classes in both datasets** to be fair | **Done, and it found a real error in our own reporting.** Both corpora now share one 6-genre space. | §4.2 |
 | E | Emotion–genre relationship in the literature, **including in music** | **Done.** New literature section covering Hu & Downie (2007), Laurier et al. (2009), Eerola (2011), Saari et al. (2016). | §6 |
 
+### Round 3 (after the second meeting)
+
+| # | Your note | Status |
+|---|---|---|
+| 1 | Fundamentals: deeper, for a CS student new to ML | **Done.** Three new sections in Overleaf: audio representations (spectrogram, hand-crafted features, the five networks), ML background (regression/classification, multi-label, the two models, overfitting and `C`, the bottleneck), evaluation (grouped/nested/repeated CV, R², macro-F1, chance floors, Cohen's d, significance). |
+| 2 | Remove some emotions, test the difference | **Done -- and it makes NO difference.** Fear alone (0.396) and valence+energy alone (0.387) both match all eight (0.389). This corrected a necessity claim in Fundamentals; see §4.8. |
+| 3 | Cross-validate through the datasets | **Done.** Both transfer directions (E→B p=0.016, B→E p<0.001) and a pooled design. Emotion wins on transfer, ties when both corpora are in training. See §4.9. |
+| 4 | Box office vs classification (Eerola) | **Done, exploratory.** 37 films with gross. The only robust effect is Action films grossing more (p=0.004) -- genre, not soundtrack. Classification quality does not relate to gross. See §4.10. |
+| 5 | Start the next chapters, generally | Skeletons with the factual content are in Overleaf for you to write over. |
+| 6 | AI-usage and authorship declarations | The official FIN wording is in `thesis.tex`; the AI-usage page is a draft **you must verify and complete** -- see §8. |
+
 ### Round 1 (earlier)
 
 | # | Note | Status |
@@ -480,6 +491,44 @@ absolute magnitude.
 
 ---
 
+### 4.8 Emotion ablation — none of them is necessary
+
+Removing any single emotion, or reducing to almost any subset, leaves the 5-genre
+Macro-F1 unchanged:
+
+| features | Macro-F1 | vs all 8 | p |
+|---|---:|---:|---:|
+| all 8 emotions | 0.389 | | |
+| **valence + energy only** | **0.387** | −0.002 | 0.891 |
+| **fear only** | **0.396** | +0.007 | 0.608 |
+| without any one emotion | 0.388–0.395 | ≤ ±0.007 | > 0.40 |
+
+The ratings are strongly intercorrelated (fear ↔ tension ↔ −valence), so the genre signal
+is recoverable from almost any pair. **This corrected the Fundamentals chapter**, which had
+argued the discrete categories were *necessary* to separate Action from Horror. Fear is the
+most *diagnostic* emotion (Cohen's d) but not a *required* one; all eight are kept for
+interpretability, not accuracy. Better to say it than to be asked.
+
+### 4.9 Cross-dataset validation, every direction
+
+| design | direct | PCA-8 | **emotion** | emotion vs direct |
+|---|---:|---:|---:|---|
+| Eerola → Blockbuster | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 |
+| Blockbuster → Eerola | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** |
+| pooled (both in training) | 0.421 | 0.398 | 0.424 | +0.003, p=0.906 |
+
+The advantage holds in **both** transfer directions and vanishes when both corpora are in
+training. It is a *generalisation* advantage — exactly what a corpus-independent
+representation should give — and consistent with the in-domain ties.
+
+### 4.10 Box office (exploratory, n = 37)
+
+Gross was fetched by IMDb id from Wikidata and Box Office Mojo. The only robust result:
+**Action films gross more** (median $267M vs $41M, p=0.004) — a fact about genre, not about
+the soundtrack model. Per-film classification quality does not correlate with gross
+(rho=+0.20, p=0.24), and the one emotion that does (anger, p=0.045) is explained by
+Action membership. One paragraph in Discussion, nothing more.
+
 ## 5. Numbers that changed — and why
 
 Several previously reported figures moved. **In every case the evaluation got stricter, not
@@ -625,6 +674,15 @@ PyTorch-only design that keeps the environment reproducible.
 
 ## 8. Open items
 
+0. **AI-usage declaration — verify before submission.** The official FIN *Statement of
+   Authorship* (which now includes the AI paragraph) is in `thesis.tex`. The separate
+   AI-usage page is a **draft from my side and describes my own involvement**; you must
+   read it, correct anything that does not match what actually happened, and add anything
+   I could not know (e.g. other tools you used). The regulation (Fakultätsratsbeschluss
+   019/25) requires: the system named, the affected sections marked, the level of use
+   explained, and the reason stated. Grammar/editing use may be summarised.
+
+
 1. **Content chapters** — the writing task. Eight ready-to-paste LaTeX sections in
    `docs/latex/`: `evaluation_protocol`, `cross_dataset_transfer`,
    `waveform_vs_spectrogram`, `emotion_genre_relationship`, `genre_subset`,
@@ -632,7 +690,7 @@ PyTorch-only design that keeps the environment reproducible.
 2. **More films is the only remaining lever on the headline claims.** `p_limit` > 0.05 for
    the still-borderline comparisons means additional computation cannot help, and the
    learning curves are still rising at 100 % of the data.
-3. **Minor known issues** (§12 of the technical log): a short debug run of
+3. **Minor known issues** (section 12 of the technical log, `docs/README.md`): a short debug run of
    `exp_statistical_power.py` overwrites the authoritative results file; most diagnostic
    experiments still only print rather than save.
 

@@ -1127,6 +1127,103 @@ absolute magnitude.
 This is the strongest available evidence that the interpretability claim generalises:
 the emotional signatures are not an artefact of the Eerola panel or corpus.
 
+## 18. Emotion ablation -- which emotions carry the signal? (round 3, item 2)
+
+`experiments/genre/exp_emotion_ablation.py`, `results/emotion_ablation.json`. 5-genre
+subset, ground-truth ratings, 5x5 repeated GroupKFold, tuned C.
+
+| features | Macro-F1 | vs all 8 | p |
+|---|---:|---:|---:|
+| all 8 emotions [reference] | 0.389 | | |
+| without any single emotion (8 arms) | 0.388-0.395 | -0.001 to +0.007 | 0.40-0.95 |
+| 11 features (8 + derived) [headline model] | 0.391 | +0.003 | 0.666 |
+| **valence + energy only (2-d circumplex)** | **0.387** | **-0.002** | **0.891** |
+| valence + energy + tension (3-d) | 0.385 | -0.004 | 0.777 |
+| 5 discrete only | 0.394 | +0.005 | 0.582 |
+| **fear only** | **0.396** | **+0.007** | **0.608** |
+| fear + valence | 0.394 | +0.006 | 0.623 |
+
+**A clean null, and an important one.** Removing any emotion changes nothing. Fear alone
+matches all eight. Valence + energy alone matches all eight. The genre-relevant
+information in the ratings is **low-dimensional and highly redundant** -- fear, tension
+and (negative) valence are strongly intercorrelated, so almost any pair of them recovers
+the same signal.
+
+**This corrects a claim in the Fundamentals chapter.** The "why not valence and arousal
+alone" section argued that the discrete categories are *necessary* because Action and
+Horror share a valence/arousal region and only fear separates them. The Cohen's d part of
+that is true (fear IS the most diagnostic emotion); the *necessity* part is false at the
+classifier level, and the chapter has been rewritten to say so: all eight are retained for
+interpretability and because no one could know in advance which subset would suffice, not
+because the classifier needs them. Reporting this rather than hiding it is the right call
+-- a supervisor who asked "remove some emotions and see" would have found it.
+
+It also sharpens the bottleneck story: the emotion bottleneck could be *narrower* than 8
+and still work, which makes the comparison against PCA-8 (a generic 8-d compression)
+conservative rather than generous.
+
+## 19. Cross-dataset validation in every direction (round 3, item 3)
+
+`experiments/cross_dataset/exp_cross_dataset_cv.py`, `results/cross_dataset_cv.json`.
+Shared 6-genre space, three designs, same three arms.
+
+| design | direct | PCA-8 | **emotion (per cue)** | emotion vs direct | emotion vs PCA-8 |
+|---|---:|---:|---:|---|---|
+| 1. Eerola -> Blockbuster (zero-shot) | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 | +0.045, p=0.258 |
+| 2. Blockbuster -> Eerola (reverse) | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** | +0.018, p=0.184 |
+| 3. pooled, both corpora in training | 0.421 | 0.398 | 0.424 | +0.003, p=0.906 | +0.026, p=0.329 |
+| &nbsp;&nbsp; 3a. Eerola part of the pooled test folds | 0.426 | 0.411 | **0.479** | | |
+| &nbsp;&nbsp; 3b. Blockbuster part | **0.562** | 0.538 | 0.540 | | |
+
+Design 2 is new and non-trivial: the emotion regressor needs ratings, which only Eerola
+has, so it is fitted on the Eerola *training* fold, the genre classifier on all of
+Blockbuster, and the held-out Eerola fold is scored -- no test clip touches either fit.
+
+**What it establishes.** The emotion advantage over the direct embedding holds in **both
+transfer directions** (p=0.016 and p<0.001). It **vanishes when both corpora are in the
+training set** (p=0.906) -- once the classifier can see the target distribution, direct
+features catch up. So the advantage is specifically a *generalisation-across-corpora*
+advantage, which is exactly the property an interpretable, corpus-independent
+representation should have, and it is consistent with the in-domain ties reported
+throughout. The PCA-8 control comparison is positive in every design but significant in
+none here (the original zero-shot experiment reached p=0.032 with the regressor trained on
+319 rather than 360 clips -- small implementation choices move single-split numbers by
+0.01-0.04, which is why the bootstrap intervals matter more than the third decimal).
+
+**Note on run-to-run differences.** Design 1 here gives emotion 0.508 / direct 0.395 /
+PCA-8 0.465; `exp_zero_shot.py` gives 0.511 / 0.407 / 0.421. The scripts differ in one
+legitimate choice (the regressor here is trained on all 360 rated clips, there on the 319
+in the shared space). The emotion arm is stable; the embedding arms move by up to 0.04.
+Quote the intervals, not the point estimates.
+
+## 20. Box office vs. the soundtrack (round 3, item 4 -- exploratory)
+
+`experiments/features/fetch_box_office.py` (data), `experiments/diagnostics/exp_box_office.py`
+(analysis), `results/box_office.json`, `data/processed/Eerola_DB/box_office.csv`.
+
+**Data.** The enriched CSV carries an `imdb_id` per film. Wikidata (matched on IMDb id, no
+scraping, no key) gives a USD gross for 27 films; Box Office Mojo fills 12 more. 37 films
+enter the analysis after excluding two whose IMDb id in the CSV points at the wrong film
+(`Blanc` -> "Adele Blanc-Sec" 2010; `Pride and Prejudice` -> the 1940 film). Every row
+records its source and whether the figure is worldwide or domestic-only. Nothing is
+inflation-adjusted. **n=37 across four decades: this is exploratory and must be reported
+as such.**
+
+Three readings of the question were tested, all Spearman with permutation p-values and a
+year-controlled partial correlation:
+
+| question | result |
+|---|---|
+| A. Are higher-grossing films' soundtracks easier to classify? (per-film pipeline F1 vs log gross) | rho = +0.20, p = 0.24 -- **no** |
+| B. Do the soundtrack's emotions track gross? (8 tests) | only anger reaches p<0.05 (rho +0.34, p=0.045); one hit in eight is what chance produces about a third of the time |
+| C. Does genre track gross? | **Action films gross far more**: median $267M vs $41M, Mann-Whitney **p=0.004**. Adventure p=0.056. Nothing else. |
+| D. Is the anger link just Action? | Yes: rho drops from +0.34 to +0.19 controlling for Action, and within non-Action films it is +0.24, p=0.22 |
+
+**Conclusion.** The only robust relationship is the unsurprising one -- Action films are
+blockbusters -- and it is about genre, not about anything the soundtrack model does. The
+apparent anger correlation is mediated by genre. Classification quality does not relate to
+gross. For the thesis this is a short paragraph in Discussion, not a result.
+
 ## Next steps
 
 - **Content chapters** — student; the LaTeX snippets in `docs/latex/` are ready to fold
@@ -1168,13 +1265,15 @@ the emotional signatures are not an artefact of the Eerola panel or corpus.
 - `experiments/` — runnable experiments, grouped by pipeline stage (index +
   per-script purpose in `experiments/README.md`). Run from the repository root.
   - `features/` — `verify_data`, `extract_features`, `clip_length_analysis`,
-    `exp4_rating_reliability`, `exp_waveform_vs_spectrogram`, `exp_w2v_layer_sweep`
+    `exp4_rating_reliability`, `exp_waveform_vs_spectrogram`, `exp_w2v_layer_sweep`,
+    `extract_musicnn` (separate TF env), `fetch_box_office`
   - `emotion/` — `exp_emotion_regression`, `exp_emotion_improve`
-  - `genre/` — `exp5_target`, `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`
+  - `genre/` — `exp5_target`, `exp_genre`, `exp_genre_subset`, `exp_emotion_genre`,
+    `exp_emotion_ablation`
   - `diagnostics/` — `exp_error_analysis`, `exp_threshold_fix`, `exp_model_search`,
-    `exp_learning_curve`, `exp_clip_length`
+    `exp_learning_curve`, `exp_clip_length`, `exp_box_office`
   - `cross_dataset/` — `exp_blockbuster`, `exp_blockbuster_emotion`, `exp_zero_shot`,
-    `exp_blockbuster_deep`, `exp_signature_replication`
+    `exp_blockbuster_deep`, `exp_signature_replication`, `exp_cross_dataset_cv`
   - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
     `genre` / `cross_dataset`)
 - `docs/` — this log; `current_state.md` (the supervisor briefing, Markdown — supersedes

@@ -34,6 +34,8 @@ See `results/README.md` for what each file contains.
 | `exp4_rating_reliability.py` | Exp 4: Set 1 vs Set 2 rating reliability + ceiling | §13 |
 | `exp_waveform_vs_spectrogram.py` | Waveform (wav2vec 2.0) vs spectrogram representations, both stages | §16 |
 | `exp_w2v_layer_sweep.py` | Control for the above: which wav2vec 2.0 layer to pool | §16 |
+| `extract_musicnn.py` | MusiCNN embeddings -- runs in the separate `.venv-musicnn` (TensorFlow) | §16.4b |
+| `fetch_box_office.py` | Box office per film from Wikidata / Box Office Mojo, by IMDb id | §20 |
 
 ## emotion — stage 1, audio -> emotion
 | Script | Purpose | Log |
@@ -48,6 +50,7 @@ See `results/README.md` for what each file contains.
 | `exp_genre.py` | Genre classification with vs without emotion, 8 genres | §3 |
 | `exp_genre_subset.py` | The same on the curated 5-genre subset | §7f |
 | `exp_emotion_genre.py` | RQ3: which emotions predict which genres (Cohen's d) | §7b |
+| `exp_emotion_ablation.py` | Leave-one-emotion-out and theory-motivated subsets: none is necessary | §18 |
 
 ## diagnostics — why the score is what it is
 | Script | Purpose | Log |
@@ -57,6 +60,7 @@ See `results/README.md` for what each file contains.
 | `exp_model_search.py` | Does any other model/feature combination beat the baseline? (no) | §7d |
 | `exp_learning_curve.py` | Would more data help? (yes, still rising) | §7e |
 | `exp_clip_length.py` | Full-clip windowed pooling vs the 10.24 s window | §6 |
+| `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 
 ## cross_dataset — transfer to Blockbuster
 | Script | Purpose | Log |
@@ -66,6 +70,7 @@ See `results/README.md` for what each file contains.
 | `exp_zero_shot.py` | Shared 6-genre space; train on Eerola, test on Blockbuster without training on it; replicates Ma et al. in-domain | §15 |
 | `exp_blockbuster_deep.py` | Blockbuster under the primary protocol: repeated CV, tuned C, cue-level (MIL) arms, full 140-feature MIR | §17 |
 | `exp_signature_replication.py` | Do the Eerola emotion-genre signatures reappear on Blockbuster? (RQ3 external validity) | §17.5 |
+| `exp_cross_dataset_cv.py` | Both transfer directions plus a pooled design, same three arms | §19 |
 
 ## evaluation — statistical reliability
 | Script | Purpose | Log |

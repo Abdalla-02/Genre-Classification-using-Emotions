@@ -35,7 +35,7 @@ for d in DOCS:
         # historical / external references that intentionally do not resolve locally
         if m in {'set1_ast.npy', 'bib/library.bib', 'current_state.docx',
                  'film_genre_master_list.csv', 'mir_feature_names.csv',
-                 'mean_ratings_set1_enriched.csv'}:
+                 'mean_ratings_set1_enriched.csv', 'thesis.tex'}:   # Overleaf-only files
             continue
         base = m.split('/')[-1].split(chr(92))[-1]
         if (ROOT / m).exists() or (d.parent / m).exists() or list(ROOT.rglob(base)):
@@ -130,12 +130,13 @@ for line in out:
         if b'\r' in p.read_bytes(): problems.append(f'[CRLF] {f}')
 
 # --------------------------------------------------------- 7. section refs --
-log = io.open(ROOT / 'docs' / 'README.md', encoding='utf-8', newline='').read()
-have = set(re.findall(r'^#{2,3} (\d+[a-z]?)[.b]', log, re.M)) |        set(re.findall(r'^#{2,3} (\d+\.\d+)', log, re.M)) |        set(re.findall(r'^### (\d+[a-z])\.', log, re.M))
-for ref in set(re.findall(r'§(\d+(?:\.\d+)?[a-z]?)', log + cs)):
-    base = ref.split('.')[0]
-    if base not in {h.rstrip('abcdef') for h in have} and base not in have:
-        problems.append(f'[bad section ref] §{ref}')
+for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'current_state.md'):
+    text = io.open(doc, encoding='utf-8', newline='').read()
+    have = set(re.findall(r'^#{2,3} (\d+[a-z]?)[.b]', text, re.M)) |            set(re.findall(r'^#{2,3} (\d+\.\d+)', text, re.M)) |            set(re.findall(r'^### (\d+[a-z])\.', text, re.M))
+    bases = {h.split('.')[0].rstrip('abcdef') for h in have}
+    for ref in set(re.findall(r'§(\d+(?:\.\d+)?[a-z]?)', text)):
+        if ref.split('.')[0].rstrip('abcdef') not in bases:
+            problems.append(f'[bad section ref] {doc.name} §{ref}')
 
 print('=' * 70)
 print('AUDIT')
