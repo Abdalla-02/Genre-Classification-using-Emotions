@@ -692,6 +692,16 @@ PyTorch-only design that keeps the environment reproducible.
    `docs/latex/`: `evaluation_protocol`, `cross_dataset_transfer`,
    `waveform_vs_spectrogram`, `emotion_genre_relationship`, `genre_subset`,
    `emotion_regression_bridge`, `statistical_power`, `rating_reliability`.
+   Every chapter on Overleaf now carries `\mytodo` notes saying what it has to
+   establish and where the facts live — Introduction, Discussion and Conclusions
+   included, which previously had nothing but empty headings.
+
+1b. **The abstract is still a placeholder**, and it is the first thing an examiner
+   reads. It is marked with a red todo on Overleaf listing what it has to cover.
+   The motto page and the Acknowledgements are optional and are commented out: the
+   template shipped a quotation about *cluster analysis* that had nothing to do with
+   this thesis, and it has been removed rather than left to ship by accident. If you
+   want a motto, put in one you have in front of you and quote it exactly.
 2. **More films is the only remaining lever on the headline claims.** `p_limit` > 0.05 for
    the still-borderline comparisons means additional computation cannot help, and the
    learning curves are still rising at 100 % of the data.

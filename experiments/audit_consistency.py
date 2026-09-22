@@ -40,9 +40,12 @@ for d in DOCS:
         if m.startswith(('http', 'word/')) or '<' in m:
             continue
         # historical / external references that intentionally do not resolve locally
+        # Files that live on Overleaf, or historical references that intentionally
+        # do not resolve inside this repository.
         if m in {'set1_ast.npy', 'bib/library.bib', 'current_state.docx',
                  'film_genre_master_list.csv', 'mir_feature_names.csv',
-                 'mean_ratings_set1_enriched.csv', 'thesis.tex'}:   # Overleaf-only files
+                 'mean_ratings_set1_enriched.csv', 'thesis.tex',
+                 'chapter/preamble.tex'}:
             continue
         base = m.split('/')[-1].split(chr(92))[-1]
         if (ROOT / m).exists() or (d.parent / m).exists() or list(ROOT.rglob(base)):
