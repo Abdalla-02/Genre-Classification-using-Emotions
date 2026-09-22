@@ -22,8 +22,10 @@ nothing is inflation-adjusted, and 37 films across four decades is not a sample 
 which to claim an effect. It can rule an effect in as "worth a proper study" or out as
 "nothing visible at this size"; it cannot establish one.
 
-Two films are excluded because their IMDb id in the enriched CSV points at the wrong film
-(see fetch_box_office.py): ``Blanc`` and ``Pride and Prejudice``.
+Of the 39 films with a USD gross, two are excluded because their IMDb id in the enriched
+CSV points at the wrong film (see fetch_box_office.py): ``Blanc`` and ``Pride and
+Prejudice``. A third, ``Vertigo``, drops out on its own: it has a gross but no clips left
+after the Set 1 cleaning, so the inner join below removes it. That leaves n = 37.
 
 Run:  python experiments/diagnostics/exp_box_office.py
 """

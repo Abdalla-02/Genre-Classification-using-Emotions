@@ -3,15 +3,21 @@
 Run this after changing any experiment or any document. It checks the things that drift
 silently and are embarrassing to discover late:
 
-  1. every file path quoted in the Markdown docs resolves to a file that exists;
+  1. every file path quoted in the documents (Markdown and the LaTeX snippets) resolves
+     to a file that exists;
   2. every headline number quoted in docs/current_state.md matches results/*.json to
      three decimals -- this catches a table updated in one place but not another;
+     2b does the same for the round-3 results across BOTH documents, and 2c for the
+     thesis-ready snippets in docs/latex/, which are pasted into the submitted document;
   3. the zero-shot bootstrap and the zero-shot score table use the SAME feature-scaling
      regime (they once did not, which flattered the reported margin by 0.013);
   4. the dataset still cleans to 346 / 319 clips;
   5. all five embedding caches hold 360 clips;
   6. no file in the working tree has CRLF endings (the repo is LF);
-  7. every section cross-reference in the docs points at a heading that exists.
+  7. every section cross-reference in the docs points at a heading that exists;
+  8. every results/*.json is listed in results/README.md and named in docs/README.md;
+  9. every results/*.json still renders through show_results.py, which is shape-driven
+     and therefore drops an unrecognised block silently rather than failing.
 
     python experiments/audit_consistency.py
 
@@ -25,7 +31,8 @@ problems, notes = [], []
 
 # ---------------------------------------------------------------- 1. paths --
 DOCS = list(ROOT.glob('*.md')) + list(ROOT.rglob('docs/**/*.md')) + \
-       list(ROOT.rglob('experiments/**/*.md')) + list(ROOT.rglob('results/*.md'))
+       list(ROOT.rglob('experiments/**/*.md')) + list(ROOT.rglob('results/*.md')) + \
+       list(ROOT.rglob('docs/latex/*.tex'))
 path_re = re.compile(r'`([A-Za-z0-9_./\\-]+\.(?:py|md|tex|json|bib|csv|npy|txt))`')
 for d in DOCS:
     text = io.open(d, encoding='utf-8', newline='').read()
@@ -89,6 +96,64 @@ for quoted, key in checks:
     if quoted not in cs:
         notes.append(f'[not quoted] {quoted} ({key}) absent from current_state.md')
 
+# ------------------------------- 2b. the round-3 results, in BOTH documents --
+# The briefing and the technical log both quote these; whichever is edited alone drifts.
+log = io.open(ROOT / 'docs' / 'README.md', encoding='utf-8', newline='').read()
+ab, cv, bo = j('emotion_ablation'), j('cross_dataset_cv'), j('box_office')
+
+def arm(block, name, field='mean'):
+    return block['arms'][name][field]
+
+round3 = [   # (value, decimals, sign, label)
+    (arm(ab['leave_one_out'], 'all 8 emotions [reference]'), 3, '', 'ablation: all 8'),
+    (arm(ab['subsets'], 'fear only'), 3, '', 'ablation: fear only'),
+    (arm(ab['subsets'], 'valence + energy  (2-d circumplex)'), 3, '', 'ablation: valence+energy'),
+    (arm(ab['leave_one_out'], '11 features (8 + derived) [headline model]'), 3, '', 'ablation: 11 features'),
+    (arm(cv['eerola_to_blockbuster'], 'VGGish -> emotion (per cue) -> genre', 'macro_f1'), 3, '', 'E->B emotion'),
+    (arm(cv['eerola_to_blockbuster'], 'VGGish-128 direct', 'macro_f1'), 3, '', 'E->B direct'),
+    (arm(cv['blockbuster_to_eerola'], 'VGGish -> emotion (per cue) -> genre', 'macro_f1'), 3, '', 'B->E emotion'),
+    (arm(cv['blockbuster_to_eerola'], 'VGGish-128 direct', 'macro_f1'), 3, '', 'B->E direct'),
+    (cv['eerola_to_blockbuster']['emotion_vs_direct']['diff'], 3, '+', 'E->B emotion vs direct'),
+    (cv['blockbuster_to_eerola']['emotion_vs_direct']['diff'], 3, '+', 'B->E emotion vs direct'),
+    (bo['n_films'], 0, '', 'box office: n films'),
+    (bo['A_f1_vs_gross']['rho'], 2, '+', 'box office: F1 vs gross'),
+    (bo['C_genre_vs_gross']['Action']['p_mw'], 3, '', 'box office: Action gross p'),
+    (bo['B_emotion_vs_gross']['anger']['rho'], 2, '+', 'box office: anger rho'),
+]
+for value, nd, sign, label in round3:
+    quoted = f'{value:{sign}.{nd}f}'
+    where = [n for n, t in (('current_state.md', cs), ('README.md', log)) if quoted in t]
+    if not where:
+        problems.append(f'[unquoted result] {label} = {quoted} appears in neither document')
+    elif len(where) == 1:
+        notes.append(f'{label} = {quoted} is quoted only in docs/{where[0]}')
+
+# ------------------------------------- 2c. the thesis-ready LaTeX snippets --
+# These are pasted straight into the thesis, so a number that drifts here is a number
+# that drifts into the submitted document. Only the figures at real risk are pinned:
+# the zero-shot table, whose two scaling regimes were confused once already.
+tex_checks = {
+    'cross_dataset_transfer.tex': [
+        'zs:VGGish -> predicted emotion(11), per-cue',
+        'zs:VGGish -> predicted emotion(11), film-level',
+        'zs:VGGish-128 direct', 'zs:PCA-8(VGGish) [control]', 'zs:loo'],
+    'statistical_power.tex': [
+        'sp5:ground-truth emotion(11) [ceiling]', 'sp5:VGGish -> PREDICTED emotion(11)',
+        'sp5:VGGish-128 (direct)', 'sp8:ground-truth emotion(11)', 'sp8:AST-768'],
+    'waveform_vs_spectrogram.tex': ['r2:wav2vec2-768', 'wg:wav2vec2-768'],
+}
+for fname, keys in tex_checks.items():
+    p = ROOT / 'docs' / 'latex' / fname
+    if not p.exists():
+        problems.append(f'[missing snippet] docs/latex/{fname}'); continue
+    text = io.open(p, encoding='utf-8', newline='').read()
+    for key in keys:
+        quoted = f'{expected[key]:.3f}'
+        # the tables use the leading-dot convention (.323), the prose writes 0.323
+        if quoted not in text and quoted[1:] not in text:
+            problems.append(f'[tex drift] docs/latex/{fname} does not quote {quoted} '
+                            f'for {key} -- the snippet and the JSON disagree')
+
 # ------------------------------------- 3. zero_shot: regimes must be consistent --
 boot = zs.get('bootstrap', {})
 if set(boot) != set(zs['zero_shot']):
@@ -137,6 +202,44 @@ for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'current_state.md'):
     for ref in set(re.findall(r'§(\d+(?:\.\d+)?[a-z]?)', text)):
         if ref.split('.')[0].rstrip('abcdef') not in bases:
             problems.append(f'[bad section ref] {doc.name} §{ref}')
+
+# ------------------------------- 7b. the exported briefing copies are stale --
+# docs/current_state.{docx,pdf} are exports of an older revision of current_state.md.
+# They cannot be regenerated here (no pandoc), so this reports rather than fails -- but
+# handing someone the PDF would hand them superseded numbers.
+md = ROOT / 'docs' / 'current_state.md'
+for ext in ('docx', 'pdf'):
+    p = md.with_suffix('.' + ext)
+    if p.exists() and p.stat().st_mtime < md.stat().st_mtime:
+        notes.append(f'current_state.{ext} is older than current_state.md -- an obsolete '
+                     f'export; the Markdown is authoritative')
+
+# ------------------------------------- 8. every results file is documented --
+readme = io.open(R / 'README.md', encoding='utf-8', newline='').read()
+for f in sorted(R.glob('*.json')):
+    if f.name not in readme:
+        problems.append(f'[undocumented result] {f.name} is not listed in results/README.md')
+    if f.name not in log:
+        problems.append(f'[undocumented result] {f.name} is not named in docs/README.md')
+
+# ---------------------------------- 9. every results file actually renders --
+# show_results.py is shape-driven, so a new experiment that invents a shape is dropped
+# silently rather than failing. This is what caught the zero-shot tables going missing.
+sys.path.insert(0, str(ROOT / 'experiments'))
+import show_results                                             # noqa: E402
+for f in sorted(R.glob('*.json')):
+    blocks = []
+    show_results.walk(json.loads(f.read_text(encoding='utf-8')), '', blocks,
+                      {len(v): v for v in json.loads(f.read_text(encoding='utf-8')).values()
+                       if isinstance(v, list) and v and all(isinstance(x, str) for x in v)})
+    tables = [b for b in blocks if b.startswith('**')]
+    leaves = len(re.findall(r'": \{', f.read_text(encoding='utf-8')))
+    if len(tables) < 2 and leaves > 4:
+        problems.append(f'[unrendered result] show_results.py emits {len(tables)} table(s) '
+                        f'for {f.name} -- a block shape it does not recognise?')
+    if f.stem not in show_results.DESCRIPTIONS:
+        problems.append(f'[undescribed result] {f.stem} has no entry in '
+                        f'show_results.DESCRIPTIONS, so the listing shows a blank line')
 
 print('=' * 70)
 print('AUDIT')

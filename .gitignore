@@ -5,6 +5,9 @@ data/processed/Eerola_DB/embeddings/ast_windows/
 # layer sweep only; the chosen layer is cached as a normal embedding alongside it
 data/processed/Eerola_DB/embeddings/wav2vec2/layers_set1/
 results/*.partial.json
+# `show_results.py --all --out report.md` output: regenerated from results/*.json on demand,
+# so committing it would be a second copy of the same numbers, free to drift
+report.md
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

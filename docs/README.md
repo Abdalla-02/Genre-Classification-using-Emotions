@@ -918,7 +918,8 @@ for. The sweep over all 13 layers (same protocol: RandomForest, GroupKFold, mean
 |---|---|---|---|---|---|---|---|---|---|---|
 | mean R^2 | 0.292 | 0.322 | **0.324** | 0.306 | 0.301 | 0.278 | 0.235 | 0.164 | 0.187 | 0.161 |
 
-Monotone decline after layer 2, and **the layer choice alone is worth a factor of two** --
+Broad decline after layer 2 -- not monotone, since layer 10 (0.187) recovers above layers
+8 and 9 -- and **the layer choice alone is worth a factor of two**, which is
 larger than the effect the thesis is trying to measure. Layer 2 is therefore used
 throughout. Note it is chosen on the Stage-1 emotion task and then held fixed; it is not
 tuned against any genre result.
@@ -1202,12 +1203,13 @@ Quote the intervals, not the point estimates.
 (analysis), `results/box_office.json`, `data/processed/Eerola_DB/box_office.csv`.
 
 **Data.** The enriched CSV carries an `imdb_id` per film. Wikidata (matched on IMDb id, no
-scraping, no key) gives a USD gross for 27 films; Box Office Mojo fills 12 more. 37 films
-enter the analysis after excluding two whose IMDb id in the CSV points at the wrong film
-(`Blanc` -> "Adele Blanc-Sec" 2010; `Pride and Prejudice` -> the 1940 film). Every row
-records its source and whether the figure is worldwide or domestic-only. Nothing is
-inflation-adjusted. **n=37 across four decades: this is exploratory and must be reported
-as such.**
+scraping, no key) gives a USD gross for 27 films; Box Office Mojo fills 12 more, all of
+them domestic-only. Of those 39, two are excluded because their IMDb id in the CSV points
+at the wrong film (`Blanc` -> "Adele Blanc-Sec" 2010; `Pride and Prejudice` -> the 1940
+film) and one (`Vertigo`) has no clips left after the Set 1 cleaning, so **37 films enter
+the analysis**. Every row records its source and whether the figure is worldwide or
+domestic-only. Nothing is inflation-adjusted. **n=37 across four decades: this is
+exploratory and must be reported as such.**
 
 Three readings of the question were tested, all Spearman with permutation p-values and a
 year-controlled partial correlation:
@@ -1227,14 +1229,16 @@ gross. For the thesis this is a short paragraph in Discussion, not a result.
 ## Next steps
 
 - **Content chapters** — student; the LaTeX snippets in `docs/latex/` are ready to fold
-  in. Five are now available: `evaluation_protocol`, `cross_dataset_transfer`,
-  `emotion_genre_relationship`, `genre_subset`, `emotion_regression_bridge`,
-  `statistical_power`, `rating_reliability`.
-- **Bib entries to add on Overleaf** (cited by the new snippets, not yet in
-  `bib/library.bib`): `hu2007exploring`, `laurier2009mood`, `eerola2011genrespecific`,
-  `saari2016genre`, `nadeau2003inference`, `sokolova2009systematic`. Each snippet carries
-  its BibTeX entry in a header comment. Note `eerola2011genrespecific` is a *different*
-  paper from `eerola2011comparison` (same author, same year).
+  in. Eight are now available: `evaluation_protocol`, `cross_dataset_transfer`,
+  `waveform_vs_spectrogram`, `emotion_genre_relationship`, `genre_subset`,
+  `emotion_regression_bridge`, `statistical_power`, `rating_reliability`.
+- ~~**Bib entries to add on Overleaf**~~ — **done.** `hu2007exploring`, `laurier2009mood`,
+  `eerola2011genrespecific`, `saari2016genre`, `nadeau2003inference`,
+  `sokolova2009systematic`, `baevski2020wav2vec` and `pons2019musicnn` are all in
+  `bib/library.bib` now, and every key cited by a snippet resolves. Each snippet still
+  carries its BibTeX entry in a header comment, so a snippet stays self-contained if it is
+  pasted into a different project. Note `eerola2011genrespecific` is a *different* paper
+  from `eerola2011comparison` (same author, same year) — keep both keys.
 - **More films** — §11 shows the remaining non-significance is corpus-bound, not
   resampling-bound (p_limit > 0.05 with infinite repeats), and §7e shows both learning
   curves still rising. Extending the corpus is the only lever left on the headline claims.
@@ -1290,5 +1294,6 @@ gross. For the thesis this is a short paragraph in Discussion, not a result.
 - `results/` — machine-readable experiment output, every per-fold score:
   `statistical_power.json`, `model_search.json`, `zero_shot.json`,
   `waveform_vs_spectrogram.json`, `w2v_layer_sweep.json`, `blockbuster_deep.json`,
-  `signature_replication.json`. Render any of them as Markdown tables with
+  `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
+  `box_office.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.

@@ -12,7 +12,8 @@
 % subsection can be moved to an appendix if space is tight, but it should be kept
 % somewhere -- it is the control that makes the negative result defensible.
 %
-% CITATION NOTE: uses baevski2020wav2vec, not yet in bib/library.bib. Add:
+% CITATION NOTE: uses baevski2020wav2vec and pons2019musicnn. Both are now in
+% bib/library.bib on Overleaf; the wav2vec entry is reproduced here for reference:
 %
 %   @inproceedings{baevski2020wav2vec,
 %     title     = {wav2vec 2.0: A Framework for Self-Supervised Learning of Speech
@@ -28,14 +29,14 @@
 \label{sec:waveform}
 
 Each of the audio representations examined so far begins by converting the signal into a
-time--frequency image. AST and CLAP operate on log-mel spectrograms, VGGish on log-mel
-patches, and the hand-crafted baseline on descriptors derived from the short-time Fourier
-transform. The comparison between emotion features and learned audio embeddings has
+time--frequency image. AST and CLAP operate on log-mel spectrograms, VGGish and MusiCNN on
+log-mel patches, and the hand-crafted baseline on descriptors derived from the short-time
+Fourier transform. The comparison between emotion features and learned audio embeddings has
 therefore only been conducted against \emph{spectrogram} front-ends, which leaves open the
 objection that the limitation lies in the mel representation rather than in the idea of
 classifying genre directly from audio.
 
-To close that gap, wav2vec 2.0 \citep{baevski2020wav2vec} is added as a fifth
+To close that gap, wav2vec 2.0 \citep{baevski2020wav2vec} is added as a sixth
 representation. Its feature encoder is a stack of one-dimensional convolutions applied
 directly to the raw 16\,kHz sample sequence; no spectral transform occurs at any stage.
 The self-supervised base checkpoint is used rather than an ASR fine-tune, whose
@@ -49,6 +50,15 @@ AudioSet, which contains music. The comparison therefore varies the input domain
 pretraining corpus simultaneously, and a poor result for wav2vec 2.0 cannot be attributed
 to the waveform front-end alone.
 
+MusiCNN \citep{pons2019musicnn} is included for the complementary reason. It is pretrained
+on Million Song Dataset tagging, so of all the representations considered it matches the
+material being analysed most closely, and it is the natural candidate if domain-specific
+pretraining is what the task needs. Together the six span four pretraining regimes ---
+general audio events (AST, VGGish), audio--text (CLAP), music tagging (MusiCNN) and speech
+(wav2vec 2.0), against a hand-crafted descriptor baseline --- so that the comparison
+against emotion features is not a comparison against a single, possibly badly chosen,
+embedding.
+
 \subsection{Selecting the Layer to Pool}
 
 A self-supervised model's final layers specialise toward its own pretraining objective, so
@@ -57,8 +67,9 @@ choice for a task the model was never trained on. All thirteen hidden states wer
 therefore evaluated on the emotion-regression task under the protocol used elsewhere
 (random-forest regression, film-grouped cross-validation, mean $R^2$ across the eight
 emotions). Performance peaks at the output of the second transformer block
-($R^2 = 0.324$) and declines monotonically thereafter to $R^2 = 0.161$ at the final
-(twelfth) block, with the convolutional encoder output alone already reaching $0.292$.
+($R^2 = 0.324$) and falls away thereafter --- not strictly monotonically, since the tenth
+block recovers to $0.187$ --- reaching $R^2 = 0.161$ at the final (twelfth) block, with
+the convolutional encoder output alone already reaching $0.292$.
 
 The choice of layer is thus worth a factor of two --- larger than the effect this thesis
 sets out to measure --- and reporting the final layer by default would have understated
@@ -75,6 +86,13 @@ recovers markedly less of the emotion-rating variance than any spectrogram-based
 alternative, and less even than the 103-dimensional hand-crafted baseline. The deficit is
 uniform across the eight emotions rather than concentrated in any one of them.
 
+The music-pretrained representation does not lead either. MusiCNN reaches $R^2 = 0.541$,
+clearly above the hand-crafted descriptors and far above the waveform model, but below
+all three general-purpose spectrogram embeddings. Domain-matched pretraining is thus
+worth less here than might be expected --- the ranking is driven by how much
+emotion-relevant variance a representation exposes, not by how closely its pretraining
+corpus resembles film music.
+
 \begin{table}[t]
   \centering
   \caption{Emotion regression by audio representation (random forest, film-grouped
@@ -89,6 +107,7 @@ uniform across the eight emotions rather than concentrated in any one of them.
     CLAP           & log-mel spectrogram & 512 & .561 & 1.22 & 62 \\
     AST            & log-mel spectrogram & 768 & .560 & 1.22 & 62 \\
     VGGish         & log-mel spectrogram & 128 & .558 & 1.23 & 62 \\
+    MusiCNN        & log-mel spectrogram & 200 & .541 & 1.25 & 60 \\
     Hand-crafted MIR & STFT descriptors  & 103 & .490 & 1.31 & 55 \\
     \textbf{wav2vec 2.0} & \textbf{raw waveform} & 768 & \textbf{.323} & 1.52 & 36 \\
     \hline
@@ -111,6 +130,7 @@ results stand out, and the second is the more important of the two.
     Emotion (11), ground-truth ratings                       & .391 & [.376, .407] \\
     \textbf{wav2vec 2.0 $\rightarrow$ predicted emotion (11)} & \textbf{.376} & [.367, .384] \\
     VGGish-128, direct                                        & .342 & [.322, .363] \\
+    MusiCNN-200, direct                                       & .340 & [.323, .357] \\
     Hand-crafted MIR, direct                                  & .339 & [.322, .355] \\
     AST-768, direct                                           & .338 & [.306, .371] \\
     CLAP-512, direct                                          & .335 & [.314, .355] \\
@@ -119,11 +139,11 @@ results stand out, and the second is the more important of the two.
   \end{tabular}
 \end{table}
 
-First, used directly, the waveform representation is the weakest of the five
+First, used directly, the waveform representation is the weakest of the six
 ($0.300$). Its shortfall against the spectrogram embeddings is not statistically
 significant, however ($+0.035$ to $+0.043$, $p = 0.12$--$0.19$), which is itself
 informative: the genre task discriminates far less sharply between representations than
-emotion regression does, where the same five differ by a factor of $1.7$. This supports
+emotion regression does, where the same six differ by a factor of $1.7$. This supports
 both the choice of $R^2$ as the metric for ranking feature extractors and the conclusion
 of Section~\ref{sec:error_analysis} that genre classification on this corpus operates near
 a noise ceiling that a better representation cannot lift.

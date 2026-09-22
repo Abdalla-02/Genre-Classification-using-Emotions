@@ -593,9 +593,11 @@ research". Four sources, four distinct points:
 measured. Our in-domain 0.620 → zero-shot 0.482/0.511 is the same phenomenon one level up,
 at the genre-prediction level. The literature and the new experiment support each other.
 
-New BibTeX entries needed on Overleaf (each snippet carries its entry in a header comment):
-`hu2007exploring`, `laurier2009mood`, `eerola2011genrespecific`, `saari2016genre`,
-`baevski2020wav2vec`, `nadeau2003inference`, `sokolova2009systematic`.
+The BibTeX entries these sections need — `hu2007exploring`, `laurier2009mood`,
+`eerola2011genrespecific`, `saari2016genre`, `baevski2020wav2vec`, `pons2019musicnn`,
+`nadeau2003inference`, `sokolova2009systematic` — **are all in `bib/library.bib` on
+Overleaf already**, and every key cited by a snippet in `docs/latex/` resolves against it.
+Each snippet also carries its own entry in a header comment, so it stays self-contained.
 
 > `eerola2011genrespecific` is a **different paper** from `eerola2011comparison` (the
 > dataset paper) — same author, same year. Keep both keys.
@@ -660,7 +662,10 @@ stays PyTorch-only.
 **And it does not win.** Emotion regression R² = 0.541 — above hand-crafted MIR (0.490)
 and far above wav2vec 2.0 (0.323), but below AST, CLAP and VGGish (0.558–0.561). On genre
 it scores 0.340, statistically inseparable from VGGish (0.342), MIR (0.339), AST (0.338)
-and CLAP (0.335).
+and CLAP (0.335). *(These genre figures are from the 5×5 table in §4.5, which is the run
+all six representations went through together. The headline §4.1 table is a longer 10×5
+run of a smaller set of arms, which is why VGGish reads 0.350 there and 0.342 here — same
+data, more repeats, not a different result.)*
 
 That negative result is worth more than a win would have been. The thesis's claim is no
 longer "emotion beats AST" but **"emotion (0.391) beats every audio representation we
@@ -702,6 +707,9 @@ PyTorch-only design that keeps the environment reproducible.
 |---|---|
 | This briefing | `docs/current_state.md` |
 | Full technical log, every experiment and result | `docs/README.md` |
+| What each experiment script does | `experiments/README.md` |
+| Check the documents still agree with the results | `python experiments/audit_consistency.py` |
+| Orientation for a new working session | `CLAUDE.md` (repository root) |
 | Thesis-ready LaTeX sections | `docs/latex/` |
 | Literature reviews | `docs/literature/` |
 | What the results JSONs mean, and how to render them | `results/README.md` |
@@ -714,3 +722,9 @@ python experiments/show_results.py --all --out report.md   # all tables as Markd
 
 Seed 42 throughout; embeddings cached and committed, so every number reproduces from a
 clone without re-running a model over the audio.
+
+> **`docs/current_state.docx` and `docs/current_state.pdf` are obsolete.** They were
+> exported before the zero-shot, waveform, Blockbuster-protocol, ablation, cross-dataset
+> and box-office work, so several of their numbers have since been superseded — including
+> two that were found to be wrong (§5). **This Markdown file is the only current version.**
+> Do not send the PDF to anyone; export a fresh one from this file if a PDF is needed.

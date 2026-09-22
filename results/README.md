@@ -36,13 +36,22 @@ experiment that follows the same conventions renders without touching it.
 | `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | §16 |
 | `w2v_layer_sweep.json` | Which wav2vec 2.0 layer to pool — the control that makes §16's negative result defensible. | §16.2 |
 | `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on an independent corpus? | §17.5 |
+| `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | §18 |
+| `cross_dataset_cv.json` | Cross-validation in **every direction**: Eerola→Blockbuster, the reverse, and both corpora pooled. | §19 |
+| `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Exploratory, n = 37. | §20 |
 | `model_search.json` | Does any other model or feature combination beat the baseline? (No.) | §7d |
+
+`clip_length_by_genre.png` is the one non-JSON file here — a figure from
+`experiments/features/clip_length_analysis.py`, kept because §5–§6 argue from it.
 
 ---
 
-## The three block types
+## The block types
 
-Every file is built from the same three shapes, which is why one renderer handles them all.
+Every file is built from a handful of recurring shapes, which is why one renderer handles
+them all. The three below carry the headline results; four smaller ones
+(`grid`, list grids, plain scalar blocks and the emotion-regression `stage1` block) are
+described at the end.
 
 ### `arms` — one score per approach
 
@@ -56,6 +65,14 @@ Every file is built from the same three shapes, which is why one renderer handle
 interval computed over the per-repeat means**, not over the individual folds — folds inside
 one repeat share training data and are not independent observations, so using all 50 would
 understate the interval.
+
+**Single-split experiments key the score `macro_f1` instead of `mean`** and carry
+`macro_precision` / `macro_recall` beside it, because there are no folds to average: the
+zero-shot arms in `zero_shot.json` and the two transfer directions in
+`cross_dataset_cv.json` are each one train-once-test-once evaluation, and their uncertainty
+comes from the bootstrap over films rather than from a fold spread. An arm may also carry
+`diff_vs_ref` and `p_corrected` (`emotion_ablation.json`) when every arm is compared
+against one reference rather than pairwise.
 
 ### `comparisons` — one paired significance test per pair
 
@@ -72,6 +89,11 @@ understate the interval.
 | `p_corrected` | Nadeau–Bengio corrected paired *t*-test. A plain *t*-test over 50 overlapping folds is anti-conservative; the correction inflates the variance by the train/test overlap factor |
 | `p_limit` | the *p* this test converges to with **infinite** repeats. If `p_limit > 0.05`, more computation can never make the comparison significant — only more films can |
 | `win_rate` | fraction of folds on which `a` beats `b`; parameter-free and often more intuitive than *p* |
+
+A comparison block is a **list** when the pairs are arbitrary (`a` vs `b`), and a **dict
+keyed by the comparison's name** when there is a fixed set of them — `zero_shot.json →
+bootstrap`, where the difference is `diff_mean` and the *p* is `p_two_sided` because it
+comes from a 2000-sample bootstrap over the 110 films rather than from folds.
 
 ### `per_fold` — the raw scores
 
@@ -114,13 +136,28 @@ plt.boxplot(list(pf.values()), labels=list(pf), vert=False); plt.xlabel("Macro-F
 plt.tight_layout(); plt.savefig("results/blockbuster_folds.png", dpi=150)
 ```
 
-**Two file-specific shapes** worth knowing:
+**The smaller shapes**, all rendered by the same script:
 
-- `waveform_vs_spectrogram.json → stage1` is emotion regression, so it holds `mean_r2`,
-  `mean_rmse` and `per_emotion_r2` rather than Macro-F1.
-- `signature_replication.json` holds Cohen's *d* vectors: `eerola_d`,
-  `blockbuster_d_film` and `blockbuster_d_cue`, each `{genre: [8 values]}` in
-  `config.EMOTIONS` order, plus a `replication` block with the per-genre correlation.
+- **`stage1`** — emotion regression rather than classification, so it holds `mean_r2`,
+  `mean_rmse` and `per_emotion_r2` rather than Macro-F1
+  (`waveform_vs_spectrogram.json → stage1`).
+- **grid** — `{row: {field: scalar}}`, for anything tabular that is not a score:
+  `box_office.json → C_genre_vs_gross` (one row per genre), `→ B_emotion_vs_gross` (one
+  per emotion), `signature_replication.json → replication` (one per genre).
+- **list grid** — `{row: [v₁ … vₙ]}`. The columns are named by a same-length list of
+  strings elsewhere in the same file, which is why `shared_genres` and `emotions` are
+  stored at the top level: `signature_replication.json` holds Cohen's *d* vectors
+  (`eerola_d`, `blockbuster_d_film`, `blockbuster_d_cue`, each `{genre: [8 values]}` in
+  `config.EMOTIONS` order) and `zero_shot.json → ma2021` holds the numbers **published by
+  Ma et al.**, as `[precision, recall, Macro-F1]`, so our reproduction can be read next to
+  the paper's own figures.
+- **scalars** — a plain `{field: value}` block: `design`, `summary`, and the single
+  bootstrap results in `cross_dataset_cv.json` (`emotion_vs_direct`, `emotion_vs_pca8`).
+
+If a new experiment invents a shape none of these covers, `show_results.py` would silently
+drop it — so `audit_consistency.py` checks that every results file still renders a
+non-trivial number of blocks. That check exists because the zero-shot and cross-dataset
+tables *were* silently dropped for several weeks.
 
 ---
 
@@ -133,10 +170,17 @@ python experiments/evaluation/exp_statistical_power.py       # statistical_power
 python experiments/cross_dataset/exp_blockbuster_deep.py     # blockbuster_deep.json
 python experiments/cross_dataset/exp_zero_shot.py            # zero_shot.json
 python experiments/cross_dataset/exp_signature_replication.py
+python experiments/cross_dataset/exp_cross_dataset_cv.py      # cross_dataset_cv.json
+python experiments/genre/exp_emotion_ablation.py              # emotion_ablation.json
 python experiments/features/exp_waveform_vs_spectrogram.py
 python experiments/features/exp_w2v_layer_sweep.py
 python experiments/diagnostics/exp_model_search.py
+python experiments/diagnostics/exp_box_office.py              # box_office.json
 ```
+
+`box_office.json` additionally needs `data/processed/Eerola_DB/box_office.csv`, which is
+committed; regenerate it with `python experiments/features/fetch_box_office.py` only if the
+figures need refreshing, since that script goes out to Wikidata and Box Office Mojo.
 
 > **Caution (known issue, §12.6).** A short debug run overwrites the authoritative file:
 > `exp_statistical_power.py --repeats 2` silently replaces `results/statistical_power.json`
