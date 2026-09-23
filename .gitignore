@@ -8,6 +8,8 @@ results/*.partial.json
 # `show_results.py --all --out report.md` output: regenerated from results/*.json on demand,
 # so committing it would be a second copy of the same numbers, free to drift
 report.md
+# notes for Claude Code sessions: kept locally, never pushed
+CLAUDE.md
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

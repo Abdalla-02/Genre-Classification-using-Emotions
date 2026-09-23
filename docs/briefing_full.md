@@ -756,7 +756,6 @@ PyTorch-only design that keeps the environment reproducible.
 | Full technical log, every experiment and result | `docs/README.md` |
 | What each experiment script does | `experiments/README.md` |
 | Check the documents still agree with the results | `python experiments/audit_consistency.py` |
-| Orientation for a new working session | `CLAUDE.md` (repository root) |
 | Thesis-ready LaTeX sections | `docs/latex/` |
 | Literature reviews | `docs/literature/` |
 | What the results JSONs mean, and how to render them | `results/README.md` |
