@@ -458,7 +458,8 @@
         "p_two_sided": 0.04185809086268504,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.03690378721390891,
-        "old_metric_p_corrected": 0.1511373102742474
+        "old_metric_p_corrected": 0.1511373102742474,
+        "old_metric_p_limit": 0.12964247012175129
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -469,7 +470,8 @@
         "p_two_sided": 0.029606942317508933,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.042124410539680524,
-        "old_metric_p_corrected": 0.11032066659579888
+        "old_metric_p_corrected": 0.11032066659579888,
+        "old_metric_p_limit": 0.09102722469520017
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -480,7 +482,8 @@
         "p_two_sided": 0.017355793772332824,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.05166028473142137,
-        "old_metric_p_corrected": 0.1071534949564553
+        "old_metric_p_corrected": 0.1071534949564553,
+        "old_metric_p_limit": 0.0880792893011074
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -491,7 +494,8 @@
         "p_two_sided": 0.018376722817764167,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04857695133598183,
-        "old_metric_p_corrected": 0.07349810845375712
+        "old_metric_p_corrected": 0.07349810845375712,
+        "old_metric_p_limit": 0.057342910319342646
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -502,7 +506,8 @@
         "p_two_sided": 0.03573251659009699,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04629335975717641,
-        "old_metric_p_corrected": 0.07048370602108622
+        "old_metric_p_corrected": 0.07048370602108622,
+        "old_metric_p_limit": 0.054653598778190406
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -513,7 +518,8 @@
         "p_two_sided": 0.0,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.07931816735615183,
-        "old_metric_p_corrected": 0.012479625598425297
+        "old_metric_p_corrected": 0.012479625598425297,
+        "old_metric_p_limit": 0.007024946281177979
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -524,7 +530,8 @@
         "p_two_sided": 0.02858601327207759,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.044102543411236816,
-        "old_metric_p_corrected": 0.12229979499923536
+        "old_metric_p_corrected": 0.12229979499923536,
+        "old_metric_p_limit": 0.10224685725251592
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -535,7 +542,8 @@
         "p_two_sided": 0.32465543644716693,
         "repeat_win_rate": 0.3,
         "old_metric_diff": -0.01020378677684003,
-        "old_metric_p_corrected": 0.49723718442661813
+        "old_metric_p_corrected": 0.49723718442661813,
+        "old_metric_p_limit": 0.47722825956328907
       },
       {
         "a": "VGGish -> PREDICTED emotion(11)",
@@ -546,7 +554,8 @@
         "p_two_sided": 0.36957631444614597,
         "repeat_win_rate": 0.7,
         "old_metric_diff": 0.007557692744156741,
-        "old_metric_p_corrected": 0.5044569600790225
+        "old_metric_p_corrected": 0.5044569600790225,
+        "old_metric_p_limit": 0.48465886220878196
       },
       {
         "a": "wav2vec2 -> predicted emotion(11), OOF-trained",
@@ -557,7 +566,8 @@
         "p_two_sided": 0.0,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.07908969428364648,
-        "old_metric_p_corrected": 0.011993402603489063
+        "old_metric_p_corrected": 0.011993402603489063,
+        "old_metric_p_limit": 0.006691333336640465
       },
       {
         "a": "wav2vec2 -> predicted emotion(11), OOF-trained",
@@ -568,7 +578,8 @@
         "p_two_sided": 0.5043389484430832,
         "repeat_win_rate": 0.8,
         "old_metric_diff": 0.0035176212854420297,
-        "old_metric_p_corrected": 0.8255566027007286
+        "old_metric_p_corrected": 0.8255566027007286,
+        "old_metric_p_limit": 0.817874552967864
       },
       {
         "a": "ground-truth emotion(11) [ceiling]",
@@ -579,7 +590,8 @@
         "p_two_sided": 0.0030627871362940277,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04710757399074894,
-        "old_metric_p_corrected": 0.052861503163335384
+        "old_metric_p_corrected": 0.052861503163335384,
+        "old_metric_p_limit": 0.03921442024407467
       },
       {
         "a": "ground-truth emotion(11) [ceiling]",
@@ -590,7 +602,8 @@
         "p_two_sided": 0.0030627871362940277,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.05232819731652055,
-        "old_metric_p_corrected": 0.07194641378663474
+        "old_metric_p_corrected": 0.07194641378663474,
+        "old_metric_p_limit": 0.055956998284803466
       },
       {
         "a": "ground-truth emotion(11) [ceiling]",
@@ -601,7 +614,8 @@
         "p_two_sided": 0.0010209290454313426,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.0618640715082614,
-        "old_metric_p_corrected": 0.03623744599886948
+        "old_metric_p_corrected": 0.03623744599886948,
+        "old_metric_p_limit": 0.025230866267676857
       },
       {
         "a": "AST-768",
@@ -612,7 +626,8 @@
         "p_two_sided": 0.6625829504849413,
         "repeat_win_rate": 0.7,
         "old_metric_diff": 0.009535874191740845,
-        "old_metric_p_corrected": 0.7520802755282935
+        "old_metric_p_corrected": 0.7520802755282935,
+        "old_metric_p_limit": 0.741294953503246
       },
       {
         "a": "VGGish -> PREDICTED emotion(11)",
@@ -623,7 +638,8 @@
         "p_two_sided": 0.009188361408882083,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.05166023615539356,
-        "old_metric_p_corrected": 0.0601003203643776
+        "old_metric_p_corrected": 0.0601003203643776,
+        "old_metric_p_limit": 0.04549292878440856
       },
       {
         "a": "VGGish -> PREDICTED emotion(11)",
@@ -634,7 +650,8 @@
         "p_two_sided": 0.009188361408882083,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04446147995806565,
-        "old_metric_p_corrected": 0.10435852288603331
+        "old_metric_p_corrected": 0.10435852288603331,
+        "old_metric_p_limit": 0.08548466076716474
       },
       {
         "a": "VGGish -> PREDICTED emotion(11)",
@@ -645,7 +662,8 @@
         "p_two_sided": 0.02041858090862685,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.049682103283837264,
-        "old_metric_p_corrected": 0.0779875430846624
+        "old_metric_p_corrected": 0.0779875430846624,
+        "old_metric_p_limit": 0.06137057382609506
       },
       {
         "a": "VGGish -> PREDICTED emotion(11)",
@@ -656,7 +674,92 @@
         "p_two_sided": 0.5778458397141398,
         "repeat_win_rate": 0.3,
         "old_metric_diff": -0.0026460940326832882,
-        "old_metric_p_corrected": 0.8546723804866683
+        "old_metric_p_corrected": 0.8546723804866683,
+        "old_metric_p_limit": 0.8482496819513867
+      },
+      {
+        "a": "VGGish-128 (direct)",
+        "b": "wav2vec2-768",
+        "diff": 0.048544738159246786,
+        "ci_lo": 0.010652112956454953,
+        "ci_hi": 0.08771623996483978,
+        "p_two_sided": 0.014293006636038795,
+        "repeat_win_rate": 1.0,
+        "old_metric_diff": 0.04241438014224291,
+        "old_metric_p_corrected": 0.18551424593620025,
+        "old_metric_p_limit": 0.1628618156834135
+      },
+      {
+        "a": "AST-768",
+        "b": "wav2vec2-768",
+        "diff": 0.042069072526522214,
+        "ci_lo": 0.008931929370717545,
+        "ci_hi": 0.07266438686938319,
+        "p_two_sided": 0.014293006636038795,
+        "repeat_win_rate": 1.0,
+        "old_metric_diff": 0.0371937568164713,
+        "old_metric_p_corrected": 0.16664193381846615,
+        "old_metric_p_limit": 0.1445590975936647
+      },
+      {
+        "a": "CLAP-512",
+        "b": "wav2vec2-768",
+        "diff": 0.03384674054769391,
+        "ci_lo": -0.00582587436294719,
+        "ci_hi": 0.07576378822460642,
+        "p_two_sided": 0.10005104645227157,
+        "repeat_win_rate": 1.0,
+        "old_metric_diff": 0.027657882624730457,
+        "old_metric_p_corrected": 0.38349109602273024,
+        "old_metric_p_limit": 0.36078423616760924
+      },
+      {
+        "a": "MusiCNN-200",
+        "b": "wav2vec2-768",
+        "diff": 0.03453399958816664,
+        "ci_lo": -0.0060064068969570665,
+        "ci_hi": 0.07472652876115063,
+        "p_two_sided": 0.0959673302705462,
+        "repeat_win_rate": 1.0,
+        "old_metric_diff": 0.030741216020169992,
+        "old_metric_p_corrected": 0.35001530567353956,
+        "old_metric_p_limit": 0.3267930490584432
+      },
+      {
+        "a": "MIR-103",
+        "b": "wav2vec2-768",
+        "diff": 0.03528617599581012,
+        "ci_lo": 0.0017080632967174606,
+        "ci_hi": 0.07200341576964209,
+        "p_two_sided": 0.039816232771822356,
+        "repeat_win_rate": 1.0,
+        "old_metric_diff": 0.033024807598975414,
+        "old_metric_p_corrected": 0.22760362824141628,
+        "old_metric_p_limit": 0.20415536701402326
+      },
+      {
+        "a": "wav2vec2 -> predicted emotion(11), OOF-trained",
+        "b": "ground-truth emotion(11) [ceiling]",
+        "diff": -0.009144254448523322,
+        "ci_lo": -0.03214932683725476,
+        "ci_hi": 0.014470691730183461,
+        "p_two_sided": 0.4563552833078101,
+        "repeat_win_rate": 0.4,
+        "old_metric_diff": -0.010432259849345371,
+        "old_metric_p_corrected": 0.5993151279523857,
+        "old_metric_p_limit": 0.5826144914039064
+      },
+      {
+        "a": "PCA-8(VGGish) [control]",
+        "b": "VGGish-128 (direct)",
+        "diff": -0.004732192548830969,
+        "ci_lo": -0.033647317381510757,
+        "ci_hi": 0.02438501416778283,
+        "p_two_sided": 0.7708014293006636,
+        "repeat_win_rate": 0.3,
+        "old_metric_diff": -0.007198756197327905,
+        "old_metric_p_corrected": 0.8040870099952798,
+        "old_metric_p_limit": 0.7954860048256456
       }
     ],
     "old_vs_new": {
@@ -1740,7 +1843,8 @@
         "p_two_sided": 0.008469449485783424,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04281861789770569,
-        "old_metric_p_corrected": 0.031016172001059304
+        "old_metric_p_corrected": 0.031016172001059304,
+        "old_metric_p_limit": 0.021001238642837376
       },
       {
         "a": "ground-truth emotion(11)",
@@ -1751,7 +1855,8 @@
         "p_two_sided": 0.0,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.050276348966822676,
-        "old_metric_p_corrected": 0.0050185358661935355
+        "old_metric_p_corrected": 0.0050185358661935355,
+        "old_metric_p_limit": 0.002260746485639822
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -1762,7 +1867,8 @@
         "p_two_sided": 0.012099213551119177,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.041768323826631926,
-        "old_metric_p_corrected": 0.04873750662723441
+        "old_metric_p_corrected": 0.04873750662723441,
+        "old_metric_p_limit": 0.03568364949230572
       },
       {
         "a": "VGGish -> predicted emotion(11), OOF-trained",
@@ -1773,7 +1879,8 @@
         "p_two_sided": 0.0,
         "repeat_win_rate": 1.0,
         "old_metric_diff": 0.04922605489574891,
-        "old_metric_p_corrected": 0.010582360669163538
+        "old_metric_p_corrected": 0.010582360669163538,
+        "old_metric_p_limit": 0.005737912215841335
       }
     ],
     "old_vs_new": {
@@ -2631,7 +2738,8 @@
         "p_two_sided": 0.7595712098009189,
         "repeat_win_rate": 0.4,
         "old_metric_diff": -0.002956577810688421,
-        "old_metric_p_corrected": 0.758450918252407
+        "old_metric_p_corrected": 0.758450918252407,
+        "old_metric_p_limit": 0.7479295947730165
       },
       {
         "a": "without energy",
@@ -2642,7 +2750,8 @@
         "p_two_sided": 0.7953037263910159,
         "repeat_win_rate": 0.3,
         "old_metric_diff": -0.001768349263497726,
-        "old_metric_p_corrected": 0.8445901686377868
+        "old_metric_p_corrected": 0.8445901686377868,
+        "old_metric_p_limit": 0.8377298188332648
       },
       {
         "a": "without tension",
@@ -2653,7 +2762,8 @@
         "p_two_sided": 0.010209290454313425,
         "repeat_win_rate": 0.8,
         "old_metric_diff": 0.004407896622086238,
-        "old_metric_p_corrected": 0.4594564208355395
+        "old_metric_p_corrected": 0.4594564208355395,
+        "old_metric_p_limit": 0.4384132476786843
       },
       {
         "a": "without anger",
@@ -2664,7 +2774,8 @@
         "p_two_sided": 0.6370597243491577,
         "repeat_win_rate": 0.7,
         "old_metric_diff": 0.00043710343226605053,
-        "old_metric_p_corrected": 0.9498690410544144
+        "old_metric_p_corrected": 0.9498690410544144,
+        "old_metric_p_limit": 0.947637990963353
       },
       {
         "a": "without fear",
@@ -2675,7 +2786,8 @@
         "p_two_sided": 0.7023991832567636,
         "repeat_win_rate": 0.5,
         "old_metric_diff": -0.0013777669363781442,
-        "old_metric_p_corrected": 0.9002269275150696
+        "old_metric_p_corrected": 0.9002269275150696,
+        "old_metric_p_limit": 0.8957988794762681
       },
       {
         "a": "without happy",
@@ -2686,7 +2798,8 @@
         "p_two_sided": 0.21439509954058192,
         "repeat_win_rate": 0.8,
         "old_metric_diff": 0.0020118195910646675,
-        "old_metric_p_corrected": 0.8405165318027361
+        "old_metric_p_corrected": 0.8405165318027361,
+        "old_metric_p_limit": 0.8334798062342589
       },
       {
         "a": "without sad",
@@ -2697,7 +2810,8 @@
         "p_two_sided": 0.7207759060745278,
         "repeat_win_rate": 0.5,
         "old_metric_diff": -0.0026980819012342727,
-        "old_metric_p_corrected": 0.7862586172951153
+        "old_metric_p_corrected": 0.7862586172951153,
+        "old_metric_p_limit": 0.7769016736521954
       },
       {
         "a": "without tender",
@@ -2708,7 +2822,8 @@
         "p_two_sided": 0.4553343542623788,
         "repeat_win_rate": 0.5,
         "old_metric_diff": -0.0033662085184982815,
-        "old_metric_p_corrected": 0.7075668630108528
+        "old_metric_p_corrected": 0.7075668630108528,
+        "old_metric_p_limit": 0.6949695088507131
       },
       {
         "a": "valence + energy (2-d circumplex)",
@@ -2719,7 +2834,8 @@
         "p_two_sided": 0.5227156712608474,
         "repeat_win_rate": 0.3,
         "old_metric_diff": -0.004531096815808655,
-        "old_metric_p_corrected": 0.7511381013055507
+        "old_metric_p_corrected": 0.7511381013055507,
+        "old_metric_p_limit": 0.7403138281328334
       },
       {
         "a": "valence + energy + tension (3-d)",
@@ -2730,7 +2846,8 @@
         "p_two_sided": 0.4124553343542624,
         "repeat_win_rate": 0.2,
         "old_metric_diff": -0.006176618042161408,
-        "old_metric_p_corrected": 0.6643931254830073
+        "old_metric_p_corrected": 0.6643931254830073,
+        "old_metric_p_limit": 0.6501011987239165
       },
       {
         "a": "5 discrete only",
@@ -2741,7 +2858,8 @@
         "p_two_sided": 0.3175089331291475,
         "repeat_win_rate": 0.6,
         "old_metric_diff": 0.002034792212385561,
-        "old_metric_p_corrected": 0.8374606565463772
+        "old_metric_p_corrected": 0.8374606565463772,
+        "old_metric_p_limit": 0.8302917994582357
       },
       {
         "a": "fear only",
@@ -2752,7 +2870,8 @@
         "p_two_sided": 0.52475752935171,
         "repeat_win_rate": 0.7,
         "old_metric_diff": 0.004386969247586747,
-        "old_metric_p_corrected": 0.7580557572921383
+        "old_metric_p_corrected": 0.7580557572921383,
+        "old_metric_p_limit": 0.7475180270797646
       },
       {
         "a": "fear + valence",
@@ -2763,7 +2882,8 @@
         "p_two_sided": 0.7350689127105666,
         "repeat_win_rate": 0.7,
         "old_metric_diff": 0.0017536362698507002,
-        "old_metric_p_corrected": 0.888682760478168
+        "old_metric_p_corrected": 0.888682760478168,
+        "old_metric_p_limit": 0.88374688237605
       }
     ],
     "old_vs_new": {

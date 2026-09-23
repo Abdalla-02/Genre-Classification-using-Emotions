@@ -74,7 +74,12 @@ from sklearn.preprocessing import StandardScaler
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from src import config  # noqa: E402
-from src.evaluation.repeated import RepeatedGroupKFold, corrected_paired_t, repeat_ci  # noqa: E402
+from src.evaluation.repeated import (  # noqa: E402
+    RepeatedGroupKFold,
+    corrected_paired_t,
+    nb_p_limit,
+    repeat_ci,
+)
 from src.features import (  # noqa: E402
     add_derived_features,
     assemble_from_cache,
@@ -248,6 +253,8 @@ def compare(pairs, per_fold, per_rep, draws, n_train, n_test):
             "repeat_win_rate": float((per_rep[a] > per_rep[b]).mean()),
             "old_metric_diff": float(per_fold[a].mean() - per_fold[b].mean()),
             "old_metric_p_corrected": p_old,
+            # the best p Nadeau-Bengio could reach with unlimited repeats on this corpus
+            "old_metric_p_limit": nb_p_limit(per_fold[a], per_fold[b], n_train, n_test),
         })
     return rows
 
@@ -343,7 +350,12 @@ def main() -> None:
     pairs5 = [(PRED_OOF, x) for x in (VGG, AST, CLAP, MUSICNN, MIR, W2V, PCA8, CEIL)] + [
         (PRED_IN, PRED_OOF), (W2V_OOF, W2V), (W2V_OOF, W2V_IN),
         (CEIL, VGG), (CEIL, AST), (CEIL, CLAP), (AST, CLAP),
-        (PRED_IN, PCA8), (PRED_IN, VGG), (PRED_IN, AST), (PRED_IN, CEIL)]
+        (PRED_IN, PCA8), (PRED_IN, VGG), (PRED_IN, AST), (PRED_IN, CEIL),
+        # for the waveform section: is wav2vec 2.0 behind the spectrogram models, and is
+        # its emotion route level with the ratings?
+        (VGG, W2V), (AST, W2V), (CLAP, W2V), (MUSICNN, W2V), (MIR, W2V), (W2V_OOF, CEIL),
+        # the control against the embedding it compresses
+        (PCA8, VGG)]
     c5 = compare(pairs5, pf5, pr5, dr5, len(dfk) - nt5, nt5)
     print_block("5 GENRES -- old per-fold metric vs new pooled metric", a5, c5)
     out["subset5"] = pack(a5, c5, pf5, pr5, len(dfk), len(set(g5)), config.GENRE_SUBSET)

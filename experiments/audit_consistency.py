@@ -161,11 +161,24 @@ tex_checks = {
         'zs:VGGish -> predicted emotion(11), per-cue',
         'zs:VGGish -> predicted emotion(11), film-level',
         'zs:VGGish-128 direct', 'zs:PCA-8(VGGish) [control]', 'zs:loo'],
+    # the in-domain Eerola figures are the corrected ones (cv_corrected.json, log 21)
     'statistical_power.tex': [
-        'sp5:ground-truth emotion(11) [ceiling]', 'sp5:VGGish -> PREDICTED emotion(11)',
-        'sp5:VGGish-128 (direct)', 'sp8:ground-truth emotion(11)', 'sp8:AST-768'],
-    'waveform_vs_spectrogram.tex': ['r2:wav2vec2-768', 'wg:wav2vec2-768'],
+        'cc5:ground-truth emotion(11) [ceiling]',
+        'cc5:VGGish -> predicted emotion(11), OOF-trained', 'cc5:VGGish-128 (direct)',
+        'cc5:PCA-8(VGGish) [control]', 'cc5:AST-768', 'cc5:CLAP-512',
+        'cc8:ground-truth emotion(11)', 'cc8:VGGish -> predicted emotion(11), OOF-trained',
+        'cc8:AST-768'],
+    'emotion_regression_bridge.tex': [
+        'cc5:ground-truth emotion(11) [ceiling]',
+        'cc5:VGGish -> predicted emotion(11), OOF-trained', 'cc5:VGGish-128 (direct)',
+        'cc5:PCA-8(VGGish) [control]', 'bb:emotion(11), per-cue -> pooled', 'bb:VGGish-128'],
+    'waveform_vs_spectrogram.tex': [
+        'r2:wav2vec2-768', 'cc5:wav2vec2-768',
+        'cc5:wav2vec2 -> predicted emotion(11), OOF-trained'],
 }
+for block, tag in (('subset5', 'cc5'), ('full8', 'cc8')):
+    for k, v in cc[block]['arms'].items():
+        expected[f'{tag}:{k}'] = v['mean']
 for fname, keys in tex_checks.items():
     p = ROOT / 'docs' / 'latex' / fname
     if not p.exists():
