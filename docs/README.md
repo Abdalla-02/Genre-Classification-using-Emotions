@@ -1185,8 +1185,9 @@ transfer directions** (p=0.016 and p<0.001). It **vanishes when both corpora are
 training set** (p=0.906) -- once the classifier can see the target distribution, direct
 features catch up. So the advantage is specifically a *generalisation-across-corpora*
 advantage, which is exactly the property an interpretable, corpus-independent
-representation should have, and it is consistent with the in-domain ties reported
-throughout. The PCA-8 control comparison is positive in every design but significant in
+representation should have. In-domain the emotion route is ahead by a smaller and
+less robust margin (§21: +0.04-0.05, significant on 8 genres, borderline on 5 under the
+strict test); across corpora the margin is about twice that. The PCA-8 control comparison is positive in every design but significant in
 none here (the original zero-shot experiment reached p=0.032 with the regressor trained on
 319 rather than 360 clips -- small implementation choices move single-split numbers by
 0.01-0.04, which is why the bootstrap intervals matter more than the third decimal).
@@ -1225,6 +1226,135 @@ year-controlled partial correlation:
 blockbusters -- and it is about genre, not about anything the soundtrack model does. The
 apparent anger correlation is mediated by genre. Classification quality does not relate to
 gross. For the thesis this is a short paragraph in Discussion, not a result.
+
+## 21. Cross-validation, corrected (two fixes to every in-domain Eerola number)
+
+`experiments/evaluation/exp_cv_corrected.py`, `results/cv_corrected.json`. Same 10x5
+grouped folds as §11, nested-CV-tuned C.
+
+**Two problems found in the §11 protocol.** Neither leaks test data into training; both
+distort the numbers.
+
+*(a) Rare genres are missing from many test folds.* With film-grouped folds, a genre with
+few films is often absent from a test fold entirely:
+
+| genre | films | test folds with no example (of 50) |
+|---|---:|---:|
+| Documentary | 2 | 31 |
+| Biography | 3 | 27 |
+| Comedy | 4 | 17 |
+| Horror | 5 | 15 |
+
+Macro-F1 computed *per fold* scores such a genre 0 in that fold whatever the model does
+(`zero_division=0`). On 5 genres, a fifth of the average is fixed at zero in about a third
+of the folds. Stratification cannot fix it: Comedy has 4 films for 5 folds. **Fix:** the
+five test folds of one repeat cover every clip exactly once, so their out-of-fold
+predictions are pooled and macro-F1 is computed once per repeat, over all clips.
+
+*(b) In-sample emotions for training.* The in-domain predicted-emotion arm trained the
+genre classifier on the forest's predictions for its *own* training clips (which a forest
+fits almost perfectly) and tested it on predictions for unseen films. **Fix:** training
+emotions predicted out-of-fold by an inner GroupKFold over films, as `exp_zero_shot.py`
+already does.
+
+**Check that nothing else changed:** the old per-fold metric, computed from this run's
+predictions, reproduces `statistical_power.json` exactly for all 10 shared arms
+(`reproduction_check.all_match`).
+
+### 21.1 Five genres (329 clips / 41 films) — all six representations on one protocol
+
+| arm | OLD per-fold | **NEW pooled** | 95% CI (film bootstrap) |
+|---|---:|---:|---|
+| ground-truth emotion (11) | 0.397 | **0.428** | [0.371, 0.476] |
+| VGGish → predicted emotion, in-sample-trained (as §11) | 0.394 | 0.422 | [0.370, 0.467] |
+| wav2vec 2.0 → predicted emotion, OOF-trained | 0.387 | 0.419 | [0.367, 0.462] |
+| **VGGish → predicted emotion, OOF-trained** | 0.387 | **0.417** | [0.365, 0.460] |
+| wav2vec 2.0 → predicted emotion, in-sample-trained | 0.383 | 0.414 | [0.361, 0.459] |
+| VGGish-128 direct | 0.350 | 0.377 | [0.325, 0.414] |
+| PCA-8 (VGGish) control | 0.343 | 0.372 | [0.316, 0.416] |
+| AST-768 | 0.345 | 0.371 | [0.326, 0.398] |
+| MIR-103 | 0.341 | 0.363 | [0.318, 0.398] |
+| MusiCNN-200 | 0.338 | 0.363 | [0.311, 0.401] |
+| CLAP-512 | 0.335 | 0.361 | [0.313, 0.400] |
+| wav2vec 2.0 direct | 0.308 | 0.326 | [0.288, 0.356] |
+| dummy | 0.166 | 0.168 | [0.146, 0.185] |
+
+Predicted emotion (OOF-trained) against each alternative:
+
+| vs | NEW diff | p (film bootstrap) | repeats won | OLD diff | p (Nadeau–Bengio) |
+|---|---:|---:|---:|---:|---:|
+| VGGish direct | +0.040 | 0.042 | 10/10 | +0.037 | 0.151 |
+| AST | +0.047 | 0.030 | 10/10 | +0.042 | 0.110 |
+| CLAP | +0.055 | 0.017 | 10/10 | +0.052 | 0.107 |
+| MusiCNN | +0.054 | 0.018 | 10/10 | +0.049 | 0.073 |
+| MIR-103 | +0.054 | 0.036 | 10/10 | +0.046 | 0.070 |
+| wav2vec 2.0 direct | +0.089 | <0.001 | 10/10 | +0.079 | 0.012 |
+| PCA-8 control | +0.045 | 0.029 | 10/10 | +0.044 | 0.122 |
+| ground-truth emotion | −0.011 | 0.325 | 3/10 | −0.010 | 0.497 |
+
+### 21.2 Eight genres (346 clips / 43 films)
+
+| arm | OLD per-fold | **NEW pooled** | 95% CI |
+|---|---:|---:|---|
+| ground-truth emotion (11) | 0.300 | **0.321** | [0.280, 0.352] |
+| VGGish → predicted emotion, OOF-trained | 0.299 | **0.318** | [0.279, 0.344] |
+| AST-768 | 0.257 | 0.276 | [0.243, 0.296] |
+| VGGish-128 direct | 0.250 | 0.268 | [0.229, 0.292] |
+| dummy | 0.101 | 0.102 | [0.086, 0.113] |
+
+| comparison | NEW diff | p (bootstrap) | OLD diff | p (N–B) |
+|---|---:|---:|---:|---:|
+| ground-truth emotion vs AST | +0.046 | 0.008 | +0.043 | 0.031 |
+| ground-truth emotion vs VGGish | +0.054 | <0.001 | +0.050 | 0.005 |
+| predicted emotion vs AST | +0.043 | 0.012 | +0.042 | 0.049 |
+| predicted emotion vs VGGish | +0.051 | <0.001 | +0.049 | 0.011 |
+
+This is the first run of the full audio → emotion → genre pipeline on all 8 genres; §11
+had only ground-truth emotion there. On 8 genres the pipeline beats both direct
+representations even under Nadeau–Bengio.
+
+### 21.3 Ablation, same folds
+The null of §18 holds. All 8 emotions 0.426 (pooled); fear alone 0.433 (p=0.525);
+valence + energy 0.420 (p=0.523); removing any one emotion moves the score by at most
+0.005. One of the 13 comparisons reaches p<0.05 (*removing* tension, +0.005, p=0.010).
+That is the rate chance produces over 13 tests, and the effect is the wrong way round
+for a "necessary emotion". Not a finding.
+
+### 21.4 What changed, and what did not
+
+- **Fix (a) raises every absolute score by 0.02–0.03** (dummy unchanged) and leaves the
+  ranking intact. The per-fold metric was biased low by the structural zeros; the pooled
+  figure is the correct estimate of the level. **Quote the pooled numbers for levels.**
+- **Fix (b) makes no measurable difference.** VGGish in-sample 0.422 vs OOF 0.417
+  (p=0.370); wav2vec 0.414 vs 0.419 (p=0.504). The mismatch was real but did not matter.
+  The OOF-trained arm is the methodologically correct one and is the one to quote.
+- **The effect sizes are stable across both metrics** (differences move by ≤0.008).
+- **The p-values are not.** This is because the *test* changed, not the evidence, and it
+  must not be sold as the fixes "making the result significant":
+  - Nadeau–Bengio accounts for variation in *which films were trained on*. Under it,
+    predicted emotion vs each single representation stays borderline (p=0.07–0.15).
+  - The film bootstrap, the same test the zero-shot result uses, resamples *test films
+    only*, with the fitted models held fixed. It does not include training-set
+    variability, so it is the less conservative of the two. Under it, every comparison
+    is significant.
+  - The test-free fact: in **every one of the 10 repeats**, the pooled score of predicted
+    emotion is higher than that of every direct representation and of the PCA-8 control.
+- **Honest summary for the thesis:** in-domain, the emotion route is consistently ahead
+  of every direct representation by 0.04–0.05. That is significant under the film
+  bootstrap and borderline under the stricter Nadeau–Bengio test. On 8 genres it is
+  significant under both. "Tie in-domain" (earlier wording) understated this; "emotion
+  beats direct audio in-domain" without the caveat overstates it.
+- **The old per-arm intervals were too narrow.** A t-interval over repeat means (e.g.
+  [0.389, 0.400]) reflects only how the films were split, not which films were sampled.
+  The film-bootstrap intervals (e.g. [0.365, 0.460]) are the honest ones. They overlap
+  between arms, while the *paired* differences are consistent. That is the usual
+  situation with a small corpus and is exactly why paired tests exist.
+- **Caveat, 8 genres:** 17% of bootstrap draws are dropped because Documentary (2 films)
+  or Biography (3 films) vanish from the resample. Dropping them conditions on those
+  genres being present; with two films, no resampling scheme can do better.
+
+The §11 tables remain valid as a record of the per-fold protocol and are reproduced
+exactly here. For new writing, use this section.
 
 ## Next steps
 
@@ -1295,5 +1425,5 @@ gross. For the thesis this is a short paragraph in Discussion, not a result.
   `statistical_power.json`, `model_search.json`, `zero_shot.json`,
   `waveform_vs_spectrogram.json`, `w2v_layer_sweep.json`, `blockbuster_deep.json`,
   `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
-  `box_office.json`. Render any of them as Markdown tables with
+  `box_office.json`, `cv_corrected.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.

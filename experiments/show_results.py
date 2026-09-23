@@ -45,6 +45,9 @@ RESULTS_DIR = config.RESULTS_DIR
 DESCRIPTIONS = {
     "statistical_power": "Eerola headline results: 10x5 repeated GroupKFold, default vs "
                          "nested-CV-tuned C (progress log section 11)",
+    "cv_corrected": "Eerola re-run with the two CV corrections: pooled per-repeat "
+                    "macro-F1 and out-of-fold emotion training; old vs new side by side "
+                    "(section 21)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "

@@ -131,6 +131,25 @@ for value, nd, sign, label in round3:
     elif len(where) == 1:
         notes.append(f'{label} = {quoted} is quoted only in docs/{where[0]}')
 
+# ------------------------------ 2d. the corrected CV run (log section 21) --
+# cv_corrected.json re-scores the statistical_power folds; its own reproduction check
+# must hold, or its corrected numbers cannot be attributed to the two fixes alone.
+cc = j('cv_corrected')
+if not cc['reproduction_check']['all_match']:
+    problems.append('[cv_corrected] old-metric figures no longer reproduce '
+                    'statistical_power.json -- the two runs are not comparable')
+for block, name in [('subset5', 'ground-truth emotion(11) [ceiling]'),
+                    ('subset5', 'VGGish -> predicted emotion(11), OOF-trained'),
+                    ('subset5', 'VGGish-128 (direct)'), ('subset5', 'AST-768'),
+                    ('full8', 'ground-truth emotion(11)'),
+                    ('full8', 'VGGish -> predicted emotion(11), OOF-trained'),
+                    ('full8', 'AST-768')]:
+    quoted = f"{cc[block]['arms'][name]['mean']:.3f}"
+    for doc_name, text in (('current_state.md', cs), ('README.md', log)):
+        if quoted not in text:
+            problems.append(f'[cv_corrected] docs/{doc_name} does not quote {quoted} '
+                            f'for {block}: {name}')
+
 # ------------------------------------- 2c. the thesis-ready LaTeX snippets --
 # These are pasted straight into the thesis, so a number that drifts here is a number
 # that drifts into the submitted document. Only the figures at real risk are pinned:

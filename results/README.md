@@ -30,7 +30,8 @@ experiment that follows the same conventions renders without touching it.
 
 | file | what it answers | progress log |
 |---|---|---|
-| `statistical_power.json` | The **headline Eerola results**. Does emotion beat direct audio, and is it significant? Default vs nested-CV-tuned `C`. | §11, §11b |
+| `cv_corrected.json` | **The Eerola results to quote.** The same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side, and a check that the old numbers reproduce exactly. | §21 |
+| `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Does emotion beat direct audio, and is it significant? Default vs nested-CV-tuned `C`. | §11, §11b |
 | `blockbuster_deep.json` | Blockbuster under the **same protocol** as Eerola: repeated CV, tuned `C`, cue-level arms, full 140-feature MIR. | §17 |
 | `zero_shot.json` | **Train on Eerola, test on Blockbuster without training on it.** Also the in-domain reproduction of Ma et al. (2021). | §15 |
 | `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | §16 |
@@ -167,6 +168,7 @@ Every file is reproducible from a clone — seed 42, cached embeddings committed
 
 ```bash
 python experiments/evaluation/exp_statistical_power.py       # statistical_power.json
+python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json (~25 min, 12 cores)
 python experiments/cross_dataset/exp_blockbuster_deep.py     # blockbuster_deep.json
 python experiments/cross_dataset/exp_zero_shot.py            # zero_shot.json
 python experiments/cross_dataset/exp_signature_replication.py

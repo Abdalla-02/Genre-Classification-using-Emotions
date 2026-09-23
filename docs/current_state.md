@@ -297,31 +297,61 @@ F1. Both are now computed on both corpora.
 
 ### 4.1 Eerola — the primary result
 
-10×5 repeated GroupKFold, nested-CV-tuned `C`, 5-genre subset (329 clips / 41 films):
+10×5 repeated GroupKFold by film, nested-CV-tuned `C`, 5-genre subset (329 clips / 41
+films). **Use the "corrected" column** (technical log, section 21): macro-F1 on out-of-fold predictions
+pooled per repeat, with the genre stage trained on out-of-fold emotions. The "original"
+column is the per-fold metric of `statistical_power.json`, which rare genres missing from
+test folds biased low. The corrected run reproduces it exactly, so the two differ only by
+the fixes.
 
-| approach | Macro-F1 | 95 % CI |
-|---|---:|---|
-| ground-truth emotion(11) — ceiling of the emotion path | **0.397** | [0.388, 0.407] |
-| VGGish → predicted emotion(11) — the real pipeline | 0.394 | [0.389, 0.400] |
-| VGGish-128, direct | 0.350 | [0.335, 0.365] |
-| AST-768, direct | 0.345 | [0.328, 0.361] |
-| PCA-8 of VGGish — "any 8-d bottleneck" control | 0.343 | [0.330, 0.355] |
-| CLAP-512, direct | 0.335 | [0.323, 0.347] |
-| dummy | 0.166 | [0.165, 0.167] |
+| approach | original | **corrected** | 95 % CI (film bootstrap) |
+|---|---:|---:|---|
+| ground-truth emotion(11) — ceiling of the emotion path | 0.397 | **0.428** | [0.371, 0.476] |
+| VGGish → predicted emotion(11) — the real pipeline | 0.394 | **0.417** | [0.365, 0.460] |
+| wav2vec 2.0 → predicted emotion(11) | — | 0.419 | [0.367, 0.462] |
+| VGGish-128, direct | 0.350 | 0.377 | [0.325, 0.414] |
+| PCA-8 of VGGish — "any 8-d bottleneck" control | 0.343 | 0.372 | [0.316, 0.416] |
+| AST-768, direct | 0.345 | 0.371 | [0.326, 0.398] |
+| MIR-103, direct | — | 0.363 | [0.318, 0.398] |
+| MusiCNN-200, direct | — | 0.363 | [0.311, 0.401] |
+| CLAP-512, direct | 0.335 | 0.361 | [0.313, 0.400] |
+| wav2vec 2.0, direct | — | 0.326 | [0.288, 0.356] |
+| dummy | 0.166 | 0.168 | [0.146, 0.185] |
 
-On all 8 genres: **emotion 0.300 vs AST 0.257, p = 0.031** (dummy 0.101).
+(The pipeline's original 0.394 used in-sample training emotions; OOF training gives 0.387
+on the original metric. The difference is not significant, p = 0.37, see below.)
 
-| comparison | Δ | p | folds won | verdict |
-|---|---:|---:|---:|---|
-| emotion vs AST, 8 genres | +0.043 | **0.031** | 92 % | significant |
-| emotion vs CLAP, 5 genres | +0.062 | **0.036** | 86 % | significant |
-| predicted emotion vs PCA-8 control | +0.052 | 0.060 | 88 % | borderline |
-| predicted vs ground-truth emotion | −0.003 | 0.855 | 54 % | **the same** |
-| AST vs CLAP | +0.010 | 0.752 | 62 % | the same |
+On all 8 genres (346 clips / 43 films), corrected: **ground-truth emotion 0.321, the
+full pipeline 0.318, AST 0.276, VGGish 0.268**, dummy 0.102 (original: emotion 0.300,
+AST 0.257, dummy 0.101).
 
-Two things to emphasise: the three pretrained embeddings are **indistinguishable from each
-other**, so the baseline is not a badly chosen model; and **predicted emotions work as well
-as human ratings**, which is what makes the pipeline usable without annotations.
+**Is the emotion route significantly better?** Two tests, and they answer different
+questions:
+
+| comparison | Δ (corrected) | p, Nadeau–Bengio | p, film bootstrap | repeats won |
+|---|---:|---:|---:|---:|
+| predicted emotion vs VGGish direct, 5 genres | +0.040 | 0.151 | **0.042** | 10/10 |
+| predicted emotion vs AST, 5 genres | +0.047 | 0.110 | **0.030** | 10/10 |
+| predicted emotion vs CLAP, 5 genres | +0.055 | 0.107 | **0.017** | 10/10 |
+| predicted emotion vs PCA-8 control, 5 genres | +0.045 | 0.122 | **0.029** | 10/10 |
+| predicted emotion vs AST, **8 genres** | +0.043 | **0.049** | **0.012** | 10/10 |
+| ground-truth emotion vs AST, 8 genres | +0.046 | **0.031** | **0.008** | 10/10 |
+| ground-truth emotion vs CLAP, 5 genres | +0.066 | **0.036** | **0.001** | 10/10 |
+| predicted vs ground-truth emotion, 5 genres | −0.011 | 0.497 | 0.325 | 3/10 |
+| AST vs CLAP | +0.008 | 0.752 | 0.663 | 7/10 |
+
+*Nadeau–Bengio* accounts for which films happened to be in training. It is the stricter
+test, and it leaves the 5-genre comparisons borderline. *Film bootstrap* is the test the
+zero-shot result uses. It resamples the test films only, with the fitted models held
+fixed, so it is less conservative. **The honest statement:** the emotion route is ahead of
+every direct representation by 0.04–0.05 in every single repeat. That is significant on 8
+genres under both tests, and on 5 genres under the film bootstrap only. The effect sizes
+are the same under both metrics; only the test differs.
+
+Two things to emphasise: the five audio representations are **indistinguishable from
+each other** (0.361–0.377 corrected), so the baseline is not a badly chosen model; and
+**predicted emotions work as well as human ratings** (−0.011, p = 0.33), which is what
+makes the pipeline usable without annotations.
 
 ### 4.2 One shared genre space (note D)
 
@@ -519,7 +549,8 @@ interpretability, not accuracy. Better to say it than to be asked.
 
 The advantage holds in **both** transfer directions and vanishes when both corpora are in
 training. It is a *generalisation* advantage — exactly what a corpus-independent
-representation should give — and consistent with the in-domain ties.
+representation should give. In-domain the emotion route is ahead too, but by less
+(0.04–0.05) and less robustly (§4.1); across corpora the margin roughly doubles (+0.11).
 
 ### 4.10 Box office (exploratory, n = 37)
 
@@ -539,6 +570,9 @@ the models better.** This is worth stating plainly rather than quietly updating.
 | emotion vs AST "within noise", p = 0.62 | **significant, p = 0.031** | 5 folds cannot resolve that gap; 50 folds + tuned `C` can |
 | "0.281 is a robust ceiling" | ceiling is 0.299 | regularisation had never been tested; tuning alone beats it |
 | predicted-emotion pipeline 0.406 | 0.394 | one optimistic split; 50 folds regress it |
+| every Eerola in-domain score (e.g. pipeline 0.394, AST 0.345) | **+0.02–0.03 higher** (0.417, 0.371) | macro-F1 per fold scored rare genres 0 whenever a test fold lacked them; now pooled per repeat (technical log, section 21). Ranking and effect sizes unchanged |
+| per-arm 95 % CIs, e.g. [0.389, 0.400] | much wider, e.g. [0.365, 0.460] | the old interval only reflected how films were split into folds, not which films were sampled; the film bootstrap is the honest interval |
+| "tie in-domain" | ahead in every repeat; significant on 8 genres, borderline on 5 under the strict test | the full pipeline was run on 8 genres for the first time, and both tests are now reported (§4.1) |
 | 338 clips | 346 clips | corrected inclusion rule |
 | **VGGish 0.582 ≫ MFCC 0.455 on Blockbuster** | **VGGish 0.593 vs full MIR 0.585, p = 0.787** | see below |
 | Blockbuster emotion 0.565, behind VGGish 0.582 | emotion 0.616, VGGish 0.593 | proper protocol + per-cue bridging |

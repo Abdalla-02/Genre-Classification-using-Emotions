@@ -89,6 +89,7 @@ python experiments/audit_consistency.py
 | Script | Purpose | Log |
 |---|---|---|
 | `exp_statistical_power.py` | Repeated GroupKFold, confidence intervals, corrected significance tests, nested-CV tuning | §11 |
+| `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check | §21 |
 
 **`evaluation/exp_statistical_power.py` supersedes the single-run numbers** printed by
 the scripts in `genre/` and `cross_dataset/`: it re-scores the same arms over 50
