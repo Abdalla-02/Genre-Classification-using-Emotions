@@ -203,6 +203,10 @@ def main() -> None:
     ap.add_argument("--splits", type=int, default=5)
     ap.add_argument("--stage1-only", action="store_true")
     args = ap.parse_args()
+    # A reduced debug run writes to a scratch .partial.json (git-ignored) so it can
+    # never replace the results file the documents quote.
+    full = args.repeats >= 5 and args.splits == 5 and not args.stage1_only
+    out_path = RESULTS if full else RESULTS.with_suffix(".partial.json")
     set_seed()
 
     df_all = load_set1(clean=False)          # all 360 clips carry emotion ratings
@@ -213,8 +217,8 @@ def main() -> None:
         out["stage2"] = stage2(df, df["soundtrack"].to_numpy(), args.repeats, args.splits)
 
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    print(f"\nwrote {RESULTS}")
+    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\nwrote {out_path}" + ("" if full else "  (reduced run: scratch file)"))
 
 
 if __name__ == "__main__":

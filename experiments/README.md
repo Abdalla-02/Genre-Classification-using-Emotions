@@ -91,12 +91,14 @@ python experiments/audit_consistency.py
 | `exp_statistical_power.py` | Repeated GroupKFold, confidence intervals, corrected significance tests, nested-CV tuning | §11 |
 | `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check | §21 |
 
-**`evaluation/exp_statistical_power.py` supersedes the single-run numbers** printed by
-the scripts in `genre/` and `cross_dataset/`: it re-scores the same arms over 50
-leakage-safe folds instead of 5 and reports confidence intervals. Where the two disagree,
-quote §11. It is also the only script that writes machine-readable output
-(`results/statistical_power.json`). `diagnostics/exp_model_search.py`,
-`cross_dataset/exp_zero_shot.py`, `features/exp_waveform_vs_spectrogram.py` and
-`features/exp_w2v_layer_sweep.py` likewise write `results/model_search.json`,
-`results/zero_shot.json`, `results/waveform_vs_spectrogram.json` and
-`results/w2v_layer_sweep.json`.
+**Which numbers to quote.** The single-run numbers printed by the older scripts in
+`genre/` and `cross_dataset/` are superseded by the repeated-CV experiments. For Eerola
+in-domain results, quote **`evaluation/exp_cv_corrected.py`** (§21): the same 50 folds as
+`exp_statistical_power.py` (§11), scored on pooled out-of-fold predictions, with both
+significance tests. `exp_statistical_power.py` is kept as the record of the per-fold
+protocol, and the corrected run reproduces it exactly under the old metric.
+
+Eleven scripts write machine-readable output to `results/`; `results/README.md` lists
+them with the command for every experiment. A run with reduced settings (`--repeats 2`,
+`--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
+never replace the numbers the documents quote.

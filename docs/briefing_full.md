@@ -29,7 +29,7 @@ Implementation complete. Open item: content chapters.
 | # | Your note | Status |
 |---|---|---|
 | 1 | Fundamentals: deeper, for a CS student new to ML | **Done.** Three new sections in Overleaf: audio representations (spectrogram, hand-crafted features, the five networks), ML background (regression/classification, multi-label, the two models, overfitting and `C`, the bottleneck), evaluation (grouped/nested/repeated CV, R², macro-F1, chance floors, Cohen's d, significance). |
-| 2 | Remove some emotions, test the difference | **Done -- and it makes NO difference.** Fear alone (0.396) and valence+energy alone (0.387) both match all eight (0.389). This corrected a necessity claim in Fundamentals; see §4.8. |
+| 2 | Remove some emotions, test the difference | **Done -- and it makes NO difference.** Fear alone (0.433) and valence+energy alone (0.420) both match all eight (0.426), on the corrected protocol. This corrected a necessity claim in Fundamentals; see §4.8. |
 | 3 | Cross-validate through the datasets | **Done.** Both transfer directions (E→B p=0.016, B→E p<0.001) and a pooled design. Emotion wins on transfer, ties when both corpora are in training. See §4.9. |
 | 4 | Box office vs classification (Eerola) | **Done, exploratory.** 37 films with gross. The only robust effect is Action films grossing more (p=0.004) -- genre, not soundtrack. Classification quality does not relate to gross. See §4.10. |
 | 5 | Start the next chapters, generally | Skeletons with the factual content are in Overleaf for you to write over. |
@@ -448,18 +448,20 @@ its second transformer block gives **0.324**. The layer choice alone is worth a 
 two — larger than the effect this thesis measures — so reporting the default would have
 dismissed the waveform front-end on an artefact.
 
-Genre results (5-genre subset, 5×5 repeated GroupKFold, tuned `C`):
+Genre results (5-genre subset, the corrected 10×5 run of §4.1, same folds for every
+representation):
 
 | approach | Macro-F1 |
 |---|---:|
-| emotion(11), ground truth | 0.391 |
-| **wav2vec 2.0 → predicted emotion → genre** | **0.376** |
-| VGGish / MIR / AST / CLAP, direct | 0.335–0.342 |
-| **wav2vec 2.0, direct** | **0.300** (last) |
+| emotion(11), ground truth | 0.428 |
+| **wav2vec 2.0 → predicted emotion → genre** | **0.419** |
+| VGGish / AST / MIR / MusiCNN / CLAP, direct | 0.361–0.377 |
+| **wav2vec 2.0, direct** | **0.326** (last) |
 
 So: the waveform model is the weakest representation — **and the emotion bottleneck lifts it
-from last place to second**, +0.076 at p = 0.003, winning **100 % of 25 folds**, ending
-statistically tied with the ground-truth ceiling. The benefit of the emotion intermediate is
+from last place to second**, +0.091, significant under both tests (film bootstrap
+p < 0.001, Nadeau–Bengio p = 0.012), in **all 10 repeats**, ending statistically tied with
+the ground-truth ceiling (−0.009, p = 0.46). The benefit of the emotion intermediate is
 not a property of one embedding; it is largest exactly where the representation is weakest.
 
 *Honest caveat:* wav2vec 2.0 was pretrained on speech while AST and VGGish saw AudioSet
@@ -526,14 +528,15 @@ absolute magnitude.
 ### 4.8 Emotion ablation — none of them is necessary
 
 Removing any single emotion, or reducing to almost any subset, leaves the 5-genre
-Macro-F1 unchanged:
+Macro-F1 unchanged (corrected 10×5 run of §4.1; the original 5×5 per-fold run gave the
+same null at lower levels: 0.389 / 0.387 / 0.396):
 
-| features | Macro-F1 | vs all 8 | p |
+| features | Macro-F1 | vs all 8 | p (bootstrap) |
 |---|---:|---:|---:|
-| all 8 emotions | 0.389 | | |
-| **valence + energy only** | **0.387** | −0.002 | 0.891 |
-| **fear only** | **0.396** | +0.007 | 0.608 |
-| without any one emotion | 0.388–0.395 | ≤ ±0.007 | > 0.40 |
+| all 8 emotions | 0.426 | | |
+| **valence + energy only** | **0.420** | −0.006 | 0.52 |
+| **fear only** | **0.433** | +0.007 | 0.53 |
+| without any one emotion | 0.423–0.431 | ≤ ±0.005 | one of 8 below 0.05 (removing tension, +0.005) — chance over 13 tests |
 
 The ratings are strongly intercorrelated (fear ↔ tension ↔ −valence), so the genre signal
 is recoverable from almost any pair. **This corrected the Fundamentals chapter**, which had
@@ -659,9 +662,9 @@ Each snippet also carries its own entry in a header comment, so it stays self-co
 The genre classifier is trained on the forest's **in-sample** emotion predictions
 (R² ≈ 0.94 on training clips) but evaluated on **out-of-sample** ones (R² ≈ 0.60). That is
 a train/test *distribution* mismatch, not leakage — no test clip or label influences either
-fit, so the score remains an honest generalisation estimate. The direction matters: the
-classifier is calibrated on clean features and then handed noisy ones, so 0.394 is if
-anything a slight under-estimate.
+fit, so the score remains an honest generalisation estimate. **Now fixed** (technical log, section 21): the in-domain run trains on out-of-fold
+emotions as well. It made no measurable difference, 0.417 against 0.422 with in-sample
+training (p = 0.37), so the mismatch was real but harmless.
 
 The zero-shot experiment **fixes this properly**, training the genre stage on out-of-fold
 predicted emotions. And it turns out to matter under transfer: training on predictions
@@ -697,16 +700,14 @@ stays PyTorch-only.
 
 **And it does not win.** Emotion regression R² = 0.541 — above hand-crafted MIR (0.490)
 and far above wav2vec 2.0 (0.323), but below AST, CLAP and VGGish (0.558–0.561). On genre
-it scores 0.340, statistically inseparable from VGGish (0.342), MIR (0.339), AST (0.338)
-and CLAP (0.335). *(These genre figures are from the 5×5 table in §4.5, which is the run
-all six representations went through together. The headline §4.1 table is a longer 10×5
-run of a smaller set of arms, which is why VGGish reads 0.350 there and 0.342 here — same
-data, more repeats, not a different result.)*
+it scores 0.363, statistically inseparable from VGGish (0.377), AST (0.371), MIR (0.363)
+and CLAP (0.361) — all from the corrected run of §4.1, where every representation shares
+the same 10×5 folds.
 
 That negative result is worth more than a win would have been. The thesis's claim is no
-longer "emotion beats AST" but **"emotion (0.391) beats every audio representation we
-could find"** — general-purpose, audio-text, music-specific and hand-crafted alike, all
-of which cluster at 0.335–0.342. A supervisor asking "did you just pick a weak baseline?"
+longer "emotion beats AST" but **"emotion (0.417 predicted, 0.428 from the ratings) is ahead
+of every audio representation we could find"** — general-purpose, audio-text,
+music-specific and hand-crafted alike, all of which cluster at 0.361–0.377. A supervisor asking "did you just pick a weak baseline?"
 now has a five-model answer. MusiCNN is also the best of all representations on *energy*
 (R² 0.687), which is a sensible thing for a music-tagging model to be good at.
 

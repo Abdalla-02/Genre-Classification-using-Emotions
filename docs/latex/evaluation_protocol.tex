@@ -139,6 +139,14 @@ protocol is therefore \textbf{$10\times5$ repeated GroupKFold}: the assignment o
 folds is re-randomised in each of ten repeats, giving 50 leakage-safe folds. Every system
 being compared is scored on the \emph{same} folds, so all comparisons are properly paired.
 
+Grouping by film has a consequence for how a repeat is scored. A genre represented by only
+a few films is absent from many test folds entirely --- Comedy, with four films, has no
+clip in 17 of the 50 --- and macro-F1 computed fold by fold would score such a genre as
+zero there, whatever the model predicts. Each repeat is therefore scored \textbf{once, on
+its pooled out-of-fold predictions}: its five test folds together contain every clip
+exactly once, so every genre is present. Fold-by-fold scoring lowers the score of every
+model by about $0.02$--$0.03$ while leaving the ranking unchanged.
+
 Hyperparameters are selected by \textbf{nested cross-validation}. The inverse
 regularisation strength $C$ of the logistic regression is chosen by an inner GroupKFold
 \emph{within each training fold}, so the test fold never participates in the choice.
@@ -148,23 +156,32 @@ is not cosmetic --- sklearn's default $C=1.0$ turned out to be the worst setting
 feature set, and it handicapped the high-dimensional embedding baselines more than the
 eleven-dimensional emotion features, i.e.\ in the direction that would have flattered this
 thesis's hypothesis. Any dimensionality reduction (PCA) and the Stage-1 emotion regressor
-are likewise fitted inside the training fold only.
+are likewise fitted inside the training fold only, and where the genre classifier is
+trained on \emph{predicted} emotions, the emotions of the training clips are themselves
+predicted out-of-fold by an inner cross-validation over the training films.
 
 \subsection{Significance testing}
 
-Two statistics accompany every headline comparison.
+Confidence intervals come from a \textbf{bootstrap over films}: the films are resampled
+with replacement 2000 times and the pooled predictions re-scored on each resample. Films
+rather than clips are resampled because clips of the same film are not independent. The
+interval therefore reflects the finite set of films the corpus happens to contain, which an
+interval over repeat means --- reflecting only how the films were split into folds ---
+would not.
 
-Confidence intervals are computed over the \textbf{ten per-repeat means} rather than over
-the 50 individual folds, because folds within a repeat share training data and are not
-independent observations.
-
-For paired comparisons, a naive $t$-test over the 50 folds is anti-conservative for the
-same reason: resampled folds overlap, so the variance of the difference is underestimated
-and $p$-values come out too small. The \textbf{corrected resampled $t$-test} of
-\citet{nadeau2003inference} is used instead, which inflates the variance estimate by the
-train/test overlap factor. A nonparametric \textbf{win rate} --- the fraction of the 50
-folds on which one system beats the other --- is reported alongside it, since it makes no
-distributional assumption and is easy to interpret.
+Paired comparisons are reported under \textbf{two tests}, because they answer different
+questions. The \textbf{paired film bootstrap} applies the same resampling to the difference
+between two systems, with the trained models held fixed, and asks how much the difference
+depends on which films make up the corpus; it is also the test used for the cross-corpus
+results, where there is only one train/test split. The \textbf{corrected resampled
+$t$-test} of \citet{nadeau2003inference}, computed on the 50 per-fold scores, additionally
+accounts for which films the models happened to be trained on and is the more conservative
+of the two. A naive $t$-test over the 50 folds would be anti-conservative: resampled folds
+overlap, so the variance of the difference is underestimated and $p$-values come out too
+small. The Nadeau--Bengio correction inflates the variance estimate by the train/test
+overlap factor. Where the two tests disagree, both are reported. The number of the ten
+repeats in which one system scores higher than the other is given alongside, since it
+makes no distributional assumption and is easy to interpret.
 
 One further quantity is reported for non-significant comparisons: the limiting $p$-value
 $p_{\text{limit}}$ that the corrected test converges to as the number of repeats grows
@@ -191,4 +208,7 @@ All random seeds are fixed at 42; audio embeddings are extracted once, cached pe
 version-controlled, so every result is reproducible from a clone without re-running any
 neural network over the audio. Each experiment is a self-contained script, and the
 headline experiments write their complete per-fold scores to machine-readable JSON so that
-reported aggregates can be re-derived independently of the prose.
+reported aggregates can be re-derived independently of the prose. The corrected run that
+produces the in-domain figures re-scores exactly the folds of the earlier per-fold run and
+checks that it reproduces that run's figures under the old metric, so that every difference
+between the two is attributable to the corrections alone.

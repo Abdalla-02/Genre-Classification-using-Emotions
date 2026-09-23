@@ -191,6 +191,10 @@ def main() -> None:
     ap.add_argument("--quick", action="store_true",
                     help="skip the 110-fold leave-one-out in-domain reference")
     args = ap.parse_args()
+    # A reduced debug run writes to a scratch .partial.json (git-ignored) so it can
+    # never replace the results file the documents quote.
+    full = not args.quick
+    out_path = RESULTS if full else RESULTS.with_suffix(".partial.json")
     set_seed()
     out: dict = {"shared_genres": G}
 
@@ -366,8 +370,8 @@ def main() -> None:
 
     out = strip(out)
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    print(f"\nwrote {RESULTS}")
+    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\nwrote {out_path}" + ("" if full else "  (reduced run: scratch file)"))
 
 
 if __name__ == "__main__":

@@ -597,11 +597,16 @@ traps for anyone reading the repository later.
    threshold analysis can use the shared wrapper. (`exp5_target` and the Exp-5 half of
    `exp_clip_length` keep their own estimator deliberately: those solve a *single-label
    12-class balanced* task, where the multi-label binary-relevance model does not apply.)
-5. **[OPEN] Most experiments still print results instead of writing them.** Only
-   `exp_statistical_power`, `exp_model_search` write JSON to `results/`. This is the
+5. **[PARTLY FIXED] Most experiments printed results instead of writing them.** Every
+   headline experiment now writes JSON to `results/` (eleven files, all listed in
+   `results/README.md`). Fourteen diagnostic scripts still only print; nothing the
+   documents quote as a result comes from them without a saved counterpart. This is the
    mechanism that let §7d's unreproducible table sit in this log undetected.
-6. **[OPEN] Short debug runs overwrite the authoritative results files.**
-   `exp_statistical_power.py --repeats 2` silently replaces `results/statistical_power.json`.
+6. **[FIXED] Short debug runs overwrote the authoritative results files.** Every script
+   that writes a results file and accepts reduced settings (`--repeats`, `--splits`,
+   `--quick`, `--stage1-only`) now writes a run with non-default settings to a
+   git-ignored `<name>.partial.json` instead. Tested: `exp_emotion_ablation.py
+   --repeats 1` leaves `emotion_ablation.json` byte-identical.
 
 ## 13. Experiment 4 — rating reliability, Set 1 vs Set 2 (done)
 
@@ -1370,21 +1375,19 @@ exactly here. For new writing, use this section.
   carries its BibTeX entry in a header comment, so a snippet stays self-contained if it is
   pasted into a different project. Note `eerola2011genrespecific` is a *different* paper
   from `eerola2011comparison` (same author, same year) — keep both keys.
-- **More films** — §11 shows the remaining non-significance is corpus-bound, not
-  resampling-bound (p_limit > 0.05 with infinite repeats), and §7e shows both learning
-  curves still rising. Extending the corpus is the only lever left on the headline claims.
-- **Remaining defects (§12, items 1-2 and 5-6 still open):** `extract_features.py` writes
-  three artifacts nothing reads, one of which (`set1_ast.npy`) disagrees with the per-clip
-  cache the experiments actually use; clip durations differ by ~0.09 s depending on whether
-  the cache was warm; most experiments still only print their results; and a short debug
-  run of `exp_statistical_power` overwrites the authoritative results file. None affects a
-  reported result. Items 3-4 (VGGish/MIR reproducibility, the duplicated logistic-regression
-  definitions) are fixed.
+- **More films** — §11 and §21 show the remaining non-significance is corpus-bound, not
+  resampling-bound: for every borderline in-domain comparison p_limit > 0.05, so no
+  number of repeats could settle it. §7e shows both learning curves still rising.
+  Extending the corpus is the only lever left on the headline claims.
+- **Remaining defects (§12):** only item 5 remains, partly — fourteen diagnostic scripts
+  still only print their tables. None affects a reported result. Items 1–4 and 6 are
+  fixed.
 - **Tests** — there are none beyond the loader's count assertions. Three cheap ones would
   pay for themselves: loader counts, `align_sets` invariants (102 rows, link integrity),
   and `RepeatedGroupKFold` never splitting a film across folds.
-- **Optional:** Blockbuster full-140-MIR / mean+std pooling; emotion-regressor tuning
-  (only the classifier's C is tuned so far); widen the C grid below 0.003.
+- **Optional:** mean+std pooling of Blockbuster cues (the full 140-feature MIR set is done,
+  §17); emotion-regressor tuning (only the classifier's C is tuned so far); widen the C
+  grid below 0.003, since 0.003 is the most frequent choice.
   ~~Set 1 vs Set 2 diff (Exp 4)~~ — done, see §13.
 
 ## Repository map
@@ -1409,7 +1412,8 @@ exactly here. For new writing, use this section.
     `exp_learning_curve`, `exp_clip_length`, `exp_box_office`
   - `cross_dataset/` — `exp_blockbuster`, `exp_blockbuster_emotion`, `exp_zero_shot`,
     `exp_blockbuster_deep`, `exp_signature_replication`, `exp_cross_dataset_cv`
-  - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
+  - `evaluation/` — `exp_cv_corrected` (the in-domain numbers to quote, §21) and
+    `exp_statistical_power` (supersedes the single-run numbers from
     `genre` / `cross_dataset`)
 - `docs/` — this log; `current_state.md` (the update for the latest supervisor meeting);
   `briefing_full.md` (the complete supervisor briefing — supersedes the older

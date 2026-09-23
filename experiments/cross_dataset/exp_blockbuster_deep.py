@@ -211,6 +211,10 @@ def main() -> None:
     ap.add_argument("--splits", type=int, default=5)
     ap.add_argument("--rf-repeats", type=int, default=3)
     args = ap.parse_args()
+    # A reduced debug run writes to a scratch .partial.json (git-ignored) so it can
+    # never replace the results file the documents quote.
+    full = args.repeats >= 10 and args.splits == 5 and args.rf_repeats >= 3
+    out_path = RESULTS if full else RESULTS.with_suffix(".partial.json")
     set_seed()
 
     film = load_blockbuster()
@@ -293,7 +297,7 @@ def main() -> None:
                      s_rf, args.splits, arms_rf)
 
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS.write_text(json.dumps({
+    out_path.write_text(json.dumps({
         "design": {"n_repeats": args.repeats, "n_splits": args.splits,
                    "scheme": "RepeatedKFold over films", "metric": "macro_f1",
                    "seed": config.SEED, "n_films": n_films,
@@ -305,7 +309,7 @@ def main() -> None:
                           "per_fold": {k: v.tolist() for k, v in s_rf.items()}},
         "random_guess_floor": rg,
     }, indent=2), encoding="utf-8")
-    print(f"\nwrote {RESULTS}")
+    print(f"\nwrote {out_path}" + ("" if full else "  (reduced run: scratch file)"))
 
 
 if __name__ == "__main__":

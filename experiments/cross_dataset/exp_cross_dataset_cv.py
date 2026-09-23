@@ -114,6 +114,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repeats", type=int, default=5)
     args = ap.parse_args()
+    # A reduced debug run writes to a scratch .partial.json (git-ignored) so it can
+    # never replace the results file the documents quote.
+    full = args.repeats >= 5
+    out_path = RESULTS if full else RESULTS.with_suffix(".partial.json")
     set_seed()
     out = {}
 
@@ -221,8 +225,8 @@ def main() -> None:
                      "per_fold": {k: v.tolist() for k, v in scores.items()}}
 
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    RESULTS.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    print(f"\nwrote {RESULTS}")
+    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print(f"\nwrote {out_path}" + ("" if full else "  (reduced run: scratch file)"))
 
 
 if __name__ == "__main__":

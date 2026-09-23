@@ -43,8 +43,8 @@ RESULTS_DIR = config.RESULTS_DIR
 
 # One-line description per results file, shown by the listing and as a table caption.
 DESCRIPTIONS = {
-    "statistical_power": "Eerola headline results: 10x5 repeated GroupKFold, default vs "
-                         "nested-CV-tuned C (progress log section 11)",
+    "statistical_power": "Original Eerola run, per-fold metric: 10x5 repeated GroupKFold, "
+                         "default vs tuned C. Superseded for levels by cv_corrected (section 11)",
     "cv_corrected": "Eerola re-run with the two CV corrections: pooled per-repeat "
                     "macro-F1 and out-of-fold emotion training; old vs new side by side "
                     "(section 21)",
@@ -54,8 +54,8 @@ DESCRIPTIONS = {
                  "in-domain reproduction of Ma et al. (section 15)",
     "cross_dataset_cv": "Cross-validation in every direction: Eerola->Blockbuster, the "
                         "reverse, and both corpora pooled (section 19)",
-    "waveform_vs_spectrogram": "wav2vec 2.0 (raw waveform) against the four "
-                               "spectrogram-based representations (section 16)",
+    "waveform_vs_spectrogram": "wav2vec 2.0 (raw waveform) against the five other "
+                               "representations; its genre part is superseded by cv_corrected (section 16)",
     "w2v_layer_sweep": "Which wav2vec 2.0 layer to pool -- the control behind section 16",
     "signature_replication": "Do the Eerola emotion-genre signatures reappear on "
                              "Blockbuster? (section 17.5)",
