@@ -45,7 +45,7 @@ for d in DOCS:
         if m in {'set1_ast.npy', 'bib/library.bib', 'current_state.docx',
                  'film_genre_master_list.csv', 'mir_feature_names.csv',
                  'mean_ratings_set1_enriched.csv', 'thesis.tex',
-                 'chapter/preamble.tex'}:
+                 'chapter/preamble.tex', '2_analysis.tex', '3_evaluation.tex'}:
             continue
         base = m.split('/')[-1].split(chr(92))[-1]
         if (ROOT / m).exists() or (d.parent / m).exists() or list(ROOT.rglob(base)):

@@ -78,7 +78,7 @@ $r_{xx}$, the largest attainable coefficient of determination is $r_{xx}$ itself
 $0.897$ on average. Consistency rather than absolute agreement is the appropriate
 quantity, since the regression is scored against a single set's ratings and a constant
 offset between panels does not reduce the variance explainable within that set. The random
-forest reaches a mean $R^2$ of $0.560$ (Section~\ref{subsec:emotion_regression}), that is
+forest reaches a mean $R^2$ of $0.560$ (Section~\ref{sec:eval_emotion}), that is
 about $62\,\%$ of the attainable variance.
 
 Two conclusions follow. First, a coefficient of determination near unity was never
@@ -87,6 +87,6 @@ against $1.0$. Second, and less comfortably, rating noise does \emph{not} accoun
 shortfall: with more than a third of the attainable variance still unexplained, the
 limiting factor is the audio representation and the amount of training data rather than
 the quality of the labels. This agrees with the learning-curve analysis in
-Section~\ref{subsec:learning_curve}, where performance had not plateaued at the full
-corpus size, and it is consistent with the range reported for music emotion recognition
+Section~\ref{sec:eval_genre}, where performance had not plateaued at the full
+dataset size, and it is consistent with the range reported for music emotion recognition
 generally \citep{kang2025there}.
