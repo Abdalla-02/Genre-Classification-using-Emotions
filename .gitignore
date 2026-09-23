@@ -228,7 +228,7 @@ ehthumbs_vista.db
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
-# isolated environment for the MusiCNN feasibility test (TensorFlow; see docs/current_state.md)
+# isolated environment for the MusiCNN feasibility test (TensorFlow; see docs/briefing_full.md, section 7b)
 .venv-musicnn/
 # MusiCNN .h5 weights: 3.3 MB each, re-downloaded automatically by extract_musicnn.py
 data/processed/musicnn_checkpoints/

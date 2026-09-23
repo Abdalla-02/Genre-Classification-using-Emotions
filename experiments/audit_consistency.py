@@ -5,7 +5,7 @@ silently and are embarrassing to discover late:
 
   1. every file path quoted in the documents (Markdown and the LaTeX snippets) resolves
      to a file that exists;
-  2. every headline number quoted in docs/current_state.md matches results/*.json to
+  2. every headline number quoted in docs/briefing_full.md matches results/*.json to
      three decimals -- this catches a table updated in one place but not another;
      2b does the same for the round-3 results across BOTH documents, and 2c for the
      thesis-ready snippets in docs/latex/, which are pasted into the submitted document;
@@ -15,6 +15,7 @@ silently and are embarrassing to discover late:
   5. all five embedding caches hold 360 clips;
   6. no file in the working tree has CRLF endings (the repo is LF);
   7. every section cross-reference in the docs points at a heading that exists;
+     7c: the short briefing, docs/current_state.md, quotes its numbers correctly;
   8. every results/*.json is listed in results/README.md and named in docs/README.md;
   9. every results/*.json still renders through show_results.py, which is shape-driven
      and therefore drops an unrecognised block silently rather than failing.
@@ -39,7 +40,6 @@ for d in DOCS:
     for m in path_re.findall(text):
         if m.startswith(('http', 'word/')) or '<' in m:
             continue
-        # historical / external references that intentionally do not resolve locally
         # Files that live on Overleaf, or historical references that intentionally
         # do not resolve inside this repository.
         if m in {'set1_ast.npy', 'bib/library.bib', 'current_state.docx',
@@ -73,7 +73,9 @@ w = j('waveform_vs_spectrogram')
 for k, v in w['stage1'].items(): expected[f'r2:{k}'] = v['mean_r2']
 for k, v in w['stage2']['arms'].items(): expected[f'wg:{k}'] = v['mean']
 
-cs = io.open(ROOT / 'docs' / 'current_state.md', encoding='utf-8', newline='').read()
+# The full briefing carries every headline number; current_state.md is the short
+# update for the latest meeting and is checked separately (7c).
+cs = io.open(ROOT / 'docs' / 'briefing_full.md', encoding='utf-8', newline='').read()
 checks = [
     ('0.397', 'sp5:ground-truth emotion(11) [ceiling]'), ('0.394', 'sp5:VGGish -> PREDICTED emotion(11)'),
     ('0.350', 'sp5:VGGish-128 (direct)'), ('0.345', 'sp5:AST-768'),
@@ -97,7 +99,7 @@ for quoted, key in checks:
     if actual != quoted:
         problems.append(f'[number drift] briefing says {quoted} for {key}, JSON says {actual}')
     if quoted not in cs:
-        notes.append(f'[not quoted] {quoted} ({key}) absent from current_state.md')
+        notes.append(f'[not quoted] {quoted} ({key}) absent from briefing_full.md')
 
 # ------------------------------- 2b. the round-3 results, in BOTH documents --
 # The briefing and the technical log both quote these; whichever is edited alone drifts.
@@ -125,7 +127,7 @@ round3 = [   # (value, decimals, sign, label)
 ]
 for value, nd, sign, label in round3:
     quoted = f'{value:{sign}.{nd}f}'
-    where = [n for n, t in (('current_state.md', cs), ('README.md', log)) if quoted in t]
+    where = [n for n, t in (('briefing_full.md', cs), ('README.md', log)) if quoted in t]
     if not where:
         problems.append(f'[unquoted result] {label} = {quoted} appears in neither document')
     elif len(where) == 1:
@@ -145,7 +147,7 @@ for block, name in [('subset5', 'ground-truth emotion(11) [ceiling]'),
                     ('full8', 'VGGish -> predicted emotion(11), OOF-trained'),
                     ('full8', 'AST-768')]:
     quoted = f"{cc[block]['arms'][name]['mean']:.3f}"
-    for doc_name, text in (('current_state.md', cs), ('README.md', log)):
+    for doc_name, text in (('briefing_full.md', cs), ('README.md', log)):
         if quoted not in text:
             problems.append(f'[cv_corrected] docs/{doc_name} does not quote {quoted} '
                             f'for {block}: {name}')
@@ -188,7 +190,7 @@ else:
         if abs(got - quoted) > 5e-4:
             problems.append(f'[zs bootstrap] docs quote {quoted} for {label}, JSON {got}')
         if f'{quoted:.3f}' not in cs:
-            problems.append(f'[zs bootstrap] {quoted} not quoted in current_state.md')
+            problems.append(f'[zs bootstrap] {quoted} not quoted in briefing_full.md')
 
 # ------------------------------------------------------- 4. dataset counts --
 from src import config
@@ -217,7 +219,8 @@ for line in out:
         if b'\r' in p.read_bytes(): problems.append(f'[CRLF] {f}')
 
 # --------------------------------------------------------- 7. section refs --
-for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'current_state.md'):
+for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'briefing_full.md',
+            ROOT / 'docs' / 'current_state.md'):
     text = io.open(doc, encoding='utf-8', newline='').read()
     have = set(re.findall(r'^#{2,3} (\d+[a-z]?)[.b]', text, re.M)) |            set(re.findall(r'^#{2,3} (\d+\.\d+)', text, re.M)) |            set(re.findall(r'^### (\d+[a-z])\.', text, re.M))
     bases = {h.split('.')[0].rstrip('abcdef') for h in have}
@@ -226,15 +229,46 @@ for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'current_state.md'):
             problems.append(f'[bad section ref] {doc.name} §{ref}')
 
 # ------------------------------- 7b. the exported briefing copies are stale --
-# docs/current_state.{docx,pdf} are exports of an older revision of current_state.md.
+# docs/current_state.{docx,pdf} are exports of an older revision of the full briefing,
+# which is now docs/briefing_full.md.
 # They cannot be regenerated here (no pandoc), so this reports rather than fails -- but
 # handing someone the PDF would hand them superseded numbers.
-md = ROOT / 'docs' / 'current_state.md'
+md = ROOT / 'docs' / 'briefing_full.md'
 for ext in ('docx', 'pdf'):
-    p = md.with_suffix('.' + ext)
+    p = ROOT / 'docs' / f'current_state.{ext}'
     if p.exists() and p.stat().st_mtime < md.stat().st_mtime:
-        notes.append(f'current_state.{ext} is older than current_state.md -- an obsolete '
+        notes.append(f'current_state.{ext} is older than briefing_full.md -- an obsolete '
                      f'export; the Markdown is authoritative')
+
+# ------------------------ 7c. the short briefing for the latest meeting --
+# docs/current_state.md is what the supervisor reads first. Every number it quotes is
+# pinned here against its results file, so the short version cannot drift from the full
+# one without the audit noticing.
+cur = io.open(ROOT / 'docs' / 'current_state.md', encoding='utf-8', newline='').read()
+xc = j('cross_dataset_cv')
+short = [
+    (cc['subset5']['arms']['VGGish -> predicted emotion(11), OOF-trained']['mean'], 3, '', 'pipeline, 5 genres'),
+    (cc['subset5']['arms']['VGGish-128 (direct)']['mean'], 3, '', 'VGGish direct, 5 genres'),
+    (cc['subset5']['arms']['ground-truth emotion(11) [ceiling]']['mean'], 3, '', 'ratings, 5 genres'),
+    (cc['full8']['arms']['VGGish -> predicted emotion(11), OOF-trained']['mean'], 3, '', 'pipeline, 8 genres'),
+    (cc['full8']['arms']['AST-768']['mean'], 3, '', 'AST, 8 genres'),
+    (cc['ablation']['arms']['all 8 emotions [reference]']['mean'], 3, '', 'ablation: all 8'),
+    (cc['ablation']['arms']['fear only']['mean'], 3, '', 'ablation: fear only'),
+    (cc['ablation']['arms']['valence + energy (2-d circumplex)']['mean'], 3, '', 'ablation: valence+energy'),
+    (xc['eerola_to_blockbuster']['arms']['VGGish -> emotion (per cue) -> genre']['macro_f1'], 3, '', 'E->B emotion'),
+    (xc['eerola_to_blockbuster']['emotion_vs_direct']['diff'], 3, '+', 'E->B emotion vs direct'),
+    (xc['blockbuster_to_eerola']['emotion_vs_direct']['diff'], 3, '+', 'B->E emotion vs direct'),
+    (zs['zero_shot']['strict (source scaler)']['VGGish -> predicted emotion(11), per-cue']['macro_f1'], 3, '', 'zero-shot emotion'),
+    (zs['zero_shot']['strict (source scaler)']['VGGish-128 direct']['macro_f1'], 3, '', 'zero-shot direct'),
+    (zs['bootstrap']['strict (source scaler)']['VGGish -> predicted emotion(11), per-cue vs VGGish direct']['diff_mean'], 3, '+', 'zero-shot margin'),
+    (bo['n_films'], 0, '', 'box office: n films'),
+    (bo['A_f1_vs_gross']['rho'], 2, '+', 'box office: F1 vs gross'),
+]
+for value, nd, sign, label in short:
+    quoted = f'{value:{sign}.{nd}f}'
+    if quoted not in cur:
+        problems.append(f'[current_state] {label}: the results say {quoted}, '
+                        f'which docs/current_state.md does not quote')
 
 # ------------------------------------- 8. every results file is documented --
 readme = io.open(R / 'README.md', encoding='utf-8', newline='').read()

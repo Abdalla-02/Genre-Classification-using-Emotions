@@ -3,9 +3,10 @@
 The **full technical log**: every experiment, every result, every decision with its
 justification. Kept up to date as work proceeds.
 
-> **Looking for the short version?** `current_state.md` is the supervisor briefing — the
-> supervisor's notes and their status, the definitions and metrics explained, and the
-> headline results, in about a tenth of the length. `results/README.md` explains what the
+> **Looking for the short version?** `current_state.md` is the update for the latest
+> supervisor meeting only. `briefing_full.md` is the complete briefing — every round of
+> notes and its status, the definitions and metrics explained, and the headline results,
+> in about a tenth of the length of this log. `results/README.md` explains what the
 > machine-readable results in `results/` contain and how to render them.
 
 ---
@@ -970,7 +971,7 @@ to any one.
 
 Added after the supervisor asked whether a music-specific model would do better
 (`experiments/features/extract_musicnn.py`, run in a separate TensorFlow environment;
-see `current_state.md` section 7b for the dependency archaeology). MusiCNN is pretrained on
+see `briefing_full.md` section 7b for the dependency archaeology). MusiCNN is pretrained on
 Million Song Dataset tagging, so its domain match is the best of any model here.
 
 It scores **R^2 = 0.541** on emotion regression and **0.340** on genre: above MIR and far
@@ -1410,8 +1411,9 @@ exactly here. For new writing, use this section.
     `exp_blockbuster_deep`, `exp_signature_replication`, `exp_cross_dataset_cv`
   - `evaluation/` — `exp_statistical_power` (supersedes the single-run numbers from
     `genre` / `cross_dataset`)
-- `docs/` — this log; `current_state.md` (the supervisor briefing, Markdown — supersedes
-  the older `current_state.docx`/`.pdf`); `results/README.md` (what each results JSON holds
+- `docs/` — this log; `current_state.md` (the update for the latest supervisor meeting);
+  `briefing_full.md` (the complete supervisor briefing — supersedes the older
+  `current_state.docx`/`.pdf`, which are exports of an earlier version of it); `results/README.md` (what each results JSON holds
   and how to render it); `docs/literature/` (literature reviews); `docs/latex/` (LaTeX
   snippets: `evaluation_protocol`, `cross_dataset_transfer`, `waveform_vs_spectrogram`,
   `emotion_genre_relationship`, `genre_subset`, `emotion_regression_bridge`,

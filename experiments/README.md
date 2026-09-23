@@ -28,7 +28,7 @@ See `results/README.md` for what each file contains.
 ## audit_consistency.py — check the documents against the results
 
 Also not an experiment. It re-reads every saved result and verifies that the numbers
-quoted in `docs/current_state.md` and `docs/README.md` still match them, that every file
+quoted in `docs/current_state.md`, `docs/briefing_full.md` and `docs/README.md` still match them, that every file
 path named in the documents resolves, that the dataset still cleans to the expected
 counts, that the embedding caches are complete, that no file has picked up CRLF endings,
 and that every results file still renders. It exits non-zero, so it can be wired into a
