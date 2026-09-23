@@ -1,0 +1,112 @@
+{
+  "n_films": 37,
+  "years": [
+    1960,
+    2006
+  ],
+  "A_f1_vs_gross": {
+    "rho": 0.19554133811743948,
+    "p_perm": 0.2442,
+    "rho_partial_year": 0.23043132436654887
+  },
+  "B_emotion_vs_gross": {
+    "valence": {
+      "rho": -0.15647226173541962,
+      "p_perm": 0.3628,
+      "rho_partial_year": -0.11728714947769805
+    },
+    "energy": {
+      "rho": 0.06875296348980559,
+      "p_perm": 0.685,
+      "rho_partial_year": 0.05220414737835662
+    },
+    "tension": {
+      "rho": 0.25985418811577315,
+      "p_perm": 0.124,
+      "rho_partial_year": 0.2330001606249697
+    },
+    "anger": {
+      "rho": 0.33736367946894263,
+      "p_perm": 0.0454,
+      "rho_partial_year": 0.33405809954354754
+    },
+    "fear": {
+      "rho": 0.16097676623992413,
+      "p_perm": 0.3424,
+      "rho_partial_year": 0.13398461226207492
+    },
+    "happy": {
+      "rho": -0.21148147474172266,
+      "p_perm": 0.217,
+      "rho_partial_year": -0.20980102721172803
+    },
+    "sad": {
+      "rho": -0.0478899952584163,
+      "p_perm": 0.788,
+      "rho_partial_year": -0.014096702691028532
+    },
+    "tender": {
+      "rho": -0.048155624646741106,
+      "p_perm": 0.7708,
+      "rho_partial_year": -0.02038897802314741
+    }
+  },
+  "C_genre_vs_gross": {
+    "Action": {
+      "n_with": 9,
+      "median_with": 266915287.0,
+      "median_without": 40904549.5,
+      "p_mw": 0.0039132822347393275
+    },
+    "Crime": {
+      "n_with": 12,
+      "median_with": 128635966.0,
+      "median_without": 60900000.0,
+      "p_mw": 0.9095905654482328
+    },
+    "Drama": {
+      "n_with": 27,
+      "median_with": 50000000.0,
+      "median_without": 199077330.5,
+      "p_mw": 0.34697132375827244
+    },
+    "Adventure": {
+      "n_with": 8,
+      "median_with": 238700000.0,
+      "median_without": 50000000.0,
+      "p_mw": 0.05632581002599977
+    },
+    "Biography": {
+      "n_with": 3,
+      "median_with": 4100000.0,
+      "median_without": 152000739.0,
+      "p_mw": 0.08082368082368083
+    },
+    "Horror": {
+      "n_with": 5,
+      "median_with": 50000000.0,
+      "median_without": 152000739.0,
+      "p_mw": 0.58942823648706
+    }
+  },
+  "D_mediation": {
+    "anger": {
+      "rho_raw": 0.33736367946894263,
+      "rho_partial_action": 0.19087641242399356,
+      "rho_non_action_only": 0.24192665571975916,
+      "p_non_action_only": 0.2178,
+      "n_non_action": 28
+    },
+    "tension": {
+      "rho_raw": 0.25985418811577315,
+      "rho_partial_action": 0.10336932419643696,
+      "rho_non_action_only": 0.12643678160919541,
+      "p_non_action_only": 0.5238,
+      "n_non_action": 28
+    }
+  },
+  "confound_year": {
+    "rho": -0.14604627160098252,
+    "p_perm": 0.3844
+  }
+}

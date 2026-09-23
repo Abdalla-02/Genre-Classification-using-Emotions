@@ -5,6 +5,7 @@ Run from anywhere:
   python experiments/features/extract_features.py --model clap --set2   # CLAP, both sets
   python experiments/features/extract_features.py --model vggish        # VGGish (cross-dataset bridge)
   python experiments/features/extract_features.py --model mir           # hand-crafted MIR
+  python experiments/features/extract_features.py --model wav2vec2      # raw-waveform baseline
 
 Output (under DATA_ROOT/processed/Eerola_DB/):
   embeddings/<model>/<set>/<number>.npy   per-clip embedding cache, resumable
@@ -32,6 +33,7 @@ from src.features import (  # noqa: E402
     ClapEmbedder,
     MirEmbedder,
     VggishEmbedder,
+    Wav2VecEmbedder,
     extract_embeddings,
     load_set1,
     load_set2,
@@ -39,7 +41,7 @@ from src.features import (  # noqa: E402
 from src.utils import set_seed  # noqa: E402
 
 # model tag -> (embedder class, per-clip cache dir, display label)
-# All four extractors share the AstEmbedder interface (load_audio / embed_waveform /
+# All five extractors share the AstEmbedder interface (load_audio / embed_waveform /
 # sampling_rate), so they all drop into extract_embeddings unchanged. VGGish and MIR were
 # previously reachable only from ad-hoc code, which left their caches -- consumed by the
 # emotion-regression and cross-dataset experiments -- unreproducible from the repository.
@@ -48,6 +50,7 @@ MODELS = {
     "clap": (ClapEmbedder, config.CLAP_EMBEDDINGS_DIR, "CLAP"),
     "vggish": (VggishEmbedder, config.VGGISH_EMBEDDINGS_DIR, "VGGish"),
     "mir": (MirEmbedder, config.MIR_EMBEDDINGS_DIR, "MIR"),
+    "wav2vec2": (Wav2VecEmbedder, config.W2V_EMBEDDINGS_DIR, "wav2vec2"),
 }
 
 

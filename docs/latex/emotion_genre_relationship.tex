@@ -6,6 +6,51 @@
 % analysis that answers RQ2a). Adjust \subsection -> \section and the \label as needed.
 % Cohen's d values are from the exploratory analysis on the 346-clip Set 1 corpus and are
 % consistent with the Horror/Action figures already reported in the Fundamentals chapter.
+%
+% CITATION NOTE (added for the music-research strand, supervisor request #5:
+% "Zusammenhang zwischen Emotion und Genre in der Literatur, auch in Musik").
+% Four keys used below are NOT yet in bib/library.bib. Add:
+%
+%   @inproceedings{hu2007exploring,
+%     title     = {Exploring Mood Metadata: Relationships with Genre, Artist and
+%                  Usage Metadata},
+%     author    = {Hu, Xiao and Downie, J. Stephen},
+%     booktitle = {Proceedings of the 8th International Conference on Music
+%                  Information Retrieval (ISMIR)},
+%     pages     = {67--72}, year = {2007}
+%   }
+%
+%   @inproceedings{laurier2009mood,
+%     title     = {Music Mood Representations from Social Tags},
+%     author    = {Laurier, Cyril and Sordo, Mohamed and Serr{\`a}, Joan and
+%                  Herrera, Perfecto},
+%     booktitle = {Proceedings of the 10th International Society for Music
+%                  Information Retrieval Conference (ISMIR)},
+%     pages     = {381--386}, year = {2009}
+%   }
+%
+%   @article{eerola2011genrespecific,
+%     title   = {Are the Emotions Expressed in Music Genre-specific? An Audio-based
+%                Evaluation of Datasets Spanning Classical, Film, Pop and Mixed Genres},
+%     author  = {Eerola, Tuomas},
+%     journal = {Journal of New Music Research},
+%     volume  = {40}, number = {4}, pages = {349--366}, year = {2011},
+%     doi     = {10.1080/09298215.2011.602195}
+%   }
+%
+%   @article{saari2016genre,
+%     title   = {Genre-Adaptive Semantic Computing and Audio-Based Modelling for
+%                Music Mood Annotation},
+%     author  = {Saari, Pasi and Fazekas, Gy{\"o}rgy and Eerola, Tuomas and
+%                Barthet, Mathieu and Lartillot, Olivier and Sandler, Mark},
+%     journal = {IEEE Transactions on Affective Computing},
+%     volume  = {7}, number = {2}, pages = {122--135}, year = {2016},
+%     doi     = {10.1109/TAFFC.2015.2462841}
+%   }
+%
+% NOTE: eerola2011genrespecific is a DIFFERENT paper from eerola2011comparison (the
+% dataset paper, Eerola & Vuoskoski). Both are by the same first author and both from
+% 2011; keep the two keys distinct.
 % =============================================================================
 
 \subsection{The Relationship Between Musical Emotion and Film Genre}
@@ -17,6 +62,49 @@ theoretical grounds in Section~\ref{sec:fund_motivation_theory}
 question: \emph{which} emotional qualities characterise \emph{which} genres, and how
 consistently? Both the prior literature and the exploratory analysis conducted for this
 thesis converge on a clear, if uneven, answer.
+
+\subsubsection*{Evidence from music research}
+
+The link between expressed emotion and genre is not specific to film music; it is a
+long-standing finding in music information retrieval, where it has been approached from
+both directions. Working from metadata rather than audio,
+\citet{hu2007exploring} analysed mood, genre, artist and usage descriptors drawn from
+three independent sources (AllMusicGuide, epinions.com and Last.fm) and ran an
+association test over 3{,}903 albums and 22 genres, yielding 7{,}134 genre--mood pairs.
+They report substantial and systematic consistencies in the genre--mood relationship, and
+it was precisely this structure that motivated their proposal to derive standardised
+mood \emph{clusters} from the data -- the construction that subsequently became the
+ground truth of the MIREX Audio Mood Classification task. \citet{laurier2009mood}
+arrived at a compatible picture from social tags, deriving a semantic mood space from
+Last.fm data by latent semantic analysis and showing that its principal structure
+recovers the valence--arousal organisation of \citet{russell1980circumplex}, with mood
+tags clustering in ways that align with musical style.
+
+The converse direction -- whether emotion models are themselves genre-dependent -- was
+tested directly by \citet{eerola2011genrespecific}, by the same author as the corpus used
+in this thesis. Extracting 39 audio features from nine datasets spanning classical, film,
+popular and mixed-genre music, he compared models trained and tested \emph{within} a
+genre against models trained in one genre and applied to another. Performance within
+genre reached 43\% of variance explained for valence and 62\% for arousal, but fell to
+16\% and 43\% respectively across genres. Two conclusions follow, and both bear directly
+on the design of this thesis. First, emotion and genre are so entangled that the mapping
+from audio to emotion \emph{changes} with genre -- which is another way of saying that
+emotion carries genre information, the premise of the present work. Second, that
+entanglement sets a concrete expectation for cross-corpus transfer: an emotion model
+carried to a new corpus should lose accuracy, and lose considerably more of it on valence
+than on arousal. \citet{saari2016genre} close the loop by exploiting the dependency
+constructively, showing that mood-annotation models made \emph{genre-adaptive} outperform
+otherwise identical genre-agnostic ones on valence, arousal and tension.
+
+Taken together, the music literature establishes the emotion--genre relationship as
+bidirectional and reliable, but also as genre-conditional rather than universal. This is
+what justifies treating emotion as an intermediate representation for genre prediction,
+while cautioning that an emotion model estimated on one repertoire cannot be assumed to
+behave identically on another -- the point examined empirically in
+Chapter~
+ef{ch:evaluation} through the cross-corpus transfer experiment.
+
+\subsubsection*{Evidence from film music}
 
 Empirical work on genre classification from film music has repeatedly observed that the
 strength of the music--genre link is not uniform across genres. \citet{austin2010characterization}
@@ -33,6 +121,8 @@ the very corpus used here, Action and Horror occupy a nearly identical region of
 valence--arousal space -- negative valence combined with high arousal -- so a purely
 dimensional description conflates them; it is the discrete emotion categories, and fear
 in particular, that carry the information needed to separate them.
+
+\subsubsection*{Evidence from the present corpus}
 
 To quantify these relationships on the present corpus, the effect size (Cohen's $d$) of
 each of the eight emotion ratings was computed between the clips belonging to a given

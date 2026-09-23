@@ -6,6 +6,8 @@ load_set1(clean=True)  -> cleaned Set 1 DataFrame (primary training data, 346 cl
 load_set2(clean=True)  -> cleaned Set 2 DataFrame (Set-1-vs-Set-2 diff analysis, Exp 4)
 add_derived_features(df) -> df with the 3 engineered features (11 total)
 genre_matrix(df)       -> (n_clips, 8) int ndarray of multi-label targets
+load_set1_shared()     -> Set 1 relabelled into the 6 genres shared with Blockbuster
+shared_genre_matrix(df)-> (n_clips, 6) int ndarray in ``config.SHARED_GENRES`` order
 
 Cleaning rules (see thesis / memory ``genre-labeling-scheme``):
   * drop clips with no IMDb genre;
@@ -81,6 +83,45 @@ def _audio_path(number: int, audio_dir) -> str:
 def genre_matrix(df: pd.DataFrame) -> np.ndarray:
     """Return the (n_clips, 8) multi-label target matrix in ``PRIMARY_GENRES`` order."""
     return df[config.PRIMARY_GENRES].to_numpy(dtype=int)
+
+
+# --------------------------------------------------------------------------- #
+# Shared 6-genre space with the Blockbuster corpus (cross-dataset experiments)
+# --------------------------------------------------------------------------- #
+def shared_genre_matrix(df: pd.DataFrame) -> np.ndarray:
+    """Return the (n_clips, 6) target matrix in ``config.SHARED_GENRES`` order.
+
+    Requires the columns added by :func:`load_set1_shared`.
+    """
+    return df[config.SHARED_GENRES].to_numpy(dtype=int)
+
+
+def load_set1_shared(verify: bool = True) -> pd.DataFrame:
+    """Load Set 1 relabelled into the 6 genres shared with Blockbuster.
+
+    Uses the SAME inclusion rule as the 8-genre target (keep a clip if any of its IMDb
+    genres is in the label space) and the same rule Ma et al. (2021) used on their
+    corpus, so the two datasets end up in one identical label space. Note this is NOT
+    the 346-clip 8-genre set: Romance and Sci-Fi are in the shared space but not in
+    ``PRIMARY_GENRES``, while Crime, Adventure, Biography and Documentary are in
+    ``PRIMARY_GENRES`` but absent from Blockbuster. -> 319 clips from 41 films.
+    """
+    df = _load(config.SET1_CSV, config.AUDIO_SET1, clean=False)
+    df = df[df["genres"].notna()].copy()
+    lower = df["genres"].apply(lambda c: {g.lower() for g in _split_genres(c)})
+    for genre in config.SHARED_GENRES:
+        df[genre] = lower.apply(lambda gs, g=genre: int(g in gs))
+    df = df[df[config.SHARED_GENRES].sum(axis=1) > 0].reset_index(drop=True)
+
+    if verify:
+        assert len(df) == config.SET1_SHARED_EXPECTED_CLIPS, (
+            f"shared-space clip count {len(df)} != "
+            f"{config.SET1_SHARED_EXPECTED_CLIPS}")
+        assert df["soundtrack"].nunique() == config.SET1_SHARED_EXPECTED_SOUNDTRACKS
+        for genre, expected in config.SET1_SHARED_LABEL_COUNTS.items():
+            got = int(df[genre].sum())
+            assert got == expected, f"shared label count {genre}={got} != {expected}"
+    return df
 
 
 def add_derived_features(df: pd.DataFrame) -> pd.DataFrame:
