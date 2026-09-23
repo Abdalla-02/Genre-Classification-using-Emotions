@@ -222,6 +222,101 @@ On all 8 genres: pipeline **0.318** vs AST 0.276 (chance 0.102).
 
 ---
 
+## 8. Questions to expect, and the answers
+
+**Is the emotion route really better than classifying from audio directly?**
+Yes, but by different margins in the two settings, and it should be put that way.
+- *In-domain* (trained and tested on Eerola), it is ahead of every audio representation by
+  0.04–0.05, in all 10 repeats of the cross-validation. On 8 genres that is significant
+  under both tests (e.g. vs AST +0.043, p = 0.049 and 0.012). On 5 genres it is
+  significant under the film bootstrap and borderline under the stricter Nadeau–Bengio
+  test (p = 0.07–0.15).
+- *Across corpora* (trained on Eerola, tested on Blockbuster), the margin roughly doubles:
+  0.511 vs 0.407, +0.106, p = 0.018.
+- The advantage is largest exactly where it matters: on data the model has never seen.
+
+**Isn't that just because 11 numbers overfit less than 128?**
+That is precisely what the PCA-8 control tests (section 2). It compresses the same
+embedding to 8 numbers that mean nothing. Compression alone does not help (PCA-8 vs direct
+audio: 0.372 vs 0.377, p = 0.77), but the emotion route beats the control (+0.045
+in-domain; +0.092 across corpora, p = 0.032). So the gain comes from what the eight
+numbers mean, not from how few they are.
+
+**Did you just pick a weak audio baseline?**
+No. Five representations were tried, spanning general audio (AST, VGGish), audio–text
+(CLAP), a music-pretrained model (MusiCNN) and hand-crafted descriptors (MIR). They are
+statistically indistinguishable from each other (0.361–0.377; AST vs CLAP p = 0.66), and
+the emotion route is ahead of all five. A sixth, the raw-waveform model wav2vec 2.0, is the
+weakest used directly (0.326) and rises to 0.419 through the emotion route.
+
+**Why is the 5-genre result only borderline under the strict test?**
+Because the corpus is small, not because the analysis stopped too early. For every one of
+those comparisons, the smallest p-value the Nadeau–Bengio test could reach with *infinitely*
+many repeats is still above 0.05 (0.055–0.130). No amount of extra computation can make them
+significant; only more films can. The learning curves are also still rising at 100 % of the
+data.
+
+**Which of the two significance tests is the right one?**
+They answer different questions, so both are reported. The film bootstrap asks how much
+the result depends on which films happen to be in the corpus. It is also the only test
+that applies to the single train/test split of the cross-corpus experiment. Nadeau–Bengio
+additionally accounts for which films the model was trained on, so it is stricter.
+Reporting only the friendlier one would overstate the result.
+
+**Why did the numbers change since the last meeting?**
+The cross-validation was corrected (section 5):
+- Rare genres were missing from many test folds, and scoring fold by fold counted them as
+  zero there. Every score rose by 0.02–0.03 (pipeline 0.394 → 0.417).
+- The gaps between methods stayed the same.
+- The corrected run reproduces the old numbers exactly under the old scoring, so the fix
+  is the only difference.
+
+**Do predicted emotions work as well as the human ratings?**
+Yes: 0.417 from predicted emotions against 0.428 from the ratings, a difference that is not
+significant (p = 0.33). So the pipeline needs no manual annotation once the emotion model
+is trained.
+
+**Which emotions matter? Why keep all eight?**
+Fear is the most diagnostic: Horror is the strongest single genre–emotion link in the
+corpus (Cohen's d = +0.75). But no single emotion is *needed*: fear alone (0.433) or valence
+and energy alone (0.420) match all eight (0.426), because the ratings are strongly
+intercorrelated. All eight are kept because the discrete emotions are what make the
+result readable, not for accuracy. This corrected an earlier claim in the Fundamentals
+chapter.
+
+**Why is Blockbuster so much easier than Eerola (0.616 vs 0.417)?**
+Those two numbers cannot be compared. They use different genre sets, different units (a
+whole film vs a 10-second clip) and different chance levels. On the one genre set both
+corpora share, Eerola scores 0.315 against a chance level of 0.250, and Blockbuster 0.620
+against 0.292. Blockbuster really is easier: a film-level summary averages out noise that
+a single clip carries, and its genres are more common.
+
+**Could the results come from recognising the film rather than the genre?**
+No, by design. Every split keeps all clips of a film on the same side, and the size of the
+effect this prevents was measured: the AST baseline scores 0.44 with a naive split and 0.26
+with a film-grouped one. Where the classifier is trained on predicted emotions, those are
+also predicted out-of-fold.
+
+**Why VGGish for the cross-corpus experiments?**
+Blockbuster distributes no audio (copyright), only pre-extracted VGGish and hand-crafted
+features. VGGish is therefore the only representation available on both corpora.
+
+**Does box-office success relate to the soundtrack?**
+No, as far as 37 films can tell. Classification quality does not track gross (ρ = +0.20,
+p = 0.24). The one robust effect is that Action films gross more (p = 0.004), which is a
+fact about genre. This is exploratory: the figures mix worldwide and domestic grosses and
+are not adjusted for inflation.
+
+**What would you do with more time?**
+In order of value:
+- More films: the one lever on the borderline results.
+- A second corpus *with* audio, so the transfer result does not rest on VGGish alone.
+- Tuning the emotion regressor, since only the genre classifier is tuned so far.
+- Cue-level genre labels, so that a romantic scene in an action film is not labelled
+  Action.
+
+---
+
 ## Headline numbers as they stand
 
 Each row is its own label space, compared only against its own chance level. The chance
