@@ -4,9 +4,13 @@
 % metrics produced the feature-extraction accuracy".
 %
 % Placement: the Methods chapter, as its own section immediately before the Results.
-% Every number quoted here is reproduced by experiments/evaluation/exp_statistical_power.py
-% (results/statistical_power.json), experiments/emotion/exp_emotion_regression.py and
+% Every number quoted here is reproduced by experiments/evaluation/exp_cv_corrected.py
+% (results/cv_corrected.json), experiments/emotion/exp_emotion_regression.py and
 % experiments/cross_dataset/exp_zero_shot.py (results/zero_shot.json).
+%
+% LABEL NOTE: this section's \label{sec:evaluation_protocol} is the label the Methods
+% chapter's skeleton section already carries. Paste this IN PLACE of that skeleton
+% section (delete the skeleton's \section and \label), or the label is defined twice.
 %
 % CITATION NOTE: uses nadeau2003inference (BibTeX entry given in statistical_power.tex)
 % and the standard multi-label metric references. If the following are not yet in
@@ -49,8 +53,8 @@ expressed in rating points, because $R^2$ alone does not convey whether an error
 practically large; an RMSE of $1.0$ means the model is typically one scale point away.
 
 \textbf{This mean $R^2$ is the metric referred to as ``feature-extraction accuracy''.} It
-is what ranks the five audio representations against one another
-(Table~\ref{tab:feature_ranking} in Chapter~\ref{ch:evaluation}), because it measures
+is what ranks the six audio representations against one another
+(Table~\ref{tab:waveform_stage1} in Chapter~\ref{ch:evaluation}), because it measures
 exactly the property the pipeline needs from a representation: how much affective
 information it carries. The genre metrics below cannot serve this purpose, since they
 also confound the quality of the second-stage classifier.
@@ -71,21 +75,21 @@ they are not interchangeable:
 Macro-F1 is the headline because the genre distribution is severely imbalanced (Drama
 appears on 239 of 346 clips, Documentary on 17). Under such imbalance the other two
 metrics reward a model for ignoring the rare genres: a trivial classifier that always
-predicts the most frequent label set attains a \emph{better} exact-match ratio and a
-\emph{better} Hamming loss than every real model tested here, while being useless. Macro
+predicts the most frequent label set attains a \emph{better} Hamming loss than every real
+model tested here, and an exact-match ratio no real model exceeds, while being useless. Macro
 averaging is the standard remedy \citep{sokolova2009systematic}, since it gives a genre
 with 17 positives the same weight as one with 239 and therefore cannot be gamed by
-neglecting the minority classes. All three numbers are reported in the results tables so
-that this behaviour is visible rather than hidden.
+neglecting the minority classes. Systems are therefore compared on macro-F1 alone; the
+other two are defined here because the literature reports them.
 
-For the cross-corpus comparison with \citet{ma2021computational}, macro-averaged
+For the cross-dataset comparison with \citet{ma2021computational}, macro-averaged
 precision and recall are reported next to macro-F1, matching their reporting format: F1
 alone cannot distinguish a model that over-predicts (recall high, precision low) from one
 that under-predicts, and the two failure modes call for different remedies.
 
 \paragraph{Sanity check.}
 Before either stage is interpreted, the extraction pipeline is verified end-to-end on a
-deliberately easy auxiliary task: predicting the corpus's own 12 balanced discrete emotion
+deliberately easy auxiliary task: predicting the dataset's own 12 balanced discrete emotion
 categories from the embedding. Because the classes are balanced and single-label, plain
 accuracy is appropriate there, and chance is exactly $1/12 = 0.083$. Scoring well above
 chance confirms that the cached embeddings are aligned with their labels and carry
@@ -107,14 +111,14 @@ published work:
     the mean base rate, which makes it a much higher and more honest floor for macro-F1.
 \end{itemize}
 
-\citet{ma2021computational} report the second of these (macro-F1 $0.32$ on their corpus)
+\citet{ma2021computational} report the second of these (macro-F1 $0.32$ on their dataset)
 and the first separately (macro-F1 $0.19$). Comparing our results against the wrong one of
 the two would misstate the margin by more than a tenth of an F1 point, so both are
-computed on both corpora.
+computed on both datasets.
 
 \subsection{Data splitting: grouping by film}
 
-The corpus contains 346 clips drawn from only 43 films, with several clips per film. A
+The dataset contains 346 clips drawn from only 43 films, with several clips per film. A
 random split therefore places clips of the \emph{same} film in both the training and the
 test set, and since clips from one film share instrumentation, orchestration and
 recording characteristics --- and share their genre label by construction --- a model can
@@ -165,14 +169,14 @@ predicted out-of-fold by an inner cross-validation over the training films.
 Confidence intervals come from a \textbf{bootstrap over films}: the films are resampled
 with replacement 2000 times and the pooled predictions re-scored on each resample. Films
 rather than clips are resampled because clips of the same film are not independent. The
-interval therefore reflects the finite set of films the corpus happens to contain, which an
+interval therefore reflects the finite set of films the dataset happens to contain, which an
 interval over repeat means --- reflecting only how the films were split into folds ---
 would not.
 
 Paired comparisons are reported under \textbf{two tests}, because they answer different
 questions. The \textbf{paired film bootstrap} applies the same resampling to the difference
 between two systems, with the trained models held fixed, and asks how much the difference
-depends on which films make up the corpus; it is also the test used for the cross-corpus
+depends on which films make up the dataset; it is also the test used for the cross-dataset
 results, where there is only one train/test split. The \textbf{corrected resampled
 $t$-test} of \citet{nadeau2003inference}, computed on the 50 per-fold scores, additionally
 accounts for which films the models happened to be trained on and is the more conservative
@@ -187,19 +191,19 @@ One further quantity is reported for non-significant comparisons: the limiting $
 $p_{\text{limit}}$ that the corrected test converges to as the number of repeats grows
 without bound. Only the $1/n$ term of the corrected variance shrinks with more repeats;
 the overlap term does not. When $p_{\text{limit}} > 0.05$, no amount of additional
-resampling can make the comparison significant and only a larger corpus can --- which
-distinguishes a genuinely underpowered corpus from an under-resampled experiment.
+resampling can make the comparison significant and only a larger dataset can --- which
+distinguishes a genuinely underpowered dataset from an under-resampled experiment.
 
-\subsection{Cross-corpus evaluation}
+\subsection{Cross-dataset evaluation}
 
 The transfer experiment (Section~\ref{sec:zero_shot}) replaces cross-validation with a
-strict train-on-one, test-on-the-other design: models are fitted on the Eerola corpus
-alone and applied to all 110 films of the Blockbuster corpus, whose labels are used only
-for scoring. Because the two corpora annotate different genre inventories, both are first
+strict train-on-one, test-on-the-other design: models are fitted on the Eerola dataset
+alone and applied to all 110 films of the Blockbuster dataset, whose labels are used only
+for scoring. Because the two datasets annotate different genre inventories, both are first
 relabelled into a single shared six-genre space, so that the classifier being transferred
 predicts exactly the same classes it was trained on. Where a Stage-2 classifier is trained
 on \emph{predicted} emotions, those predictions are produced out-of-fold on the training
-corpus, so that the classifier is fitted on the same noisy quantity it will encounter at
+dataset, so that the classifier is fitted on the same noisy quantity it will encounter at
 test time rather than on near-perfect in-sample predictions.
 
 \subsection{Reproducibility}

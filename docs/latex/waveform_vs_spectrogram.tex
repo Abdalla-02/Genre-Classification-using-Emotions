@@ -52,7 +52,7 @@ that the two differ only in their front-end.
 One confound must be stated plainly, because it constrains what the comparison can show.
 wav2vec 2.0 was pretrained on read speech, whereas AST and VGGish were pretrained on
 AudioSet, which contains music. The comparison therefore varies the input domain and the
-pretraining corpus simultaneously, and a poor result for wav2vec 2.0 cannot be attributed
+pretraining dataset simultaneously, and a poor result for wav2vec 2.0 cannot be attributed
 to the waveform front-end alone.
 
 MusiCNN \citep{pons2019musicnn} is included for the complementary reason. It is pretrained
@@ -96,7 +96,7 @@ clearly above the hand-crafted descriptors and far above the waveform model, but
 all three general-purpose spectrogram embeddings. Domain-matched pretraining is thus
 worth less here than might be expected --- the ranking is driven by how much
 emotion-relevant variance a representation exposes, not by how closely its pretraining
-corpus resembles film music.
+dataset resembles film music.
 
 \begin{table}[t]
   \centering
@@ -109,12 +109,12 @@ corpus resembles film music.
     \hline
     Representation & Input domain & Dim. & $R^2$ & RMSE & \% ceiling \\
     \hline
-    CLAP           & log-mel spectrogram & 512 & .561 & 1.22 & 62 \\
-    AST            & log-mel spectrogram & 768 & .560 & 1.22 & 62 \\
-    VGGish         & log-mel spectrogram & 128 & .558 & 1.23 & 62 \\
-    MusiCNN        & log-mel spectrogram & 200 & .541 & 1.25 & 60 \\
-    Hand-crafted MIR & STFT descriptors  & 103 & .490 & 1.31 & 55 \\
-    \textbf{wav2vec 2.0} & \textbf{raw waveform} & 768 & \textbf{.323} & 1.52 & 36 \\
+    CLAP           & log-mel spectrogram & 512 & 0.561 & 1.22 & 62 \\
+    AST            & log-mel spectrogram & 768 & 0.560 & 1.22 & 62 \\
+    VGGish         & log-mel spectrogram & 128 & 0.558 & 1.23 & 62 \\
+    MusiCNN        & log-mel spectrogram & 200 & 0.541 & 1.25 & 60 \\
+    Hand-crafted MIR & STFT descriptors  & 103 & 0.490 & 1.31 & 55 \\
+    \textbf{wav2vec 2.0} & \textbf{raw waveform} & 768 & \textbf{0.323} & 1.52 & 36 \\
     \hline
   \end{tabular}
 \end{table}
@@ -132,14 +132,14 @@ results stand out, and the second is the more important of the two.
     \hline
     Approach & Macro-$F_1$ & 95\,\% CI \\
     \hline
-    Emotion (11), ground-truth ratings                       & .428 & [.371, .476] \\
-    \textbf{wav2vec 2.0 $\rightarrow$ predicted emotion (11)} & \textbf{.419} & [.367, .462] \\
-    VGGish-128, direct                                        & .377 & [.325, .414] \\
-    AST-768, direct                                           & .371 & [.326, .398] \\
-    Hand-crafted MIR, direct                                  & .363 & [.318, .398] \\
-    MusiCNN-200, direct                                       & .363 & [.311, .401] \\
-    CLAP-512, direct                                          & .361 & [.313, .400] \\
-    \textbf{wav2vec 2.0, direct}                              & \textbf{.326} & [.288, .356] \\
+    Emotion (11), ground-truth ratings                       & 0.428 & [0.371, 0.476] \\
+    \textbf{wav2vec 2.0 $\rightarrow$ predicted emotion (11)} & \textbf{0.419} & [0.367, 0.462] \\
+    VGGish-128, direct                                        & 0.377 & [0.325, 0.414] \\
+    AST-768, direct                                           & 0.371 & [0.326, 0.398] \\
+    Hand-crafted MIR, direct                                  & 0.363 & [0.318, 0.398] \\
+    MusiCNN-200, direct                                       & 0.363 & [0.311, 0.401] \\
+    CLAP-512, direct                                          & 0.361 & [0.313, 0.400] \\
+    \textbf{wav2vec 2.0, direct}                              & \textbf{0.326} & [0.288, 0.356] \\
     \hline
   \end{tabular}
 \end{table}
@@ -153,7 +153,7 @@ and the hand-crafted descriptors ($p = 0.014$--$0.040$) but not against CLAP or 
 sharply between representations than emotion regression does, where the same six differ
 by a factor of $1.7$. This supports
 both the choice of $R^2$ as the metric for ranking feature extractors and the conclusion
-of Section~\ref{sec:error_analysis} that genre classification on this corpus operates near
+of Section~\ref{sec:eval_genre} that genre classification on this dataset operates near
 a noise ceiling that a better representation cannot lift.
 
 Second, and centrally, \emph{the emotion bottleneck rescues the weakest representation}.

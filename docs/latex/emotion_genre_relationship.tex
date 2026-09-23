@@ -4,7 +4,7 @@
 % subsection deepening Section~\ref{sec:fund_motivation_theory} (Fundamentals) or as the
 % exploratory-analysis subsection in the Methods chapter (it reports the Cohen's d
 % analysis that answers RQ2a). Adjust \subsection -> \section and the \label as needed.
-% Cohen's d values are from the exploratory analysis on the 346-clip Set 1 corpus and are
+% Cohen's d values are from the exploratory analysis on the 346-clip Set 1 dataset and are
 % consistent with the Horror/Action figures already reported in the Fundamentals chapter.
 %
 % CITATION NOTE (added for the music-research strand, supervisor request #5:
@@ -63,6 +63,13 @@ question: \emph{which} emotional qualities characterise \emph{which} genres, and
 consistently? Both the prior literature and the exploratory analysis conducted for this
 thesis converge on a clear, if uneven, answer.
 
+% =============================================================================
+% SKIP WHEN PASTING -- already in the thesis. "Evidence from music research" and
+% "Evidence from film music" below were adapted into Related Work (section
+% "The Emotion--Genre Relationship in Music Research" and the Austin/Kim/Kang parts).
+% Only "Evidence from the present dataset" is new: it belongs in the Evaluation
+% chapter, section "Emotional Signatures of Genres". See docs/latex/README.md.
+% =============================================================================
 \subsubsection*{Evidence from music research}
 
 The link between expressed emotion and genre is not specific to film music; it is a
@@ -81,7 +88,7 @@ recovers the valence--arousal organisation of \citet{russell1980circumplex}, wit
 tags clustering in ways that align with musical style.
 
 The converse direction -- whether emotion models are themselves genre-dependent -- was
-tested directly by \citet{eerola2011genrespecific}, by the same author as the corpus used
+tested directly by \citet{eerola2011genrespecific}, by the same author as the dataset used
 in this thesis. Extracting 39 audio features from nine datasets spanning classical, film,
 popular and mixed-genre music, he compared models trained and tested \emph{within} a
 genre against models trained in one genre and applied to another. Performance within
@@ -90,8 +97,8 @@ genre reached 43\% of variance explained for valence and 62\% for arousal, but f
 on the design of this thesis. First, emotion and genre are so entangled that the mapping
 from audio to emotion \emph{changes} with genre -- which is another way of saying that
 emotion carries genre information, the premise of the present work. Second, that
-entanglement sets a concrete expectation for cross-corpus transfer: an emotion model
-carried to a new corpus should lose accuracy, and lose considerably more of it on valence
+entanglement sets a concrete expectation for cross-dataset transfer: an emotion model
+carried to a new dataset should lose accuracy, and lose considerably more of it on valence
 than on arousal. \citet{saari2016genre} close the loop by exploiting the dependency
 constructively, showing that mood-annotation models made \emph{genre-adaptive} outperform
 otherwise identical genre-agnostic ones on valence, arousal and tension.
@@ -102,7 +109,7 @@ what justifies treating emotion as an intermediate representation for genre pred
 while cautioning that an emotion model estimated on one repertoire cannot be assumed to
 behave identically on another -- the point examined empirically in
 Chapter~
-ef{ch:evaluation} through the cross-corpus transfer experiment.
+ef{ch:evaluation} through the cross-dataset transfer experiment.
 
 \subsubsection*{Evidence from film music}
 
@@ -117,14 +124,16 @@ emotion recognition (MER) literature: the surveys of \citet{kim2010music} and
 recovered from audio far more reliably than valence. This is directly relevant to genre,
 because several genres are distinguished less by their level of arousal than by their
 valence and by their discrete-emotion content. As \citet{eerola2011comparison} note for
-the very corpus used here, Action and Horror occupy a nearly identical region of the
+the very dataset used here, Action and Horror occupy a nearly identical region of the
 valence--arousal space -- negative valence combined with high arousal -- so a purely
-dimensional description conflates them; it is the discrete emotion categories, and fear
-in particular, that carry the information needed to separate them.
+dimensional description conflates them. The discrete categories, and fear in particular,
+separate them most sharply, although the ablation in Chapter~\ref{ch:evaluation}
+shows that a classifier can recover the same genre information from the dimensional
+ratings alone: fear is the most \emph{diagnostic} emotion, not a \emph{necessary} one.
 
-\subsubsection*{Evidence from the present corpus}
+\subsubsection*{Evidence from the present dataset}
 
-To quantify these relationships on the present corpus, the effect size (Cohen's $d$) of
+To quantify these relationships on the present dataset, the effect size (Cohen's $d$) of
 each of the eight emotion ratings was computed between the clips belonging to a given
 genre and those not belonging to it. The dominant emotional signature of each genre is
 summarised in Table~\ref{tab:emotion_genre_signatures}. A coherent picture emerges. Fear
