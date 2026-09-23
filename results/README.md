@@ -162,29 +162,93 @@ tables *were* silently dropped for several weeks.
 
 ---
 
-## Regenerating
+## Running the experiments
 
-Every file is reproducible from a clone — seed 42, cached embeddings committed:
+Run every command from the **repository root** with the project environment
+(`.venv/Scripts/python.exe` on Windows, shown as `python` below). Everything is seeded
+(42) and reads the committed embedding caches, so a re-run reproduces the file it writes
+exactly. Reduced debug runs (`--repeats 2`, `--quick`) write a separate
+`*.partial.json` and never replace the file the documents quote.
+
+### Experiments that write a results file
 
 ```bash
-python experiments/evaluation/exp_statistical_power.py       # statistical_power.json
-python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json (~25 min, 12 cores)
+# --- Eerola, in-domain ------------------------------------------------------------------
+python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json  (~27 min, 12 cores) -- the numbers to quote
+python experiments/evaluation/exp_statistical_power.py       # statistical_power.json  (the original per-fold run)
+python experiments/genre/exp_emotion_ablation.py             # emotion_ablation.json
+python experiments/diagnostics/exp_model_search.py           # model_search.json
+python experiments/features/exp_waveform_vs_spectrogram.py   # waveform_vs_spectrogram.json
+python experiments/features/exp_w2v_layer_sweep.py           # w2v_layer_sweep.json  (see requirements below)
+python experiments/features/clip_length_analysis.py          # clip_length_by_genre.png  (needs raw audio)
+
+# --- Blockbuster, and transfer between the two corpora ----------------------------------
 python experiments/cross_dataset/exp_blockbuster_deep.py     # blockbuster_deep.json
 python experiments/cross_dataset/exp_zero_shot.py            # zero_shot.json
-python experiments/cross_dataset/exp_signature_replication.py
-python experiments/cross_dataset/exp_cross_dataset_cv.py      # cross_dataset_cv.json
-python experiments/genre/exp_emotion_ablation.py              # emotion_ablation.json
-python experiments/features/exp_waveform_vs_spectrogram.py
-python experiments/features/exp_w2v_layer_sweep.py
-python experiments/diagnostics/exp_model_search.py
-python experiments/diagnostics/exp_box_office.py              # box_office.json
+python experiments/cross_dataset/exp_cross_dataset_cv.py     # cross_dataset_cv.json
+python experiments/cross_dataset/exp_signature_replication.py  # signature_replication.json
+
+# --- Box office (exploratory) -----------------------------------------------------------
+python experiments/features/fetch_box_office.py      # OPTIONAL, needs internet: refreshes data/processed/Eerola_DB/box_office.csv
+python experiments/diagnostics/exp_box_office.py     # box_office.json  (+ box_office_per_film.csv)
 ```
 
-`box_office.json` additionally needs `data/processed/Eerola_DB/box_office.csv`, which is
-committed; regenerate it with `python experiments/features/fetch_box_office.py` only if the
-figures need refreshing, since that script goes out to Wikidata and Box Office Mojo.
+The box-office analysis works offline: it reads `data/processed/Eerola_DB/box_office.csv`,
+which is committed. Run `fetch_box_office.py` first only if you want fresh figures. It
+queries Wikidata and Box Office Mojo, so the grosses (and with them `box_office.json`)
+can change if either source has been updated since.
 
-> **Caution (known issue, §12.6).** A short debug run overwrites the authoritative file:
-> `exp_statistical_power.py --repeats 2` silently replaces `results/statistical_power.json`
-> with a 10-fold version. Check `design.n_repeats` in the JSON before quoting from it — the
-> reported figures use `n_repeats: 10`.
+### Experiments that only print their tables
+
+These write no results file. Their output goes to the terminal; the progress log
+(`docs/README.md`) records what each one found.
+
+```bash
+python experiments/features/verify_data.py              # data sanity check: clip and film counts (seconds)
+python experiments/features/exp4_rating_reliability.py  # two listener panels agree: the R^2 ceiling of 0.897
+python experiments/emotion/exp_emotion_regression.py    # stage 1: audio -> emotion, per representation
+python experiments/emotion/exp_emotion_improve.py       # attempts to improve stage 1
+python experiments/genre/exp5_target.py                 # which genre target to use
+python experiments/genre/exp_genre.py                   # stage 2: genre from emotion (8 genres)
+python experiments/genre/exp_genre_subset.py            # the 5-genre subset
+python experiments/genre/exp_emotion_genre.py           # Cohen's d signatures per genre (quoted in Fundamentals)
+python experiments/diagnostics/exp_error_analysis.py    # per-genre errors, over-prediction
+python experiments/diagnostics/exp_threshold_fix.py     # why raising the threshold does not help
+python experiments/diagnostics/exp_learning_curve.py    # would more data help?
+python experiments/diagnostics/exp_clip_length.py       # full-clip vs 10.24 s window (needs raw audio)
+python experiments/cross_dataset/exp_blockbuster.py         # first Blockbuster baseline (superseded by blockbuster_deep)
+python experiments/cross_dataset/exp_blockbuster_emotion.py # first emotion bridge (superseded by blockbuster_deep)
+```
+
+To keep a copy of a print-only experiment's output, redirect it:
+`python experiments/genre/exp_emotion_genre.py > emotion_genre.txt`.
+
+### Requirements that a fresh clone does not meet
+
+Most experiments need nothing beyond the repository. Three need the **raw Eerola audio**,
+which is not in the repository for copyright reasons (`data/raw/README.md` explains
+where to get it):
+
+| experiment | why |
+|---|---|
+| `clip_length_analysis.py` | measures clip durations from the audio files |
+| `exp_clip_length.py` | embeds every 10.24 s window of each clip (cached locally, git-ignored) |
+| `exp_w2v_layer_sweep.py` | needs all 13 wav2vec 2.0 layers per clip; they are cached locally but git-ignored (~13 MB per clip), so on a fresh clone it re-extracts them from the audio |
+
+### Rebuilding the embedding caches (rarely needed)
+
+Every experiment reads the per-clip embeddings in `data/processed/Eerola_DB/embeddings/`,
+which are committed. Re-extract them only after changing an extractor; this needs the
+raw audio and downloads the pretrained models:
+
+```bash
+python experiments/features/extract_features.py --model ast   # also: vggish, clap, mir, wav2vec2
+.venv-musicnn/Scripts/python.exe experiments/features/extract_musicnn.py   # separate TensorFlow environment
+```
+
+### Check the documents afterwards
+
+```bash
+python experiments/audit_consistency.py   # do the documents still quote what results/*.json says?
+python experiments/show_results.py --all --out report.md   # every results file as Markdown tables
+```
