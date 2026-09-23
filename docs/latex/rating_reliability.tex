@@ -14,24 +14,24 @@
 
 The emotion ratings are the target of the first pipeline stage, so their reliability
 determines how well any audio model could possibly perform. The dataset of
-\citet{eerola2011comparison} permits a direct estimate: its second set re-rates excerpts
+\citet{eerola2011comparison} permits a direct estimate: its second set re-rates clips
 drawn from the first with a different listener panel, giving two independent measurements
 of the same musical material. The correspondence between the sets is carried by a
 reference column in the second set rather than by clip number, which the two sets assign
 independently; the mapping was verified acoustically by full-lag normalised
 cross-correlation between each pair of audio files (median $0.964$, against $0.027$ for
-randomly paired clips), and the single excerpt whose audio did not match its reference was
-excluded. Seven excerpts occur twice within the second set, presented twice to the same
-panel; averaging these leaves $102$ matched excerpts from $38$ soundtracks. (This count
+randomly paired clips), and the single clip whose audio did not match its reference was
+excluded. Seven clips occur twice within the second set, presented twice to the same
+panel; averaging these leaves $102$ matched clips from $38$ soundtracks. (This count
 coincides with the number of Set~2 clips that survive genre-based cleaning elsewhere in
 this work, but the two sets are not identical: they are obtained by different filters
 and overlap in $101$ of their rows.)
 
 \begin{table}[t]
   \centering
-  \caption{Agreement between the two listener panels on the same $102$ excerpts.
+  \caption{Agreement between the two listener panels on the same $102$ clips.
     ICC(C,1) treats a constant offset between panels as irrelevant (do they rank
-    excerpts alike?), ICC(A,1) counts it as disagreement (do they give the same
+    clips alike?), ICC(A,1) counts it as disagreement (do they give the same
     numbers?). Bias is the mean difference in rating points on the $1$--$9$ scale.}
   \label{tab:rating_reliability}
   \begin{tabular}{lcccc}
@@ -64,11 +64,11 @@ which is what the classifier pipeline does to its inputs -- the mean absolute di
 falls to $0.305$ standard deviations, so the shift is absorbed by the preprocessing rather
 than propagating into the results.
 
-Excerpts presented twice to the \emph{same} panel are reproduced almost exactly (mean
+Clips presented twice to the \emph{same} panel are reproduced almost exactly (mean
 $r=0.988$ over the seven repeat trials, with negligible bias), indicating that the
-excerpts themselves are not intrinsically ambiguous and that the between-panel difference
+clips themselves are not intrinsically ambiguous and that the between-panel difference
 reflects panel and context rather than uncertainty about the stimuli. This estimate rests
-on only seven excerpts and on repetitions within a single session, so it should be read as
+on only seven clips and on repetitions within a single session, so it should be read as
 an upper bound on within-panel reliability.
 
 \paragraph{Consequences for the emotion regression.}

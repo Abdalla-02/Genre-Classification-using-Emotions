@@ -177,7 +177,7 @@ First, genre information transfers across the corpora at all. The best transferr
 reaches macro-$F_1 = 0.482$ against a random-guess floor of $0.292$, recovering
 approximately $78\,\%$ of the $0.620$ obtained with in-domain training --- and it does so
 despite a substantial change in the unit of analysis, since each training row is a
-single ten-second excerpt while each test row aggregates the cues of an entire film. What
+single ten-second clip while each test row aggregates the cues of an entire film. What
 the models have learned is therefore a property of film music generally, not of the
 43-film Eerola collection.
 
@@ -211,7 +211,7 @@ Between the two granularities lies a third observation. Predicting emotion for e
 and averaging the resulting emotion vectors outperforms averaging the embedding first and
 predicting once ($0.511$ vs $0.482$; in-domain the same change is worth $+0.059$,
 $p = 0.020$). A cue is a single piece of film music of median 19\,s, i.e.\ the same kind of
-object as an Eerola excerpt, whereas a film-level mean over some 39 cues is not. Applying
+object as an Eerola clip, whereas a film-level mean over some 39 cues is not. Applying
 the emotion model at the granularity it was trained on is thus not a detail but a
 measurable part of the method.
 
@@ -256,7 +256,7 @@ both corpora, and only the ranking of anger against happiness differs.
 One caveat concerns magnitude rather than pattern. Measured per film, the Blockbuster
 effect sizes are roughly twice the Eerola ones, because averaging some 39 cues per film
 shrinks within-group variance and thereby inflates $d$. The cue-level estimates, computed
-on the unit comparable to an Eerola excerpt, are of the same order as the originals
+on the unit comparable to an Eerola clip, are of the same order as the originals
 (horror--fear $+0.55$ against $+0.78$). What transfers is the structure of the
 emotion--genre relationship, not the absolute effect size.
 

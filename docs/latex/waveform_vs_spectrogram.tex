@@ -40,7 +40,7 @@ To close that gap, wav2vec 2.0 \citep{baevski2020wav2vec} is added as a sixth
 representation. Its feature encoder is a stack of one-dimensional convolutions applied
 directly to the raw 16\,kHz sample sequence; no spectral transform occurs at any stage.
 The self-supervised base checkpoint is used rather than an ASR fine-tune, whose
-representations are specialised toward phonetic content. Excerpt length
+representations are specialised toward phonetic content. Clip length
 (10.24\,s), temporal mean pooling and output dimensionality (768) are identical to AST, so
 that the two differ only in their front-end.
 
