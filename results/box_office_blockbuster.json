@@ -1,0 +1,808 @@
+{
+  "n_films": 110,
+  "n_with_gross": 110,
+  "n_with_budget": 84,
+  "years": [
+    2014,
+    2019
+  ],
+  "gross_usd": {
+    "median": 236449718.5,
+    "min": 9090040.0,
+    "max": 2799439100.0
+  },
+  "zero_shot_reproduction": {
+    "emotion route": {
+      "here": 0.5114725178073393,
+      "zero_shot.json": 0.5114725178073393,
+      "match": true
+    },
+    "direct audio (VGGish)": {
+      "here": 0.40657876238899693,
+      "zero_shot.json": 0.40657876238899693,
+      "match": true
+    },
+    "PCA-8 control": {
+      "here": 0.42089632790731074,
+      "zero_shot.json": 0.42089632790731074,
+      "match": true
+    }
+  },
+  "A_quality_vs_gross": {
+    "in-domain | emotion route | f1": {
+      "spearman": 0.12386135435715369,
+      "p_spearman": 0.1936,
+      "pearson_log": 0.07988132514251461,
+      "p_pearson": 0.4114,
+      "kendall": 0.07771998477162669,
+      "spearman_partial_year": 0.11629078896079445,
+      "p_spearman_bh": 0.3272769230769231
+    },
+    "in-domain | emotion route | jaccard": {
+      "spearman": 0.12287414174562727,
+      "p_spearman": 0.199,
+      "pearson_log": 0.12392135842526728,
+      "p_pearson": 0.1908,
+      "kendall": 0.07804796036367406,
+      "spearman_partial_year": 0.11499726134899341,
+      "p_spearman_bh": 0.3272769230769231
+    },
+    "in-domain | emotion route | hamming_accuracy": {
+      "spearman": 0.10701342478518225,
+      "p_spearman": 0.263,
+      "pearson_log": 0.07885531141065678,
+      "p_pearson": 0.4178,
+      "kendall": 0.06645316445356822,
+      "spearman_partial_year": 0.09635532994502985,
+      "p_spearman_bh": 0.3682
+    },
+    "in-domain | emotion route | exact_match": {
+      "spearman": 0.1456316201744479,
+      "p_spearman": 0.1232,
+      "pearson_log": 0.19056971934963196,
+      "p_pearson": 0.0494,
+      "kendall": 0.10667128642958275,
+      "spearman_partial_year": 0.1316439376798321,
+      "p_spearman_bh": 0.27233684210526315
+    },
+    "in-domain | emotion route | ranking_ap": {
+      "spearman": 0.018740803255536627,
+      "p_spearman": 0.8484,
+      "pearson_log": 0.04215329366736303,
+      "p_pearson": 0.659,
+      "kendall": 0.011557100903322898,
+      "spearman_partial_year": 0.006791223382600844,
+      "p_spearman_bh": 0.8690926829268294
+    },
+    "in-domain | emotion route | prob_margin": {
+      "spearman": 0.010454658161080179,
+      "p_spearman": 0.9136,
+      "pearson_log": 0.024241984135512335,
+      "p_pearson": 0.7986,
+      "kendall": 0.009507923269391158,
+      "spearman_partial_year": 0.010393591889407338,
+      "p_spearman_bh": 0.9136000000000001
+    },
+    "in-domain | direct audio (VGGish) | f1": {
+      "spearman": 0.21252573316009912,
+      "p_spearman": 0.029,
+      "pearson_log": 0.20768051805646984,
+      "p_pearson": 0.0318,
+      "kendall": 0.1417586027614312,
+      "spearman_partial_year": 0.21502288979316886,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | direct audio (VGGish) | jaccard": {
+      "spearman": 0.21217954540198627,
+      "p_spearman": 0.0244,
+      "pearson_log": 0.2316139340555507,
+      "p_pearson": 0.014,
+      "kendall": 0.1419397108001008,
+      "spearman_partial_year": 0.2145764780014331,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | direct audio (VGGish) | hamming_accuracy": {
+      "spearman": 0.17827799007756528,
+      "p_spearman": 0.0746,
+      "pearson_log": 0.18855885414862245,
+      "p_pearson": 0.0408,
+      "kendall": 0.1155183209967495,
+      "spearman_partial_year": 0.18127070687620328,
+      "p_spearman_bh": 0.2205
+    },
+    "in-domain | direct audio (VGGish) | exact_match": {
+      "spearman": 0.1974633274425457,
+      "p_spearman": 0.0392,
+      "pearson_log": 0.2596612672894469,
+      "p_pearson": 0.0084,
+      "kendall": 0.14468638076325194,
+      "spearman_partial_year": 0.198750119050555,
+      "p_spearman_bh": 0.1829333333333333
+    },
+    "in-domain | direct audio (VGGish) | ranking_ap": {
+      "spearman": 0.11232430168476709,
+      "p_spearman": 0.2466,
+      "pearson_log": 0.13610712441560516,
+      "p_pearson": 0.1548,
+      "kendall": 0.08084096693568833,
+      "spearman_partial_year": 0.1213681538209673,
+      "p_spearman_bh": 0.3571448275862069
+    },
+    "in-domain | direct audio (VGGish) | prob_margin": {
+      "spearman": 0.0805851723282916,
+      "p_spearman": 0.395,
+      "pearson_log": 0.12076354646140394,
+      "p_pearson": 0.202,
+      "kendall": 0.06088407005838198,
+      "spearman_partial_year": 0.10164779510108483,
+      "p_spearman_bh": 0.4608333333333333
+    },
+    "in-domain | PCA-8 control | f1": {
+      "spearman": 0.2399582088389652,
+      "p_spearman": 0.013,
+      "pearson_log": 0.21057110101961207,
+      "p_pearson": 0.0258,
+      "kendall": 0.1601350866150588,
+      "spearman_partial_year": 0.2372295406714856,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | PCA-8 control | jaccard": {
+      "spearman": 0.2427335479654192,
+      "p_spearman": 0.0118,
+      "pearson_log": 0.23939415405720202,
+      "p_pearson": 0.0126,
+      "kendall": 0.1627256747857692,
+      "spearman_partial_year": 0.24001966919892562,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | PCA-8 control | hamming_accuracy": {
+      "spearman": 0.22968434220791772,
+      "p_spearman": 0.0162,
+      "pearson_log": 0.22823970344427225,
+      "p_pearson": 0.0166,
+      "kendall": 0.15778286087826013,
+      "spearman_partial_year": 0.22500677403204147,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | PCA-8 control | exact_match": {
+      "spearman": 0.2128884708507472,
+      "p_spearman": 0.0258,
+      "pearson_log": 0.24948465584165128,
+      "p_pearson": 0.0106,
+      "kendall": 0.16223227098696077,
+      "spearman_partial_year": 0.20862148885102752,
+      "p_spearman_bh": 0.16275
+    },
+    "in-domain | PCA-8 control | ranking_ap": {
+      "spearman": 0.16328157694855322,
+      "p_spearman": 0.084,
+      "pearson_log": 0.15640631730552587,
+      "p_pearson": 0.0984,
+      "kendall": 0.11531697554714397,
+      "spearman_partial_year": 0.17171306485519824,
+      "p_spearman_bh": 0.2205
+    },
+    "in-domain | PCA-8 control | prob_margin": {
+      "spearman": 0.11713815567026575,
+      "p_spearman": 0.22,
+      "pearson_log": 0.1424004319259543,
+      "p_pearson": 0.1386,
+      "kendall": 0.08490408673894911,
+      "spearman_partial_year": 0.1414428619891323,
+      "p_spearman_bh": 0.3422222222222222
+    },
+    "in-domain | MIR-140 | f1": {
+      "spearman": 0.1415066929194051,
+      "p_spearman": 0.1344,
+      "pearson_log": 0.1124843827293384,
+      "p_pearson": 0.2334,
+      "kendall": 0.0966590928360962,
+      "spearman_partial_year": 0.1506437627269928,
+      "p_spearman_bh": 0.28224
+    },
+    "in-domain | MIR-140 | jaccard": {
+      "spearman": 0.13881353033172,
+      "p_spearman": 0.1562,
+      "pearson_log": 0.13332835372091328,
+      "p_pearson": 0.1574,
+      "kendall": 0.09304688482994757,
+      "spearman_partial_year": 0.1464849328142185,
+      "p_spearman_bh": 0.2982
+    },
+    "in-domain | MIR-140 | hamming_accuracy": {
+      "spearman": 0.1228680837055617,
+      "p_spearman": 0.1964,
+      "pearson_log": 0.12743295211914896,
+      "p_pearson": 0.1888,
+      "kendall": 0.0807099607105989,
+      "spearman_partial_year": 0.13194684005062365,
+      "p_spearman_bh": 0.3272769230769231
+    },
+    "in-domain | MIR-140 | exact_match": {
+      "spearman": 0.10262636351754231,
+      "p_spearman": 0.2858,
+      "pearson_log": 0.14457628958236884,
+      "p_pearson": 0.1258,
+      "kendall": 0.07913177201597454,
+      "spearman_partial_year": 0.09807979416586872,
+      "p_spearman_bh": 0.3872129032258065
+    },
+    "in-domain | MIR-140 | ranking_ap": {
+      "spearman": 0.1226151280728791,
+      "p_spearman": 0.2026,
+      "pearson_log": 0.10583405001102185,
+      "p_pearson": 0.262,
+      "kendall": 0.0866725104032345,
+      "spearman_partial_year": 0.13144231159503014,
+      "p_spearman_bh": 0.3272769230769231
+    },
+    "in-domain | MIR-140 | prob_margin": {
+      "spearman": -0.13859747988188356,
+      "p_spearman": 0.153,
+      "pearson_log": -0.12519515787240726,
+      "p_pearson": 0.1832,
+      "kendall": -0.08657214345287738,
+      "spearman_partial_year": -0.11675006913972222,
+      "p_spearman_bh": 0.2982
+    },
+    "zero-shot | emotion route | f1": {
+      "spearman": 0.17840247102545329,
+      "p_spearman": 0.065,
+      "pearson_log": 0.09677717092075672,
+      "p_pearson": 0.312,
+      "kendall": 0.1299708870241761,
+      "spearman_partial_year": 0.16920031551765288,
+      "p_spearman_bh": 0.2205
+    },
+    "zero-shot | emotion route | jaccard": {
+      "spearman": 0.17840247102545329,
+      "p_spearman": 0.0638,
+      "pearson_log": 0.04659799808774131,
+      "p_pearson": 0.635,
+      "kendall": 0.1299708870241761,
+      "spearman_partial_year": 0.16920031551765288,
+      "p_spearman_bh": 0.2205
+    },
+    "zero-shot | emotion route | hamming_accuracy": {
+      "spearman": 0.09044236596879716,
+      "p_spearman": 0.3592,
+      "pearson_log": -0.017234911961357582,
+      "p_pearson": 0.8614,
+      "kendall": 0.07131098994228934,
+      "spearman_partial_year": 0.07848500781622049,
+      "p_spearman_bh": 0.4608333333333333
+    },
+    "zero-shot | emotion route | exact_match": {
+      "spearman": -0.20836876105668334,
+      "p_spearman": 0.031,
+      "pearson_log": -0.2836227536389199,
+      "p_pearson": 0.0034,
+      "kendall": -0.17090396035727176,
+      "spearman_partial_year": -0.21211329774652382,
+      "p_spearman_bh": 0.16275
+    },
+    "zero-shot | emotion route | ranking_ap": {
+      "spearman": 0.16340850574086077,
+      "p_spearman": 0.083,
+      "pearson_log": 0.13162805525733876,
+      "p_pearson": 0.1624,
+      "kendall": 0.11553086722123479,
+      "spearman_partial_year": 0.15836706547927484,
+      "p_spearman_bh": 0.2205
+    },
+    "zero-shot | emotion route | prob_margin": {
+      "spearman": 0.21682483150373058,
+      "p_spearman": 0.0236,
+      "pearson_log": 0.2164555172500776,
+      "p_pearson": 0.0238,
+      "kendall": 0.14562135112593827,
+      "spearman_partial_year": 0.2218670518763077,
+      "p_spearman_bh": 0.16275
+    },
+    "zero-shot | direct audio (VGGish) | f1": {
+      "spearman": -0.08389893108171897,
+      "p_spearman": 0.3734,
+      "pearson_log": -0.08653980480504635,
+      "p_pearson": 0.3764,
+      "kendall": -0.0656460323669663,
+      "spearman_partial_year": -0.06459904536321566,
+      "p_spearman_bh": 0.4608333333333333
+    },
+    "zero-shot | direct audio (VGGish) | jaccard": {
+      "spearman": -0.08389893108171897,
+      "p_spearman": 0.3826,
+      "pearson_log": -0.11438187452853776,
+      "p_pearson": 0.2352,
+      "kendall": -0.0656460323669663,
+      "spearman_partial_year": -0.06459904536321566,
+      "p_spearman_bh": 0.4608333333333333
+    },
+    "zero-shot | direct audio (VGGish) | hamming_accuracy": {
+      "spearman": -0.15135177610326156,
+      "p_spearman": 0.1134,
+      "pearson_log": -0.15999815667041256,
+      "p_pearson": 0.0898,
+      "kendall": -0.11633590895170974,
+      "spearman_partial_year": -0.13005972793095583,
+      "p_spearman_bh": 0.2646
+    },
+    "zero-shot | direct audio (VGGish) | exact_match": {
+      "spearman": -0.17798392544452718,
+      "p_spearman": 0.071,
+      "pearson_log": -0.1843020378708967,
+      "p_pearson": 0.056,
+      "kendall": -0.1459823324002408,
+      "spearman_partial_year": -0.1558077766750914,
+      "p_spearman_bh": 0.2205
+    },
+    "zero-shot | direct audio (VGGish) | ranking_ap": {
+      "spearman": -0.0831729496926003,
+      "p_spearman": 0.3854,
+      "pearson_log": -0.10076877568668705,
+      "p_pearson": 0.2798,
+      "kendall": -0.060656013150625084,
+      "spearman_partial_year": -0.07525147030398116,
+      "p_spearman_bh": 0.4608333333333333
+    },
+    "zero-shot | direct audio (VGGish) | prob_margin": {
+      "spearman": -0.048937177377544355,
+      "p_spearman": 0.6224,
+      "pearson_log": -0.03196511392539467,
+      "p_pearson": 0.7472,
+      "kendall": -0.029524603836530435,
+      "spearman_partial_year": -0.02652604526929687,
+      "p_spearman_bh": 0.706508108108108
+    },
+    "zero-shot | PCA-8 control | f1": {
+      "spearman": -0.033899172165116905,
+      "p_spearman": 0.7284,
+      "pearson_log": -0.020973928899447044,
+      "p_pearson": 0.8284,
+      "kendall": -0.023536213553856197,
+      "spearman_partial_year": -0.006304386428809537,
+      "p_spearman_bh": 0.76482
+    },
+    "zero-shot | PCA-8 control | jaccard": {
+      "spearman": -0.033899172165116905,
+      "p_spearman": 0.7244,
+      "pearson_log": -0.033961795892035455,
+      "p_pearson": 0.718,
+      "kendall": -0.023536213553856197,
+      "spearman_partial_year": -0.006304386428809537,
+      "p_spearman_bh": 0.76482
+    },
+    "zero-shot | PCA-8 control | hamming_accuracy": {
+      "spearman": -0.11408779321241141,
+      "p_spearman": 0.2344,
+      "pearson_log": -0.128788105705177,
+      "p_pearson": 0.1742,
+      "kendall": -0.08760148923797567,
+      "spearman_partial_year": -0.08531355517586242,
+      "p_spearman_bh": 0.35159999999999997
+    },
+    "zero-shot | PCA-8 control | exact_match": {
+      "spearman": -0.045155325977555484,
+      "p_spearman": 0.6512,
+      "pearson_log": -0.07721299129143963,
+      "p_pearson": 0.423,
+      "kendall": -0.03703637724605217,
+      "spearman_partial_year": -0.03605135767589046,
+      "p_spearman_bh": 0.7197473684210527
+    },
+    "zero-shot | PCA-8 control | ranking_ap": {
+      "spearman": -0.1569381348038445,
+      "p_spearman": 0.102,
+      "pearson_log": -0.16853010546554276,
+      "p_pearson": 0.0802,
+      "kendall": -0.10904172903699032,
+      "spearman_partial_year": -0.14520539196253018,
+      "p_spearman_bh": 0.252
+    },
+    "zero-shot | PCA-8 control | prob_margin": {
+      "spearman": -0.16516015598584405,
+      "p_spearman": 0.0834,
+      "pearson_log": -0.10838985233539289,
+      "p_pearson": 0.2604,
+      "kendall": -0.11059216013344451,
+      "spearman_partial_year": -0.13858444938239317,
+      "p_spearman_bh": 0.2205
+    }
+  },
+  "B_emotion_vs_gross": {
+    "mean valence": {
+      "spearman": -0.31737709352388255,
+      "p_spearman": 0.0004,
+      "pearson_log": -0.3032070356108948,
+      "p_pearson": 0.0012,
+      "kendall": -0.20467055879899912,
+      "spearman_partial_year": -0.31468126863058477,
+      "p_spearman_bh": 0.0008888888888888889,
+      "spearman_partial_budget": -0.07066429995463612
+    },
+    "mean energy": {
+      "spearman": 0.2269774361517481,
+      "p_spearman": 0.0154,
+      "pearson_log": 0.2699639105962286,
+      "p_pearson": 0.0038,
+      "kendall": 0.15429524603836528,
+      "spearman_partial_year": 0.2155446283375039,
+      "p_spearman_bh": 0.023692307692307693,
+      "spearman_partial_budget": 0.022832689212020703
+    },
+    "mean tension": {
+      "spearman": 0.35815882604873434,
+      "p_spearman": 0.0002,
+      "pearson_log": 0.3525185595911432,
+      "p_pearson": 0.0,
+      "kendall": 0.23536280233527934,
+      "spearman_partial_year": 0.3549492664768949,
+      "p_spearman_bh": 0.0005,
+      "spearman_partial_budget": 0.07861645758152339
+    },
+    "mean anger": {
+      "spearman": 0.42677456438924327,
+      "p_spearman": 0.0,
+      "pearson_log": 0.42785143725664276,
+      "p_pearson": 0.0,
+      "kendall": 0.2887406171809841,
+      "spearman_partial_year": 0.42050773306524614,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": 0.049643590789648875
+    },
+    "mean fear": {
+      "spearman": 0.29881207312399977,
+      "p_spearman": 0.0024,
+      "pearson_log": 0.27549353562021955,
+      "p_pearson": 0.0032,
+      "kendall": 0.19065888240200163,
+      "spearman_partial_year": 0.29471767217902206,
+      "p_spearman_bh": 0.004363636363636363,
+      "spearman_partial_budget": 0.0621603045888953
+    },
+    "mean happy": {
+      "spearman": -0.2547753758762933,
+      "p_spearman": 0.0084,
+      "pearson_log": -0.23325768115501977,
+      "p_pearson": 0.011,
+      "kendall": -0.16463719766472057,
+      "spearman_partial_year": -0.2591774815254495,
+      "p_spearman_bh": 0.013999999999999999,
+      "spearman_partial_budget": -0.08055567760044814
+    },
+    "mean sad": {
+      "spearman": -0.10075513378265671,
+      "p_spearman": 0.3048,
+      "pearson_log": -0.16982381829859539,
+      "p_pearson": 0.0864,
+      "kendall": -0.06889074228523769,
+      "spearman_partial_year": -0.08731649408854572,
+      "p_spearman_bh": 0.4064,
+      "spearman_partial_budget": -0.011833173481601164
+    },
+    "mean tender": {
+      "spearman": -0.36551630863557466,
+      "p_spearman": 0.0,
+      "pearson_log": -0.3476862572053515,
+      "p_pearson": 0.0,
+      "kendall": -0.24737281067556294,
+      "spearman_partial_year": -0.3656869487134635,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": -0.09675919843438925
+    },
+    "mean valence_x_energy": {
+      "spearman": -0.1569100376439826,
+      "p_spearman": 0.1032,
+      "pearson_log": -0.15520249964051439,
+      "p_pearson": 0.1116,
+      "kendall": -0.10225187656380315,
+      "spearman_partial_year": -0.16063080780588818,
+      "p_spearman_bh": 0.14742857142857144,
+      "spearman_partial_budget": -0.03419763022620076
+    },
+    "mean negative_mean": {
+      "spearman": 0.3653359781800149,
+      "p_spearman": 0.0002,
+      "pearson_log": 0.36242480812363537,
+      "p_pearson": 0.0,
+      "kendall": 0.2393661384487072,
+      "spearman_partial_year": 0.3632296369872126,
+      "p_spearman_bh": 0.0005,
+      "spearman_partial_budget": 0.0804943958648702
+    },
+    "mean positive_mean": {
+      "spearman": -0.3541194238441945,
+      "p_spearman": 0.0,
+      "pearson_log": -0.32764528229219975,
+      "p_pearson": 0.0008,
+      "kendall": -0.23102585487906582,
+      "spearman_partial_year": -0.3557095744631871,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": -0.10727790276869656
+    },
+    "spread valence": {
+      "spearman": 0.012149764443342426,
+      "p_spearman": 0.9006,
+      "pearson_log": 0.005376913984189206,
+      "p_pearson": 0.957,
+      "kendall": 0.012844036697247704,
+      "spearman_partial_year": -0.022259714435242862,
+      "p_spearman_bh": 0.9006000000000001,
+      "spearman_partial_budget": -0.14726293253353237
+    },
+    "spread energy": {
+      "spearman": 0.4303000247954376,
+      "p_spearman": 0.0,
+      "pearson_log": 0.44156049833512084,
+      "p_pearson": 0.0,
+      "kendall": 0.2944120100083402,
+      "spearman_partial_year": 0.41462914567097964,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": 0.04436855078492088
+    },
+    "spread tension": {
+      "spearman": 0.09328945292248045,
+      "p_spearman": 0.3306,
+      "pearson_log": 0.10421589095460669,
+      "p_pearson": 0.2762,
+      "kendall": 0.06622185154295245,
+      "spearman_partial_year": 0.06263230654177913,
+      "p_spearman_bh": 0.41325,
+      "spearman_partial_budget": -0.14352972777356993
+    },
+    "spread anger": {
+      "spearman": 0.45092081238870224,
+      "p_spearman": 0.0,
+      "pearson_log": 0.4303703990100497,
+      "p_pearson": 0.0,
+      "kendall": 0.29941618015012506,
+      "spearman_partial_year": 0.4349322855957844,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": -0.022628988961712646
+    },
+    "spread fear": {
+      "spearman": -0.0300475621576539,
+      "p_spearman": 0.7528,
+      "pearson_log": -0.026027258546208323,
+      "p_pearson": 0.796,
+      "kendall": -0.013511259382819015,
+      "spearman_partial_year": -0.059715699419326494,
+      "p_spearman_bh": 0.792421052631579,
+      "spearman_partial_budget": -0.14971468966479148
+    },
+    "spread happy": {
+      "spearman": -0.047088790208056265,
+      "p_spearman": 0.6132,
+      "pearson_log": -0.07553708747584306,
+      "p_pearson": 0.4292,
+      "kendall": -0.035529608006672216,
+      "spearman_partial_year": -0.09390768326383193,
+      "p_spearman_bh": 0.6813333333333333,
+      "spearman_partial_budget": -0.09713121838786117
+    },
+    "spread sad": {
+      "spearman": 0.2978743547550887,
+      "p_spearman": 0.0016,
+      "pearson_log": 0.3184844480885617,
+      "p_pearson": 0.0006,
+      "kendall": 0.21067556296914092,
+      "spearman_partial_year": 0.2914515268746278,
+      "p_spearman_bh": 0.0032,
+      "spearman_partial_budget": 0.012062266168591011
+    },
+    "spread tender": {
+      "spearman": -0.08372292225503235,
+      "p_spearman": 0.3792,
+      "pearson_log": -0.07367095421759913,
+      "p_pearson": 0.4514,
+      "kendall": -0.06522101751459548,
+      "spearman_partial_year": -0.1226960659662353,
+      "p_spearman_bh": 0.4461176470588235,
+      "spearman_partial_budget": -0.08532747500473149
+    },
+    "number of cues": {
+      "spearman": 0.5715387920627447,
+      "p_spearman": 0.0,
+      "pearson_log": 0.5086579803307464,
+      "p_pearson": 0.0,
+      "kendall": 0.40422275895959514,
+      "spearman_partial_year": 0.560532234559951,
+      "p_spearman_bh": 0.0,
+      "spearman_partial_budget": 0.22464199813431188
+    }
+  },
+  "C_genre_vs_gross": {
+    "action": {
+      "n_with": 55,
+      "median_with": 474609154.0,
+      "median_without": 128988320.0,
+      "p_mw": 5.285071714611148e-07,
+      "p_mw_bh": 1.5855215143833443e-06
+    },
+    "drama": {
+      "n_with": 44,
+      "median_with": 154265899.0,
+      "median_without": 380755776.5,
+      "p_mw": 0.00013539241234920138,
+      "p_mw_bh": 0.00027078482469840276
+    },
+    "comedy": {
+      "n_with": 37,
+      "median_with": 158972570.0,
+      "median_without": 343471816.0,
+      "p_mw": 0.011593130745767028,
+      "p_mw_bh": 0.017389696118650544
+    },
+    "sci-fi": {
+      "n_with": 36,
+      "median_with": 615274280.5,
+      "median_without": 159067766.5,
+      "p_mw": 1.0240040740441526e-07,
+      "p_mw_bh": 6.144024444264915e-07
+    },
+    "romance": {
+      "n_with": 13,
+      "median_with": 208450780.0,
+      "median_without": 243870033.0,
+      "p_mw": 0.882227104850945,
+      "p_mw_bh": 0.882227104850945
+    },
+    "horror": {
+      "n_with": 11,
+      "median_with": 149368835.0,
+      "median_without": 239343729.0,
+      "p_mw": 0.30010334350790147,
+      "p_mw_bh": 0.36012401220948176
+    }
+  },
+  "D_predict_gross": {
+    "emotion (11)": {
+      "cv_r2": 0.2835114024611356,
+      "null_r2_95th": -0.016712875240264637,
+      "p_perm": 0.0
+    },
+    "VGGish-128": {
+      "cv_r2": 0.34838706841551526,
+      "null_r2_95th": -0.015741575957485238,
+      "p_perm": 0.0
+    },
+    "MIR-140": {
+      "cv_r2": 0.21354650411648718,
+      "null_r2_95th": -0.0009838258809595339,
+      "p_perm": 0.0
+    },
+    "genre labels (6)": {
+      "cv_r2": 0.2525760601427127,
+      "null_r2_95th": -0.014328751426795688,
+      "p_perm": 0.0
+    },
+    "emotion (11) + genre (6)": {
+      "cv_r2": 0.22189685855199612,
+      "null_r2_95th": -0.015497394717291103,
+      "p_perm": 0.0
+    },
+    "log budget (84 films)": {
+      "cv_r2": 0.491264103717735,
+      "null_r2_95th": -0.013138047313704323,
+      "p_perm": 0.0
+    },
+    "emotion (11), same 84 films": {
+      "cv_r2": 0.11780177045881643,
+      "null_r2_95th": -0.02057456245844295,
+      "p_perm": 0.0
+    },
+    "log budget + emotion (11), same 84 films": {
+      "cv_r2": 0.4517195775467326,
+      "null_r2_95th": -0.020799201701321105,
+      "p_perm": 0.0
+    }
+  },
+  "E_mir_all": {
+    "n_features": 140,
+    "n_constant_skipped": 1,
+    "n_p_below_05_uncorrected": 45,
+    "n_significant_bh": 20,
+    "top10": {
+      "crest_mean": {
+        "spearman": -0.42466469805919344,
+        "p_spearman": 0.0,
+        "pearson_log": -0.385099846261989,
+        "p_pearson": 0.0,
+        "kendall": -0.292743953294412,
+        "spearman_partial_year": -0.42238152003601376,
+        "p_spearman_bh": 0.0
+      },
+      "mfcc4_mean": {
+        "spearman": -0.41801952077181437,
+        "p_spearman": 0.0,
+        "pearson_log": -0.411466169495308,
+        "p_pearson": 0.0,
+        "kendall": -0.2783986655546288,
+        "spearman_partial_year": -0.40267271594668136,
+        "p_spearman_bh": 0.0
+      },
+      "mfcc2_mean": {
+        "spearman": -0.40241191984311253,
+        "p_spearman": 0.0,
+        "pearson_log": -0.38477140971513185,
+        "p_pearson": 0.0,
+        "kendall": -0.27939949958298577,
+        "spearman_partial_year": -0.39043643024627617,
+        "p_spearman_bh": 0.0
+      },
+      "mfcc6_mean": {
+        "spearman": -0.3975880801568875,
+        "p_spearman": 0.0,
+        "pearson_log": -0.36232914640982367,
+        "p_pearson": 0.0,
+        "kendall": -0.26205170975813175,
+        "spearman_partial_year": -0.37721959290718415,
+        "p_spearman_bh": 0.0
+      },
+      "pulseclarity_mean": {
+        "spearman": -0.397101187926876,
+        "p_spearman": 0.0,
+        "pearson_log": -0.3695446890391039,
+        "p_pearson": 0.0,
+        "kendall": -0.2697247706422018,
+        "spearman_partial_year": -0.38797464187627145,
+        "p_spearman_bh": 0.0
+      },
+      "deltadeltamfcc2_stddev": {
+        "spearman": -0.32670919459910286,
+        "p_spearman": 0.0,
+        "pearson_log": -0.33564397019041936,
+        "p_pearson": 0.001,
+        "kendall": -0.21801501251042535,
+        "spearman_partial_year": -0.31849025852490526,
+        "p_spearman_bh": 0.0
+      },
+      "deltamfcc2_stddev": {
+        "spearman": -0.3205959921556252,
+        "p_spearman": 0.0,
+        "pearson_log": -0.32512259487234624,
+        "p_pearson": 0.0,
+        "kendall": -0.21534612176814008,
+        "spearman_partial_year": -0.311170264643551,
+        "p_spearman_bh": 0.0
+      },
+      "mfcc12_mean": {
+        "spearman": -0.3105515857809436,
+        "p_spearman": 0.0,
+        "pearson_log": -0.28643657747712276,
+        "p_pearson": 0.002,
+        "kendall": -0.21434528773978315,
+        "spearman_partial_year": -0.288115652343569,
+        "p_spearman_bh": 0.0
+      },
+      "crest_stddev": {
+        "spearman": -0.3510808556680116,
+        "p_spearman": 0.001,
+        "pearson_log": -0.32645894690389576,
+        "p_pearson": 0.001,
+        "kendall": -0.23536280233527934,
+        "spearman_partial_year": -0.3524334522333315,
+        "p_spearman_bh": 0.011583333333333334
+      },
+      "deltadeltamfcc1_stddev": {
+        "spearman": -0.3336699501837117,
+        "p_spearman": 0.001,
+        "pearson_log": -0.33285529759413546,
+        "p_pearson": 0.001,
+        "kendall": -0.23202668890742284,
+        "spearman_partial_year": -0.31988593626075923,
+        "p_spearman_bh": 0.011583333333333334
+      }
+    }
+  },
+  "confounds": {
+    "year": {
+      "rho": 0.13798165607339002,
+      "p_perm": 0.1468
+    },
+    "budget": {
+      "rho": 0.7813220484855815,
+      "p_perm": 0.0,
+      "n": 84
+    }
+  }
+}

@@ -14,6 +14,52 @@ They were checked against the Overleaf project as it stood on 23 September 2026
 
 **Nothing has been pasted into Overleaf.** These are for you to read, adapt and add.
 
+## Held back from the thesis: `held_back/`
+
+On 6 Oct 2026 three parts were taken **out** of the Overleaf build, to be rewritten by the
+author. Their drafts are kept here, outside the Overleaf project, and are not compiled:
+
+| file | was | on Overleaf now |
+|---|---|---|
+| `held_back/abstract.tex` | the abstract on the title page | a red placeholder |
+| `held_back/4_conclusion.tex` | the whole Conclusions and Future Work chapter | the chapter heading, both section headings and their labels (other chapters refer to them), with a `\mytodo` note each |
+| `held_back/intro_contributions.tex` | the end of "Aim of this thesis": the list of contributions | removed; the section ends after the research questions |
+
+At the same time the prose of every other chapter was revised for style (shorter, plainer
+sentences, fewer dashes and set phrases). No number, label, reference, citation, table or
+figure changed; a script compared each chapter with its previous version.
+
+## New since the fourth meeting: whole chapters in `chapters/` (now on Overleaf)
+
+**Status, 5 Oct 2026:** all six files below are on Overleaf, with the figures, the
+missing references and the fixes of an examiner-style review; the project compiles with
+0 errors. The files here mirror the Overleaf versions.
+
+`docs/latex/chapters/` holds a complete draft of every chapter that was still a skeleton.
+Each file **replaces the Overleaf file of the same name as a whole**, so the ten-step paste
+plan below is no longer needed: the drafts already contain the sections it lists,
+adapted to each other.
+
+| file | replaces on Overleaf | contents |
+|---|---|---|
+| `chapters/0_intro.tex` | `chapter/0_intro.tex` | motivation, the research questions, contributions, structure |
+| `chapters/2_analysis.tex` | `chapter/2_analysis.tex` | Methods: datasets and the three label spaces, representations, Stage 1 (incl. the three derived features), Stage 2, baselines, the evaluation protocol, implementation; the pipeline figure in TikZ |
+| `chapters/3_evaluation.tex` | `chapter/3_evaluation.tex` | every result, with the figures; **new section "Robustness: Choice of Metric and Stability"** (supervisor notes 1 and 2) and the Blockbuster box-office analysis (note 3) |
+| `chapters/discussion.tex` | `chapter/discussion.tex` | interpretation, limitations, relation to prior work |
+| `chapters/4_conclusion.tex` | `chapter/4_conclusion.tex` | now only the headings and labels; the draft is in `held_back/` |
+| `held_back/abstract.tex` | the abstract on the title page | held back since 6 Oct (see above) |
+
+**Figures.** The chapters include `figures/<name>.pdf`. Upload the repository's `figures/`
+folder to the Overleaf project root (the PDFs only; the PNGs are previews). Every figure
+is drawn by `experiments/make_figures.py` from `results/*.json`.
+
+**Before pasting, search each file for `% CITATION NEEDED`.** Three places need a
+reference that is not in `bib/library.bib` yet: librosa (McFee et al., 2015); PyTorch,
+Hugging Face transformers and scikit-learn; and threshold tuning for F1 (Lipton et al.,
+2014). Add the BibTeX entries, then the `\citep`.
+
+Nothing has been compiled on Overleaf yet. Replace one chapter at a time and recompile.
+
 ---
 
 ## Three rules before pasting
@@ -72,15 +118,19 @@ The skeleton notes on Overleaf list the facts and where they are for each of the
 ## Also fix on Overleaf when you get to it
 
 **Fundamentals, "Metrics", the macro-F1 paragraph** says a trivial classifier "scores
-*better* than every real model on both exact-match accuracy and Hamming loss". Re-running
-the check (`experiments/genre/exp_genre.py`, film-grouped protocol) shows:
+*better* than every real model on both exact-match accuracy and Hamming loss". Whether
+that is true depends on the label space:
 
-- it beats every model on **Hamming loss** (0.185 against 0.188 to 0.431);
-- on **exact match** it only **ties** the best one (0.116 against the MLP on AST's 0.116).
+- **5 genres** (the headline protocol, `results/metrics_stability.json`): true as
+  written. The most-frequent baseline wins outright on exact match (0.283 against at most
+  0.170) and on Hamming loss (0.218 against at least 0.314).
+- **8 genres** (`experiments/genre/exp_genre.py`, older protocol): it wins on Hamming
+  loss (0.185 against 0.188 to 0.431) but only **ties** the best model on exact match
+  (0.116).
 
-Suggested wording: "*…scores better than every real model on Hamming loss, and no worse
-than any of them on exact-match accuracy*". `evaluation_protocol.tex` already says it this
-way.
+Simplest fix: say which setting is meant, e.g. "*on the five-genre task, a trivial
+classifier ... scores better than every real model on both exact-match accuracy and
+Hamming loss*".
 
 ---
 

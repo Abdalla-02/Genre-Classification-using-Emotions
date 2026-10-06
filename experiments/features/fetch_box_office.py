@@ -93,16 +93,23 @@ def from_box_office_mojo(imdb_id: str) -> dict | None:
                                    headers=UA), timeout=20).read().decode("utf-8", "replace")
     except Exception:
         return None
+    # Read the figures from the page's performance summary only. Searching the whole
+    # page for "Worldwide" finds the navigation menu first, and the next dollar figure
+    # after it is the domestic OPENING weekend -- which is how every film came out as
+    # "domestic only" before this was fixed.
+    start = html.find("mojo-performance-summary")
+    summary = html[start:start + 20000] if start >= 0 else ""
+
     def grab(label: str):
         # a figure must start with a digit: "$," (an empty cell) must not match
-        m = re.search(label + r".*?\$(\d[\d,]*)", html, re.S)
+        m = re.search(r">\s*" + label + r"\b.*?\$(\d[\d,]*)", summary, re.S)
         return int(m.group(1).replace(",", "")) if m else None
     ww_v, dom_v = grab("Worldwide"), grab("Domestic")
     if ww_v is None and dom_v is None:
         return None
-    if ww_v and dom_v and ww_v > dom_v:
+    if ww_v and (dom_v is None or ww_v >= dom_v):
         return {"gross": float(ww_v), "scope": "worldwide"}
-    return {"gross": float(ww_v or dom_v), "scope": "domestic only"}
+    return {"gross": float(dom_v), "scope": "domestic only"}
 
 
 def main() -> None:

@@ -14,7 +14,7 @@ Implementation complete. Open item: content chapters.
 
 ## 1. Your notes — what was asked and what came of it
 
-### Round 2 (most recent)
+### Round 2
 
 | # | Your note | Status | Where |
 |---|---|---|---|
@@ -23,6 +23,17 @@ Implementation complete. Open item: content chapters.
 | C | Try a **waveform** extractor, not just spectrogram | **Done.** wav2vec 2.0 added. It is clearly worse (R² 0.323 vs 0.56) — but the emotion bottleneck lifts it from last place to second. | §4.5 |
 | D | The classifier must have the **same genre classes in both datasets** to be fair | **Done, and it found a real error in our own reporting.** Both corpora now share one 6-genre space. | §4.2 |
 | E | Emotion–genre relationship in the literature, **including in music** | **Done.** New literature section covering Hu & Downie (2007), Laurier et al. (2009), Eerola (2011), Saari et al. (2016). | §6 |
+
+### Round 4 (after the third meeting, 24 Sep 2026) — most recent
+
+| # | Your note | Status |
+|---|---|---|
+| 1 | Explain the F1 metric; is there a better approach? | **Done.** Every route scored under 13 metrics. Macro-F1 stays the headline: the most-frequent baseline wins micro-F1, samples-F1, exact match, Hamming loss and Jaccard. **But** with per-genre thresholds tuned on the training data all routes converge (0.427–0.441) and the in-domain emotion lead is no longer significant. See §4.11. |
+| 2 | Standard deviation / variance of the CV: is it stable and reproducible? | **Done.** SD over repeats 0.009–0.023, over single folds 0.050–0.061, over five master seeds 0.001–0.008; emotion − direct is positive under every seed; seed 42 reproduces the main run exactly. See §4.11. |
+| 3 | Box office vs the Blockbuster dataset, under all metrics | **Done, exploratory.** See §4.12. Also found and fixed a parser bug that had stored Box Office Mojo grosses as US-only; the Eerola analysis was re-run (§4.10). |
+| 4 | Write the rest of the chapters | **Drafted** in `docs/latex/chapters/` (Introduction, Methods, Evaluation, Discussion, Conclusions, abstract), each a full replacement for its Overleaf file. Not yet on Overleaf. |
+| 5 | Results as graphs, not only tables | **Done.** Nine figures in `figures/`, drawn from the results files by `experiments/make_figures.py`, placed in the Evaluation draft. |
+| 6 | Figures from other papers are allowed with the source | Noted. The circumplex figure in Fundamentals is redrawn after Russell (1980); the original could now be used instead, with its source. |
 
 ### Round 3 (after the second meeting)
 
@@ -203,6 +214,56 @@ other, which makes no distributional assumption.
 **Reliability ceiling (0.897)** — Set 2 re-rates 110 Set 1 excerpts with a *different*
 listener panel. The two panels agree at r ≈ 0.91, so a model cannot explain more than
 ~0.90 of the rating variance. **The honest reference point for R² is 0.90, not 1.0.**
+
+---
+
+## 2b. What is being compared: three routes from audio to genre
+
+Every result below compares the same three ways of getting from a soundtrack clip to its
+genres. They share their first and last step and differ only in the middle:
+
+```
+                      ┌─ 1. DIRECT AUDIO ── all 128 numbers ─────────────────────┐
+clip ─► pretrained ───┼─ 2. EMOTION ROUTE ── predict 8 emotions ─► 11 numbers ───┼─► genre
+        network       │                      (+3 combinations)                   │  classifier
+        (VGGish:      └─ 3. PCA-8 CONTROL ── compress to 8 numbers ──────────────┘
+        128 numbers)
+```
+
+| route | what the genre classifier sees | how many numbers | the question it answers |
+|---|---|---:|---|
+| **1. Direct audio** | the audio network's raw output (the *embedding*) | 128 (VGGish), up to 768 (AST) | How well can genre be predicted from audio *without* emotion? This is what all earlier work does, so it is the baseline to beat. |
+| **2. Emotion route** — the pipeline this thesis proposes | eight emotions *predicted* from the embedding by a model trained on the listener ratings: valence, energy, tension, anger, fear, happy, sad, tender, plus three simple combinations of them | 11 | Does passing through emotion keep what genre needs? If it does, genre becomes explainable: "Horror, because the music is fearful". |
+| **3. PCA-8 control** | the embedding squeezed into its 8 main directions of variation by principal component analysis, a standard statistical compression | 8 | Is it the *emotions* that help, or just having *few* numbers? |
+
+The emotion route squeezes 128 numbers into 11. With only about 330 clips to learn from,
+fewer numbers alone can help, because a classifier has less room to memorise the training
+films. The PCA-8 control is there to test exactly that: it is just as compact, but its
+eight numbers are chosen purely by statistics and **mean nothing**. If the emotion route
+also beats the control, the advantage comes from *what* its numbers mean, not from how few
+of them there are.
+
+A fourth variant, **human ratings (ceiling)**, gives the classifier the listeners' actual
+ratings instead of predicted ones: the best the emotion route could do if emotion
+prediction were perfect. It exists only for Eerola, because Blockbuster has no ratings.
+
+**What each comparison tells you**, with VGGish as the direct audio (all three routes
+start from the same VGGish embedding, so they differ only in the middle step):
+
+| comparison | a win means | Eerola, in-domain (5 genres) | zero-shot, Eerola → Blockbuster |
+|---|---|---|---|
+| emotion vs direct audio | the detour through emotion loses nothing and gains something | **0.417 vs 0.377**, p = 0.042 † | **0.511 vs 0.407**, p = 0.018 |
+| emotion vs PCA-8 control | the gain comes from emotional *meaning*, not from compression | **0.417 vs 0.372**, p = 0.029 † | **0.511 vs 0.421**, p = 0.032 |
+| PCA-8 control vs direct audio | compression alone helps | 0.372 vs 0.377, p = 0.77 — no | 0.421 vs 0.407, p = 0.572 — no |
+
+† Film bootstrap. Under the stricter Nadeau–Bengio test the two in-domain wins are
+borderline (p = 0.151 and 0.122); section 5 explains the difference. Zero-shot values
+are film-bootstrap p-values, the only test that applies to a single train/test split.
+
+Read together: compression by itself does not help (row 3), yet the emotion route beats
+both alternatives (rows 1 and 2). So what makes the difference is the emotional content of
+the eight numbers, and it matters most when the model is applied to a corpus it was never
+trained on.
 
 ---
 
@@ -557,13 +618,64 @@ training. It is a *generalisation* advantage — exactly what a corpus-independe
 representation should give. In-domain the emotion route is ahead too, but by less
 (0.04–0.05) and less robustly (§4.1); across corpora the margin roughly doubles (+0.11).
 
-### 4.10 Box office (exploratory, n = 37)
+### 4.10 Box office on Eerola (exploratory, n = 37)
 
-Gross was fetched by IMDb id from Wikidata and Box Office Mojo. The only robust result:
-**Action films gross more** (median $267M vs $41M, p=0.004) — a fact about genre, not about
-the soundtrack model. Per-film classification quality does not correlate with gross
-(rho=+0.20, p=0.24), and the one emotion that does (anger, p=0.045) is explained by
-Action membership. One paragraph in Discussion, nothing more.
+Gross was fetched by IMDb id from Wikidata and Box Office Mojo. All 38 usable grosses are
+worldwide figures since the Box Office Mojo parser was fixed in round 4 (it had stored
+the 12 films taken from that site as US-only; 7 grosses changed, no conclusion did).
+The only robust result: **Action films gross more** (median $267M vs $44M, p=0.004) — a
+fact about genre, not about the soundtrack model. Per-film classification quality does
+not correlate with gross (rho=+0.197, p=0.246), and the one emotion that does (anger,
+rho=+0.335, p=0.043) is explained by Action membership. Biography (3 films) now also
+reaches p=0.045: with three films and six genre tests, that is chance.
+
+### 4.11 Is macro-F1 the right metric, and are the numbers stable? (round 4, notes 1–2)
+
+`results/metrics_stability.json`; 5 genres, same folds and predictions as §4.1.
+
+| metric | emotion | VGGish | AST | PCA-8 | most freq. | random | emotion − VGGish |
+|---|---:|---:|---:|---:|---:|---:|---|
+| macro-F1 (headline) | **0.417** | 0.377 | 0.371 | 0.372 | 0.168 | 0.308 | +0.041, p=0.035 |
+| macro-F1, tuned thresholds | 0.440 | 0.429 | 0.427 | **0.441** | 0.168 | 0.308 | +0.011, p=0.439 |
+| macro average precision | **0.372** | 0.361 | 0.359 | 0.356 | 0.309 | 0.321 | +0.011, p=0.533 |
+| macro ROC-AUC | **0.608** | 0.567 | 0.571 | 0.567 | 0.500 | 0.501 | +0.041, p=0.176 |
+| film-level macro-F1 | **0.469** | 0.375 | 0.307 | 0.418 | 0.169 | 0.301 | +0.096, p=0.041 |
+| micro-F1 | 0.482 | 0.471 | 0.515 | 0.446 | **0.571** | 0.477 | |
+| exact match | 0.082 | 0.105 | 0.170 | 0.095 | **0.283** | 0.133 | |
+| Hamming loss (lower better) | 0.404 | 0.359 | 0.314 | 0.393 | **0.218** | 0.323 | |
+
+- **Macro-F1 is the right headline**: the metrics that pool decisions (micro-F1,
+  samples-F1, exact match, Hamming, Jaccard) are won by always predicting Drama.
+- **The in-domain lead depends on the decision threshold.** At the default cut of 0.5
+  the emotion route wins mainly through recall (0.596 vs 0.439). With each genre's cut
+  tuned on the training folds, all routes land at 0.427–0.441 and the lead is not
+  significant. The threshold-free ranking metrics put the emotion route first, not
+  significantly. The zero-shot result cannot be tuned this way (no target labels).
+- **Stable and reproducible**: SD over repeats 0.009–0.023 (emotion 0.011); over single
+  folds 0.050–0.061; film-bootstrap SE 0.018–0.027 (the largest source); SD of the
+  10-repeat mean over 5 master seeds 0.001–0.008. Emotion − VGGish is +0.037 to +0.059
+  under every seed. Seed 42 reproduces `cv_corrected.json` exactly.
+
+The random-guess floor on 5 genres is now quoted as **0.308**, the simulated value stored in
+this file (the earlier 0.309 was the mean-prevalence formula, not in any results file).
+
+### 4.12 Box office on Blockbuster (round 4, note 3, exploratory)
+
+`results/box_office_blockbuster.json`. 110 films (2014–2019), worldwide gross from Box
+Office Mojo for all of them ($9M to $2.8B), budget for 84. Emotions predicted per cue.
+Spearman with permutation p and Benjamini–Hochberg correction.
+
+- **Classification quality does not relate to gross.** 42 tests (6 per-film metrics × 7
+  route/setting combinations); none survives the correction.
+- **The emotions of the score do — until the budget is controlled.** Anger ρ=+0.43,
+  tension +0.36, tender −0.37, valence −0.32 (all significant after correction). With the
+  budget controlled every emotion is within ±0.11. Budget and gross: ρ=+0.78.
+- **Genre**: Action ($475M vs $129M) and Sci-Fi ($615M vs $159M) gross more.
+- **Prediction**: the soundtrack predicts log gross (emotion R²=0.28, VGGish 0.35), but the
+  budget alone does better (0.49) and adding the emotions to it does not help (0.45).
+
+Reading: the music mirrors the scale and kind of production (big action/sci-fi scores),
+not success as such. Exploratory, non-causal.
 
 ## 5. Numbers that changed — and why
 
@@ -775,3 +887,98 @@ clone without re-running a model over the audio.
 > and box-office work, so several of their numbers have since been superseded — including
 > two that were found to be wrong (§5). **This Markdown file is the only current version.**
 > Do not send the PDF to anyone; export a fresh one from this file if a PDF is needed.
+
+---
+
+## 10. Questions to expect, and the answers (third meeting)
+
+**Is the emotion route really better than classifying from audio directly?**
+Yes, but by different margins in the two settings, and it should be put that way.
+- *In-domain* (trained and tested on Eerola), it is ahead of every audio representation by
+  0.04–0.05, in all 10 repeats of the cross-validation. On 8 genres that is significant
+  under both tests (e.g. vs AST +0.043, p = 0.049 and 0.012). On 5 genres it is
+  significant under the film bootstrap and borderline under the stricter Nadeau–Bengio
+  test (p = 0.07–0.15).
+- *Across corpora* (trained on Eerola, tested on Blockbuster), the margin roughly doubles:
+  0.511 vs 0.407, +0.106, p = 0.018.
+- The advantage is largest exactly where it matters: on data the model has never seen.
+
+**Isn't that just because 11 numbers overfit less than 128?**
+That is precisely what the PCA-8 control tests (§2b). It compresses the same
+embedding to 8 numbers that mean nothing. Compression alone does not help (PCA-8 vs direct
+audio: 0.372 vs 0.377, p = 0.77), but the emotion route beats the control (+0.045
+in-domain; +0.092 across corpora, p = 0.032). So the gain comes from what the eight
+numbers mean, not from how few they are.
+
+**Did you just pick a weak audio baseline?**
+No. Five representations were tried, spanning general audio (AST, VGGish), audio–text
+(CLAP), a music-pretrained model (MusiCNN) and hand-crafted descriptors (MIR). They are
+statistically indistinguishable from each other (0.361–0.377; AST vs CLAP p = 0.66), and
+the emotion route is ahead of all five. A sixth, the raw-waveform model wav2vec 2.0, is the
+weakest used directly (0.326) and rises to 0.419 through the emotion route.
+
+**Why is the 5-genre result only borderline under the strict test?**
+Because the corpus is small, not because the analysis stopped too early. For every one of
+those comparisons, the smallest p-value the Nadeau–Bengio test could reach with *infinitely*
+many repeats is still above 0.05 (0.055–0.130). No amount of extra computation can make them
+significant; only more films can. The learning curves are also still rising at 100 % of the
+data.
+
+**Which of the two significance tests is the right one?**
+They answer different questions, so both are reported. The film bootstrap asks how much
+the result depends on which films happen to be in the corpus. It is also the only test
+that applies to the single train/test split of the cross-corpus experiment. Nadeau–Bengio
+additionally accounts for which films the model was trained on, so it is stricter.
+Reporting only the friendlier one would overstate the result.
+
+**Why did the numbers change since the last meeting?**
+The cross-validation was corrected (§4.1 and technical log section 21):
+- Rare genres were missing from many test folds, and scoring fold by fold counted them as
+  zero there. Every score rose by 0.02–0.03 (pipeline 0.394 → 0.417).
+- The gaps between methods stayed the same.
+- The corrected run reproduces the old numbers exactly under the old scoring, so the fix
+  is the only difference.
+
+**Do predicted emotions work as well as the human ratings?**
+Yes: 0.417 from predicted emotions against 0.428 from the ratings, a difference that is not
+significant (p = 0.33). So the pipeline needs no manual annotation once the emotion model
+is trained.
+
+**Which emotions matter? Why keep all eight?**
+Fear is the most diagnostic: Horror is the strongest single genre–emotion link in the
+corpus (Cohen's d = +0.75). But no single emotion is *needed*: fear alone (0.433) or valence
+and energy alone (0.420) match all eight (0.426), because the ratings are strongly
+intercorrelated. All eight are kept because the discrete emotions are what make the
+result readable, not for accuracy. This corrected an earlier claim in the Fundamentals
+chapter.
+
+**Why is Blockbuster so much easier than Eerola (0.616 vs 0.417)?**
+Those two numbers cannot be compared. They use different genre sets, different units (a
+whole film vs a 10-second clip) and different chance levels. On the one genre set both
+corpora share, Eerola scores 0.315 against a chance level of 0.250, and Blockbuster 0.620
+against 0.292. Blockbuster really is easier: a film-level summary averages out noise that
+a single clip carries, and its genres are more common.
+
+**Could the results come from recognising the film rather than the genre?**
+No, by design. Every split keeps all clips of a film on the same side, and the size of the
+effect this prevents was measured: the AST baseline scores 0.44 with a naive split and 0.26
+with a film-grouped one. Where the classifier is trained on predicted emotions, those are
+also predicted out-of-fold.
+
+**Why VGGish for the cross-corpus experiments?**
+Blockbuster distributes no audio (copyright), only pre-extracted VGGish and hand-crafted
+features. VGGish is therefore the only representation available on both corpora.
+
+**Does box-office success relate to the soundtrack?**
+No, as far as 37 films can tell. Classification quality does not track gross (ρ = +0.20,
+p = 0.24). The one robust effect is that Action films gross more (p = 0.004), which is a
+fact about genre. This is exploratory: 37 films over four decades, not adjusted for
+inflation. (Superseded by the larger Blockbuster analysis, §4.12.)
+
+**What would you do with more time?**
+In order of value:
+- More films: the one lever on the borderline results.
+- A second corpus *with* audio, so the transfer result does not rest on VGGish alone.
+- Tuning the emotion regressor, since only the genre classifier is tuned so far.
+- Cue-level genre labels, so that a romantic scene in an action film is not labelled
+  Action.

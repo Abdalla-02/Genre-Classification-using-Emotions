@@ -1,0 +1,111 @@
+slug,title,year_hint,wikidata,wikidata_label,year,imdb_id,wikidata_gross_usd,budget_usd,gross,scope,source
+first_man,First Man,2018,Q42708010,First Man,2018,tt1213641,,59000000.0,105713218.0,worldwide,boxofficemojo
+happy_death_day,Happy Death Day,2017,Q29514884,Happy Death Day,2017,tt5308322,125479266.0,4800000.0,125479266.0,worldwide,boxofficemojo
+johnny_english_strikes_again,Johnny English Strikes Again,2018,Q35160593,Johnny English Strikes Again,2018,tt6921996,,,158972570.0,worldwide,boxofficemojo
+krampus,Krampus,2015,Q19627473,Krampus,2015,tt3850590,61548707.0,15000000.0,61548934.0,worldwide,boxofficemojo
+mortal_engines,Mortal Engines,2018,Q28999515,Mortal Engines,2018,tt1571234,83672673.0,100000000.0,84789131.0,worldwide,boxofficemojo
+house_with_a_clock_in_its_walls,The House with a Clock in Its Walls,2018,Q42914959,The House with a Clock in Its Walls,2018,tt2119543,,42000000.0,131523093.0,worldwide,boxofficemojo
+paddington_2,Paddington 2,2017,Q27590871,Paddington 2,2017,tt4468740,227994792.0,50000000.0,290132513.0,worldwide,boxofficemojo
+antman,Ant-Man,2015,Q5901134,Ant-Man,2015,tt0478970,519311965.0,130000000.0,519311965.0,worldwide,boxofficemojo
+antman_and_the_wasp,Ant-Man and the Wasp,2018,Q22957393,Ant-Man and the Wasp,2018,tt5095030,622674139.0,162000000.0,622674139.0,worldwide,boxofficemojo
+avengers_age_of_ultron,Avengers: Age of Ultron,2015,Q14171368,Avengers: Age of Ultron,2015,tt2395427,1402805868.0,250000000.0,1405018048.0,worldwide,boxofficemojo
+avengers_infinity_war,Avengers: Infinity War,2018,Q23780914,Avengers: Infinity War,2018,tt4154756,2048359754.0,400000000.0,2052415039.0,worldwide,boxofficemojo
+bohemian_rhapsody,Bohemian Rhapsody,2018,Q27894574,Bohemian Rhapsody,2018,tt1727824,903655259.0,,911084758.0,worldwide,boxofficemojo
+captain_america_civil_war,Captain America: Civil War,2016,Q18407657,Captain America: Civil War,2016,tt3498820,1153296293.0,250000000.0,1155046416.0,worldwide,boxofficemojo
+captain_america_the_winter_soldier,Captain America: The Winter Soldier,2014,Q1765358,Captain America: The Winter Soldier,2014,tt1843866,714421503.0,170000000.0,714421503.0,worldwide,boxofficemojo
+doctor_strange,Doctor Strange,2016,Q18406872,Doctor Strange,2016,tt1211837,677718395.0,165000000.0,677796833.0,worldwide,boxofficemojo
+thor_ragnarok,Thor: Ragnarok,2017,Q22665878,Thor: Ragnarok,2017,tt3501632,853977126.0,180000000.0,855301806.0,worldwide,boxofficemojo
+spotlight,Spotlight,2015,Q18154496,Spotlight,2015,tt1895587,88346473.0,20000000.0,98690254.0,worldwide,boxofficemojo
+hitman_agent_47,Hitman: Agent 47,2015,Q15715216,Hitman: Agent 47,2015,tt2679042,,35000000.0,82347656.0,worldwide,boxofficemojo
+kingsman_the_secret_service,Kingsman: The Secret Service,2015,Q15068238,Kingsman: The Secret Service,2014,tt2802144,414351546.0,81000000.0,414351546.0,worldwide,boxofficemojo
+miss_peregrines_home_for_peculiar_children,Miss Peregrine's Home for Peculiar Children,2016,Q19321019,Miss Peregrine's Home for Peculiar Children,2016,tt1935859,296485719.0,110000000.0,296482446.0,worldwide,boxofficemojo
+mission_impossible_fallout,Mission: Impossible – Fallout,2018,Q29261993,Mission: Impossible – Fallout,2018,tt4912910,791657398.0,178000000.0,824171374.0,worldwide,boxofficemojo
+mission_impossible_rogue_nation,Mission: Impossible – Rogue Nation,2015,Q17548046,Mission: Impossible – Rogue Nation,2015,tt2381249,682716636.0,150000000.0,710916403.0,worldwide,boxofficemojo
+moonlight,Moonlight,2016,Q21527875,Moonlight,2016,tt4975722,65336603.0,1500000.0,66953264.0,worldwide,boxofficemojo
+the_boy,The Boy,2016,Q19850968,The Boy,2016,tt3882082,,,73929392.0,worldwide,boxofficemojo
+megan_leavey,Megan Leavey,2017,Q21527861,Megan Leavey,2017,tt4899370,,,14510490.0,worldwide,boxofficemojo
+jumanji_welcome_to_the_jungle,Jumanji: Welcome to the Jungle,2017,Q20762680,Jumanji: Welcome to the Jungle,2017,tt2283362,962102237.0,90000000.0,962544585.0,worldwide,boxofficemojo
+jupiter_ascending,Jupiter Ascending,2015,Q12125299,Jupiter Ascending,2015,tt1617661,183987723.0,176000000.0,184287723.0,worldwide,boxofficemojo
+murder_on_the_orient_express,Murder on the Orient Express,2017,Q27689100,Murder on the Orient Express,2017,tt3402236,352789811.0,55000000.0,352794081.0,worldwide,boxofficemojo
+the_imitation_game,The Imitation Game,2014,Q14918344,The Imitation Game,2014,tt2084970,233555708.0,14000000.0,233555708.0,worldwide,boxofficemojo
+the_post,The Post,2017,Q30203425,The Post,2017,tt6294822,193764664.0,50000000.0,193764664.0,worldwide,boxofficemojo
+venom,Venom,2018,Q23006268,Venom,2018,tt1270797,856085151.0,140000000.0,856085161.0,worldwide,boxofficemojo
+chappaquiddick,Chappaquiddick,2018,Q30544669,Chappaquiddick,2018,tt5270948,,,18263470.0,worldwide,boxofficemojo
+need_for_speed,Need for Speed,2014,Q13374569,Need for Speed,2014,tt2369135,203300000.0,66000000.0,203277636.0,worldwide,boxofficemojo
+sicario,Sicario,2015,Q17337292,Sicario,2015,tt3397884,84869984.0,30000000.0,84997446.0,worldwide,boxofficemojo
+star_trek_beyond,Star Trek Beyond,2016,Q15929448,Star Trek Beyond,2016,tt2660888,343471816.0,185000000.0,343471816.0,worldwide,boxofficemojo
+sully,Sully,2016,Q21062112,Sully,2016,tt3263904,240797623.0,60000000.0,243870033.0,worldwide,boxofficemojo
+beauty_and_the_beast,Beauty and the Beast,2017,Q19946102,Beauty and the Beast,2017,tt2771200,1263521126.0,160000000.0,1266115964.0,worldwide,boxofficemojo
+christopher_robin,Christopher Robin,2018,Q24301991,Christopher Robin,2018,tt4575576,197744377.0,75000000.0,197744825.0,worldwide,boxofficemojo
+cinderella,Cinderella,2015,Q15046091,Cinderella,2015,tt1661199,542351353.0,95000000.0,542358331.0,worldwide,boxofficemojo
+incredibles_2,Incredibles 2,2018,Q24832112,Incredibles 2,2018,tt3606756,1242805359.0,200000000.0,1243225667.0,worldwide,boxofficemojo
+into_the_woods,Into the Woods,2014,Q14847067,Into the Woods,2014,tt2180411,213100000.0,,212902959.0,worldwide,boxofficemojo
+maleficent,Maleficent,2014,Q172271,Maleficent,2014,tt1587310,758410378.0,180000000.0,759853685.0,worldwide,boxofficemojo
+pirates_of_the_caribbean_dead_men_tell_no_tales,Pirates of the Caribbean: Dead Men Tell No Tales,2017,Q10350033,Pirates of the Caribbean: Dead Men Tell no Tales,2017,tt1790809,794881442.0,230000000.0,795922298.0,worldwide,boxofficemojo
+queen_of_katwe,Queen of Katwe,2016,Q20921603,Queen of Katwe,2016,tt4341582,9897056.0,15000000.0,10368126.0,worldwide,boxofficemojo
+solo_a_star_wars_story,Solo: A Star Wars Story,2018,Q27038847,Solo: A Star Wars Story,2018,tt3778644,392924807.0,250000000.0,392924807.0,worldwide,boxofficemojo
+star_wars_the_force_awakens,Star Wars: The Force Awakens,2015,Q6074,Star Wars: Episode VII – The Force Awakens,2015,tt2488496,2068223624.0,245000000.0,2071310218.0,worldwide,boxofficemojo
+star_wars_the_last_jedi,Star Wars: The Last Jedi,2017,Q18486021,Star Wars: Episode VIII – The Last Jedi,2017,tt2527336,1332698830.0,200000000.0,1334407706.0,worldwide,boxofficemojo
+tomorrowland,Tomorrowland,2015,Q7820305,Tomorrowland,2015,tt1964418,209154322.0,190000000.0,209035668.0,worldwide,boxofficemojo
+300_rise_of_an_empire,300: Rise of an Empire,2014,Q400332,300: Rise of an Empire,2014,tt1253863,337580051.0,110000000.0,337580051.0,worldwide,boxofficemojo
+annabelle,Annabelle,2014,Q15733440,Annabelle,2014,tt3322940,256873813.0,6500000.0,257589952.0,worldwide,boxofficemojo
+aquaman,Aquaman,2018,Q22998395,Aquaman,2018,tt1477834,1148528393.0,160000000.0,1152028393.0,worldwide,boxofficemojo
+black_mass,Black Mass,2015,Q16971610,Black Mass,2015,tt1355683,99775678.0,53000000.0,99975678.0,worldwide,boxofficemojo
+blended,Blended,2014,Q13522800,Blended,2014,tt1086772,,,128006208.0,worldwide,boxofficemojo
+collateral_beauty,Collateral Beauty,2016,Q22977777,Collateral Beauty,2016,tt4682786,,,88616021.0,worldwide,boxofficemojo
+crazy_rich_asians,Crazy Rich Asians,2018,Q29588623,Crazy Rich Asians,2018,tt3104988,238500000.0,,239343729.0,worldwide,boxofficemojo
+creed,Creed,2015,Q18822138,Creed,2015,tt3076658,173578883.0,35000000.0,174178883.0,worldwide,boxofficemojo
+dumb_and_dumber_to,Dumb and Dumber To,2014,Q14932750,Dumb and Dumber To,2014,tt2096672,,,169837010.0,worldwide,boxofficemojo
+dunkirk,Dunkirk,2017,Q21935651,Dunkirk,2017,tt5013056,526940665.0,100000000.0,549982398.0,worldwide,boxofficemojo
+edge_of_tomorrow,Edge of Tomorrow,2014,Q1187607,Edge of Tomorrow,2014,tt1631867,370500000.0,,381055527.0,worldwide,boxofficemojo
+entourage,Entourage,2015,Q15725811,Entourage,2015,tt1674771,,,49263404.0,worldwide,boxofficemojo
+focus,Focus,2015,Q15548282,Focus,2015,tt2381941,158762963.0,50100000.0,159162963.0,worldwide,boxofficemojo
+geostorm,Geostorm,2017,Q18342910,Geostorm,2017,tt1981128,221600000.0,120000000.0,221900160.0,worldwide,boxofficemojo
+going_in_style,Going in Style,2017,Q20762674,Going in Style,2017,tt2568862,,,85218541.0,worldwide,boxofficemojo
+horrible_bosses_2,Horrible Bosses 2,2014,Q15275703,Horrible Bosses 2,2014,tt2170439,,,107645357.0,worldwide,boxofficemojo
+how_to_be_single,How to Be Single,2016,Q19880527,How to Be Single,2016,tt1292566,,,112543513.0,worldwide,boxofficemojo
+in_the_heart_of_the_sea,In the Heart of the Sea,2015,Q15079316,In the Heart of the Sea,2015,tt1390411,,,94320758.0,worldwide,boxofficemojo
+interstellar,Interstellar,2014,Q13417189,Interstellar,2014,tt0816692,701729206.0,165000000.0,782967041.0,worldwide,boxofficemojo
+justice_league,Justice League,2017,Q20501835,Justice League,2017,tt0974015,657926987.0,300000000.0,661326987.0,worldwide,boxofficemojo
+king_arthur_legend_of_the_sword,King Arthur: Legend of the Sword,2017,Q19569225,King Arthur: Legend of the Sword,2017,tt1972591,,,149175066.0,worldwide,boxofficemojo
+kong_skull_island,Kong: Skull Island,2017,Q21203766,Kong: Skull Island,2017,tt3731562,566652812.0,300000000.0,568652812.0,worldwide,boxofficemojo
+lights_out,Lights Out,2016,Q20649307,Lights Out,2016,tt4786282,148000000.0,4900000.0,149368835.0,worldwide,boxofficemojo
+mad_max_fury_road,Mad Max: Fury Road,2015,Q1757288,Mad Max: Fury Road,2015,tt1392190,378858340.0,150000000.0,380456026.0,worldwide,boxofficemojo
+magic_mike_xxl,Magic Mike XXL,2015,Q17893055,Magic Mike XXL,2015,tt2268016,117813057.0,14800000.0,122613057.0,worldwide,boxofficemojo
+me_before_you,Me Before You,2016,Q20735644,Me Before You,2016,tt2674426,207945075.0,20000000.0,208450780.0,worldwide,boxofficemojo
+oceans_8,Ocean's 8,2018,Q25627545,Ocean's 8,2018,tt5164214,297718711.0,70000000.0,297795726.0,worldwide,boxofficemojo
+pan,Pan,2015,Q15713892,Pan,2015,tt3332064,128988320.0,150000000.0,128988320.0,worldwide,boxofficemojo
+rampage,Rampage,2018,Q29470162,Rampage,2018,tt2231461,428028233.0,150000000.0,428128399.0,worldwide,boxofficemojo
+ready_player_one,Ready Player One,2018,Q22000542,Ready Player One,2018,tt1677720,582890172.0,175000000.0,607874422.0,worldwide,boxofficemojo
+run_all_night,Run All Night,2015,Q15220567,Run All Night,2015,tt2199571,71661644.0,50000000.0,71661644.0,worldwide,boxofficemojo
+san_andreas,San Andreas,2015,Q15973073,San Andreas,2015,tt2126355,474009154.0,110000000.0,474609154.0,worldwide,boxofficemojo
+smallfoot,Smallfoot,2018,Q30607974,Smallfoot,2018,tt6182908,214140103.0,,218015531.0,worldwide,boxofficemojo
+suicide_squad,Suicide Squad,2016,Q18604504,Suicide Squad,2016,tt1386697,746846894.0,175000000.0,749200054.0,worldwide,boxofficemojo
+tammy,Tammy,2014,Q15901539,Tammy,2014,tt2103254,,,100375432.0,worldwide,boxofficemojo
+teen_titans_go_to_the_movies,Teen Titans Go! To the Movies,2018,Q46392313,Teen Titans Go! To the Movies,2018,tt7424200,52090236.0,10000000.0,52390236.0,worldwide,boxofficemojo
+the_conjuring_2,The Conjuring 2,2016,Q21001651,The Conjuring 2,2016,tt3065204,320270008.0,40000000.0,322819915.0,worldwide,boxofficemojo
+the_intern,The Intern,2015,Q18151084,The Intern,2015,tt2361509,194000000.0,35000000.0,194764672.0,worldwide,boxofficemojo
+the_judge,The Judge,2014,Q13573278,The Judge,2014,tt1872194,,,84419388.0,worldwide,boxofficemojo
+the_legend_of_tarzan,The Legend of Tarzan,2016,Q17361809,The Legend of Tarzan,2016,tt0918940,356700000.0,180000000.0,357243061.0,worldwide,boxofficemojo
+the_man_from_uncle,The Man from U.N.C.L.E.,2015,Q14488725,The Man from U.N.C.L.E.,2015,tt1638355,107045109.0,75000000.0,110045109.0,worldwide,boxofficemojo
+the_meg,The Meg,2018,Q27957869,The Meg,2018,tt4779682,530243742.0,130000000.0,529338515.0,worldwide,boxofficemojo
+this_is_where_i_leave_you,This Is Where I Leave You,2014,Q15039873,This Is Where I Leave You,2014,tt1371150,40996320.0,19000000.0,41296320.0,worldwide,boxofficemojo
+transcendence,Transcendence,2014,Q10384115,Transcendence,2014,tt2209764,103039258.0,100000000.0,103039258.0,worldwide,boxofficemojo
+vacation,Vacation,2015,Q18155457,Vacation,2015,tt1524930,,,107228221.0,worldwide,boxofficemojo
+wonder_woman,Wonder Woman,2017,Q20502242,Wonder Woman,2017,tt0451279,822854286.0,149000000.0,823970682.0,worldwide,boxofficemojo
+halloween_2018,Halloween,2018,Q20666646,Halloween,2018,tt1502407,253700000.0,,259939869.0,worldwide,boxofficemojo
+aladdin,Aladdin,2019,Q27188178,Aladdin,2019,tt6139732,1050693953.0,183000000.0,1054304000.0,worldwide,boxofficemojo
+alita_battle_angel,Alita: Battle Angel,2019,Q24053265,Alita: Battle Angel,2019,tt0437086,,170000000.0,404980543.0,worldwide,boxofficemojo
+avengers_endgame,Avengers: Endgame,2019,Q23781155,Avengers: Endgame,2019,tt4154796,2797501328.0,356000000.0,2799439100.0,worldwide,boxofficemojo
+captain_marvel,Captain Marvel,2019,Q23781129,Captain Marvel,2019,tt4154664,1128462972.0,152000000.0,1131416446.0,worldwide,boxofficemojo
+dora_and_the_lost_city_of_gold,Dora and the Lost City of Gold,2019,Q56064745,Dora and the Lost City of Gold,2019,tt7547410,120597108.0,49000000.0,120597108.0,worldwide,boxofficemojo
+it_chapter_two,It Chapter Two,2019,Q42726338,It: Chapter Two,2019,tt7349950,473122525.0,180000000.0,473123154.0,worldwide,boxofficemojo
+parasite,Parasite,2019,Q61448040,Parasite,2019,tt6751668,263136741.0,13200000.0,263492582.0,worldwide,boxofficemojo
+pet_sematary,Pet Sematary,2019,Q55102449,Pet Sematary,2019,tt0837563,112400000.0,21000000.0,113118226.0,worldwide,boxofficemojo
+pokemon_detective_pikachu,Pokémon Detective Pikachu,2019,Q47492499,Detective Pikachu,2019,tt5884052,449762638.0,150000000.0,451453444.0,worldwide,boxofficemojo
+rambo_last_blood,Rambo: Last Blood,2019,Q54854465,Rambo: Last Blood,2019,tt1206885,,,91490353.0,worldwide,boxofficemojo
+shazam,Shazam!,2019,Q23685878,Q23685878,2019,tt0448115,366080049.0,100000000.0,367799011.0,worldwide,boxofficemojo
+stuber,Stuber,2019,Q55634129,Stuber,2019,tt7734218,,,32390945.0,worldwide,boxofficemojo
+the_hustle,The Hustle,2019,Q43208792,The Hustle,2019,tt1298644,97900000.0,21000000.0,97409779.0,worldwide,boxofficemojo
+the_peanut_butter_falcon,The Peanut Butter Falcon,2019,Q39047194,The Peanut Butter Falcon,2019,tt4364194,,,23712097.0,worldwide,boxofficemojo
+tolkien,Tolkien,2019,Q42689885,Tolkien,2019,tt3361792,,,9090040.0,worldwide,boxofficemojo

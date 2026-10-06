@@ -62,7 +62,12 @@ DESCRIPTIONS = {
     "emotion_ablation": "Which emotions carry the genre signal? Leave-one-out and "
                         "theory-motivated subsets (section 18)",
     "box_office": "Does box-office gross relate to the soundtrack or to its genre? "
-                  "Exploratory, n=37 (section 20)",
+                  "Eerola, exploratory, n=37 (sections 20, 22.2)",
+    "box_office_blockbuster": "The box-office question on the 110 Blockbuster films: "
+                              "gross vs classification quality, emotions, genre and every "
+                              "MIR descriptor, BH-corrected (section 22.3)",
+    "metrics_stability": "Every route under 13 multi-label metrics, and the spread over "
+                         "repeats, folds, films and five seeds (section 22.1)",
     "model_search": "Does any other model or feature combination beat the baseline? "
                     "(section 7d)",
 }
@@ -144,8 +149,14 @@ def render_arms(name: str, arms: dict) -> str:
     key = first_key(next(iter(arms.values())), SCORE_KEYS)
     has = {k: any(k in d for d in arms.values())
            for k in ("macro_precision", "ci_lo", "diff_vs_ref", "p_corrected",
-                     "C_mode", "C", "C_selected")}
-    header = ["arm", "Macro-F1"]
+                     "C_mode", "C", "C_selected", "sd")}
+    # metrics_stability.json keys its arms by metric ("metrics / hamming_loss / arms"),
+    # so the score column is named after that metric rather than assumed to be F1
+    parts = [p.strip() for p in name.split("/")]
+    label = parts[1] if len(parts) == 3 and parts[0] == "metrics" else "Macro-F1"
+    header = ["arm", label]
+    if has["sd"]:
+        header += ["SD", "min", "max"]
     if has["macro_precision"]:
         header += ["precision", "recall"]
     if has["ci_lo"]:
@@ -161,6 +172,8 @@ def render_arms(name: str, arms: dict) -> str:
     rows = []
     for arm, d in sorted(arms.items(), key=lambda kv: -kv[1][key]):
         row = [arm, fmt(d[key])]
+        if has["sd"]:
+            row += [fmt(d.get("sd")), fmt(d.get("min")), fmt(d.get("max"))]
         if has["macro_precision"]:
             row += [fmt(d.get("macro_precision")), fmt(d.get("macro_recall"))]
         if has["ci_lo"]:

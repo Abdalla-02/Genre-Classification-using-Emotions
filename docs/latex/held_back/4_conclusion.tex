@@ -1,0 +1,126 @@
+% =============================================================================
+% HELD BACK from the thesis on 6 Oct 2026 (to be rewritten by the author).
+% Not part of the Overleaf build. Was chapter/4_conclusion.tex in full.
+% =============================================================================
+
+\chapter{Conclusions and Future Work}
+\label{ch:conclusions}
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+The four research questions of Section~\ref{sec:aim} can now be answered.
+
+\paragraph{RQ1: Can a soundtrack's emotional profile predict its film's genre?}
+Yes, well above chance, though far from perfectly. On the five-genre Eerola subset, the
+emotions rated by listeners reach a macro-$F_1$ of 0.428 and the emotions predicted from
+audio 0.417, against 0.168 for the most-frequent baseline and 0.308 for a random guess at
+the genres' base rates. On all eight genres the pipeline reaches 0.318 against a
+most-frequent baseline of 0.102. Predicted emotions are as useful as the ratings they
+imitate ($-0.011$, $p=0.325$), so the trained pipeline needs no manual annotation. The
+caveat is the absolute level: genre labels describe films rather than clips, rare genres
+have a handful of films, and the learning curves show that more films would still help.
+
+\paragraph{RQ2a: Which emotions relate to which genres?}
+Every genre that can be predicted has a readable emotional signature. Horror and Action are
+defined by threat -- fear, tension and low valence -- with Horror set apart by fear; Comedy
+and Drama by high valence and the absence of threat; and Adventure, the one genre without a
+distinctive signature, is also the one \emph{frequent} genre the model cannot predict
+(Biography and Documentary fail for lack of films). These signatures are not
+an artefact of one dataset: recomputed on the 110 Blockbuster films from emotions that the
+Eerola-trained model predicts for each cue, they correlate with the Eerola signatures at
+$r=0.836$ across 48 genre--emotion cells, with 92\,\% agreement in sign. The caveat is that
+the Blockbuster emotions are predicted, not rated, so the replication validates the
+signatures indirectly.
+
+\paragraph{RQ2b: Does the emotion intermediate beat direct audio?}
+In-domain, modestly; across datasets, clearly. On the five-genre Eerola subset the pipeline
+reaches 0.417 against 0.377 for the best direct representation, ahead of all six direct
+representations and the PCA-8 control in all ten repeats and, for the routes re-run under
+four further master seeds, under every seed. The margin is significant on eight genres under both tests (against AST and VGGish, the
+only direct representations run there), but on five genres only under
+the film bootstrap ($p=0.042$) and not under the stricter Nadeau--Bengio test ($p=0.151$),
+and it disappears when per-genre decision thresholds are tuned on the training data. Across
+datasets the picture is different: trained on Eerola and applied to Blockbuster without any
+further fitting, the emotion route reaches 0.511 against 0.407 for direct audio ($+0.106$,
+$p=0.018$) and 0.421 for the PCA-8 control ($+0.092$, $p=0.032$), against a random-guess
+floor of 0.292; the reverse direction agrees ($+0.050$, $p<0.001$), and the gap vanishes
+when both datasets are in the training data ($+0.003$, $p=0.906$). The caveats are that the
+zero-shot result is a single split resting on one representation, VGGish, and that the
+advantage over the PCA-8 control, while positive in every design, is significant only in the
+strict zero-shot run ($p=0.032$) and, in-domain, under the film bootstrap alone ($p=0.029$;
+Nadeau--Bengio $p=0.122$).
+
+\paragraph{RQ3: Which emotions discriminate each genre most strongly?}
+Fear is the master discriminator, with the strongest single genre--emotion association in
+the dataset (Horror, $d=+0.75$), and valence is the second axis, separating the light genres
+from the threatening ones. Fear defines Horror in both datasets. The ablation study adds the
+caveat that ``strongest'' does not mean ``necessary'': fear alone matches all eight emotions
+as a classifier input (0.433 against 0.426), and so does the pair of valence and energy,
+because the genre signal lies on one low-dimensional axis that almost any pair of emotions
+recovers. The discrete emotions are kept because they name what a score is doing, not
+because the classifier needs them.
+
+\paragraph{Synthesis.}
+Taken together, the results support a specific claim rather than a general one. Routing
+film audio through emotion costs nothing in accuracy compared with the strongest direct
+representation, and it buys two things: a model whose predictions can be read in terms of
+named emotions and checked against film-scoring practice, and a representation that
+survives a change of dataset far better than the embedding it is computed from. The modest
+and threshold-dependent in-domain margin is part of this finding, not a blemish on it. It is
+what one should expect if the value of the emotion intermediate lies in generalisation: when
+training and test data come from the same distribution, a rich embedding can learn most of
+what emotion provides; when they do not, the emotion axes, which mean the same thing in every
+dataset, carry over and the embedding's do not.
+
+\section{Future Work}
+\label{sec:futurework}
+
+The following directions are listed in descending order of expected value.
+
+\paragraph{More films.} This is the single remaining lever on the in-domain claims. The
+learning curves are still rising, and for every borderline five-genre comparison the
+smallest $p$-value the Nadeau--Bengio test could reach with unlimited repetition is above
+0.05, so no further computation on the present films can settle them. A larger dataset
+could, and it would give the rare genres enough films to be learned at all.
+
+\paragraph{Emotion-annotated film music at scale, with audio on both sides.} The transfer
+result rests on VGGish alone, because the second dataset distributes no audio, and on
+emotions that are predicted rather than rated on that dataset. A second dataset of film
+music with audio and emotion ratings would allow every representation to be carried across,
+the predicted emotions to be validated directly, and the Stage-1 regressor to be trained on
+more than one listener population. Tuning the regressor itself, which was left at a fixed
+configuration while only the genre classifier was tuned, belongs to the same step.
+
+\paragraph{A threshold-free and calibrated evaluation.} The in-domain advantage depends on
+the decision threshold, and the zero-shot comparison was run only at the default one. Two
+experiments would close this gap: a zero-shot comparison with per-genre thresholds tuned on
+the source dataset, and an evaluation of probability calibration alongside the ranking
+metrics already reported. Together they would separate what the emotion route contributes to
+\emph{ranking} genres from what it contributes to \emph{deciding} them.
+
+\paragraph{Per-cue and temporal modelling.} Every clip is currently summarised by one
+time-averaged embedding, and a Blockbuster film by the average of its per-cue emotions.
+Applying the emotion model per cue already proved better than averaging the embedding first.
+The natural next step is to model how emotion unfolds within a cue and across the cues of a
+film -- a horror score is defined as much by its build-up and release as by its average
+fear -- and to learn which cues matter most for a film's genre.
+
+\paragraph{Cue-level genre labels and induced emotion.} Film-level genre labels are the
+largest source of label noise identified in Chapter~\ref{ch:discussion}; labels assigned
+per cue or per scene would remove it. With a suitably annotated dataset, emotion
+\emph{induced} in the listener could also be compared with the perceived emotion modelled
+here.
+
+\paragraph{Box office, separated from budget.} On the Blockbuster films the emotions of
+the score tracked gross only as far as they tracked the production budget. Whether any
+property of film music relates to success \emph{beyond} the scale of production could only
+be asked with a design that holds the budget fixed -- for example by comparing films of
+similar budget and genre -- on a much larger sample, and even then only as an exploratory,
+non-causal question.
+
+One direction is deliberately absent from this list: a larger neural network. The direct
+representations evaluated here, spanning very different architectures and training data,
+are statistically indistinguishable from one another, and the genre signal they need to
+recover is low-dimensional. More model capacity is the one change the evidence of this
+thesis suggests will not help; more and better-labelled data is the one it suggests will.

@@ -1,0 +1,43 @@
+% =============================================================================
+% HELD BACK from the thesis on 6 Oct 2026 (to be rewritten by the author).
+% Not part of the Overleaf build. Was the end of Section "Aim of this thesis" in chapter/0_intro.tex.
+% =============================================================================
+
+To answer these questions, this thesis makes the following contributions.
+
+First, it builds a \emph{two-stage, interpretable pipeline} from audio to genre. A frozen
+pretrained audio network turns each clip into an embedding; a regressor trained on
+listener ratings maps the embedding to eight emotions (valence, energy, tension, anger,
+fear, happiness, sadness and tenderness); and a linear classifier maps those emotions,
+with three simple combinations of them, to a multi-label genre vector. Every decision of
+the genre classifier can therefore be read in terms of named emotions.
+
+Second, it compares the pipeline against a \emph{direct-audio baseline built from five
+representations rather than one}: three general-purpose learned embeddings (VGGish, the
+Audio Spectrogram Transformer and CLAP), one embedding pretrained specifically on music
+(MusiCNN), and a set of hand-crafted music-information-retrieval descriptors, with a raw
+waveform model (wav2vec~2.0) as a sixth point of reference. A result against a single
+baseline invites the objection that the baseline was badly chosen; a result against five
+representations of different architecture and training data does not.
+
+Third, it includes a \emph{control} that separates the effect of emotion from the effect
+of compression. The emotion route reduces a high-dimensional embedding to a handful of
+numbers, and with little training data fewer numbers can help on their own. The control
+compresses the same embedding to eight principal components, which are just as compact
+but mean nothing. If emotion helps only by being small, the control helps equally.
+
+Fourth, it tests the pipeline \emph{across datasets}. Besides the film-music dataset of
+\citet{eerola2011comparison}, on which the emotion model is trained, it uses the
+independent dataset of blockbuster films published by \citet{ma2021computational}, which
+comes without emotion ratings and without audio. The two datasets are mapped to a shared
+genre space, the published in-domain result on the second dataset is reproduced first, and
+models are then trained on one dataset and evaluated on the other in both directions.
+This asks whether what the models learn is a property of film music or of one collection
+of films.
+
+Finally, the evaluation itself is designed so that its numbers can be trusted: every split
+is grouped by film, every score is paired with a chance floor from its own label space,
+every in-domain comparison is reported under two significance tests that answer
+different questions and every transfer comparison under a film bootstrap, together with a check of how far the conclusions depend on the choice of
+metric. Where this apparatus weakened an earlier result, the weaker result is the one
+reported.
