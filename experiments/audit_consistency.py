@@ -259,23 +259,23 @@ for ext in ('docx', 'pdf'):
 # one without the audit noticing.
 cur = io.open(ROOT / 'docs' / 'current_state.md', encoding='utf-8', newline='').read()
 xc = j('cross_dataset_cv')
+ms, bb = j('metrics_stability'), j('box_office_blockbuster')
 short = [
     (cc['subset5']['arms']['VGGish -> predicted emotion(11), OOF-trained']['mean'], 3, '', 'pipeline, 5 genres'),
     (cc['subset5']['arms']['VGGish-128 (direct)']['mean'], 3, '', 'VGGish direct, 5 genres'),
-    (cc['subset5']['arms']['ground-truth emotion(11) [ceiling]']['mean'], 3, '', 'ratings, 5 genres'),
     (cc['full8']['arms']['VGGish -> predicted emotion(11), OOF-trained']['mean'], 3, '', 'pipeline, 8 genres'),
     (cc['full8']['arms']['AST-768']['mean'], 3, '', 'AST, 8 genres'),
-    (cc['ablation']['arms']['all 8 emotions [reference]']['mean'], 3, '', 'ablation: all 8'),
-    (cc['ablation']['arms']['fear only']['mean'], 3, '', 'ablation: fear only'),
-    (cc['ablation']['arms']['valence + energy (2-d circumplex)']['mean'], 3, '', 'ablation: valence+energy'),
-    (xc['eerola_to_blockbuster']['arms']['VGGish -> emotion (per cue) -> genre']['macro_f1'], 3, '', 'E->B emotion'),
-    (xc['eerola_to_blockbuster']['emotion_vs_direct']['diff'], 3, '+', 'E->B emotion vs direct'),
-    (xc['blockbuster_to_eerola']['emotion_vs_direct']['diff'], 3, '+', 'B->E emotion vs direct'),
+    (ms['metrics']['macro_f1_tuned_threshold']['arms']['VGGish -> predicted emotion(11), OOF-trained']['mean'], 3, '', 'tuned threshold, emotion'),
+    (ms['metrics']['macro_f1_tuned_threshold']['arms']['VGGish-128 (direct)']['mean'], 3, '', 'tuned threshold, VGGish'),
+    (ms['metrics']['exact_match']['arms']['dummy']['mean'], 3, '', 'exact match, most frequent'),
+    (ms['metrics']['macro_f1']['base_rate_random_guess'], 3, '', 'random guess, 5 genres'),
+    (ms['stability']['seed_42']['VGGish -> predicted emotion(11), OOF-trained']['repeat_sd'], 3, '', 'repeat SD, emotion'),
     (zs['zero_shot']['strict (source scaler)']['VGGish -> predicted emotion(11), per-cue']['macro_f1'], 3, '', 'zero-shot emotion'),
     (zs['zero_shot']['strict (source scaler)']['VGGish-128 direct']['macro_f1'], 3, '', 'zero-shot direct'),
     (zs['bootstrap']['strict (source scaler)']['VGGish -> predicted emotion(11), per-cue vs VGGish direct']['diff_mean'], 3, '+', 'zero-shot margin'),
-    (bo['n_films'], 0, '', 'box office: n films'),
-    (bo['A_f1_vs_gross']['rho'], 2, '+', 'box office: F1 vs gross'),
+    (bo['A_f1_vs_gross']['rho'], 3, '+', 'box office (Eerola): F1 vs gross'),
+    (bb['B_emotion_vs_gross']['mean anger']['spearman'], 2, '+', 'box office (Blockbuster): anger'),
+    (bb['confounds']['budget']['rho'], 2, '+', 'box office (Blockbuster): budget'),
 ]
 for value, nd, sign, label in short:
     quoted = f'{value:{sign}.{nd}f}'

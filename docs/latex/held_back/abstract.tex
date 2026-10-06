@@ -1,0 +1,25 @@
+% =============================================================================
+% HELD BACK from the thesis on 6 Oct 2026 (to be rewritten by the author).
+% Not part of the Overleaf build. Was the abstract on the title page.
+% =============================================================================
+
+Film genre can be predicted from a soundtrack, but existing methods classify genre
+directly from audio and offer no account of why the music should reveal it. This thesis
+tests whether emotion, which film composers deliberately encode in their scores, can serve
+as an interpretable intermediate step: audio is mapped to eight perceived emotions, such as
+fear, tension and tenderness, and genre is predicted from these alone. The pipeline is
+compared with genre classifiers built directly on six audio representations (five
+pretrained embeddings and a hand-crafted feature set), and with a
+control that compresses the same audio embedding to eight meaningless principal
+components. The data are 346 clips from 43 films, rated by listeners for emotion, and an
+independent dataset of 110 films. Within the first dataset, on five genres, the pipeline
+reaches a macro-averaged F1 score of 0.417 against 0.377 for the best direct
+representation, where random guessing scores 0.308. It is ahead in every repeat of the
+cross-validation, but the margin is significant under only one of two tests and disappears
+when each genre's decision threshold is tuned. Trained on the first dataset and applied
+unchanged to the second, on six shared genres, the pipeline reaches 0.511 against 0.407
+for direct audio (random guessing: 0.292; $p=0.018$), and the reverse direction agrees.
+Each predictable genre also has a readable emotional signature, with fear the strongest single discriminator, which
+reappears on the second dataset. The advantage of the emotion intermediate is therefore
+above all one of generalisation across datasets, combined with predictions explained by
+named emotions.

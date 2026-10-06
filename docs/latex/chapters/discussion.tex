@@ -1,0 +1,352 @@
+\chapter{Discussion}
+\label{ch:discussion}
+
+Chapter~\ref{ch:evaluation} reported the results; this chapter interprets them.
+Section~\ref{sec:disc_main} combines the individual results to show where the emotion
+route helps and where it does not. Section~\ref{sec:disc_bottleneck} discusses why the
+emotion bottleneck helps in those cases, Section~\ref{sec:disc_limitations} states the
+limitations of the work, and Section~\ref{sec:disc_relatedwork} relates the findings to
+the literature.
+
+\section{Interpreting the Main Result}
+\label{sec:disc_main}
+
+The result of this thesis is not a clean win for the emotion route.
+Table~\ref{tab:disc_settings} lists the emotion route, direct audio and the PCA-8 control
+for every setting in which all three were run, and each row is compared with the chance
+floor of its own label space. The emotion route is modestly ahead, or level, when a model
+is trained and tested on the same dataset. When the model is trained on one dataset and
+tested on the other, the emotion route is clearly ahead.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{The emotion route, the PCA-8 control and direct audio (VGGish) in every
+    setting in which all three were run, macro-$F_1$. Each row has its own label space
+    and test set and is read only against its own floor (base-rate random guess); the rows
+    are not comparable with each other. $p$ is the paired film bootstrap unless marked
+    $^{\dagger}$ (Nadeau--Bengio corrected $t$-test over repeated folds); for the Eerola
+    in-domain row both are given. The zero-shot row is the strict (source-scaler) regime.}
+  \label{tab:disc_settings}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lcrrrrrl}
+    \toprule
+    Setting & Genres & Floor & Emotion & PCA-8 & Direct & $\Delta$ & $p$ \\
+    \midrule
+    Eerola, in-domain                        & 5 & 0.308 & 0.417 & 0.372 & 0.377 & $+0.040$ & $0.042$ / $0.151^{\dagger}$ \\
+    Blockbuster, in-domain                   & 6 & 0.295 & 0.616 & 0.587 & 0.593 & $+0.023$ & $0.536^{\dagger}$ \\
+    Eerola $\rightarrow$ Blockbuster         & 6 & 0.292 & 0.511 & 0.421 & 0.407 & $+0.106$ & $0.018$ \\
+    Blockbuster $\rightarrow$ Eerola         & 6 & 0.250 & 0.370 & 0.352 & 0.320 & $+0.050$ & $<0.001$ \\
+    Both datasets in training                & 6 & --    & 0.424 & 0.398 & 0.421 & $+0.003$ & $0.906^{\dagger}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{In-domain: consistent, modest, and partly an operating point.}
+On the Eerola dataset the full pipeline (VGGish, predicted emotion, genre) reaches a
+macro-$F_1$ of 0.417 on five genres, against 0.377 for the best direct representation. It
+is ahead of all five direct representations and of the PCA-8 control, by 0.040 to 0.055.
+This margin is consistent. It holds in all ten repeats of the cross-validation and under
+all five master seeds of the stability analysis (Section~\ref{sec:eval_robustness}), where
+the emotion-minus-VGGish difference ranges from $+0.037$ to $+0.059$ and never changes
+sign. The levels are also stable. Across the five seeds, the standard deviation of each
+route's ten-repeat mean is at most 0.008, so the reported levels reflect the dataset
+rather than one random split. On eight genres the advantage over both direct
+representations run there (AST and VGGish) is significant under both tests used in this
+thesis.
+
+However, the advantage is modest, and on five genres its significance depends on the
+test. The film bootstrap estimates how much the result depends on which films make up the
+dataset, and it finds the advantage significant ($p=0.042$ against VGGish, $p=0.029$
+against the PCA-8 control). The Nadeau--Bengio test also accounts for the variation that
+comes from which films the models were trained on, and it finds the advantage borderline
+($p=0.151$ and $p=0.122$). The two tests do not contradict each other, because they
+measure different sources of uncertainty. Together they indicate that the in-domain
+advantage is real in its direction, but that its size is not yet established.
+
+The metric analysis of Section~\ref{sec:eval_robustness} qualifies this result further.
+The emotion route ranks first under macro-$F_1$, weighted $F_1$, macro average precision,
+macro ROC-AUC and film-level macro-$F_1$, so its lead does not depend on one averaging
+scheme. If each genre's decision threshold is instead tuned on the training fold, all
+routes converge (0.427--0.441) and the advantage disappears ($+0.011$, $p=0.439$ against
+VGGish; $-0.001$, $p=0.924$ against the PCA-8 control). Under the two threshold-free
+ranking metrics it is small and not significant. Part of the in-domain advantage at the
+default threshold of one half is therefore an \emph{operating-point} effect. With
+class-balanced weighting, the classifier on eleven emotion features places more of the
+true positives above the default cut and so reaches a much higher recall at only slightly
+higher precision. The direct classifiers rank clips almost as well, but cut them in the
+wrong place. This result supports two readings. In the narrow reading, the emotion route
+does not rank genres better than direct audio in-domain; its predicted probabilities are
+better placed relative to the default cut. In practical terms, a model that works at
+the default threshold without per-genre tuning has a real advantage, since such tuning
+needs labelled data from the same distribution and becomes unreliable for genres
+represented by a handful of films. This advantage is, however, smaller and more specific
+than ``emotion is better''.
+
+\paragraph{Across datasets: a larger and different advantage.}
+When the model is trained on Eerola and applied without any further fitting to the 110
+Blockbuster films, the margin is larger relative to the floor of its own label space. The
+emotion route reaches 0.511 against 0.407 for direct audio ($+0.106$, $p=0.018$), and
+0.511 against 0.421 for the PCA-8 control ($+0.092$, $p=0.032$). The reverse direction,
+trained on Blockbuster and tested on Eerola, agrees ($+0.050$, $p<0.001$). When both
+datasets are included in the training data, the gap disappears ($+0.003$, $p=0.906$).
+In-domain on Blockbuster alone, the emotion route is also level with direct audio
+(Table~\ref{tab:disc_settings}).
+
+The pattern across the five rows of Table~\ref{tab:disc_settings} is the main result of
+this thesis. The emotion route is at best modestly ahead when the classifier has
+seen data from the distribution it is tested on, and clearly ahead when it has not. Its
+advantage is mainly a \emph{generalisation} advantage. An eight-dimensional representation
+whose axes mean the same thing in every dataset survives a change of dataset. A
+128-dimensional embedding, whose axes carry the statistics of the data it was computed on,
+does not, although it catches up once the classifier is allowed to see the target
+distribution. This matches what is expected of an interpretable intermediate, and it is a
+more defensible claim than ``emotion is better at predicting genre''.
+
+The zero-shot comparison is a single train--test split and answers a different question
+from the in-domain threshold analysis. In a zero-shot setting no labelled target data is
+available, so no threshold can be tuned on it, and the default operating point is the one a
+practitioner would use. The operating-point pattern is nevertheless visible here as well.
+From Eerola to Blockbuster the emotion route gains its lead through much higher recall at
+lower precision, which is a stronger form of the recall-driven pattern seen in-domain.
+Whether the zero-shot advantage survives thresholds tuned on the \emph{source} dataset was
+not tested and would still be useful to know (Section~\ref{sec:futurework}). However, an
+operating-point effect is unlikely to explain the whole advantage. In the reverse
+direction the emotion route is ahead of direct audio in both precision and recall. A shift
+of the decision threshold alone cannot produce this, because it trades one for the other.
+
+\section{Why the Bottleneck Helps When It Helps}
+\label{sec:disc_bottleneck}
+
+\subsection{Meaning rather than compression}
+
+A sceptical reading of the result is that eleven numbers simply overfit less than 128 on a
+dataset of about 330 clips. Three pieces of evidence speak against this reading. First,
+the PCA-8 control is just as compact but is no better than the embedding it compresses,
+either in-domain ($-0.005$, $p=0.771$) or under transfer ($+0.014$, $p=0.572$), so
+compression alone does not help. Nor is the control a weak baseline. On Blockbuster it
+beats a random eight-dimensional projection of the same embedding by a wide margin, so it
+keeps the most informative directions that a generic method can find. Second, the ablation
+shows that the genre-relevant content of the emotions is low-dimensional and redundant
+(Section~\ref{subsec:disc_ablation}). The emotion bottleneck could therefore be narrower
+still, which makes an eight-dimensional control a conservative comparison. Finally, the
+emotion--genre signatures derived from human ratings on Eerola reappear on Blockbuster,
+where they are computed from the emotions that the Eerola-trained model predicts for each
+cue ($r=0.836$ over 48 genre--emotion cells). In both datasets horror is defined by fear.
+A principal component has no meaning that could replicate in this way, and an artefact of
+the Eerola dataset would not reappear in 110 other films.
+
+The evidence against the control is, however, weaker than the evidence against direct
+audio. At the default threshold the emotion route beats the PCA-8 control in every design,
+but significantly in only two of them, namely in-domain under the film bootstrap
+($p=0.029$, Nadeau--Bengio $p=0.122$) and in the strict zero-shot experiment ($p=0.032$).
+When the transfer was repeated in both directions with one shared implementation
+(Section~\ref{sec:eval_transfer}), the emotion route was again ahead of the control, but
+not significantly ($+0.045$, $p=0.258$ from Eerola to Blockbuster; $+0.018$, $p=0.184$ in
+reverse). This was largely because the control scored higher there than in the original
+zero-shot run. Single-split scores of the embedding arms moved by up to 0.04 between two
+legitimate implementations, while the emotion arm remained stable. With per-genre
+thresholds the two bottlenecks tie in-domain. The claim that the gain comes from the
+meaning of the eight numbers rather than from their number is therefore supported in
+direction in every design. It is significant in the strict zero-shot run and, in-domain,
+under the film bootstrap alone, and it is supported most strongly by the replication of the
+signatures. It is not supported with the same force as the claim against direct audio.
+
+\subsection{Why more information does not win}
+
+The direct embeddings contain strictly more information about the audio than the eight
+emotions predicted from them, since every emotion prediction is a function of the
+embedding. There are three explanations, which reinforce each other, for why they
+nevertheless do no better in-domain and clearly worse across datasets.
+
+The first is \emph{data scarcity}. With about 330 clips from about 40 films, a linear
+classifier over 128 to 768 dimensions can fit many directions that happen to separate the
+genres of the training films. Strong regularisation was selected for almost every feature
+set, which is a symptom of this problem, and the learning curves of both routes were still
+rising at the full dataset size. The emotion stage adds prior knowledge that the direct
+classifier would otherwise have to learn from very few examples. It was trained on
+listener ratings, which are a second and independent source of supervision, and it reduces
+the embedding to the directions that listeners consider emotionally relevant.
+
+A second explanation is \emph{film identity}. Clips from one film share their
+instrumentation, recording and mixing, and a rich embedding encodes these properties well.
+Under a naive split this makes the direct baseline look far stronger than it is, because
+the model recognises the film instead of the genre. Under the film-grouped protocol used
+throughout this thesis, the same information is at best useless and at worst misleading,
+since it rewards learning the sound of individual training films. The emotion features are
+much less sensitive to this effect, because an emotion rating describes what a clip
+expresses rather than how it was produced.
+
+The third explanation is \emph{domain shift}. An embedding's dimensions have no fixed
+meaning, and their scale and distribution depend on the recordings they were computed on.
+A classifier trained on them partly learns the idiosyncrasies of its training dataset,
+which is harmless in-domain but harmful when the dataset changes. Emotion values are
+expressed in the units of a rating scale and mean the same thing in any dataset, so the
+representation absorbs the change of dataset. The pooled design shows this most clearly.
+Once both datasets are in the training data, the direct classifier can learn both sets of
+idiosyncrasies, and its disadvantage disappears.
+
+\subsection{A low-dimensional genre signal}
+\label{subsec:disc_ablation}
+
+The ablation study returned a null result, but one that is still informative. No single
+emotion is necessary. Removing any one of them changes macro-$F_1$ by at most 0.005, and
+fear alone matches all eight, as do valence and energy alone. Only one of the thirteen
+comparisons reached $p<0.05$, which is what chance produces over that many tests, and it
+points in the wrong direction for a ``necessary'' emotion. The reason lies in the ratings
+themselves. Fear rises with tension and falls with valence, and the genre signal they
+carry lies along essentially one threat--versus--warmth axis, which almost any pair of
+emotions can recover.
+
+For the genre task, this means that the part of film music that distinguishes the five
+genres modelled here is low-dimensional. This is one reason why richer representations
+cannot extract more from it with the data available. As for the design of the thesis, all
+eight emotions are retained because the discrete categories make the model
+readable (Section~\ref{subsec:fund_why_not_va}), even though the classifier does not need
+them. ``Horror is fear'' is a better description of a score than ``Horror is low valence
+and high tension'', although a classifier can use either.
+
+\subsection{The Stage-1 ceiling}
+
+On paper, the emotion regressor is the weakest part of the pipeline. The best
+representations explain about 0.56 of the variance in the listener ratings, which is about
+62\,\% of the variance that two independent listener panels agree on
+(Section~\ref{sec:eval_emotion}). Even so, genre predicted from these imperfect emotions is
+statistically indistinguishable from genre predicted from the human ratings (0.417 against
+0.428, $p=0.325$). The ablation explains this apparent contradiction. The genre signal lies
+in the threat--warmth axis of fear, tension and valence, which are among the
+better-predicted emotions. Happiness and sadness are the hardest to predict (the
+categorical form of the ``valence problem'' of the emotion-recognition literature), but
+given fear, tension and valence they are largely redundant for the classifier. A better
+emotion model would therefore improve genre prediction less than its $R^2$ gap suggests,
+because the genre-relevant part of Stage~1 is closer to its ceiling than the average.
+
+The waveform representation provides a counterweight.
+wav2vec~2.0, the weakest representation used directly, gains most from the bottleneck
+($+0.091$, significant under both tests) and reaches the same level as the VGGish pipeline.
+Part of the effect of the bottleneck is therefore \emph{denoising}. Forcing a poor
+representation through a supervised, low-dimensional target discards the directions that
+carry nothing about genre. This effect is real but not specific to interpretation, and it
+explains why the gain is largest for the representation with the least to lose.
+
+\subsection{What the bottleneck buys in readability}
+
+Apart from accuracy, the emotion route provides what it was designed for. Each genre the
+model can predict has a readable affective signature: Horror is fear, Comedy and Drama are
+high valence and low threat, and Action is tension without happiness. Adventure, the one
+genre without a signature, is also the one frequent genre that the model cannot predict
+(Biography and Documentary fail because there are too few films), and the pipeline makes
+the reason for this failure visible. This is the practical value of an interpretable
+intermediate. Both its errors and its successes come with an explanation that can be
+checked against film-music practice.
+
+\section{Limitations}
+\label{sec:disc_limitations}
+
+\paragraph{Dataset size.} The Eerola dataset contains 346 rated clips from 43 films (41
+films in the five-genre subset), and this size limits every in-domain conclusion. The
+learning curves are still rising at the full dataset size. For every borderline
+five-genre comparison, the smallest $p$-value that the Nadeau--Bengio test could reach
+with infinitely many repeats is above 0.05 ($p_{\lim}$ between 0.055 and 0.130), so
+additional computation cannot settle these comparisons; only more films can. Rare genres
+make the problem worse. Comedy is represented by four films and is absent from a third of
+the individual test folds.
+
+\paragraph{Two tests that disagree.} On five genres the film bootstrap finds the in-domain
+advantage significant and the Nadeau--Bengio test finds it borderline. Both are reported
+because they measure different things. The first measures the dependence on which films
+make up the dataset, and the second also the dependence on which films a model was trained
+on. Reporting only the more favourable of the two would overstate the result. Because the
+zero-shot experiment is a single split, it can only be tested with the film bootstrap.
+
+\paragraph{Dependence on the operating point.} The in-domain advantage holds at the default
+decision threshold, where the emotion route ranks first under macro-$F_1$ and four further
+metrics. However, its lead is significant under only some of them, it is small and not
+significant under the threshold-free ones, and it disappears with per-genre thresholds
+tuned on the training data, where all routes converge. The headline in-domain comparison
+is therefore a statement about models used at a fixed, untuned operating point. In
+addition, several multi-label metrics reward always predicting the frequent genres
+(micro-$F_1$, sample-averaged $F_1$, exact match, Hamming loss and Jaccard), and the
+most-frequent baseline wins them outright. For this reason macro-$F_1$ is the headline
+metric, and these metrics cannot be used to rank the routes at all.
+
+\paragraph{Choice of the five-genre subset.} The five headline genres were selected partly
+because they carry an emotional signature in the same data, which can favour the emotion
+route. The eight-genre results, in which the advantage over AST and VGGish is significant
+under both tests, reduce this risk but do not remove it.
+
+\paragraph{Genre labels.} Genre labels come from IMDb and are a property of the film, not
+of the individual clip or cue. A romantic scene in an action film is labelled Action, and a
+comic interlude in a drama is labelled Drama, so some clips carry labels that do not
+describe the music they contain. Genre is also multi-label, and IMDb lists a film's genres
+alphabetically rather than by relevance, so there is no ``primary'' genre that could be
+used to simplify the task or to weight the labels. The resulting label noise is probably
+the largest single source of error, and it caps what any audio model can achieve.
+
+\paragraph{Perceived emotion, one population.} The emotion model learns \emph{perceived}
+emotion, that is, what listeners judged the music to express rather than the emotion it
+induced in them. It learns this from the ratings of one listener panel. A second panel
+that rated a subset of the clips agreed closely with the first, but both were recruited
+for the same study. Their agreement therefore bounds the noise among comparable listeners
+and says nothing about listeners from a different musical culture. The film-music codes
+described by \citet{gorbman1987unheard} are learned conventions, and such listeners might
+rate the same clips differently.
+
+\paragraph{The second dataset.} The Blockbuster dataset distributes neither audio (for
+copyright reasons) nor emotion ratings. As a result, only VGGish, the embedding published
+with the dataset, could be carried across, so the transfer result rests on a single
+representation. In addition, the emotions on Blockbuster are predicted by the
+Eerola-trained model and cannot be checked directly against human judgement. They are
+validated only indirectly, through the replication of the emotion--genre signatures and
+through the transfer result itself. Finally, the zero-shot comparison is a single split
+whose point estimates move by a few hundredths with legitimate implementation choices, so
+the result rests on its confidence intervals rather than on its third decimal.
+
+\paragraph{Box office.} The box-office analysis is exploratory and must not be read
+causally. On the 110 Blockbuster films, how well a soundtrack reveals its genre is
+unrelated to gross. The predicted emotions of the score, on the other hand, correlate
+quite strongly with gross (the higher-grossing films have angrier, tenser and less tender
+music) until the production budget is controlled for, at which point every correlation
+disappears. The soundtrack therefore reflects the scale and kind of production and adds
+nothing to predicting gross once the budget is known. The earlier check on 37 Eerola films
+points the same way, since only genre relates to gross there. The analysis cannot separate
+the many things a budget buys at once, such as a larger orchestra, more music, a franchise
+or a marketing campaign. A larger sample would reduce its noise but not these confounds.
+
+\section{Relation to Prior Work}
+\label{sec:disc_relatedwork}
+
+The comparison with \citet{ma2021computational} is like-for-like and does not rely on an
+unverified baseline. Their protocol, reproduced on their own published features, reaches
+0.620 in-domain, inside their reported range of 0.61--0.65. The reproduction also qualifies
+their observation that VGGish generally outperforms the hand-crafted features. Under
+repeated cross-validation the learned embedding does not beat their full set of
+hand-crafted features ($+0.009$, $p=0.787$), and the two are statistically
+indistinguishable. This agrees with Ma et al.'s own cautious wording and with the result
+on Eerola, where five direct representations of very different design are
+indistinguishable from one another. Across two datasets, the choice of audio
+representation therefore matters less than what is done with it.
+
+\citet{eerola2011genrespecific} found that models of musical emotion lose much of their
+accuracy when carried from one musical genre to another. This thesis observes the same
+degradation one level higher, where genre models lose accuracy when carried from one film
+dataset to another, as the Related Work chapter anticipated. The present results add that
+the loss is smaller for a model built on emotions than for one built on raw embeddings.
+This suggests that the repertoire dependence described by
+\citeauthor{eerola2011genrespecific} lies more in the mapping from audio to its
+representation than in the relationship between emotion and genre itself.
+
+The other genre studies are consistent with this. \citet{austin2010characterization} found
+high-intensity genres more separable by their scores than narrative genres. The signatures
+found here explain this, since Action and Horror carry the strongest emotional profiles and
+Adventure has none. \citet{mangolin2020multimodal} found audio to be the weakest of five
+modalities for genre, and the modest absolute scores reported here agree that audio alone
+is a limited predictor of genre. The contribution of this thesis lies in a model whose
+predictions can be explained and which degrades less when the data change, rather than in
+a higher number. This also answers the concern raised by \citet{kang2025there} that
+accurate emotion-recognition systems frequently reveal little about the mechanisms behind
+their predictions. When predicted emotion is used as an intermediate for a downstream task,
+the emotion model becomes an explanation instead of an end in itself. Finally, the metric
+analysis supports the decision of this thesis not to follow \citet{behrouzi2023multimodal}
+in using Hamming loss as a headline metric, because on these data a classifier that always
+predicts the most frequent genres wins on Hamming loss outright.

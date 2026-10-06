@@ -16,15 +16,17 @@ rank-based anyway) with a permutation p-value, and the year of release is report
 partial-correlation control because gross is not inflation-adjusted and older films are
 systematically lower.
 
-This is EXPLORATORY and the write-up must say so: n is about 37 films, the figures mix
-worldwide and domestic-only grosses (the ``scope`` column in box_office.csv says which),
-nothing is inflation-adjusted, and 37 films across four decades is not a sample from
-which to claim an effect. It can rule an effect in as "worth a proper study" or out as
+This is EXPLORATORY and the write-up must say so: n is 37 films, nothing is
+inflation-adjusted, and 37 films across four decades is not a sample from which to claim
+an effect. (Every gross is now a worldwide figure. Until the Box Office Mojo parser was
+fixed in the fourth round, the 12 films taken from that site were stored as US-only
+figures; 7 of them changed, and no conclusion below changed with them -- log section 22.) It can rule an effect in as "worth a proper study" or out as
 "nothing visible at this size"; it cannot establish one.
 
-Of the 39 films with a USD gross, two are excluded because their IMDb id in the enriched
-CSV points at the wrong film (see fetch_box_office.py): ``Blanc`` and ``Pride and
-Prejudice``. A third, ``Vertigo``, drops out on its own: it has a gross but no clips left
+Two films are excluded because their IMDb id in the enriched CSV points at the wrong film
+(see fetch_box_office.py): ``Blanc`` (which therefore picks up the gross of a different
+film) and ``Pride and Prejudice`` (no gross at all). That leaves 38 films with a usable
+USD gross. A third, ``Vertigo``, drops out on its own: it has a gross but no clips left
 after the Set 1 cleaning, so the inner join below removes it. That leaves n = 37.
 
 Run:  python experiments/diagnostics/exp_box_office.py

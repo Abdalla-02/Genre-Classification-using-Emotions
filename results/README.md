@@ -39,7 +39,9 @@ experiment that follows the same conventions renders without touching it.
 | `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on an independent corpus? | §17.5 |
 | `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | §18 |
 | `cross_dataset_cv.json` | Cross-validation in **every direction**: Eerola→Blockbuster, the reverse, and both corpora pooled. | §19 |
-| `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Exploratory, n = 37. | §20 |
+| `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | §22.1 |
+| `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Eerola, exploratory, n = 37. | §20, §22.2 |
+| `box_office_blockbuster.json` | The same question on the **110 Blockbuster films**: gross against per-film classification quality under six per-film metrics (in-domain and zero-shot), predicted emotions, genre, cross-validated prediction of gross, and all 140 MIR descriptors, with Benjamini–Hochberg correction. | §22.3 |
 | `model_search.json` | Does any other model or feature combination beat the baseline? (No.) | §7d |
 
 `clip_length_by_genre.png` is the one non-JSON file here — a figure from
@@ -175,6 +177,7 @@ exactly. Reduced debug runs (`--repeats 2`, `--quick`) write a separate
 ```bash
 # --- Eerola, in-domain ------------------------------------------------------------------
 python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json  (~27 min, 12 cores) -- the numbers to quote
+python experiments/evaluation/exp_metrics_stability.py       # metrics_stability.json  (~19 min, 12 cores) -- metric family + stability
 python experiments/evaluation/exp_statistical_power.py       # statistical_power.json  (the original per-fold run)
 python experiments/genre/exp_emotion_ablation.py             # emotion_ablation.json
 python experiments/diagnostics/exp_model_search.py           # model_search.json
@@ -189,14 +192,25 @@ python experiments/cross_dataset/exp_cross_dataset_cv.py     # cross_dataset_cv.
 python experiments/cross_dataset/exp_signature_replication.py  # signature_replication.json
 
 # --- Box office (exploratory) -----------------------------------------------------------
-python experiments/features/fetch_box_office.py      # OPTIONAL, needs internet: refreshes data/processed/Eerola_DB/box_office.csv
-python experiments/diagnostics/exp_box_office.py     # box_office.json  (+ box_office_per_film.csv)
+python experiments/features/fetch_box_office.py              # OPTIONAL, needs internet: refreshes data/processed/Eerola_DB/box_office.csv
+python experiments/diagnostics/exp_box_office.py             # box_office.json  (+ box_office_per_film.csv)
+python experiments/features/fetch_box_office_blockbuster.py  # OPTIONAL, needs internet: refreshes data/processed/Blockbuster/box_office.csv
+python experiments/diagnostics/exp_box_office_blockbuster.py # box_office_blockbuster.json  (+ Blockbuster/box_office_per_film.csv)
+
+# --- Figures for the thesis, drawn from the files above ------------------------------------
+python experiments/make_figures.py                           # figures/*.pdf and *.png
 ```
 
-The box-office analysis works offline: it reads `data/processed/Eerola_DB/box_office.csv`,
-which is committed. Run `fetch_box_office.py` first only if you want fresh figures. It
-queries Wikidata and Box Office Mojo, so the grosses (and with them `box_office.json`)
-can change if either source has been updated since.
+Both box-office analyses work offline: they read the committed
+`data/processed/Eerola_DB/box_office.csv` and `data/processed/Blockbuster/box_office.csv`.
+Run the fetch scripts first only if you want fresh figures. They query Wikidata and Box
+Office Mojo, so the grosses (and with them the results) can change if either source has
+been updated since. The Blockbuster fetch reuses the Wikidata matches of an earlier run
+unless given `--fresh`, because resolving 110 titles from scratch takes up to half an
+hour under Wikimedia's rate limit.
+
+`make_figures.py` draws every figure from the results files, never from typed-in
+numbers, so re-run it after re-running an experiment.
 
 ### Experiments that only print their tables
 
