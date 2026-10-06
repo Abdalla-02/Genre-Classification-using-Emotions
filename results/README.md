@@ -265,4 +265,5 @@ python experiments/features/extract_features.py --model ast   # also: vggish, cl
 ```bash
 python experiments/audit_consistency.py   # do the documents still quote what results/*.json says?
 python experiments/show_results.py --all --out report.md   # every results file as Markdown tables
+python experiments/export_current_state.py   # docs/current_state.md -> .docx and .pdf (PDF needs LibreOffice)
 ```
