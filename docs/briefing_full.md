@@ -611,7 +611,7 @@ interpretability, not accuracy. Better to say it than to be asked.
 |---|---:|---:|---:|---|
 | Eerola → Blockbuster | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 |
 | Blockbuster → Eerola | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** |
-| pooled (both in training) | 0.421 | 0.398 | 0.424 | +0.003, p=0.906 |
+| pooled (both in training) | 0.428 | 0.405 | 0.432 | +0.004, p=0.850 |
 
 The advantage holds in **both** transfer directions and vanishes when both corpora are in
 training. It is a *generalisation* advantage — exactly what a corpus-independent

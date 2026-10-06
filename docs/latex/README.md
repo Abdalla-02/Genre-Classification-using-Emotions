@@ -24,6 +24,7 @@ author. Their drafts are kept here, outside the Overleaf project, and are not co
 | `held_back/abstract.tex` | the abstract on the title page | a red placeholder |
 | `held_back/4_conclusion.tex` | the whole Conclusions and Future Work chapter | the chapter heading, both section headings and their labels (other chapters refer to them), with a `\mytodo` note each |
 | `held_back/intro_contributions.tex` | the end of "Aim of this thesis": the list of contributions | removed; the section ends after the research questions |
+| `held_back/box_office.tex` | the box-office section of the Evaluation, its figure, and the box-office paragraph of the Limitations (removed 7 Oct 2026 as not relevant) | removed completely |
 
 At the same time the prose of every other chapter was revised for style (shorter, plainer
 sentences, fewer dashes and set phrases). No number, label, reference, citation, table or

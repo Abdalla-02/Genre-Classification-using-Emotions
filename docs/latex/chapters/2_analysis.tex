@@ -66,6 +66,8 @@ Genre is treated as a multi-label problem throughout (Section~\ref{sec:fund_ml})
 
 This gives three label spaces, which are summarised in Table~\ref{tab:label_spaces}. Since they differ in their genres, clips and chance levels, a score from one space cannot be compared with a score from another. Every result in Chapter~\ref{ch:evaluation} is therefore given with its label space and the chance floor of that space.
 
+In Table~\ref{tab:label_spaces}, the entries are the number of clips carrying each genre (Eerola) or the number of films (Blockbuster), and a dash means that the genre is not part of that space.
+
 \paragraph{(a) The eight-genre Eerola space.} Eight genres occur often enough in the Eerola films to be modelled: Action, Adventure, Biography, Comedy, Crime, Documentary, Drama and Horror. Together they give 346 clips from 43 films. The labels are strongly imbalanced: Drama applies to 239 clips, Documentary to 17.
 
 \paragraph{(b) The five-genre subset.} In prior work on film audio, the number of modelled genres grows with the size of the dataset. At a scale comparable to this one, \citet{austin2010characterization} model four genres over 98 films, and \citet{ma2021computational}, who also work from soundtracks, reduce the IMDb genres to six for their 110 films. The eighteen-genre study of \citet{mangolin2020multimodal} and the nine-genre study of \citet{behrouzi2023multimodal} rest on thousands of films. Compared with this, eight genres from 43 soundtracks is ambitious, and three of them are poorly supported. Biography and Documentary have fewer than 25 clips each. Adventure is frequent but has no distinctive emotional signature (every $|d| \le 0.25$; Section~\ref{sec:eval_signatures}), so it is unlikely to be recoverable from emotional features. Results are therefore reported both on all eight genres and on a curated subset of five (Action, Crime, Drama, Comedy and Horror), which are established in the literature and have a measurable emotional signature here. Under the any-present rule the subset contains 329 clips from 41 films. The eight-genre results show the limits imposed by rare and affectively indistinct genres; the five-genre results describe performance where the approach is applicable and form the main in-domain setting.
@@ -76,7 +78,7 @@ A model can only be transferred between two datasets if it predicts the same cla
 \begin{table}[t]
   \centering
   \small
-  \caption[The three genre label spaces]{The three genre label spaces. Entries are the number of clips carrying each genre (Eerola) or the number of films (Blockbuster); a dash means the genre is not part of that space. Since the spaces differ in genres, clips and base rates, scores from different spaces are not comparable, and each is reported against the chance floor of its own space.}
+  \caption{The three genre label spaces.}
   \label{tab:label_spaces}
   \begin{tabular}{lrrrr}
     \toprule
@@ -108,7 +110,7 @@ Six audio representations are compared, so that a conclusion about ``direct audi
 \begin{table}[t]
   \centering
   \small
-  \caption[The six audio representations]{The six audio representations. Every network is used frozen, as published, and its output is reduced to one vector per clip. ``Audio used'' is the part of each clip the representation is computed from. MSD: Million Song Dataset. MIR: the hand-crafted librosa descriptors. Models: AST \citep{gong2021ast}, VGGish \citep{hershey2017cnn}, CLAP \citep{wu2023clap}, MusiCNN \citep{pons2019musicnn}, wav2vec~2.0 \citep{baevski2020wav2vec}.}
+  \caption{The six audio representations.}
   \label{tab:representations}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lllll}
@@ -124,6 +126,8 @@ Six audio representations are compared, so that a conclusion about ``direct audi
     \bottomrule
   \end{tabular}
 \end{table}
+
+The models in Table~\ref{tab:representations} are AST \citep{gong2021ast}, VGGish \citep{hershey2017cnn}, CLAP \citep{wu2023clap}, MusiCNN \citep{pons2019musicnn} and wav2vec~2.0 \citep{baevski2020wav2vec}. Every network is used frozen, as published, and its output is reduced to one vector per clip; MIR denotes the hand-crafted librosa descriptors. The column ``Audio used gives the part of each clip a representation is computed from, and MSD stands for the Million Song Dataset.
 
 Every clip is decoded to mono at the sampling rate its model expects (48\,kHz for CLAP, 16\,kHz for all others) and passed through the frozen model once; nothing is fine-tuned on the thesis data. The model's output over time is then reduced to a single vector per clip. The last hidden state of AST, the 0.96\,s VGGish frames, the MusiCNN patches of roughly 3\,s (taken from its penultimate, 200-dimensional layer) and the wav2vec~2.0 frames are mean-pooled over time, while CLAP's projected audio embedding is used as the model returns it. The VGGish embedding is post-processed (PCA and 8-bit quantisation) in the same way as the features published with the Blockbuster dataset, so that both datasets share one feature space. The hand-crafted baseline consists of 103 descriptors computed with librosa \citep{mcfee2015librosa}: 13 MFCCs and their deltas, chroma, spectral centroid, bandwidth, roll-off, flatness and contrast, zero-crossing rate and RMS energy, each summarised by its mean and standard deviation over frames, plus one global tempo estimate. It differs from the 140 MIR descriptors of the Blockbuster release, which were computed with another toolchain.
 
@@ -197,7 +201,7 @@ The main transfer experiment is \emph{zero-shot}. Every arm is fitted on the Eer
 
 The genre classifier is trained on Eerola clips with out-of-fold predicted emotions (Section~\ref{sec:methods_stage1}), and $C$ is tuned by grouped cross-validation on Eerola. For the Blockbuster films, the emotion arm predicts emotions per cue and averages them per film, while the direct and PCA-8 arms use the film's VGGish vector averaged over its cues. Two feature-scaling regimes are possible. In the \emph{strict} regime, the standardisation is fitted on the source dataset only and applied unchanged to the target. In the \emph{target-standardised} regime, each dataset is standardised with its own statistics, an unsupervised adaptation that uses no labels. Only the embedding-based arms differ between the two. The direct baseline scores higher under the strict regime, so this regime is the conservative one and the one quoted.
 
-Two further designs test whether the result depends on the direction of transfer. In the \emph{reverse} direction, the genre classifier is trained on all Blockbuster films and tested on Eerola. Since the emotion regressor needs ratings, which only Eerola has, it is fitted on the Eerola training fold of a film-grouped split, and the held-out Eerola fold is scored; in this way no test clip enters either fit. In the \emph{pooled} design, both datasets are combined in one table, with Eerola clips and Blockbuster films as rows and the film as the group, and evaluated by $3\times5$ repeated grouped cross-validation. This asks whether the two datasets can be learned from jointly, which neither transfer direction does.
+Two further designs test whether the result depends on the direction of transfer. In the \emph{reverse} direction, the genre classifier is trained on all Blockbuster films and tested on Eerola. Since the emotion regressor needs ratings, which only Eerola has, it is fitted on the Eerola training fold of a film-grouped split, and the held-out Eerola fold is scored; in this way no test clip enters either fit. In the \emph{pooled} design, both datasets are combined in one table, with Eerola clips and Blockbuster films as rows and the film as the group, and evaluated by $5\times5$ repeated grouped cross-validation. This asks whether the two datasets can be learned from jointly, which neither transfer direction does.
 
 A transfer experiment is a single train/test split, so its uncertainty cannot come from repeated folds. It is quantified by a paired bootstrap over the test films. The 110 films are resampled with replacement 2000 times, and both arms are re-scored on each resample with the fitted models held fixed.
 
