@@ -21,12 +21,7 @@ tested on the other, the emotion route is clearly ahead.
 \begin{table}[t]
   \centering
   \small
-  \caption{The emotion route, the PCA-8 control and direct audio (VGGish) in every
-    setting in which all three were run, macro-$F_1$. Each row has its own label space
-    and test set and is read only against its own floor (base-rate random guess); the rows
-    are not comparable with each other. $p$ is the paired film bootstrap unless marked
-    $^{\dagger}$ (Nadeau--Bengio corrected $t$-test over repeated folds); for the Eerola
-    in-domain row both are given. The zero-shot row is the strict (source-scaler) regime.}
+  \caption{The three routes in every setting in which all of them were run (macro-$F_1$).}
   \label{tab:disc_settings}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lcrrrrrl}
@@ -37,10 +32,16 @@ tested on the other, the emotion route is clearly ahead.
     Blockbuster, in-domain                   & 6 & 0.295 & 0.616 & 0.587 & 0.593 & $+0.023$ & $0.536^{\dagger}$ \\
     Eerola $\rightarrow$ Blockbuster         & 6 & 0.292 & 0.511 & 0.421 & 0.407 & $+0.106$ & $0.018$ \\
     Blockbuster $\rightarrow$ Eerola         & 6 & 0.250 & 0.370 & 0.352 & 0.320 & $+0.050$ & $<0.001$ \\
-    Both datasets in training                & 6 & --    & 0.424 & 0.398 & 0.421 & $+0.003$ & $0.906^{\dagger}$ \\
+    Both datasets in training                & 6 & --    & 0.432 & 0.405 & 0.428 & $+0.004$ & $0.850^{\dagger}$ \\
     \bottomrule
   \end{tabular}
 \end{table}
+
+The rows of Table~\ref{tab:disc_settings} are not comparable with each other, since each
+has its own label space, test set and floor (the base-rate random guess). The $p$-value is
+the paired film bootstrap unless marked $^{\dagger}$ (Nadeau--Bengio corrected $t$-test over
+repeated folds); the Eerola in-domain row gives both, and the zero-shot row is the strict
+(source-scaler) regime.
 
 \paragraph{In-domain: consistent, modest, and partly an operating point.}
 On the Eerola dataset the full pipeline (VGGish, predicted emotion, genre) reaches a
@@ -89,7 +90,7 @@ Blockbuster films, the margin is larger relative to the floor of its own label s
 emotion route reaches 0.511 against 0.407 for direct audio ($+0.106$, $p=0.018$), and
 0.511 against 0.421 for the PCA-8 control ($+0.092$, $p=0.032$). The reverse direction,
 trained on Blockbuster and tested on Eerola, agrees ($+0.050$, $p<0.001$). When both
-datasets are included in the training data, the gap disappears ($+0.003$, $p=0.906$).
+datasets are included in the training data, the gap disappears ($+0.004$, $p=0.850$).
 In-domain on Blockbuster alone, the emotion route is also level with direct audio
 (Table~\ref{tab:disc_settings}).
 
@@ -301,17 +302,6 @@ validated only indirectly, through the replication of the emotion--genre signatu
 through the transfer result itself. Finally, the zero-shot comparison is a single split
 whose point estimates move by a few hundredths with legitimate implementation choices, so
 the result rests on its confidence intervals rather than on its third decimal.
-
-\paragraph{Box office.} The box-office analysis is exploratory and must not be read
-causally. On the 110 Blockbuster films, how well a soundtrack reveals its genre is
-unrelated to gross. The predicted emotions of the score, on the other hand, correlate
-quite strongly with gross (the higher-grossing films have angrier, tenser and less tender
-music) until the production budget is controlled for, at which point every correlation
-disappears. The soundtrack therefore reflects the scale and kind of production and adds
-nothing to predicting gross once the budget is known. The earlier check on 37 Eerola films
-points the same way, since only genre relates to gross there. The analysis cannot separate
-the many things a budget buys at once, such as a larger orchestra, more music, a franchise
-or a marketing campaign. A larger sample would reduce its noise but not these confounds.
 
 \section{Relation to Prior Work}
 \label{sec:disc_relatedwork}

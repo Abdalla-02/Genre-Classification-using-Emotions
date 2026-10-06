@@ -1178,9 +1178,9 @@ Shared 6-genre space, three designs, same three arms.
 |---|---:|---:|---:|---|---|
 | 1. Eerola -> Blockbuster (zero-shot) | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 | +0.045, p=0.258 |
 | 2. Blockbuster -> Eerola (reverse) | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** | +0.018, p=0.184 |
-| 3. pooled, both corpora in training | 0.421 | 0.398 | 0.424 | +0.003, p=0.906 | +0.026, p=0.329 |
-| &nbsp;&nbsp; 3a. Eerola part of the pooled test folds | 0.426 | 0.411 | **0.479** | | |
-| &nbsp;&nbsp; 3b. Blockbuster part | **0.562** | 0.538 | 0.540 | | |
+| 3. pooled, both corpora in training (5x5) | 0.428 | 0.405 | 0.432 | +0.004, p=0.850 | +0.027, p=0.231 |
+| &nbsp;&nbsp; 3a. Eerola part of the pooled test folds | 0.422 | 0.410 | **0.476** | | |
+| &nbsp;&nbsp; 3b. Blockbuster part | **0.573** | 0.552 | 0.539 | | |
 
 Design 2 is new and non-trivial: the emotion regressor needs ratings, which only Eerola
 has, so it is fitted on the Eerola *training* fold, the genre classifier on all of
@@ -1188,7 +1188,7 @@ Blockbuster, and the held-out Eerola fold is scored -- no test clip touches eith
 
 **What it establishes.** The emotion advantage over the direct embedding holds in **both
 transfer directions** (p=0.016 and p<0.001). It **vanishes when both corpora are in the
-training set** (p=0.906) -- once the classifier can see the target distribution, direct
+training set** (p=0.850) -- once the classifier can see the target distribution, direct
 features catch up. So the advantage is specifically a *generalisation-across-corpora*
 advantage, which is exactly the property an interpretable, corpus-independent
 representation should have. In-domain the emotion route is ahead by a smaller and
@@ -1458,11 +1458,13 @@ and non-causal; a budget buys orchestra, marketing and franchise at once.
 
 ### 22.4 Chapters and figures (notes 4–6)
 
-- **Fold count of the pooled cross-dataset design.** `results/cross_dataset_cv.json` holds
-  15 per-fold scores per arm, i.e. a **3x5** run, although the script's default (and its
-  docstring) is 5x5; a default re-run would therefore not reproduce the file. The thesis
-  now says 3x5. Re-running with the default would change the pooled numbers slightly
-  (0.424 / 0.421 / 0.398, p=0.906) wherever they are quoted.
+- **Fold count of the pooled cross-dataset design.** `results/cross_dataset_cv.json` held
+  a **3x5** run although the script's default (and its docstring) is 5x5, so a default
+  re-run did not reproduce it. Re-run at the default 5x5 on 7 Oct 2026: designs 1 and 2
+  are identical; the pooled design moves slightly (emotion 0.424 -> 0.432, direct
+  0.421 -> 0.428, PCA-8 0.398 -> 0.405; emotion vs direct +0.003, p=0.906 -> +0.004,
+  p=0.850; vs PCA-8 p=0.329 -> 0.231). The conclusion (a tie once both datasets are in
+  training) is unchanged; thesis, briefings and log updated.
 
 - `docs/latex/chapters/`: full drafts of Introduction, Methods, Evaluation, Discussion,
   Conclusions and the abstract, each replacing its Overleaf file (guide:

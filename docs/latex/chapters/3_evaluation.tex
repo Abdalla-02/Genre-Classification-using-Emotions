@@ -13,8 +13,7 @@ to film music it has never seen, in Section~\ref{sec:eval_transfer}. Two further
 support these answers. Section~\ref{sec:eval_emotion} first establishes how well emotion
 can be predicted from audio at all, since the pipeline depends on it, and
 Section~\ref{sec:eval_robustness} checks whether the in-domain conclusions depend on the
-choice of metric or on the random seed. The chapter ends with an exploratory check on
-box-office figures (Section~\ref{sec:eval_boxoffice}) and a summary
+choice of metric or on the random seed. The chapter ends with a summary
 (Section~\ref{sec:eval_summary}).
 
 Two conventions from Chapter~\ref{ch:methods} apply throughout. Results come from three
@@ -39,6 +38,11 @@ are ranked (Section~\ref{sec:evaluation_protocol}). Table~\ref{tab:waveform_stag
 gives the mean over the eight emotions, and Figure~\ref{fig:stage1_r2} breaks it down by
 emotion.
 
+Table~\ref{tab:waveform_stage1} uses the random forest under film-grouped cross-validation
+on all $n=360$ clips. Its last column expresses each score as a fraction of the
+$R^2 = 0.897$ implied by the agreement between two independent listener panels
+(Section~\ref{subsec:rating_reliability}).
+
 Each cell of Figure~\ref{fig:stage1_r2} is the $R^2$ of the random-forest regressor for
 one emotion (column) and one audio representation (row), rounded to two decimals; the last
 column is the mean over the eight emotions. $R^2=0$ corresponds to always predicting the
@@ -47,11 +51,7 @@ on average.
 
 \begin{table}[tbp]
   \centering
-  \caption{Emotion regression by audio representation (random forest, film-grouped
-    cross-validation, mean $R^2$ over the eight emotions, $n=360$ clips). The last
-    column expresses each score as a fraction of the $R^2 = 0.897$ implied by the
-    agreement between two independent listener panels
-    (Section~\ref{subsec:rating_reliability}).}
+  \caption{Emotion regression by audio representation: mean $R^2$ over the eight emotions.}
   \label{tab:waveform_stage1}
   \begin{tabular}{llrrrr}
     \toprule
@@ -276,13 +276,7 @@ conservative of the two. Both are reported for every comparison.
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Paired comparisons on the five-genre subset (329 clips, 41 films).
-    $\Delta$ is the difference in pooled macro-$F_1$ with a 95\,\% interval from the film
-    bootstrap; $p_{\text{boot}}$ is the paired film bootstrap, $p_{\text{NB}}$ the
-    Nadeau--Bengio corrected resampled $t$-test on the per-fold scores, and $p_{\lim}$
-    the smallest $p_{\text{NB}}$ this dataset allows with an unlimited number of
-    repeats; ``won'' is the number of the ten repeats in which the first method scores
-    higher. ``Predicted emotion'' is the emotion route from VGGish. Bold: $p<0.05$.}
+  \caption{Paired comparisons on the five-genre subset (329 clips, 41 films) under both tests.}
   \label{tab:power_cmp}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lrcrrrr}
@@ -304,6 +298,14 @@ conservative of the two. Both are reported for every comparison.
     \bottomrule
   \end{tabular}
 \end{table}
+
+In Table~\ref{tab:power_cmp}, $\Delta$ is the difference in pooled macro-$F_1$ with its
+95\,\% interval from the film bootstrap, $p_{\text{boot}}$ is the paired film bootstrap,
+$p_{\text{NB}}$ the Nadeau--Bengio corrected resampled $t$-test on the per-fold scores, and
+$p_{\lim}$ the smallest $p_{\text{NB}}$ this dataset allows with an unlimited number of
+repeats. The column ``won'' counts the repeats, out of ten, in which the first method
+scores higher; ``predicted emotion'' is the emotion route from VGGish, and bold marks
+$p<0.05$.
 
 The ordering is stable. The emotion route scores higher than every direct representation
 and than the PCA-8 control in all ten repeats, by 0.040 to 0.055 against the five
@@ -403,6 +405,12 @@ Figure~\ref{fig:metric_family} shows the most informative of them as the distanc
 each route above the base-rate random guess of that metric, so that metrics with
 different chance levels can share one axis.
 
+In Table~\ref{tab:metric_family}, ``Random'' is the base-rate random guess, which predicts
+each genre independently at its frequency, and ``Most freq.'' is the most-frequent
+baseline. $\Delta$ is the emotion route minus direct VGGish with the paired film-bootstrap
+$p$-value, and a dash means that it was not computed. For Hamming loss lower is better;
+bold marks the best of the four audio routes.
+
 In Figure~\ref{fig:metric_family}, each bar is the mean over the ten repeats of a route's
 score minus the base-rate random guess of that metric, so the zero line is the random-guess
 floor of every metric; the whiskers are the standard deviation over the ten repeats. The
@@ -412,12 +420,7 @@ most-frequent baseline is not drawn. It lies above zero only for micro- and samp
 \begin{table}[tbp]
   \centering
   \small
-  \caption{The same out-of-fold predictions (five-genre subset, seed 42) scored under
-    thirteen metrics; means over the ten repeats. ``Random'' is the base-rate random
-    guess, which predicts each genre independently at its frequency; ``Most freq.''\ is
-    the most-frequent baseline. $\Delta$ is the emotion route minus direct VGGish, with
-    the paired film-bootstrap $p$-value; -- where not computed. Hamming loss: lower is
-    better. Bold: best of the four audio routes.}
+  \caption{The routes under thirteen metrics on the five-genre subset (seed 42, mean of ten repeats).}
   \label{tab:metric_family}
   \setlength{\tabcolsep}{3.5pt}
   \resizebox{\textwidth}{!}{%
@@ -584,10 +587,7 @@ eight Eerola genres.
 
 \begin{table}[tbp]
   \centering
-  \caption{Dominant emotional signature of each of the eight Eerola genres, measured by
-    Cohen's $d$ of the human emotion rating between the clips of that genre and all
-    other clips. Positive $d$: the emotion is elevated for the genre; negative $d$: it is
-    suppressed.}
+  \caption{Dominant emotional signature (Cohen's $d$) of each of the eight Eerola genres.}
   \label{tab:emotion_genre_signatures}
   \begin{tabular}{llr}
     \toprule
@@ -604,6 +604,9 @@ eight Eerola genres.
     \bottomrule
   \end{tabular}
 \end{table}
+
+In Table~\ref{tab:emotion_genre_signatures}, a positive $d$ means that the emotion is
+elevated for the genre and a negative $d$ that it is suppressed.
 
 Fear is the strongest single discriminator across the genre set. It separates the
 threat-oriented genres (Horror, $d=+0.75$, the strongest genre--emotion association in
@@ -893,14 +896,14 @@ Eerola to Blockbuster, the re-implementation gives 0.508 for the emotion route a
 0.395 for direct VGGish ($+0.115$, $p=0.016$); from Blockbuster to Eerola, 0.370 against
 0.320 ($+0.050$ [$+0.023$, $+0.079$], $p<0.001$), against a random-guess floor of 0.250.
 The advantage disappears when both datasets are in the training set. There, the emotion
-route (0.424) and the direct embedding (0.421) are level ($+0.003$, Nadeau--Bengio
-$p=0.906$), so once the classifier can see examples of the target distribution, direct
+route (0.432) and the direct embedding (0.428) are level ($+0.004$, Nadeau--Bengio
+$p=0.850$), so once the classifier can see examples of the target distribution, direct
 features catch up. The advantage of the emotion route is therefore an advantage in
 generalisation across datasets. This is the property one would expect from an
 interpretable representation whose values mean the same thing in any dataset. The pooled
 result also shows where each route is strong: on the Eerola part of the pooled test
-folds the emotion route leads (0.479 against 0.426), and on the Blockbuster part the
-direct embedding does (0.562 against 0.540).
+folds the emotion route leads (0.476 against 0.422), and on the Blockbuster part the
+direct embedding does (0.573 against 0.539).
 
 The comparison with the PCA-8 control is less robust than the one with the direct
 embedding. The two implementations of the Eerola-to-Blockbuster direction differ in one
@@ -910,111 +913,13 @@ route is stable between them (0.511 and 0.508), but the embedding-based arms mov
 to 0.04, the PCA-8 control from 0.421 to 0.465. In the re-implementation the emotion
 route is still ahead of the control, but no longer significantly ($+0.045$, $p=0.258$),
 and the same holds in the reverse direction ($+0.018$, $p=0.184$) and in the pooled
-design ($+0.026$, $p=0.329$). The emotion route is thus ahead of the control in every
+design ($+0.027$, $p=0.231$). The emotion route is thus ahead of the control in every
 transfer design, but significantly so only in the original zero-shot run (in-domain on
 Eerola it is significant under the film bootstrap only; Table~\ref{tab:power_cmp}). The
 comparison with the direct embedding, in contrast, is significant in both directions and
 in both implementations. Single-split numbers move by a few hundredths with such
 choices, so the conclusion rests on the bootstrap intervals and not on the third
 decimal.
-
-% =============================================================================
-\section{Box Office (exploratory)}
-\label{sec:eval_boxoffice}
-
-Whether commercial success relates to the soundtrack, or to how well its genre can be
-recognised, is examined here as an exploratory side question.
-
-The question is answered on the Blockbuster dataset, which suits it better than Eerola:
-its 110 films were all released between 2014 and 2019, so their grosses are comparable
-without an inflation adjustment, and a worldwide gross could be obtained for every one of
-them from a single source, Box Office Mojo, after matching each film to its IMDb
-identifier. A production budget was available for 84 of the films. Gross is skewed
-(from USD 9 million to 2.8 billion), so every analysis uses its logarithm, and every
-correlation is reported as Spearman's $\rho$ with a permutation $p$-value; within each
-family of tests the $p$-values are corrected for multiple testing with the
-Benjamini--Hochberg procedure. Pearson correlations on the logarithm and Kendall's $\tau$
-were computed as well and lead to the same conclusions. Since Blockbuster has no
-ratings, the emotions are those the Eerola-trained model predicts for each cue, averaged
-over the film. The analysis is exploratory, and none of it can be read causally.
-
-\paragraph{Is a higher-grossing film easier to classify?} No. For every route (emotion,
-direct VGGish, the PCA-8 control and the full MIR set) and in both settings, in-domain
-and zero-shot (MIR in-domain only), the per-film quality of the genre prediction was
-correlated with gross under six per-film metrics: $F_1$, Jaccard index, Hamming
-accuracy, exact match, label-ranking average precision and the probability margin
-between a film's true and false genres. Of these 42 correlations, the largest in size is
-$\rho=+0.243$ (PCA-8, in-domain Jaccard index), and none survives the correction for multiple
-testing (smallest corrected $p=0.163$). The nominally significant ones do not form a
-pattern. They occur for the direct and control routes in-domain but not for the emotion
-route, and for the emotion route in the zero-shot setting only. How well a soundtrack
-reveals its film's genre is unrelated to how much the film earned.
-
-\paragraph{Do the soundtrack's emotions track gross?} Taken at face value they do, and
-strongly (Figure~\ref{fig:box_office_blockbuster}). Higher-grossing films have angrier
-($\rho=+0.427$), tenser ($+0.358$), more fearful ($+0.299$) and more energetic ($+0.227$)
-scores, and less tender ($-0.366$), less positive in valence ($-0.317$) and less happy
-($-0.255$) ones; all of these survive the correction. Their emotional range is also
-wider. The spread of predicted anger and energy between a film's cues correlates with
-gross at $+0.451$ and $+0.430$, and the number of cues at $+0.572$. Controlling for the
-year of release does not change these results, but controlling for the budget removes
-all the emotion correlations (only the number of cues keeps a weaker partial correlation,
-$+0.225$): on the 84 films with a budget, every emotion's partial correlation with
-gross lies between $-0.11$ and $+0.08$. Budget and gross are themselves strongly related
-($\rho=+0.781$), and the genres that are expensive to make are the ones with the
-angriest scores. Action films earn a median of USD 475 million against 129 million for
-the rest, Sci-Fi films 615 against 159 million (both $p<0.001$), while Drama and Comedy
-films earn less.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/box_office_blockbuster.pdf}
-  \caption{Box office on the 110 Blockbuster films: gross against predicted anger, and emotion correlations with and without the budget.}
-  \label{fig:box_office_blockbuster}
-\end{figure}
-
-The left panel of Figure~\ref{fig:box_office_blockbuster} plots worldwide gross (log
-scale) against the mean predicted anger of a film's cues, with Action films highlighted.
-The right panel gives the Spearman correlation of each predicted emotion with log gross,
-as measured (orange) and after controlling for the production budget on the 84 films that
-have one (grey).
-
-\paragraph{Can gross be predicted from the soundtrack?} The single correlations above test
-one feature at a time. As a multivariate check, a cross-validated ridge regression
-($10\times5$ folds) predicted log gross from each representation. The soundtrack does
-carry information about gross. The eleven emotion features explain $R^2=0.284$ of its
-variance out of fold, the VGGish embedding $0.348$ and the MIR descriptors $0.214$, all
-far above a permutation null. However, the six genre labels alone explain $0.253$, and
-the budget alone explains $0.491$ on the 84 films that have one. On those films, the
-emotions explain $0.118$, and adding them to the budget does not improve on the budget
-alone ($0.452$). Taken one by one, 20 of the 139 non-constant MIR descriptors correlate
-with gross after the correction, most of them timbral (MFCC means, spectral crest) or
-rhythmic (pulse clarity).
-
-The consistent reading is that a blockbuster's music reflects the scale and kind of
-production rather than its success as such. Expensive action and science-fiction films
-are scored with tense, angry, energetic music, use more of it, and earn more. Once the
-budget is known, the soundtrack adds nothing to the prediction of gross. This agrees
-with the check on Eerola described next.
-
-\paragraph{The earlier check on Eerola.} An earlier and smaller check was made on the
-Eerola films. A gross figure in US dollars could be matched by IMDb identifier for 37 of
-them, and three readings of the question were tested with Spearman correlations and
-permutation $p$-values. Classification quality does not relate to gross: the per-film
-$F_1$ of the pipeline correlates with the logarithm of the gross at only $\rho=+0.197$
-($p=0.246$). Genre does relate to it. Action films gross far more than the others
-(median about USD 267 million against 44 million, Mann--Whitney $p=0.004$), and the
-three Biography films far less ($p=0.045$, a result that rests on three films). Of the
-eight emotions only anger correlates with gross at $p<0.05$ ($\rho=+0.335$, $p=0.043$),
-and this is explained by genre: controlling for Action lowers it to $+0.191$, and within
-the 28 non-Action films it is $+0.249$ ($p=0.196$). One nominal hit in eight tests is in
-any case what chance often produces. The only robust relation is therefore the
-unsurprising one that Action films are blockbusters, which concerns genre and not
-anything the soundtrack model does. The check has clear limits: 37 films released between
-1960 and 2006, worldwide grosses taken from two different sources (Wikidata and Box
-Office Mojo), and no adjustment for inflation. Within those limits it agrees with the
-Blockbuster analysis, in which gross relates to the kind of film and not to how well its
-music reveals the genre.
 
 % =============================================================================
 \section{Summary of Findings}
@@ -1063,7 +968,7 @@ the emotion route reaches 0.511 against 0.407 for direct VGGish ($+0.106$, $p=0.
 and 0.421 for the PCA-8 control ($+0.092$, $p=0.032$), against a random-guess floor of
 0.292 in that label space. The advantage over the direct embedding holds in the reverse
 direction as well ($+0.050$, $p<0.001$) and disappears when both datasets are in
-training ($+0.003$, $p=0.906$). The advantage over the PCA-8 control is positive in
+training ($+0.004$, $p=0.850$). The advantage over the PCA-8 control is positive in
 every design, significant in the original zero-shot run and, in-domain, under the film
 bootstrap only. These transfer results use the default threshold on a single split, so
 the in-domain threshold finding does not carry over to them directly; whether they would
