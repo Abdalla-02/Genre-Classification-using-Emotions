@@ -1458,6 +1458,12 @@ and non-causal; a budget buys orchestra, marketing and franchise at once.
 
 ### 22.4 Chapters and figures (notes 4–6)
 
+- **Fold count of the pooled cross-dataset design.** `results/cross_dataset_cv.json` holds
+  15 per-fold scores per arm, i.e. a **3x5** run, although the script's default (and its
+  docstring) is 5x5; a default re-run would therefore not reproduce the file. The thesis
+  now says 3x5. Re-running with the default would change the pooled numbers slightly
+  (0.424 / 0.421 / 0.398, p=0.906) wherever they are quoted.
+
 - `docs/latex/chapters/`: full drafts of Introduction, Methods, Evaluation, Discussion,
   Conclusions and the abstract, each replacing its Overleaf file (guide:
   `docs/latex/README.md`). Three `% CITATION NEEDED` (librosa; PyTorch/transformers/

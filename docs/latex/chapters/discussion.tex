@@ -45,7 +45,7 @@ tested on the other, the emotion route is clearly ahead.
 \paragraph{In-domain: consistent, modest, and partly an operating point.}
 On the Eerola dataset the full pipeline (VGGish, predicted emotion, genre) reaches a
 macro-$F_1$ of 0.417 on five genres, against 0.377 for the best direct representation. It
-is ahead of all five direct representations and of the PCA-8 control, by 0.040 to 0.055.
+is ahead of the five spectrogram-based and hand-crafted direct representations and of the PCA-8 control, by 0.040 to 0.055.
 This margin is consistent. It holds in all ten repeats of the cross-validation and under
 all five master seeds of the stability analysis (Section~\ref{sec:eval_robustness}), where
 the emotion-minus-VGGish difference ranges from $+0.037$ to $+0.059$ and never changes
@@ -132,7 +132,7 @@ shows that the genre-relevant content of the emotions is low-dimensional and red
 still, which makes an eight-dimensional control a conservative comparison. Finally, the
 emotion--genre signatures derived from human ratings on Eerola reappear on Blockbuster,
 where they are computed from the emotions that the Eerola-trained model predicts for each
-cue ($r=0.836$ over 48 genre--emotion cells). In both datasets horror is defined by fear.
+cue ($r=0.836$ over 48 genre--emotion cells). In both datasets Horror is defined by fear.
 A principal component has no meaning that could replicate in this way, and an artefact of
 the Eerola dataset would not reappear in 110 other films.
 
@@ -243,7 +243,7 @@ checked against film-music practice.
 \section{Limitations}
 \label{sec:disc_limitations}
 
-\paragraph{Dataset size.} The Eerola dataset contains 346 rated clips from 43 films (41
+\paragraph{Dataset size.} The Eerola dataset contains 360 rated clips from 46 films, 346 of them (43 films) with a modelled genre (41
 films in the five-genre subset), and this size limits every in-domain conclusion. The
 learning curves are still rising at the full dataset size. For every borderline
 five-genre comparison, the smallest $p$-value that the Nadeau--Bengio test could reach
@@ -338,7 +338,7 @@ representation than in the relationship between emotion and genre itself.
 
 The other genre studies are consistent with this. \citet{austin2010characterization} found
 high-intensity genres more separable by their scores than narrative genres. The signatures
-found here explain this, since Action and Horror carry the strongest emotional profiles and
+found here explain this, since Horror carries the strongest emotional signature, Action a distinct one, and
 Adventure has none. \citet{mangolin2020multimodal} found audio to be the weakest of five
 modalities for genre, and the modest absolute scores reported here agree that audio alone
 is a limited predictor of genre. The contribution of this thesis lies in a model whose
