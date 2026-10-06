@@ -1,8 +1,8 @@
 # Supervisor briefing — update since the last meeting
 
 **Can a soundtrack's emotion predict a film's genre?** This page covers only what happened
-since the fourth meeting (24 September 2026): the six notes from that meeting and what
-came of them. Earlier rounds, the three routes (direct audio, emotion route, PCA-8
+since the fourth meeting (24 September 2026): the six notes from that meeting, what came
+of them, and the work on the thesis text that followed (state: 7 October 2026). Earlier rounds, the three routes (direct audio, emotion route, PCA-8
 control), the definitions, every result table and the previous Q&A are in
 `briefing_full.md`; every experiment in detail is in the technical log, `docs/README.md`
 (section 22 for this round).
@@ -15,9 +15,9 @@ control), the definitions, every result table and the previous Q&A are in
 |---|---|---|---|
 | 1 | Explain the F1 metric more; is there a better approach? | Every route scored under 13 metrics on the same predictions (section 2) | **Macro-F1 stays the right headline**, but the in-domain lead **depends on the decision threshold** |
 | 2 | Standard deviation / variance of the cross-validation: stable and reproducible? | Spread over repeats, folds, films and five master seeds (section 3) | **Stable and reproducible**; the emotion lead is positive under every seed |
-| 3 | Box office vs the Blockbuster dataset, under all metrics | Worldwide gross for all 110 films; 6 per-film metrics, emotions, genre, prediction, all 140 MIR features (section 4) | Classification quality: **no relation**. Emotions: **yes, but only through the budget** |
-| 4 | Write the rest of the chapters | Full drafts of every remaining chapter and the abstract (section 5) | In `docs/latex/chapters/`, **for you to read**; not yet on Overleaf |
-| 5 | Results as graphs, not only tables | Nine figures drawn from the results files (section 6) | In `figures/`, placed in the Evaluation draft |
+| 3 | Box office vs the Blockbuster dataset, under all metrics | Worldwide gross for all 110 films; 6 per-film metrics, emotions, genre, prediction, all 140 MIR features (section 4) | Classification quality: **no relation**. Emotions: **only through the budget**. Then **left out of the thesis** (7 Oct) |
+| 4 | Write the rest of the chapters | Full drafts of every remaining chapter and the abstract (section 5) | **On Overleaf, compiles with 0 errors**; reviewed, style-revised, references checked. Abstract, conclusions and contributions held back for the author |
+| 5 | Results as graphs, not only tables | Figures drawn directly from the results files (section 6) | Eight figures in the Evaluation chapter, with short captions |
 | 6 | Figures from other papers are allowed, with the source | Noted (section 6) | The circumplex figure could now be the original |
 
 ---
@@ -117,7 +117,7 @@ Figure: `figures/stability_repeats.pdf`.
 
 ---
 
-## 4. Note 3 — box office on Blockbuster
+## 4. Note 3 — box office on Blockbuster (done, then left out of the thesis)
 
 **Data.** Blockbuster ships only title slugs, so each film was matched to Wikidata by
 title and release year, and its **worldwide** gross taken from Box Office Mojo: all 110
@@ -128,57 +128,73 @@ Benjamini–Hochberg correction for multiple tests.
 
 | question | answer |
 |---|---|
-| Is a film's genre easier to predict when it grossed more? Tested with 6 per-film metrics (F1, Jaccard, Hamming accuracy, exact match, ranking precision, probability margin) × every route, in-domain and zero-shot: 42 tests | **No.** Nothing survives the correction; the largest correlation is ρ = +0.24 |
-| Do the soundtrack's emotions track gross? | **Yes, at first sight**: anger ρ = +0.43, tension +0.36, fear +0.30, tenderness −0.37, valence −0.32, all significant after correction. **But with the budget controlled, every one is within ±0.11.** |
+| Is a film's genre easier to predict when it grossed more? 6 per-film metrics × every route, in-domain and zero-shot: 42 tests | **No.** Nothing survives the correction; the largest correlation is ρ = +0.24 |
+| Do the soundtrack's emotions track gross? | **Yes, at first sight**: anger ρ = +0.43, tension +0.36, fear +0.30, tenderness −0.37, valence −0.32, all significant after correction. **With the budget controlled, every one is within ±0.11.** |
 | Does genre? | Action (median $475M vs $129M) and Sci-Fi ($615M vs $159M) gross more; Drama and Comedy less |
-| Can gross be predicted from the soundtrack? | Yes, partly (emotion R² = 0.28, VGGish 0.35), but the **budget alone does better (0.49)**, and adding the emotions to the budget does not help (0.45) |
-| All 140 MIR descriptors, one by one | 20 correlate after correction, mostly timbre (MFCCs, spectral crest) and pulse clarity |
+| Can gross be predicted from the soundtrack? | Partly (emotion R² = 0.28, VGGish 0.35), but the **budget alone does better (0.49)**, and adding the emotions to it does not help (0.45) |
 
 **Reading:** blockbuster music mirrors the *scale and kind of production*. Expensive
-action and sci-fi films are scored with tense, angry, energetic music, use more of it
-(number of cues: ρ = +0.57), and earn more; budget and gross themselves correlate at
-ρ = +0.78. Once the budget is known, the soundtrack adds
-nothing. Exploratory, not causal.
+action and sci-fi films are scored with tense, angry, energetic music and earn more;
+budget and gross themselves correlate at ρ = +0.78. Once the budget is known, the
+soundtrack adds nothing. Exploratory, not causal.
 
-**A bug found on the way.** The Box Office Mojo parser read the first "Worldwide" on the
-page (the navigation menu) and stored US-only figures. Fixed. On Eerola, 7
-grosses changed; every conclusion stayed the same (quality vs gross ρ = +0.197,
-p = 0.246; Action $267M vs $44M, p = 0.004). All grosses are now worldwide.
+**A bug found on the way.** The Box Office Mojo parser read the navigation menu and
+stored US-only figures. Fixed; on Eerola 7 grosses changed and every conclusion stayed
+the same (quality vs gross ρ = +0.197, p = 0.246).
 
-Figure: `figures/box_office_blockbuster.pdf`.
+**Decision (7 Oct):** the box-office analysis is **not in the thesis**: it answers a
+question about commercial success, not about genre. The text is kept in
+`docs/latex/held_back/box_office.tex` and the analysis in the repository.
 
 ---
 
-## 5. Note 4 — the chapters
+## 5. Note 4 — the chapters (now on Overleaf)
 
-Full drafts are in `docs/latex/chapters/`. **Nothing has been put on Overleaf**, so you
-can read them first. Each file replaces the Overleaf file of the same name as a whole;
-`docs/latex/README.md` says how.
+All chapters are written and **on Overleaf; the thesis compiles with 0 errors**.
 
-| draft | about | contents |
-|---|---|---|
-| `0_intro.tex` | 1,400 words | motivation, the research questions RQ1–RQ3, contributions, structure |
-| `2_analysis.tex` (Methods) | 5,200 words | datasets and the three label spaces, the six representations, Stage 1 (incl. the three derived features as formulas), Stage 2, baselines and controls, the evaluation protocol, implementation; a TikZ pipeline figure |
-| `3_evaluation.tex` | 7,500 words | every result, with the figures, and the new sections on the metric and stability (notes 1–2) and on box office (note 3) |
-| `discussion.tex` | 3,500 words | what the pattern of results means, why the bottleneck helps where it helps, limitations, relation to prior work |
-| `4_conclusion.tex` | 1,200 words | one answer per research question, future work |
-| `abstract.tex` | 245 words | the abstract paragraph |
+| chapter | state |
+|---|---|
+| 1 Introduction | drafted; the list of contributions is **held back** for the author to write |
+| 2 Fundamentals, 3 Related Work | written earlier; revised |
+| 4 Methods | drafted (datasets, three label spaces, six representations, Stage 1 with the three derived features, Stage 2, baselines, protocol, implementation; TikZ pipeline figure) |
+| 5 Experiments and Evaluation | drafted, with the result figures and the new section on metric and stability |
+| 6 Discussion | drafted |
+| 7 Conclusions and Future Work, abstract | **held back**: only headings and placeholders on Overleaf; drafts in `docs/latex/held_back/` |
 
-Before pasting:
+What was done to the text after drafting:
 
-- **Three references are missing** from `bib/library.bib`; search for `% CITATION NEEDED`:
-  librosa; PyTorch / transformers / scikit-learn; threshold tuning for F1
-  (Lipton et al., 2014).
-- **Upload the `figures/` folder** (the PDFs) to the Overleaf project.
-- **Replace one chapter at a time and recompile.** The drafts were checked statically
-  (every reference, citation and environment) but never compiled.
+1. **Missing references added** (librosa, scikit-learn, PyTorch, transformers, Lipton et
+   al. 2014 on F1 thresholds; LAION-CLAP, see below).
+2. **An examiner-style review** found factual slips, all corrected:
+   - CLAP was cited to the wrong model (the checkpoint used is LAION-CLAP).
+   - VGGish was said to be trained on AudioSet (it was trained on YouTube videos and is
+     distributed with AudioSet).
+   - The reliability ceiling 0.897 is an intraclass correlation, not r².
+   - Clip length, film counts and dataset size were stated wrongly in places.
+   - One argument was circular (the scaling ablation), one compared margins across label
+     spaces that are not comparable.
+   - A limitation was added: the five-genre subset was chosen partly by emotional
+     signature.
+3. **A consistency pass** over the whole thesis: about 25 wording and pointer fixes
+   (numbers stated two ways, wrong cross-references, British spelling).
+4. **Style revision** of the prose of every chapter (plainer sentences, fewer set phrases
+   and dashes). A script checked that no number, reference, citation, table or figure
+   changed.
+5. **Captions shortened**: every figure and table has a one-line caption; the legend
+   (colours, whiskers, columns) moved into the text after the first mention.
+6. **Every reference and link checked**: all 36 bibliography entries against Crossref and
+   OpenAlex (all real, all matching); the GitHub link and the three Hugging Face models
+   resolve.
+7. **AI-usage declaration filled in** from the repository and Overleaf history: models
+   Claude Opus 5 and Claude Opus 5.5, July to October 2026, which parts were drafted,
+   edited or generated. Three red notes remain that only the author can fill.
 
 ---
 
 ## 6. Notes 5–6 — figures
 
-Drawn by `experiments/make_figures.py` from the results files, so a figure can never
-disagree with a table. PDF for LaTeX, PNG to look at:
+Eight figures, drawn by `experiments/make_figures.py` directly from the results files, so a
+figure can never disagree with a table.
 
 | figure | shows |
 |---|---|
@@ -190,28 +206,53 @@ disagree with a table. PDF for LaTeX, PNG to look at:
 | `signatures` | each genre's emotional signature, Eerola vs Blockbuster side by side |
 | `zero_shot` | Eerola → Blockbuster: emotion 0.511 vs PCA-8 0.421 vs direct 0.407 |
 | `cross_dataset` | both transfer directions and the pooled design |
-| `box_office_blockbuster` | gross vs predicted anger; each emotion's correlation before and after the budget control |
 
-**Figures from other papers.** The circumplex figure in Fundamentals is currently redrawn
-"after Russell (1980)". Since you allow originals with the source, the original could
-replace it. Ma et al. (2021) is published under CC BY 4.0, so its figures may be reused
-with attribution.
+![In-domain, five genres: every route with 95 % intervals](../figures/indomain_eerola5.png)
+
+![Zero-shot transfer from Eerola to Blockbuster](../figures/zero_shot.png)
+
+![Stability over repeats and seeds](../figures/stability_repeats.png)
+
+![The routes under seven metrics](../figures/metric_family.png)
+
+**Figures from other papers.** The circumplex figure in Fundamentals is redrawn "after
+Russell (1980)"; the original could replace it with its source. Ma et al. (2021) is
+published under CC BY 4.0, so its figures may be reused with attribution.
 
 ---
 
-## 7. Open items
+## 7. A correction since: the pooled cross-dataset design
 
-1. **Read the chapter drafts**, adapt them, and paste them into Overleaf one at a time.
-2. **Three missing references** (section 5).
-3. **Zero-shot with a threshold tuned on the source dataset**: the one check the metric
+The results file of the pooled design (both datasets in training) came from a 3×5 run,
+while the script and the text said 5×5. It was re-run at 5×5 (7 Oct). The two transfer
+directions reproduce exactly; the pooled numbers move slightly and the conclusion stays:
+
+| pooled design | before (3×5) | now (5×5) |
+|---|---:|---:|
+| emotion route / direct / PCA-8 | 0.424 / 0.421 / 0.398 | **0.432 / 0.428 / 0.405** |
+| emotion vs direct | +0.003, p = 0.906 | **+0.004, p = 0.850** |
+
+Once both datasets are in training, the two routes tie: the emotion advantage is a
+generalisation advantage.
+
+---
+
+## 8. Open items
+
+1. **Write the held-back parts**: abstract, Chapter 7 (Conclusions and Future Work) and the
+   list of contributions. Future Work must keep the experiment the Discussion points to
+   (below).
+2. **Zero-shot with a threshold tuned on the source dataset**: the one check the metric
    analysis raises that has not been run.
-4. **AI-usage declaration**: still has red placeholders (period of use, other tools).
-5. **Fundamentals, "Metrics"**: its trivial-classifier sentence is true on 5 genres but
-   not quite on 8; say which is meant (`docs/latex/README.md`).
+3. **AI-usage declaration**: three red notes (other tools, how the drafts were revised, the
+   level for the held-back parts) and the date.
+4. **Read the whole thesis once**, using `docs/verification_checklist.md`: what to check,
+   the numbers that no results file stores, every correction made, and what to look at in
+   the PDF (the two TikZ diagrams have not been checked visually).
 
 ---
 
-## 8. Questions to expect, and the answers
+## 9. Questions to expect, and the answers
 
 **Why macro-F1 and not accuracy or Hamming loss?**
 Because on this data those are won by a model that always says "Drama": exact match 0.283
@@ -227,30 +268,27 @@ ahead at the default operating point", not "better under every metric".
 
 **Then what is left of the main claim?**
 The cross-dataset result: 0.511 vs 0.407 (p = 0.018) from Eerola to Blockbuster, the
-reverse direction agreeing (p < 0.001), and interpretable predictions whose emotional
-signatures replicate on a second dataset (r = 0.84). The advantage is a generalisation
-advantage; the thesis says so.
+reverse direction agreeing (p < 0.001), a tie once both datasets are in training
+(p = 0.850), and interpretable predictions whose emotional signatures replicate on a second
+dataset (r = 0.836). The advantage is a generalisation advantage; the thesis says so.
 
 **Would threshold tuning also erase the zero-shot advantage?**
-Unknown: not tested yet (open item 3). A threshold cannot be tuned on the target without
-its labels; one tuned on the source would have to survive the dataset shift.
+Unknown: not tested yet (open item 2).
 
 **How stable are the numbers?**
 Very: the 10-repeat mean moves by at most 0.008 between seeds, and the emotion lead over
 VGGish stays between +0.037 and +0.059 under every seed. The main uncertainty is which
 41 films the dataset contains (bootstrap SE about 0.02).
 
-**Does box-office success relate to the soundtrack?**
-Classification quality: no. The score's emotions: only through the budget. Big-budget
-films have angrier, tenser scores and earn more; controlling for budget removes every
-emotion correlation, and the soundtrack adds nothing to predicting gross once the budget
-is known.
+**Why is the box-office analysis not in the thesis?**
+It was done (section 4) and its answer is clear: classification quality does not relate to
+gross, and the emotions of the score relate to it only through the budget. It answers a
+question about commercial success rather than about genre, so it was left out.
 
-**Are the Blockbuster grosses reliable?**
-All 110 are worldwide figures from one source (Box Office Mojo), matched by IMDb id; every
-match is listed in `data/processed/Blockbuster/box_office.csv` with its Wikidata item and
-year. The films span only 2014–2019, so inflation hardly matters (gross vs year:
-ρ = +0.14, n.s.).
+**How was AI used?**
+As a programming and writing assistant (Claude Opus 5 and 5.5): code, documentation, chapter
+drafts, figures and reference checking. The declaration at the end of the thesis lists
+every part and its level; the research questions, datasets and decisions are the author's.
 
 ---
 
@@ -269,5 +307,4 @@ random guess):
 In-domain significance (default threshold): emotion vs VGGish film bootstrap p = 0.042,
 Nadeau–Bengio p = 0.151. Zero-shot: +0.106 [+0.015, +0.186], p = 0.018. On 8 genres the
 pipeline scores 0.318 against 0.276 for AST (most-frequent baseline 0.102). The 5-genre
-random guess is now 0.308, the simulated value stored in `metrics_stability.json`; the
-0.309 quoted before was the mean-prevalence formula, which no results file stored.
+random guess is 0.308, the simulated value stored in `metrics_stability.json`.
