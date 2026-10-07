@@ -183,7 +183,12 @@ RARE_GENRES = ["Fantasy", "Mystery"]
 # These are asserted in the loader so silent data drift fails loudly.
 # --------------------------------------------------------------------------- #
 SET1_EXPECTED_CLIPS = 346
-SET1_EXPECTED_SOUNDTRACKS = 43
+# 42 films. Until 7 Oct 2026 this was 43: clip 256 is spelt "The Portait of a Lady" in the
+# source CSV, the other six clips of that film "The Portrait of a Lady" (same IMDb id
+# tt0117364), so the film counted twice and could straddle a fold boundary. The loader
+# now merges the two spellings (SOUNDTRACK_NAME_FIXES); log section 24.
+SET1_EXPECTED_SOUNDTRACKS = 42
+SOUNDTRACK_NAME_FIXES = {"The Portait of a Lady": "The Portrait of a Lady"}
 
 # AUTHORITATIVE genre distribution: multi-label positive counts (column sums of the
 # target matrix). Use THIS for the thesis dataset table.
@@ -219,7 +224,7 @@ SET2_EXPECTED_CLIPS = 102  # 110 total: -6 no genre, -2 with no primary genre
 # Expected counts for Set 1 relabelled into SHARED_GENRES (any-present rule).
 # Asserted in the loader like the 8-genre counts, so drift fails loudly.
 SET1_SHARED_EXPECTED_CLIPS = 319
-SET1_SHARED_EXPECTED_SOUNDTRACKS = 41
+SET1_SHARED_EXPECTED_SOUNDTRACKS = 40   # 41 before the "Portait" fix (see above)
 SET1_SHARED_LABEL_COUNTS = {
     "action": 103,
     "drama": 239,

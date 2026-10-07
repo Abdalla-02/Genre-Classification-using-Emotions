@@ -38,6 +38,15 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ## B. Read again: text produced by the assistant
 
+- [ ] **Fifth meeting (8 Oct, Overleaf `3b10594`).** Chapter 5 was rebuilt around the core
+  results, the rest moved to the new Appendix A, and Chapter 6 was shortened and rewritten
+  around one table. All Eerola numbers changed after the duplicate-film fix. Read Chapters 5
+  and 6 and Appendix A in full; check in particular the per-genre paragraph (Section 5.4),
+  the leakage paragraph (Section 5.6) and "Interpreting the Main Result".
+- [ ] **Methods, wav2vec layer.** After the fix, blocks 1–3 are within 0.003 and block 1 is
+  nominally best; the text says block 2 was selected earlier and kept. Decide whether that
+  is acceptable to you.
+
 Every chapter except the held-back parts was drafted or revised by the assistant, and on
 6 October the wording of Chapters 1-6 was revised again for style (numbers, references
 and tables were checked to be unchanged). Read each chapter once completely. What to look
@@ -126,6 +135,10 @@ script before submission, or be ready to explain where the number comes from.
 ## E. Errors found and corrected along the way (confirm you agree)
 
 **Results and method**
+- [ ] **Duplicate film** (§24): "The Portait of a Lady" (clip 256) and "The Portrait of a
+  Lady" are one film; merged in the loader, every Eerola experiment re-run. Film counts are
+  42 (8 genres), 40 (5 genres, shared space) and 45 (all rated clips). Emotion vs VGGish at
+  film level moved from p = 0.047 to p = 0.052.
 - [ ] **Blockbuster → Eerola significance** (§23.3): the clip-level p < 0.001 came from a
   bootstrap that resampled clips, which are not independent. Resampling films gives
   +0.077, p = 0.127. The thesis now says the reverse direction agrees in sign but is not

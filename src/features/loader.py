@@ -165,6 +165,12 @@ def _load(csv_path, audio_dir, clean: bool) -> pd.DataFrame:
     df = df[df["number"].notna()].copy()
     df["number"] = df["number"].astype(int)
 
+    # One film appears under two spellings in the source CSV (same IMDb id). The
+    # soundtrack name is the grouping key of every film-grouped split, so a misspelt
+    # name would split one film into two groups and leak it across folds.
+    df["soundtrack"] = df["soundtrack"].astype(str).str.strip().replace(
+        config.SOUNDTRACK_NAME_FIXES)
+
     # normalise the discrete-emotion TARGET label (strip stray whitespace, e.g.
     # "HIGH TENSION " -> "HIGH TENSION") and expose the audio path for every clip.
     if "TARGET" in df.columns:

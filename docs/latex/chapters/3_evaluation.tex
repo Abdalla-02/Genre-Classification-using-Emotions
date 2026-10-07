@@ -2,54 +2,43 @@
 \label{ch:evaluation}
 
 This chapter reports the results of the experiments described in Chapter~\ref{ch:methods}
-and states for each research question of the introduction which section answers it. RQ1, whether a
-soundtrack's emotional profile predicts its film's genre, is answered in
-Section~\ref{sec:eval_genre}. RQ2a, which emotions relate to which genres, and RQ3, which
-emotions discriminate each genre most strongly, are answered together in
-Section~\ref{sec:eval_signatures}. RQ2b, whether routing audio through an emotion
-intermediate beats classifying genre directly from audio, is answered twice: within one
-dataset in Section~\ref{sec:eval_direct}, and across datasets, where the model is applied
-to film music it has never seen, in Section~\ref{sec:eval_transfer}. Two further sections
-support these answers. Section~\ref{sec:eval_emotion} first establishes how well emotion
-can be predicted from audio at all, since the pipeline depends on it, and
-Section~\ref{sec:eval_robustness} checks whether the in-domain conclusions depend on the
-choice of metric or on the random seed. The chapter ends with a summary
-(Section~\ref{sec:eval_summary}).
+and concentrates on the results that answer the research questions.
+Section~\ref{sec:eval_emotion} first establishes how well emotion can be predicted from
+audio, since the pipeline depends on it. Section~\ref{sec:eval_genre} answers RQ1, whether
+a soundtrack's emotional profile predicts its film's genre, and
+Section~\ref{sec:eval_direct} answers RQ2b within one dataset: whether the detour through
+emotion beats classifying genre directly from audio. Section~\ref{sec:eval_pergenre}
+breaks this comparison down by genre. Section~\ref{sec:eval_signatures} answers RQ2a and
+RQ3, which emotions relate to which genres, and Section~\ref{sec:eval_transfer} answers
+RQ2b across datasets, on film music the model has never seen. Analyses that check these
+results without changing them (the choice of metric, stability over seeds, the emotion
+ablation, the waveform representation, all eight genres, the reproduction of the published
+Blockbuster result and an error analysis) are reported in
+Appendix~\ref{app:supplementary}.
 
-Two conventions from Chapter~\ref{ch:methods} apply throughout. Results come from three
-label spaces that are never compared directly: the eight Eerola genres (346 clips,
-43 films), the five-genre subset (329 clips, 41 films) on which the in-domain comparisons
-are made, and the six genres shared with the Blockbuster dataset (319 Eerola clips from
-41 films, and 110 Blockbuster films). Every score is therefore given together with the
-chance floor of its own label space. Every genre score is macro-$F_1$ over films
-(Section~\ref{sec:evaluation_protocol}); where it matters for the argument, the clip-level
-score of the same predictions is given beside it. In addition, two chance floors are used, as explained
-in Section~\ref{sec:fund_evaluation}: the \emph{most-frequent} baseline and the
-\emph{base-rate random guess}. The second is always the higher of the two, and the text
-says which one it refers to.
+Two conventions apply throughout. First, every genre score is macro-$F_1$ over films
+(Section~\ref{sec:evaluation_protocol}): the predicted probabilities of a film's clips are
+averaged, and the film is scored once. Where it matters for the argument, the clip-level
+score of the same predictions is given beside it. Second, results come from three label
+spaces that are never compared directly: the eight Eerola genres (346 clips,
+42 films), the five-genre subset (329 clips, 40 films) on which the
+in-domain comparisons are made, and the six genres shared with the Blockbuster dataset
+(319 Eerola clips from 40 films, and 110 Blockbuster films). Every score is
+therefore given with the chance floor of its own label space, either the
+\emph{most-frequent} baseline or the higher \emph{base-rate random guess}
+(Section~\ref{sec:fund_evaluation}).
 
 % =============================================================================
 \section{Stage 1: Emotion Regression}
 \label{sec:eval_emotion}
 
-The first stage of the pipeline predicts the eight emotion ratings from a frozen audio
-embedding with a random forest. Its quality is measured by the coefficient of
-determination $R^2$, averaged over the eight emotions, under cross-validation grouped by
-film on all 360 rated clips; this is the metric by which the six audio representations
-are ranked (Section~\ref{sec:evaluation_protocol}). Table~\ref{tab:waveform_stage1}
-gives the mean over the eight emotions, and Figure~\ref{fig:stage1_r2} breaks it down by
-emotion.
-
-Table~\ref{tab:waveform_stage1} uses the random forest under film-grouped cross-validation
-on all $n=360$ clips. Its last column expresses each score as a fraction of the
-$R^2 = 0.897$ implied by the agreement between two independent listener panels
-(Section~\ref{subsec:rating_reliability}).
-
-Each cell of Figure~\ref{fig:stage1_r2} is the $R^2$ of the random-forest regressor for
-one emotion (column) and one audio representation (row), rounded to two decimals; the last
-column is the mean over the eight emotions. $R^2=0$ corresponds to always predicting the
-mean rating, and the ceiling set by the agreement between two listener panels is $0.897$
-on average.
+The first stage predicts the eight emotion ratings from a frozen audio embedding with a
+random forest. It is scored by $R^2$, averaged over the eight emotions, on out-of-fold
+predictions of five-fold cross-validation grouped by film over all 360 rated clips
+(Section~\ref{sec:evaluation_protocol}). Table~\ref{tab:waveform_stage1} ranks the six
+audio representations, and Figure~\ref{fig:stage1_r2} breaks the result down by emotion.
+The last column of the table expresses each score as a fraction of $R^2 = 0.897$, the
+agreement between two independent listener panels (Section~\ref{subsec:rating_reliability}).
 
 \begin{table}[tbp]
   \centering
@@ -59,12 +48,12 @@ on average.
     \toprule
     Representation & Input domain & Dim. & $R^2$ & RMSE & \% of ceiling \\
     \midrule
-    CLAP             & log-mel spectrogram & 512 & 0.561 & 1.22 & 62 \\
-    AST              & log-mel spectrogram & 768 & 0.560 & 1.22 & 62 \\
-    VGGish           & log-mel spectrogram & 128 & 0.558 & 1.23 & 62 \\
-    MusiCNN          & log-mel spectrogram & 200 & 0.541 & 1.25 & 60 \\
-    Hand-crafted MIR & STFT descriptors    & 103 & 0.490 & 1.31 & 55 \\
-    wav2vec 2.0      & raw waveform        & 768 & 0.323 & 1.52 & 36 \\
+    CLAP             & log-mel spectrogram & 512 & 0.558 & 1.22 & 62 \\
+    VGGish           & log-mel spectrogram & 128 & 0.553 & 1.23 & 62 \\
+    AST              & log-mel spectrogram & 768 & 0.545 & 1.24 & 61 \\
+    MusiCNN          & log-mel spectrogram & 200 & 0.512 & 1.29 & 57 \\
+    Hand-crafted MIR & STFT descriptors    & 103 & 0.476 & 1.33 & 53 \\
+    wav2vec 2.0      & raw waveform        & 768 & 0.299 & 1.54 & 33 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -76,80 +65,55 @@ on average.
   \label{fig:stage1_r2}
 \end{figure}
 
-The three general-purpose spectrogram embeddings cannot be told apart: CLAP, AST and
-VGGish reach $R^2$ between 0.558 and 0.561. The music-pretrained MusiCNN follows closely
-(0.541) but does not lead, so pretraining on music helps less here than might be
-expected. What matters is how much emotion-relevant variation a representation exposes
-rather than how closely its pretraining data resemble film music. The 103 hand-crafted
-descriptors are clearly weaker (0.490). The waveform representation, wav2vec~2.0,
-recovers far less of the rating variance than any other (0.323), even at the hidden
-layer that was selected for it on this task (Section~\ref{sec:methods_features}), and
-its deficit is spread across all eight emotions instead of being concentrated in one. As
-discussed in the Methods chapter, this comparison changes the input domain and the
-pretraining data (speech instead of general audio or music) at the same time, so the weak result
-cannot be blamed on the waveform front-end alone.
+Each cell of Figure~\ref{fig:stage1_r2} is the $R^2$ of the regressor for one emotion
+(column) and one representation (row); the last column is the mean over the eight
+emotions. $R^2=0$ corresponds to always predicting the mean rating.
 
-The difficulty of the task also differs strongly between emotions
-(Figure~\ref{fig:stage1_r2}). For the three strongest representations, tension, energy
-and anger are the easiest to predict ($R^2$ between 0.612 and 0.664), valence and fear
-follow closely (0.585 to 0.616), and sadness (0.437 to 0.448) and happiness (0.314 to
-0.337) are clearly the hardest. This mirrors the ``valence problem'' documented in the
-music emotion recognition literature, where arousal is recovered from audio more
-reliably than the positive--negative quality of an emotion
-\citep{kim2010music,kang2025there}. In this dataset, however, the valence scale itself is
-predicted about as well as fear; the difficulty lies with the two discrete emotions that
-most directly express positive and negative feeling. Happiness and sadness are the two
-hardest emotions for every representation, including the weakest.
+The three general-purpose spectrogram embeddings, CLAP, VGGish and AST, cannot be told apart
+($R^2$ between 0.545 and 0.558). The music-pretrained MusiCNN follows closely
+(0.512), the 103 hand-crafted descriptors are clearly weaker (0.476), and the
+waveform model wav2vec~2.0 recovers far less of the rating variance than any other
+(0.299). The emotions also differ in difficulty. For the three strongest
+representations, tension, energy and anger are the easiest ($R^2$ 0.608 to
+0.661), valence and fear follow (0.559 to 0.603), and sadness
+(0.428 to 0.438) and happiness (0.302 to 0.321) are clearly the
+hardest. This mirrors the ``valence problem'' of music emotion recognition, where arousal
+is recovered from audio more reliably than the positive--negative quality of an emotion
+\citep{kim2010music,kang2025there}.
 
 \subsection{Reliability of the Ratings and the Attainable Ceiling}
 \label{subsec:rating_reliability}
 
-An $R^2$ of 0.56 means little without a reference point, because the ratings that the
-regressor is scored against are themselves noisy. The dataset of
-\citet{eerola2011comparison} permits a direct estimate of that noise: its second set
-re-rates clips drawn from the first with a different listener panel, giving two
-independent measurements of the same music on 102 matched clips from 38 soundtracks.
-
-The two panels agree closely. The mean correlation over the eight emotions is $r=0.912$,
-and the intraclass correlation for consistency, ICC(C,1), which asks whether the panels
-rank the clips alike, is 0.897. Absolute agreement, ICC(A,1), is lower at 0.818, because
-on the three bipolar scales (valence, energy and tension) the second panel rated
-systematically about 1.25 points higher; on the five discrete emotions the panels differ
-by only 0.06 to 0.21 points. The panels therefore agree on what they hear but use the
-rating scale differently.
-
-A predictor cannot agree with a noisy target more closely than the target agrees with an
-independent measurement of itself, so the largest attainable $R^2$ is about 0.897. The
-best representations reach 0.558 to 0.561, about 62\,\% of that ceiling. A value near 1
-was therefore never achievable. However, rating noise does not explain the shortfall
-either, since more than a third of the attainable variance is still unexplained. The
-limit lies in the audio representations and the amount of training data rather than in
-the quality of the labels, which is consistent with the range reported for music emotion
-recognition in general \citep{kang2025there}.
+The ratings that the regressor is scored against are themselves noisy. The dataset of
+\citet{eerola2011comparison} allows a direct estimate: its second set re-rates clips from
+the first with a different listener panel, which gives two independent measurements of
+the same music on 102 matched clips. The panels agree closely (mean correlation over the
+eight emotions $r=0.912$, intraclass correlation for consistency ICC(C,1) $=0.897$),
+although on the three bipolar scales the second panel rated systematically higher, which
+lowers absolute agreement to ICC(A,1) $=0.818$. A predictor cannot agree with a noisy
+target more closely than the target agrees with an independent measurement of itself, so
+the attainable $R^2$ is about 0.897. The best representations reach 62\,\% of
+it. Rating noise is therefore not what limits the regressor; the limit lies in the audio
+representations and the amount of training data.
 
 % =============================================================================
 \section{Genre Classification from Emotion (RQ1)}
 \label{sec:eval_genre}
 
-All genre results in this and the next two sections follow the protocol of
-Section~\ref{sec:evaluation_protocol}: $10\times5$ cross-validation grouped by film,
-nested tuning of $C$, and macro-$F_1$ over films, computed once per repeat on the pooled
-out-of-fold predictions of its five test folds after the clip probabilities of each film
-have been averaged. Scores are the mean over the ten repeats, with a 95\,\% interval from a
-bootstrap over films. The predictions are pooled because rare genres are missing from many
-single test folds (Comedy, with four films, from 17 of the 50), and a per-fold score
-counts such a genre as zero there whatever the model predicts.
+All genre results in this and the next two sections use $10\times5$ cross-validation
+grouped by film with nested tuning of $C$. Each repeat is scored once on its pooled
+out-of-fold predictions, per film, and the scores are averaged over the ten repeats, with a
+95\,\% interval from a bootstrap over films.
 
-On the five-genre subset, a classifier trained on the ground-truth emotion ratings
-reaches a film-level macro-$F_1$ of 0.521 [0.440, 0.589], and the full pipeline, in which
-emotions are predicted from the VGGish embedding, reaches 0.469 [0.392, 0.529]
-(Figure~\ref{fig:indomain_eerola5}). Both lie far above the most-frequent baseline of
-0.169 and clearly above the base-rate random guess of 0.301. Scored over clips, the same
-predictions reach 0.428 and 0.417. On the full eight-genre task the film-level values are
-0.359 [0.298, 0.406] and 0.352 [0.297, 0.388], against a most-frequent baseline
-of 0.103 and a random-guess floor of 0.221 (over clips: 0.321 and 0.318). RQ1 can
-therefore be answered positively. The emotional profile of a film's soundtrack predicts
-its genres well above chance, although far from perfectly.
+On the five-genre subset, a classifier trained on the human emotion ratings reaches a
+film-level macro-$F_1$ of 0.491 [0.411, 0.552], and the full pipeline, in which
+the emotions are predicted from the VGGish embedding, reaches 0.460 [0.385, 0.514]
+(Figure~\ref{fig:indomain_eerola5}). Both lie far above the most-frequent baseline
+(0.168) and clearly above the base-rate random guess (0.309). Scored over clips, the same
+predictions reach 0.416 and 0.405. RQ1 can therefore be answered positively: the
+emotional profile of a film's soundtrack predicts its genres well above chance, although
+far from perfectly. The same holds on all eight genres, where the pipeline reaches 0.349
+against a random guess of 0.226 (Appendix~\ref{sec:app_eight}).
 
 \begin{figure}[t]
   \centering
@@ -158,471 +122,158 @@ its genres well above chance, although far from perfectly.
   \label{fig:indomain_eerola5}
 \end{figure}
 
-In Figure~\ref{fig:indomain_eerola5}, each filled point is the film-level macro-$F_1$ on
-the pooled out-of-fold predictions, averaged over the ten repeats of $10\times5$
-film-grouped cross-validation on the 41 films (329 clips), and the whiskers are 95\,\%
-intervals from a bootstrap over films. The hollow marker in each row is the clip-level
-macro-$F_1$ of the same predictions. Green marks the classifier trained on the human emotion ratings
-(the ceiling of the emotion route), orange the emotion route with emotions predicted from
-VGGish or from wav2vec~2.0, blue an audio representation used directly, and grey the PCA-8
-control. The dashed line is the most-frequent baseline (0.169) and the dotted line the
-base-rate random guess (0.301), both at film level.
+In Figure~\ref{fig:indomain_eerola5}, each filled point is the film-level macro-$F_1$,
+averaged over the ten repeats, and the whiskers are 95\,\% intervals from a bootstrap over
+films. The hollow marker in each row is the clip-level score of the same predictions.
+Green marks the classifier on the human ratings (the ceiling of the emotion route), orange
+the emotion route, blue an audio representation used directly, and grey the PCA-8
+control. The dashed line is the most-frequent baseline and the dotted line the base-rate
+random guess.
 
-For the practical use of the pipeline, the most important comparison is the one between
-predicted and rated emotions. At film level the ratings are ahead by
-$0.053$ [$-0.001$, $+0.110$] in all ten repeats, which just misses significance
-under the film bootstrap ($p=0.053$). Over clips the two are level
-($-0.011$, film bootstrap $p=0.325$, Nadeau--Bengio $p=0.497$). Emotion values estimated
-from audio therefore carry most, but probably not all, of the genre information in the
-human ratings they were trained on. The pipeline needs no emotion annotation at
-deployment, and a better emotion model would still have something to gain. Training the
-genre classifier on out-of-fold rather than in-sample emotion predictions, which is the
-methodologically correct choice, makes no measurable difference
-($+0.012$ for the in-sample variant, $p=0.374$).
-
-\subsection{Error analysis}
-
-The kind of errors the classifier makes explains why the score is not higher. The
-genre classifier uses class-balanced weights so that rare genres are not simply ignored,
-and this leads to over-prediction: on the eight-genre task, under the earlier single-run
-protocol, it assigned 3.49 genres per clip on average against 1.87 true ones. The same
-pattern holds on the five-genre subset under the current protocol, where the emotion
-route has a macro recall of 0.596 over clips but a macro precision of only 0.371
-(Section~\ref{sec:eval_robustness}). The individual genres behave very differently. On
-the eight-genre task the rarest genres are almost never caught: Documentary, with two
-films, is never predicted correctly by any route, and Biography, with three, reaches a
-film-level $F_1$ of 0.16 in the emotion route. Adventure, with ten films, is predicted
-poorly for its frequency (0.35, against 0.37 for Comedy with four films and 0.60 for
-Action with twelve). It has no emotional signature of its own
-(Section~\ref{sec:eval_signatures}), so nothing in the emotion profile separates it from
-the genres it co-occurs with.
-
-An obvious remedy for over-prediction would be to raise the decision threshold above
-0.5. This, however, makes macro-$F_1$ worse (measured over clips). With strong regularisation the predicted
-probabilities are compressed towards 0.5, so a single higher threshold does not trim the
-least certain predictions evenly across genres; it removes almost all positive
-predictions of the rare, distinctive genres first. Horror and Comedy are then hardly
-predicted at all, the classifier degenerates towards predicting Drama alone, and
-macro-$F_1$, which gives each genre the same weight, falls with it. The over-prediction
-is therefore the cost of catching the rare genres at all and is not a calibration error.
-A threshold chosen per genre on the training folds is a different matter, and
-Section~\ref{sec:eval_robustness} shows that it helps every route.
-
-Finally, a learning curve, in which the models were trained on growing fractions of the
-films and scored over clips, was still rising at the full dataset size for both the emotion features and the
-AST embedding. Performance is thus limited by the amount of data as well as by the
-signal, and a larger dataset would be expected to raise both.
-
-\subsection{Which emotions are needed? (ablation)}
-
-If the eight emotions are an interpretable description of the music, it makes sense to
-ask which of them the genre classifier uses. The ablation answers this on the same folds
-and with the same metric as the headline, using the ground-truth ratings of the eight
-emotions without the three derived features (all eight: 0.521 at film level,
-0.426 over clips). Each emotion was left
-out in turn, and several theory-motivated subsets were tested: the two-dimensional
-circumplex of valence and energy, the three dimensional scales, the five discrete
-emotions, fear alone, and fear with valence. Figure~\ref{fig:ablation} shows the
-difference of each to the full set.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/ablation.pdf}
-  \caption{Emotion ablation on the five-genre subset: change in film-level macro-$F_1$ relative to all eight emotions.}
-  \label{fig:ablation}
-\end{figure}
-
-Each point in Figure~\ref{fig:ablation} is the difference in film-level macro-$F_1$ to the
-classifier that uses all eight ground-truth emotions (0.521), on the same $10\times5$
-film-grouped folds, with a 95\,\% interval from a bootstrap over films. Orange points leave
-out one emotion and light blue points are the theory-motivated subsets; the vertical line
-marks no difference. No chance floor is drawn, since the plot shows differences.
-
-For single emotions the ablation gives a null result. Removing any one emotion changes
-the film-level score by at most 0.010 in either direction, and none of the eight changes is
-significant (the smallest $p$ is 0.101). Reducing the set further costs a little more. Fear
-alone reaches 0.485, valence with energy 0.498 and the three dimensional scales 0.487, between
-0.024 and 0.037 below the full set. These subsets score lower in all or nearly all of
-the ten repeats, but none of the differences is significant (fear alone
-$p=0.082$, the three scales $p=0.066$). The five discrete emotions together lose only
-0.009 ($p=0.328$). Over clips all thirteen variants lie within 0.007 of the full
-set; the one nominal clip-level hit, removing tension ($p=0.010$ under the film
-bootstrap), is not significant at film level ($p=0.101$).
-
-The interpretation is that the genre signal in the ratings is low-dimensional and
-redundant. The eight ratings are strongly intercorrelated (fear rises with tension and
-falls with valence), so a small subset recovers most of the information: one to three
-emotions keep 93 to 95\,\% of the film-level score of all eight. This confirms
-the position taken in Section~\ref{subsec:fund_why_not_va}: fear is the most
-\emph{diagnostic} emotion, but no emotion is \emph{necessary}, and all eight are retained
-for interpretability rather than for predictive necessity. For the next section this
-means that the emotion bottleneck could be narrower than eight dimensions at little
-cost, so comparing it with the PCA-8 control is a conservative choice.
+For the use of the pipeline, the most important comparison is between predicted and rated
+emotions. At film level the ratings score 0.032 higher (difference $-0.032$ [$-0.090$,
+$+0.021$]) and are ahead in all ten repeats, but the difference is not
+significant ($p=0.277$); over clips the two are level ($-0.010$, $p=0.340$). Emotions
+estimated from audio therefore carry most of the genre information in the ratings they were
+trained on, so the pipeline needs no emotion annotation at deployment, although a better
+emotion model might still gain a little.
 
 % =============================================================================
 \section{Emotion versus Direct Audio, In-domain (RQ2b)}
 \label{sec:eval_direct}
 
-RQ2b asks whether the detour through emotion is better than giving the genre classifier
-the audio embedding directly. Figure~\ref{fig:indomain_eerola5} already shows the answer
-in outline. All six representations were evaluated on the same folds. Used directly,
-MusiCNN reaches 0.385, VGGish 0.375, CLAP 0.371, the hand-crafted descriptors 0.367, AST 0.307
-and wav2vec~2.0 0.249. The PCA-8 control, which compresses the VGGish embedding to eight
-principal components, reaches 0.418. The emotion route from the same VGGish embedding
-reaches 0.469 and is ahead of all of them.
-
-\subsection{Statistical Reliability of the Comparisons}
-\label{subsec:statistical_power}
-
-Table~\ref{tab:power_cmp} gives the paired comparisons on the five-genre subset with
-the tests available for it. The film bootstrap resamples the test films with the trained
-models held fixed, and so asks how much a difference depends on which films happen to
-make up the dataset. It is also the test used for the zero-shot results of
-Section~\ref{sec:eval_transfer}. The Nadeau--Bengio corrected $t$-test
-\citep{nadeau2003inference} also charges for the variation that comes from which films
-were used for training and is the more conservative test. It needs one score per test
-fold, which film-level scoring cannot provide, since a test fold holds only about eight
-films (Section~\ref{sec:evaluation_protocol}). It is therefore applied to the fifty
-per-fold clip-level scores of the same predictions, next to the clip-level bootstrap.
+Figure~\ref{fig:indomain_eerola5} also answers RQ2b within one dataset. Used directly, the
+six representations reach MusiCNN 0.396, CLAP 0.390, VGGish 0.367, the hand-crafted descriptors 0.365, AST 0.318 and wav2vec~2.0 0.261. The PCA-8 control, which compresses the VGGish
+embedding to eight principal components, reaches 0.390. The emotion route from the same
+VGGish embedding reaches 0.460 and is ahead of all of them, by 0.065 to 0.196.
+Table~\ref{tab:power_cmp} gives the comparisons that matter most for the argument; all
+paired comparisons are listed in Appendix~\ref{sec:app_comparisons}.
 
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Paired comparisons on the five-genre subset (41 films): film level, with the clip-level tests beside it.}
+  \caption{The main paired comparisons on the five-genre subset (40 films).}
   \label{tab:power_cmp}
-  \setlength{\tabcolsep}{3.5pt}
-  \begin{tabular}{lrcrr@{\hspace{10pt}}rrr}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lrcrr@{\hspace{10pt}}rr}
     \toprule
-    & \multicolumn{4}{c}{Film level} & \multicolumn{3}{c}{Clip level} \\
-    \cmidrule(lr){2-5} \cmidrule(lr){6-8}
-    Comparison & $\Delta$ & 95\,\% CI & $p_{\text{boot}}$ & won & $\Delta$ & $p_{\text{boot}}$ & $p_{\text{NB}}$ \\
+    & \multicolumn{4}{c}{Film level} & \multicolumn{2}{c}{Clip level} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-7}
+    Comparison & $\Delta$ & 95\,\% CI & $p_{\text{boot}}$ & won & $\Delta$ & $p_{\text{NB}}$ \\
     \midrule
-    Emotion vs.\ VGGish direct & $+0.095$ & $[+0.004,\,+0.193]$ & $\mathbf{0.047}$ & 10 & $+0.040$ & $\mathbf{0.042}$ & $0.151$ \\
-    Emotion vs.\ AST           & $+0.160$ & $[+0.079,\,+0.239]$ & $\mathbf{<0.001}$ & 10 & $+0.047$ & $\mathbf{0.030}$ & $0.110$ \\
-    Emotion vs.\ CLAP          & $+0.102$ & $[+0.015,\,+0.197]$ & $\mathbf{0.025}$ & 10 & $+0.055$ & $\mathbf{0.017}$ & $0.107$ \\
-    Emotion vs.\ MusiCNN       & $+0.085$ & $[-0.007,\,+0.185]$ & $0.079$ & 10 & $+0.054$ & $\mathbf{0.018}$ & $0.073$ \\
-    Emotion vs.\ MIR           & $+0.104$ & $[+0.020,\,+0.186]$ & $\mathbf{0.016}$ & 9 & $+0.054$ & $\mathbf{0.036}$ & $0.070$ \\
-    Emotion vs.\ wav2vec 2.0   & $+0.216$ & $[+0.144,\,+0.289]$ & $\mathbf{<0.001}$ & 10 & $+0.089$ & $\mathbf{<0.001}$ & $\mathbf{0.012}$ \\
-    Emotion vs.\ PCA-8 control & $+0.051$ & $[-0.045,\,+0.156]$ & $0.326$ & 9 & $+0.045$ & $\mathbf{0.029}$ & $0.122$ \\
-    \midrule
-    Emotion vs.\ ground truth  & $-0.053$ & $[-0.110,\,+0.001]$ & $0.053$ & 0 & $-0.011$ & $0.325$ & $0.497$ \\
-    Ground truth vs.\ CLAP       & $+0.155$ & $[+0.065,\,+0.253]$ & $\mathbf{<0.001}$ & 10 & $+0.066$ & $\mathbf{0.001}$ & $\mathbf{0.036}$ \\
-    PCA-8 vs.\ VGGish direct     & $+0.043$ & $[-0.018,\,+0.101]$ & $0.163$ & 8 & $-0.005$ & $0.771$ & $0.804$ \\
-    AST vs.\ CLAP                        & $-0.058$ & $[-0.122,\,+0.016]$ & $0.106$ & 0 & $+0.008$ & $0.663$ & $0.752$ \\
+    Emotion vs.\ VGGish (its input)     & $+0.093$ & $[-0.001,\,+0.191]$ & $0.052$ & 9 & $+0.039$ & $0.086$ \\
+    Emotion vs.\ MusiCNN (best direct)  & $+0.065$ & $[-0.039,\,+0.170]$ & $0.241$ & 9 & $+0.046$ & $0.112$ \\
+    Emotion vs.\ PCA-8 control          & $+0.070$ & $[-0.011,\,+0.158]$ & $0.089$ & 10 & $+0.042$ & $0.151$ \\
+    Emotion vs.\ ground truth           & $-0.032$ & $[-0.090,\,+0.021]$ & $0.277$ & 0 & $-0.010$ & $0.489$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-In Table~\ref{tab:power_cmp}, the left block is the film-level headline: $\Delta$ is the
-difference in film-level macro-$F_1$ with its 95\,\% interval from the film bootstrap,
-$p_{\text{boot}}$ the paired film bootstrap, and ``won'' the number of the ten repeats in
-which the first method scores higher. The right block scores the same predictions over
-clips, with the clip-level film bootstrap and $p_{\text{NB}}$, the Nadeau--Bengio corrected
-resampled $t$-test on the per-fold scores. ``Emotion'' is the emotion route from VGGish,
-``ground truth'' the classifier on the human ratings, and bold marks $p<0.05$.
+In Table~\ref{tab:power_cmp}, $\Delta$ is the first route minus the second with its 95\,\%
+interval and $p$-value from the paired film bootstrap, and ``won'' counts the ten repeats
+in which the first route scores higher. The two right-hand columns score the same
+predictions over clips with the Nadeau--Bengio corrected $t$-test, which needs one score per
+test fold and therefore cannot be computed per film. Bold marks $p<0.05$.
 
-The ordering is stable. The emotion route scores higher than every direct representation
-in all ten repeats (in nine against the hand-crafted descriptors) and higher than the
-PCA-8 control in 9 of ten. Against the direct representations its film-level lead is
-0.085 to 0.216, and 0.095 against VGGish, its own input. The bootstrap interval excludes
-zero for every direct representation except MusiCNN ($+0.085$, $p=0.079$). Over clips the
-same leads are smaller, 0.040 to 0.055 against the five spectrogram-based and
-hand-crafted representations, and every one of them excludes zero.
+Three results stand out. First, the emotion route is ahead of the VGGish embedding it is
+computed from by $+0.093$, in 9 of ten repeats, and ahead of every other direct
+representation as well. Whether these leads are significant depends on the comparison and
+on the unit of scoring. At film level the film bootstrap finds the lead significant against
+AST, the hand-crafted descriptors and wav2vec~2.0, but not against VGGish ($p=0.052$), CLAP ($p=0.156$) and MusiCNN ($p=0.241$). Over clips, where the leads are smaller
+(0.037 to 0.049), the same bootstrap finds it significant against
+VGGish, CLAP, MusiCNN, the hand-crafted descriptors and wav2vec~2.0 but not against AST ($p=0.106$), and the stricter Nadeau--Bengio test,
+whose attainable $p$-value lies above 0.05 on this dataset, only against wav2vec~2.0
+(Appendix~\ref{sec:app_comparisons}).
+Second, compression alone explains part of the film-level gain. The PCA-8 control is ahead
+of VGGish by $+0.023$ ($p=0.488$, but in 7 of ten repeats and under every seed), and
+the emotion route's lead over the control, $+0.070$, is not significant ($p=0.089$). Over
+clips the control is level with VGGish and the emotion route is ahead of it ($+0.042$,
+$p=0.020$). Third, part of the advantage is an operating-point effect. With a decision
+threshold tuned per genre on the training folds, the routes converge over clips (0.420
+to 0.433; Appendix~\ref{sec:eval_robustness}). The in-domain answer to RQ2b is
+therefore that the emotion route is consistently ahead of direct audio at the default
+threshold, in nearly every repeat and under every seed, but that the size of its lead over
+the strongest direct representations is not established on 40 films.
 
-Among themselves, the spectrogram-based and hand-crafted representations are hard to
-separate. Four of them lie between 0.367 and 0.385 at film level. AST falls to 0.307,
-because its probabilities for Comedy and Horror rarely reach one half when averaged over
-a film's clips (film-level $F_1$ of 0.02 and 0.00), but even its gap to CLAP is not
-significant ($-0.058$, $p=0.106$; over clips the two are 0.008 apart). The emotion route is
-therefore not being compared with one arbitrarily chosen or poorly suited embedding; it
-is ahead of general-audio, audio--text, music-specific and hand-crafted features alike.
-Compression alone, however, explains part of the film-level advantage. The PCA-8 control
-is ahead of the VGGish embedding it compresses by 0.043 ($p=0.163$, but in 8 of ten repeats
-and under every seed of Section~\ref{sec:eval_robustness}), and the emotion route's lead
-over the control, $+0.051$, is not significant ($p=0.326$). Over clips the control is level
-with VGGish ($-0.005$, $p=0.771$), and the emotion route is ahead of it
-($+0.045$, $p=0.029$).
-
-At film level the advantage over direct audio is significant under the film bootstrap
-against VGGish ($p=0.047$), AST, CLAP, the hand-crafted descriptors and wav2vec~2.0
-($p$ at most 0.025), but not against MusiCNN ($p=0.079$) or the PCA-8 control. Over clips
-the same comparisons are significant under the film bootstrap ($p$ between 0.017 and
-0.042; below 0.001 against wav2vec~2.0) and borderline under the Nadeau--Bengio test
-($p$ between 0.070 and 0.151), where only the comparison with wav2vec~2.0 is significant.
-The second test also charges for the choice of training films. For this reason the
-in-domain advantage over direct audio is described here as consistent and larger at
-film level, but not as an unqualified significant result, and against the PCA-8 control
-it is not significant at film level. (The comparison with CLAP that is significant under
-the clip-level Nadeau--Bengio test, $+0.066$ with $p_{\text{NB}}=0.036$, uses the
-ground-truth ratings and not the pipeline.)
-
-The remaining uncertainty comes from the dataset rather than from the procedure. Only the
-$1/n$ term of the corrected test shrinks as repeats are added, so for a given dataset the
-attainable $p$-value has a floor, $p_{\lim}$. For every borderline clip-level comparison
-that floor lies above 0.05 (0.055 to 0.130), and at ten repeats the test is already within about
-0.02 of it. Additional repeats could therefore never make these comparisons significant
-under this test; only more films could. This agrees with the learning curve of
-Section~\ref{sec:eval_genre}.
-
-On the full eight-genre task the advantage is larger. At film level the pipeline reaches
-0.352, ahead of the AST embedding (0.234) by $+0.116$ ($p_{\text{boot}}<0.001$) and of
-the VGGish embedding it starts from (0.256) by $+0.096$ ($p_{\text{boot}}=0.002$); both
-differences hold in all ten repeats, against a most-frequent baseline of 0.103. Over
-clips both are significant under both tests ($p_{\text{NB}}=0.049$ and $0.011$). The
-ground-truth ratings (0.359) are likewise ahead of AST by $+0.124$
-($p_{\text{boot}}<0.001$; over clips $p_{\text{NB}}=0.031$). Since Documentary is never predicted
-correctly and Biography only rarely, these values rest mainly on the six
-better-represented genres. For comparison, the first version of
-this analysis, a single five-fold run with an untuned classifier, produced $p=0.62$ for
-the ratings against AST, which illustrates how little one five-fold run can say about a
-difference of this size.
-
-Grouping by film matters for this comparison in a second way. Under an ungrouped split
-the AST baseline reaches 0.44 instead of 0.26 (clip-level macro-$F_1$, eight genres,
-single untuned five-fold run), because the classifier can recognise the film rather than the genre
-(Section~\ref{sec:fund_evaluation}), while the emotion features gain only about 0.05
-from the same leakage. A naive evaluation would therefore have favoured the direct
-embedding for the wrong reason, since the emotion features carry far less information
-about film identity.
-
-\subsection{The waveform representation}
-
-The waveform representation shows most clearly what the emotion intermediate does. Used
-directly, wav2vec~2.0 is the weakest of the six representations (0.249). At film level its
-shortfall against the others is 0.056 to 0.131, significant under the film bootstrap against
-all five ($p$ at most 0.007). Over clips it is only 0.034 to 0.049, significant under the
-film bootstrap against VGGish, AST and the hand-crafted descriptors but not against CLAP
-or MusiCNN, and against none of them under the Nadeau--Bengio test. With 41 films, genre
-accuracy is a much noisier way to rank feature extractors than $R^2$, which is measured
-on every rated clip (Table~\ref{tab:waveform_stage1}), and this supports ranking them by
-$R^2$.
-
-Routed through predicted emotions, however, the same representation reaches 0.475
-[0.401, 0.531] (Figure~\ref{fig:indomain_eerola5}). This is level with the VGGish pipeline,
-above every directly used embedding and not significantly below the ground-truth ceiling
-($-0.047$, $p=0.083$). The gain over its own direct use is $+0.222$ [$+0.152$, $+0.291$]
-(film bootstrap $p<0.001$), and it holds in all ten repeats; over clips it is
-$+0.091$, significant under both tests (Nadeau--Bengio $p=0.012$). The benefit of the emotion intermediate is therefore not
-tied to one particular embedding. It is largest where the underlying representation is
-weakest, as would be expected from a bottleneck that discards representation-specific
-detail and keeps only perceptually meaningful structure.
+These numbers are stable. Re-running the entire protocol under five master seeds moves the
+ten-repeat mean of the emotion route by at most 0.019 (from 0.460 to
+0.481), and its lead over VGGish stays positive under every seed ($+0.076$ to
+$+0.132$). The main source of uncertainty is which films the dataset happens to
+contain (bootstrap standard error 0.027 to 0.038), which only more films could reduce
+(Appendix~\ref{sec:eval_robustness}).
 
 % =============================================================================
-\section{Robustness: Choice of Metric and Stability}
-\label{sec:eval_robustness}
+\section{Results per Genre}
+\label{sec:eval_pergenre}
 
-The in-domain conclusions above rest on one metric, macro-$F_1$ over films at the default
-decision threshold of 0.5, and on one random seed. This section checks both: whether the
-picture changes when the same predictions are scored over clips or with a different
-metric, and how stable and reproducible the cross-validated numbers are. Both checks use
-the protocol of the previous sections on the five-genre subset, with the emotion route,
-the two strongest direct representations of the clip-level analysis (VGGish and AST), the
-PCA-8 control, the ground-truth ratings and the most-frequent baseline. All metrics are
-computed from the same out-of-fold predictions, once per repeat. In the metric comparison,
-significance is assessed with the paired film bootstrap with 1000 draws per repeat
-instead of the 2000 used in Table~\ref{tab:power_cmp}, so the two macro-$F_1$ rows can
-differ from that table in the third decimal.
+Macro-$F_1$ averages five very different genres. Figure~\ref{fig:per_genre} shows the
+film-level $F_1$ of every route for each genre, and Table~\ref{tab:per_genre} adds
+precision and recall for the emotion route and for VGGish, the embedding it is computed
+from.
 
-\subsection{Does the Choice of Metric Matter?}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/per_genre.pdf}
+  \caption{Film-level $F_1$ per genre and route on the five-genre subset.}
+  \label{fig:per_genre}
+\end{figure}
 
-Multi-label classification has no single natural metric \citep{sokolova2009systematic}.
-Table~\ref{tab:metric_family} scores every route under a wider family of metrics, and
-Figure~\ref{fig:metric_family} shows the most informative of them as the distance of
-each route above the base-rate random guess of that metric, so that metrics with
-different chance levels can share one axis.
-
-In Table~\ref{tab:metric_family}, ``Random'' is the base-rate random guess, which predicts
-each genre independently at its frequency, and ``Most freq.'' is the most-frequent
-baseline. $\Delta$ is the emotion route minus direct VGGish with the paired film-bootstrap
-$p$-value, and a dash means that it was not computed. For Hamming loss lower is better;
-bold marks the best of the four audio routes. The first row is the film-level headline;
-every other row is computed over clips.
-
-In Figure~\ref{fig:metric_family}, each bar is the mean over the ten repeats of a route's
-score minus the base-rate random guess of that metric, so the zero line is the random-guess
-floor of every metric; the whiskers are the standard deviation over the ten repeats. The
-most-frequent baseline is not drawn. It lies above zero only for micro- and samples-$F_1$
-(0.571 and 0.574 against floors of 0.477 and 0.438), where it beats every route.
+In Figure~\ref{fig:per_genre}, each cell is a route's $F_1$ for one genre, averaged over
+the ten repeats; the number of films with the genre is given under its name. The box marks
+the best route for each genre among the emotion route, the PCA-8 control and the six
+direct representations; the ratings (the ceiling) and the most-frequent baseline are shown
+for reference but not boxed.
 
 \begin{table}[tbp]
   \centering
   \small
-  \caption{The routes under thirteen metrics on the five-genre subset (seed 42, mean of ten repeats).}
-  \label{tab:metric_family}
-  \setlength{\tabcolsep}{3.5pt}
-  \resizebox{\textwidth}{!}{%
-  \begin{tabular}{lrrrrrrr}
+  \caption{Precision, recall and $F_1$ per genre at film level: best route, emotion route and VGGish.}
+  \label{tab:per_genre}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lrlrrrrrr}
     \toprule
-    Metric & Emotion & VGGish & AST & PCA-8 & Most freq. & Random & $\Delta$ ($p$) \\
+    & & & \multicolumn{3}{c}{Emotion route} & \multicolumn{3}{c}{VGGish direct} \\
+    \cmidrule(lr){4-6} \cmidrule(lr){7-9}
+    Genre & Films & Best route ($F_1$) & Prec. & Rec. & $F_1$ & Prec. & Rec. & $F_1$ \\
     \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, decision at 0.5}} \\
-    Macro-$F_1$ over films (headline) & \textbf{0.469} & 0.375 & 0.307 & 0.418 & 0.169 & 0.301 & $+0.096$ (0.041) \\
-    Macro-$F_1$ over clips           & \textbf{0.417} & 0.377 & 0.371 & 0.372 & 0.168 & 0.308 & $+0.041$ (0.035) \\
-    Macro precision                  & \textbf{0.371} & 0.350 & 0.356 & 0.340 & 0.145 & 0.308 & -- \\
-    Macro recall                     & \textbf{0.596} & 0.439 & 0.393 & 0.476 & 0.200 & 0.308 & -- \\
-    \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, per-genre threshold tuned on the training fold}} \\
-    Macro-$F_1$, tuned threshold     & 0.440 & 0.429 & 0.427 & \textbf{0.441} & 0.168 & 0.308 & $+0.011$ (0.439) \\
-    \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, threshold-free}} \\
-    Macro average precision          & \textbf{0.372} & 0.361 & 0.359 & 0.356 & 0.309 & 0.321 & $+0.011$ (0.533) \\
-    Macro ROC-AUC                    & \textbf{0.608} & 0.567 & 0.571 & 0.567 & 0.500 & 0.501 & $+0.041$ (0.176) \\
-    \midrule
-    \multicolumn{8}{l}{\emph{Dominated by the frequent genres}} \\
-    Weighted $F_1$                   & \textbf{0.550} & 0.504 & 0.534 & 0.491 & 0.396 & 0.477 & $+0.048$ (0.004) \\
-    Micro-$F_1$                      & 0.482 & 0.471 & \textbf{0.515} & 0.446 & 0.571 & 0.477 & $+0.012$ (0.563) \\
-    Samples-$F_1$                    & 0.485 & 0.451 & \textbf{0.495} & 0.431 & 0.574 & 0.438 & $+0.034$ (0.116) \\
-    Jaccard (samples)                & 0.367 & 0.356 & \textbf{0.408} & 0.335 & 0.500 & 0.355 & -- \\
-    Exact match                      & 0.082 & 0.105 & \textbf{0.170} & 0.095 & 0.283 & 0.133 & -- \\
-    Hamming loss                     & 0.404 & 0.359 & \textbf{0.314} & 0.393 & 0.218 & 0.323 & -- \\
+    Action   & 12 & Emotion (0.61) & 0.52 & 0.76 & \textbf{0.61} & 0.39 & 0.47 & 0.43 \\
+    Crime    & 12 & Emotion (0.35) & 0.28 & 0.47 & \textbf{0.35} & 0.29 & 0.37 & 0.32 \\
+    Drama    & 29 & MIR (0.82) & 0.87 & 0.68 & \textbf{0.76} & 0.79 & 0.69 & 0.74 \\
+    Comedy   & 4 & Emotion (0.34) & 0.22 & 0.78 & \textbf{0.34} & 0.12 & 0.12 & 0.12 \\
+    Horror   & 5 & CLAP (0.43) & 0.15 & 0.50 & \textbf{0.23} & 0.21 & 0.26 & 0.23 \\
     \bottomrule
-  \end{tabular}}
+  \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/metric_family.pdf}
-  \caption{The four audio routes under seven metrics, as distance above the random guess (five genres, seed 42).}
-  \label{fig:metric_family}
-\end{figure}
+In Table~\ref{tab:per_genre}, all values are film-level and averaged over the ten repeats;
+``Best route'' is the route with the highest $F_1$ for the genre, as boxed in
+Figure~\ref{fig:per_genre}.
 
-The table separates into two groups. The metrics in the last block reward predicting the
-frequent genres well and hardly care about the rare ones: micro-$F_1$ pools all
-clip--genre decisions, samples-$F_1$ and Jaccard score each clip's genre vector, and
-exact match and Hamming loss count correct vectors or correct individual decisions.
-Under every one of these, the most-frequent baseline, which predicts the most common
-genre, Drama, for every clip, beats every model: 0.571 micro-$F_1$ against at most
-0.515, an exact-match rate of 0.283 against at most 0.170, and a Hamming loss of 0.218
-against at least 0.314. The emotion route even falls below the random guess on exact
-match and Hamming loss, because it deliberately predicts more genres per clip. A metric
-under which a model that has learned nothing ranks first is not a suitable headline for
-a thesis whose question concerns genres such as Horror and Comedy. For this reason
-macro-$F_1$ is used, computed over films. Because it gives every genre the same weight, it cannot be won by
-ignoring the rare ones (Section~\ref{sec:fund_evaluation}). Among the
-frequency-dominated metrics, weighted $F_1$ is the exception, because it still averages
-per-genre $F_1$ values; there the emotion route is first ($+0.048$ over VGGish,
-$p=0.004$).
-
-Among the metrics that weight genres equally, the emotion route ranks first under
-macro-$F_1$ over films and over clips, macro average precision and macro ROC-AUC, and
-first or level-first under all of them, so its lead does not depend on the unit of
-scoring. Moving from clips to films widens the gaps. Averaging the clip probabilities of
-a film rewards a route whose clips of the same film agree, and it punishes a route whose
-positive predictions for a rare genre are scattered over the clips of different films.
-This is why AST, which is level with VGGish over clips, falls to 0.307 at film level,
-barely above the random-guess floor of 0.301, while the emotion route rises from 0.417
-to 0.469.
-
-The result for the decision threshold is more important and qualifies the in-domain
-finding. Macro-$F_1$ depends on where the predicted probability is cut, and 0.5 is only
-a convention. When each genre's threshold is instead chosen to maximise $F_1$ on the
-training fold, every route improves and, scored over clips, the four routes converge to
-between 0.427 and 0.441. The direct routes and the control gain most (VGGish from 0.377 to 0.429, AST
-from 0.371 to 0.427, PCA-8 from 0.372 to 0.441) and the emotion route least (from 0.417
-to 0.440). With tuned thresholds the emotion route is no longer significantly ahead,
-neither of VGGish ($+0.011$, $p=0.439$) nor of the PCA-8 control, which now scores level
-with it ($-0.001$, $p=0.924$). The two threshold-free metrics, which measure how well a
-route ranks clips without cutting anywhere, point in the same direction. The emotion
-route is first, but by small margins that are not significant (macro average precision
-$+0.011$, $p=0.533$; macro ROC-AUC $+0.041$, $p=0.176$, both against VGGish), and all
-routes are only modestly above the random guess on average precision.
-
-Part of the in-domain advantage of the emotion route at the default threshold is
-therefore an \emph{operating-point} effect. Its predicted probabilities put many more
-clips of the rare genres above 0.5 (its macro recall is 0.596 against 0.439 for VGGish,
-at a slightly higher precision), which suits macro-$F_1$. Once every route is given its
-own best cut, the direct routes recover most of the gap. The ranking metrics show that
-the emotion route orders clips at least as well as any direct route, but they do not
-show that, in-domain, it orders them clearly better. The comparison at the default
-threshold is not unfair, since the same fixed rule, chosen before any result was seen,
-is applied to every route. However, the in-domain claim that can be defended is that the
-emotion route loses nothing against direct audio and is ahead at the default operating
-point. It is not better under every way of scoring. Per-genre threshold tuning is a
-legitimate refinement \citep{lipton2014optimal} that the main protocol does not use, and
-it is the natural choice if the only goal is the highest in-domain score. Film-level
-scoring applies the same cut of one half to the averaged probabilities of a film, so the
-film-level advantage is subject to the same caveat; thresholds were not tuned at film
-level.
-
-The zero-shot advantage of Section~\ref{sec:eval_transfer} is a separate result. It
-comes from a single split in which the target dataset contributes no labels, so there is
-no target data on which to tune a threshold, and a threshold tuned on the source would
-itself have to survive the domain shift. All transfer experiments use the default
-threshold; whether their margins would survive a tuned threshold was not tested.
-
-\subsection{Stability and Reproducibility}
-
-The second question is whether the numbers would change under a different random
-assignment of films to folds, a different sample of films, or a different random seed.
-These three sources of variation are examined separately, and
-Figure~\ref{fig:stability_repeats} shows the first and the third.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/stability_repeats.pdf}
-  \caption{Stability of film-level macro-$F_1$ on the five-genre subset over repeats and master seeds.}
-  \label{fig:stability_repeats}
-\end{figure}
-
-In Figure~\ref{fig:stability_repeats}, the coloured dots are the ten individual repeats
-under seed 42, summarised by a box plot (box: interquartile range with median; whiskers:
-the most extreme repeat within 1.5 times the interquartile range). The black dashes to the
-right of each box are the ten-repeat means obtained when the whole protocol is re-run under
-each of five master seeds (42, 1, 2, 3, 4). The most-frequent baseline (0.169) lies below the
-plotted range, and the base-rate random guess (0.301) lies below the repeats of every route
-except AST.
-
-\emph{Variation over splits.} Across the ten repeats, each of which assigns the films to
-folds differently, the standard deviation of film-level macro-$F_1$ is between
-0.017 and 0.055 depending on the route, about two to three times the clip-level values (0.009 to 0.023),
-because each genre's $F_1$ now rests on a few films. The emotion route is among the most
-stable (0.026, against 0.055 for VGGish and 0.047 for AST), which is visible in
-Figure~\ref{fig:stability_repeats} as the tighter cluster of its ten dots (VGGish and AST
-each have repeats far below the rest). Individual folds vary even more: over clips, the
-standard deviation of the 50 single-fold scores is between 0.050 and 0.061, because a
-single test fold contains only about eight films. For this reason a single five-fold run
-cannot resolve differences of a few hundredths, and the protocol is repeated.
-
-\emph{Variation over the sample of films.} The film bootstrap asks how much a score
-depends on which 41 films happen to make up the dataset. At film level its approximate
-standard error is between 0.027 and 0.044 (over clips, 0.018 to 0.027), larger than the
-variation over repeats for every route except the two direct embeddings, whose repeats
-spread even more. This is the dominant source of uncertainty, and only a larger dataset
-can reduce it, in agreement with the $p_{\lim}$ analysis of
-Section~\ref{subsec:statistical_power}.
-
-\emph{Variation over seeds.} The entire $10\times5$ protocol was re-run under four further
-master seeds, which changes both the fold assignment and the random forest of Stage~1.
-At film level the standard deviation of the ten-repeat mean across the five seeds is
-between 0.008 and 0.015; for the emotion route, the means lie between 0.463 and
-0.489. The difference between the emotion route and direct VGGish is positive under every
-seed, between $+0.093$ and $+0.128$, and so are its differences to AST ($+0.140$ and $+0.173$) and
-to the PCA-8 control ($+0.040$ and $+0.070$). Unlike over clips, where the difference between
-the PCA-8 control and VGGish changes sign with the seed ($-0.005$ to $+0.012$), at film
-level the control is ahead of VGGish under every seed ($+0.033$ and $+0.059$). Compression alone
-therefore accounts for a consistent part of the film-level gain over the VGGish
-embedding, as noted in Section~\ref{subsec:statistical_power}. Over clips the seed
-standard deviation is 0.001 to 0.008. The run under seed 42 reproduces the per-repeat
-scores of the main analysis exactly for every route, at clip and at film level.
-
-The cross-validated numbers are therefore stable and reproducible. The position of the
-emotion route relative to the other routes does not depend on the seed or on the split,
-and the size of the emotion advantage over VGGish at the default threshold, about
-0.09 at film level and 0.04 over clips, is several times the spread of the ten-repeat mean
-across seeds. The strength of the conclusions is
-limited by the number of films rather than by the evaluation procedure, since the
-film-sampling error is of the same order as the effect itself.
+The emotion route is the best route for Action, Crime and Comedy. For Drama the best route is the hand-crafted MIR features (0.82 against 0.76 for the emotion route), and for Horror it is CLAP (0.43 against 0.23). Drama, the
+genre of 29 of the 40 films, is predicted well by every route, including the
+most-frequent baseline, and so separates the routes least. The largest difference lies in
+Comedy (4 films). Its VGGish probabilities rarely average above one half over a
+film's clips, so VGGish seldom predicts it (recall 0.12), whereas the emotion route
+finds most Comedy films (recall 0.78) at a low precision (0.22). Horror
+(5 films) is the exception: although fear defines it, the emotion route predicts
+it for too many films (precision 0.15 at a recall of 0.50) and is no better
+than VGGish there (0.23 against 0.23). Averaged over the five genres, the
+emotion route has a recall of 0.64 against 0.38 for VGGish, at a precision of 0.41
+against 0.36. Its advantage is therefore mainly that it finds the rare genres, at the
+price of more false positives, which is the same recall-driven pattern as the
+operating-point effect of Section~\ref{sec:eval_direct}. With only four or five films behind the two rarest
+genres, their $F_1$ values move by about 0.2 when a single film changes, and the per-genre
+comparison should be read as a description, not as a test.
 
 % =============================================================================
 \section{Emotional Signatures of Genres (RQ2a, RQ3)}
 \label{sec:eval_signatures}
 
-RQ2a and RQ3 concern the content of the relationship rather than its predictive
-strength: which emotions characterise which genres, and which of them discriminate most
-strongly. They are answered with Cohen's $d$ (Section~\ref{sec:fund_evaluation}),
-computed for each emotion rating between the clips of a genre and all other clips.
+RQ2a and RQ3 concern the content of the relationship rather than its predictive strength.
+They are answered with Cohen's $d$ (Section~\ref{sec:fund_evaluation}), computed for each
+emotion rating between the clips of a genre and all other clips.
 Table~\ref{tab:emotion_genre_signatures} summarises the dominant signature of each of the
-eight Eerola genres.
+eight Eerola genres; a positive $d$ means that the emotion is elevated in the genre.
 
 \begin{table}[tbp]
   \centering
@@ -644,41 +295,30 @@ eight Eerola genres.
   \end{tabular}
 \end{table}
 
-In Table~\ref{tab:emotion_genre_signatures}, a positive $d$ means that the emotion is
-elevated for the genre and a negative $d$ that it is suppressed.
-
-Fear is the strongest single discriminator across the genre set. It separates the
-threat-oriented genres (Horror, $d=+0.75$, the strongest genre--emotion association in
-the dataset; Crime, $+0.40$) from the light-hearted ones (Comedy, $-0.61$). Valence forms
-a second axis, separating the positively toned genres (Drama, $+0.57$; Comedy) from the
-negatively toned ones (Horror, $-0.63$; Action). Each of these genres thus has an
-interpretable affective fingerprint that agrees with film-scoring convention. Horror is
-defined by fear, Comedy by the absence of fear together with positive valence, Drama by
-elevated valence, and Action by high tension combined with an absence of happiness. The
-signatures of Biography and Documentary are also strong, but they rest on 24 and 17
-clips from very few films and should be read with care.
-
-The same analysis shows where the relationship breaks down. Adventure has no distinctive
-signature, as no emotion clearly exceeds an effect size of $|d|=0.25$. It co-occurs with several
-other genres and shares their affective palette instead of having one of its own. This
-explains why, unlike the rare Biography and Documentary, it is predicted poorly although
-it is frequent (Section~\ref{sec:eval_genre}). The uneven strength of the signatures mirrors the
-asymmetry reported by \citet{austin2010characterization}: genres with a pronounced,
-conventional affective identity are recoverable from the music, while genres defined by
-narrative or setting rather than by tone are not. For RQ2a, this means that emotions
-relate to genres in a systematic and readable way for most genres. For RQ3, fear is the
-most discriminating emotion overall, followed by valence, and each predictable genre is
-marked by one or two dominant emotions.
+Fear is the strongest single discriminator. It separates the threat-oriented genres
+(Horror, $d=+0.75$, the strongest genre--emotion association in the dataset; Crime,
+$+0.40$) from the light-hearted ones (Comedy, $-0.61$). Valence forms a second axis,
+separating the positively toned genres (Drama, $+0.57$; Comedy) from the negatively toned
+ones (Horror, $-0.63$; Action). Each of these genres thus has an affective fingerprint that
+agrees with film-scoring convention: Horror is defined by fear, Comedy by the absence of
+fear together with positive valence, Drama by elevated valence, and Action by high tension
+without happiness. The signatures of Biography and Documentary are also strong, but they
+rest on very few films. Adventure has no signature: no emotion exceeds $|d|=0.25$, as the
+genre co-occurs with several others and shares their affective palette. This mirrors the
+asymmetry reported by \citet{austin2010characterization}: genres with a conventional
+affective identity are recoverable from the music, while genres defined by narrative or
+setting are not. For RQ2a, emotions relate to most genres in a systematic and readable
+way; for RQ3, fear is the most discriminating emotion overall, followed by valence.
 
 \subsection{Do the Signatures Replicate?}
 \label{subsec:signature_replication}
 
-These signatures were derived from human ratings on one dataset. Whether they describe
-film music or only that dataset can be tested on the second one. The Eerola-trained
-emotion regressor predicts the eight emotions for each of the 4664 Blockbuster cues, and
-the same effect sizes are recomputed there for the six shared genres. No emotion
-annotation of Blockbuster exists or is used, so any agreement comes from transfer and
-not from fitting. Figure~\ref{fig:signatures} shows the two matrices side by side.
+The signatures were derived from human ratings on one dataset. Whether they describe film
+music or only that dataset can be tested on the second one. The Eerola-trained emotion
+regressor predicts the eight emotions for each of the 4664 Blockbuster cues, and the same
+effect sizes are recomputed there for the six shared genres. No emotion annotation of
+Blockbuster exists or is used, so any agreement comes from transfer and not from fitting.
+Figure~\ref{fig:signatures} shows the two matrices side by side.
 
 \begin{figure}[t]
   \centering
@@ -689,132 +329,90 @@ not from fitting. Figure~\ref{fig:signatures} shows the two matrices side by sid
 
 Each cell of Figure~\ref{fig:signatures} is Cohen's $d$ of one emotion for one genre
 against all other items; red marks an emotion elevated in the genre, blue a suppressed one.
-The Eerola matrix is computed from the human ratings of the clips in the shared six-genre
-space, the Blockbuster matrix from the emotions predicted for each of the 4664 cues by the
-regressor trained on Eerola only. The replication statistics below are computed against the
-film-level Blockbuster values, whose magnitudes are larger.
+The Eerola matrix is computed from the human ratings, the Blockbuster matrix from the
+emotions predicted for each cue.
 
-The signatures replicate. Across all 48 genre--emotion cells, the Eerola effect sizes
-and the film-level Blockbuster ones correlate at $r=0.836$, and 44 of the 48 signs agree
-(92\,\%). Horror is defined by fear in both datasets. Per genre, the correlation is
-highest for Romance (0.991), Sci-Fi (0.971), Action (0.965) and Horror (0.949), lower for
-Drama (0.805) and lowest for Comedy (0.586). The strongest single emotion agrees for Horror and Sci-Fi.
-For Action and Romance it changes within a signature of the same shape (Action is
-low-valence, high-anger and low-happiness in both datasets, and only the order of anger
-and happiness changes), while for Comedy, the weakest replication, it changes from fear to
-happiness.
-
-One caveat concerns magnitude rather than pattern. Measured per film, the Blockbuster
-effect sizes are roughly twice the Eerola ones, because averaging some 39 cues per film
-shrinks the variation within each group and so inflates $d$. Measured per cue, the unit
-comparable to an Eerola clip, they are of the same order (Horror--fear $+0.55$ against
-$+0.78$ on Eerola in the shared space). The structure of the emotion--genre relationship
-transfers, but the absolute effect size does not. This is the strongest available
-evidence that the interpretability claim generalises beyond its own dataset and that the
-affective fingerprints belong to film scoring practice rather than to one collection of
-films. However, since the Blockbuster emotions are predicted by a model trained on the
+The signatures replicate. Across all 48 genre--emotion cells, the Eerola effect sizes and
+the film-level Blockbuster ones correlate at $r=0.836$, and 92\,\% of the signs
+agree. Horror is defined by fear in both datasets. The replication is closest for Romance,
+Sci-Fi, Action and Horror and weakest for Comedy, whose strongest emotion changes from fear
+to happiness. The absolute effect sizes do not transfer: averaging some 39 cues per film
+inflates $d$, and measured per cue the values are of the same order as on Eerola. The
+structure of the emotion--genre relationship therefore generalises beyond its own
+dataset, although, since the Blockbuster emotions are predicted by a model trained on the
 Eerola panel, the replication cannot show independence from that panel.
 
 % =============================================================================
 \section{Cross-Dataset Transfer (RQ2b under domain shift)}
 \label{sec:eval_transfer}
 
-All results so far are cross-validated within one dataset. That design can establish
-that a representation carries genre information, but not that the information is a
-property of film music rather than of this particular collection of 43 films. The
-experiments in this section therefore train on one dataset and test on the other. They
-take place in the six-genre space shared with the Blockbuster dataset of
-\citet{ma2021computational} (Section~\ref{subsec:genre_labels}), whose six genres and
-labelling rule are taken from that paper, so that both datasets are scored against the
-same classes. VGGish is the only representation available on both
-(Section~\ref{subsec:methods_blockbuster}); its two versions are numerically compatible,
-both being the standard post-processed 128-dimensional embedding, with per-dimension
-means correlating at $r=0.97$.
+The results so far are cross-validated within one dataset. They show that a representation
+carries genre information, but not that this information is a property of film music
+rather than of one collection of films. The experiments in this section therefore train on
+one dataset and test on the other, in the six-genre space shared with the Blockbuster
+dataset of \citet{ma2021computational} (Section~\ref{subsec:genre_labels}). VGGish is the
+only representation available on both (Section~\ref{subsec:methods_blockbuster}). Since a
+Blockbuster row is a film, every score in this section is a film-level score, as in the
+in-domain sections. On the 110 Blockbuster films the base-rate random guess reaches
+0.292 and the plurality baseline 0.193; on the 40 Eerola films of the shared
+space the random guess reaches 0.240.
 
-The two datasets differ in how easy they are, and their floors differ accordingly. On
-the 110 Blockbuster films, where a genre is predicted per film, the base-rate random
-guess reaches 0.292 and the plurality baseline, which always predicts the most frequent
-label set, 0.193. Scored over the 41 Eerola films of the shared space, the random guess
-reaches 0.243. Since a Blockbuster row is a film, every score in this section is a film-level
-score, as in the in-domain sections. Numbers from the two datasets are only ever compared
-with their own floors.
+\paragraph{No film occurs in both datasets.} A transfer result would be inflated if the
+same film were in the training and the test data. This was checked against the IMDb
+identifiers of all films: none of the 42 Eerola films occurs among the 110
+Blockbuster films, and no titles match. The Eerola films were all released before 2011,
+the Blockbuster films between 2014 and 2019. The two datasets share composers, however
+(for example, Danny Elfman scored \emph{Batman} in Eerola and \emph{Justice League} in
+Blockbuster, which quotes his Batman theme), so some stylistic similarity across the split
+remains possible; it is not a shared film. A related problem was found inside the Eerola
+dataset and corrected before the results reported here: one film appeared under two
+spellings of its title, so that grouping by film treated it as two films and could place
+its clips on both sides of a split. All Eerola experiments were re-run with the two
+spellings merged, which gives the 42 films (eight genres) and 40 films (five
+genres) used throughout.
 
 \subsection{Blockbuster in-domain}
 
-A transfer score cannot be interpreted without knowing what in-domain training achieves
-on the target, and without first establishing that the classifier used here is
-competitive there. The protocol of \citet{ma2021computational} (leave-one-film-out
-cross-validation over the 110 films, with macro-averaged precision, recall and $F_1$)
-was therefore reproduced with the simple pipeline of this thesis, which uses mean-pooled
-VGGish features and binary-relevance logistic regression. It reaches macro-$F_1$ 0.620,
-within the range of 0.61 to 0.65 reported for their VGGish models, and both of their
-baselines reproduce to within 0.03 (Table~\ref{tab:blockbuster_reference}). The pipeline
-is thus validated against an external published result before it is used for transfer.
+A transfer score needs an in-domain reference on the target. The simple pipeline of this
+thesis first reproduces the published result on Blockbuster: under the leave-one-film-out
+protocol of \citet{ma2021computational} it reaches macro-$F_1$ 0.620, within the 0.61 to
+0.65 they report for their VGGish models (Appendix~\ref{sec:app_blockbuster}).
+Figure~\ref{fig:blockbuster_cv} shows the same dataset under the repeated protocol used for
+Eerola ($10\times5$ cross-validation over films).
 
-\begin{table}[tbp]
+\begin{figure}[t]
   \centering
-  \caption{In-domain reference performance on the Blockbuster dataset (110 films, six
-    genres; leave-one-film-out, macro-averaged). Published values are quoted from
-    \citet{ma2021computational}, Table~4.}
-  \label{tab:blockbuster_reference}
-  \small
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{lrrr}
-    \toprule
-    Model & Prec. & Rec. & $F_1$ \\
-    \midrule
-    \citeauthor{ma2021computational}: VGGish, single attention (their best) & 0.60 & 0.73 & 0.65 \\
-    \citeauthor{ma2021computational}: VGGish, average pooling               & 0.55 & 0.78 & 0.62 \\
-    \citeauthor{ma2021computational}: VGGish, $k$NN Simple-MI               & 0.64 & 0.59 & 0.61 \\
-    \citeauthor{ma2021computational}: MIR, SVM Simple-MI                    & 0.60 & 0.52 & 0.56 \\
-    \citeauthor{ma2021computational}: MIR, average pooling                  & 0.55 & 0.78 & 0.61 \\
-    This thesis: VGGish + logistic regression                               & 0.569 & 0.705 & \textbf{0.620} \\
-    \midrule
-    Random guess (published / reproduced)     & 0.32 / 0.294 & 0.32 / 0.293 & 0.32 / 0.292 \\
-    Plurality label set (published / reproduced) & 0.14 / 0.138 & 0.34 / 0.333 & 0.19 / 0.193 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+  \includegraphics[width=\textwidth]{figures/blockbuster_cv.pdf}
+  \caption{Blockbuster in-domain: macro-$F_1$ over the 110 films under $10\times5$ cross-validation.}
+  \label{fig:blockbuster_cv}
+\end{figure}
 
-The same dataset was then evaluated under the repeated protocol used for Eerola: ten
-repetitions of five-fold cross-validation over films, with nested tuning of $C$. Films
-are independent rows here, so no grouping is needed, but arms that work on individual
-cues still split by film. All $p$-values in the rest of this subsection are from the
-Nadeau--Bengio test. Two resources that the first analysis had left unused were
-included: the full set of 140 hand-crafted MIR features per cue, and the cue structure
-itself. Instance majority voting over the cues, the architecture of
-\citet{ma2021computational}, reaches 0.621, and the emotion route applied per cue
-reaches 0.616. The film-level VGGish embedding reaches 0.593, the PCA-8 control 0.587,
-the full MIR set 0.585 and its 78 MFCC-family features 0.516, against a random-guess
-floor of 0.295 under this protocol.
+In Figure~\ref{fig:blockbuster_cv}, each bar is the mean over the 50 folds and the error
+bar the standard deviation of the ten repeat means; the dotted line is the base-rate
+random guess (0.295). The emotion route is applied per cue and its emotions averaged per
+film; ``majority vote over cues'' classifies each cue and lets the cues vote, as in the
+best model of \citet{ma2021computational}.
 
-These results correct an earlier claim of this work. The learned embedding does not
-beat the full hand-crafted feature set on this dataset: VGGish is ahead by only 0.009
-($p=0.787$) and wins exactly half of the 50 folds. The earlier, much larger gap came
-from comparing VGGish against the MFCC subset only ($+0.077$ under the repeated
-protocol, $p=0.062$). This is consistent with \citeauthor{ma2021computational}'s own
-results, in which their best MIR model is close to their best VGGish model. In addition,
-in-domain on Blockbuster the emotion route is competitive with the direct embedding but
-not better. It is nominally ahead of VGGish ($+0.023$, $p=0.536$) and of the PCA-8
-control ($+0.029$, $p=0.369$), but neither difference is significant. The PCA-8 control
-is a meaningful baseline here, since it beats a random eight-dimensional projection of
-the same embedding by 0.100 ($p=0.001$).
+In-domain on Blockbuster, the emotion route (0.616 $\pm$ 0.022) is level with
+direct audio. It is nominally ahead of the film-average VGGish embedding (0.593;
+$+0.023$, Nadeau--Bengio $p=0.536$) and slightly behind VGGish with a majority vote
+over cues (0.621), and none of these differences is significant. The PCA-8 control
+(0.587) is a serious baseline here, well ahead of a random eight-dimensional projection
+of the same embedding (0.487). The hand-crafted MIR features (0.585) are level with
+VGGish ($+0.009$, $p=0.787$).
 
 \subsection{Zero-Shot Transfer}
 \label{sec:zero_shot}
 
-In the zero-shot experiment every model is fitted on the Eerola dataset alone and used
-to predict the genres of all 110 Blockbuster films; no Blockbuster label takes part in
-training. Where the genre classifier consumes predicted emotions, these are generated
-out-of-fold on the training dataset, so that the classifier is fitted on the same kind
-of noisy estimates it meets at test time. A single train--test split has no fold
-structure, so uncertainty is quantified by a paired bootstrap over the 110 target films
-with 2000 resamples. The embedding-based arms need a feature scaler, and two regimes are
-possible: keeping the scaler fitted on the source dataset, or re-standardising the
-target with its own statistics. All figures below use the first, strict regime, which
-is the conservative one because the direct baseline performs better under it.
-Figure~\ref{fig:zero_shot} shows the result and Table~\ref{tab:zero_shot} gives all arms
-with precision and recall.
+In the zero-shot experiment every model is fitted on the Eerola dataset alone and used to
+predict the genres of all 110 Blockbuster films; no Blockbuster label takes part in
+training. The emotion classifier is trained on out-of-fold predicted emotions, so that it
+sees the same kind of noisy input it meets at test time. A single train--test split has no
+fold structure, so uncertainty comes from a paired bootstrap over the 110 target films. The
+feature scaler is the one fitted on the source dataset (the strict regime), which is the
+conservative choice because the direct baseline scores higher under it.
+Figure~\ref{fig:zero_shot} shows the result and Table~\ref{tab:zero_shot} gives precision
+and recall.
 
 \begin{figure}[t]
   \centering
@@ -823,26 +421,20 @@ with precision and recall.
   \label{fig:zero_shot}
 \end{figure}
 
-Figure~\ref{fig:zero_shot} shows macro-$F_1$ on this single transfer split, with the scaler
-fitted on the source dataset. The dashed line is the plurality (most-frequent label set)
-baseline, 0.193, and the dotted line the base-rate random guess, 0.292; the $p$-values in
-the figure are paired bootstraps over the 110 target films.
+In Figure~\ref{fig:zero_shot}, the dashed line is the plurality baseline and the dotted line
+the base-rate random guess; the $p$-values are paired bootstraps over the 110 films.
 
 \begin{table}[tbp]
   \centering
-  \caption{Zero-shot transfer, trained on Eerola and evaluated on all 110 Blockbuster
-    films (strict regime). The in-domain reference of
-    Table~\ref{tab:blockbuster_reference} is repeated for orientation.}
+  \caption{Zero-shot transfer from Eerola to the 110 Blockbuster films (strict regime).}
   \label{tab:zero_shot}
   \begin{tabular}{lrrr}
     \toprule
     Approach (trained on Eerola only) & Prec. & Rec. & $F_1$ \\
     \midrule
-    VGGish $\rightarrow$ predicted emotion (11), per cue            & 0.488 & 0.651 & \textbf{0.511} \\
-    \quad the same, emotions predicted from the film-average embedding & 0.450 & 0.637 & 0.482 \\
-    Emotion (11) $\rightarrow$ genre, classifier fitted on ratings  & 0.445 & 0.474 & 0.434 \\
-    PCA-8 (VGGish) $\rightarrow$ genre (control)                    & 0.534 & 0.467 & 0.421 \\
-    VGGish-128 $\rightarrow$ genre (direct)                         & 0.576 & 0.442 & 0.407 \\
+    VGGish $\rightarrow$ predicted emotion (11), per cue            & 0.480 & 0.651 & \textbf{0.508} \\
+    PCA-8 (VGGish) $\rightarrow$ genre (control)                    & 0.539 & 0.459 & 0.417 \\
+    VGGish-128 $\rightarrow$ genre (direct)                         & 0.705 & 0.435 & 0.403 \\
     Random guess                                                    & 0.294 & 0.293 & 0.292 \\
     \midrule
     \emph{In-domain reference (trained on Blockbuster)}             & \emph{0.569} & \emph{0.705} & \emph{0.620} \\
@@ -850,187 +442,95 @@ the figure are paired bootstraps over the 110 target films.
   \end{tabular}
 \end{table}
 
-Genre information does transfer between the datasets. The best transferred model
-reaches 0.511 against a random-guess floor of 0.292, about 82\,\% of the 0.620 obtained
-with in-domain training, although each training row is a single clip of about
-17 seconds and the test items are whole films. What the models learn is therefore at
-least partly a property of film music rather than of the 41 Eerola films in the shared
-space.
-
-The central result for RQ2b is that the emotion route transfers better than the
-representation it is derived from. It exceeds the direct VGGish classifier by $+0.106$
-[$+0.015$, $+0.186$] ($p=0.018$). Measured against each space's own floor, the emotion
-route's lead over chance is 1.9 times that of direct VGGish here (0.219 against 0.115
-above 0.292), and 2.3 times in-domain on five genres (0.168 against 0.074 above 0.301;
-Section~\ref{subsec:statistical_power}). The relative advantage is thus of the same order
-in both settings; what the transfer adds is that it survives a change of dataset. Under the alternative scaling regime the
-same margin is $+0.116$ ($p<0.001$). This is the setting in which an interpretable
-intermediate should help most, because an emotion value denotes the same perceptual
-quantity in both datasets. A dimension of an embedding does not, and a classifier
-trained on embeddings partly learns the idiosyncratic scaling of its training data. The
-scaling ablation is consistent with this reading but does not test it. The emotion arm
-receives the same inputs in both regimes by construction, since only the embedding-based
-arms are re-standardised (Section~\ref{sec:evaluation_protocol}), whereas the direct
-embedding ($0.407 \rightarrow 0.394$) and the PCA-8 control ($0.421 \rightarrow 0.413$)
-move with the choice of target statistics.
-
-The advantage is also not simply due to dimensionality reduction. Compressing the same
-embedding to eight principal components gains only $+0.014$ over the raw features
-($p=0.572$), whereas compressing it to eight emotions gains $+0.106$. The direct
-comparison of the two bottlenecks favours emotion by $+0.092$ [$+0.009$, $+0.171$]
-($p=0.032$). In-domain the same comparison is $+0.051$ at film level and not significant
-(over clips $+0.045$, significant only under the film bootstrap). In this experiment, then, the gain comes from the emotion bottleneck in
-particular and not from compression as such. The subsection on transfer in every direction below qualifies
-how robust this particular comparison is.
-
-The emotion route also transfers better than direct audio when the genre classifier is
-trained on the human ratings instead of on predicted emotions (0.434), but by less. This
-difference was not tested for significance. It suggests that training the classifier on
-the same kind of noisy predictions it meets at test time contributes to the transfer.
-
-The drop from in-domain to transferred performance, from 0.620 to 0.511, is consistent
-with the music literature. \citet{eerola2011genrespecific} found that models of musical
-emotion generalise considerably worse across repertoires than within them, explaining
-16\,\% of valence variance across genres against 43\,\% within.
-
-\subsection{Predicting Emotion per Cue or per Film}
-
-A Blockbuster film consists of individually scored cues (4664 in total, a median of 39
-per film, with a median length of 19\,s). A cue is therefore the same kind of object as
-an Eerola clip, whereas the average over a film's cues is not. Predicting the emotions
-of each cue and averaging the emotions afterwards outperforms averaging the embedding
-first and predicting once: 0.511 against 0.482 in the zero-shot setting
-(Table~\ref{tab:zero_shot}), and $+0.059$ in-domain on Blockbuster (Nadeau--Bengio
-$p=0.020$, in 92\,\% of the folds). When the emotions are predicted once from the
-film-average embedding, the emotion route is still ahead of the direct embedding under
-transfer, but the margin is smaller and not significant ($+0.077$, $p=0.066$). Applying the emotion model at the granularity it was trained on
-is thus a measurable part of the method. The multi-instance structure itself adds
-little, since instance majority voting is not significantly better than averaging the
-cues in-domain.
+Genre information transfers between the datasets. The emotion route reaches 0.508
+against a random-guess floor of 0.292, about 82\,\% of the 0.620 obtained with
+in-domain training, although each training row is a clip of about 17 seconds and the
+test items are whole films. The central result for RQ2b is that the emotion route
+transfers better than the representation it is derived from: it exceeds direct VGGish
+(0.403) by $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$), and the PCA-8 control
+(0.417) by $+0.093$ [$+0.013$, $+0.171$] ($p=0.027$), whereas compressing the
+embedding to eight principal components gains only $+0.013$ over the raw features
+($p=0.737$). Under the alternative scaling regime the lead over direct VGGish is
+$+0.118$ ($p=0.001$). The lead is partly recall-driven: the emotion route finds more of
+the true genres (0.651 against 0.435) at lower precision (0.480 against
+0.705). In this transfer it makes little difference whether the emotions are predicted
+per cue or once from the film-average embedding (0.508 against 0.502); in-domain on
+Blockbuster the per-cue prediction is clearly better (Appendix~\ref{sec:app_blockbuster}).
 
 \subsection{Transfer in Every Direction}
 
-The zero-shot experiment transfers in one direction only. Two further designs complete
-the picture (Figure~\ref{fig:cross_dataset}). In the reverse direction, the genre
-classifier is trained on all Blockbuster films and tested on the Eerola films; because only
-Eerola has emotion ratings, the emotion regressor is fitted on the Eerola training folds,
-and the held-out Eerola fold touches neither fit. In the pooled design both datasets
-are in the training set and cross-validation runs over both.
+Two further designs complete the picture (Figure~\ref{fig:cross_dataset}). In the reverse
+direction, the genre classifier is trained on all Blockbuster films and tested on the
+Eerola films; the emotion regressor is fitted on the Eerola training folds, and the
+held-out Eerola films touch neither fit. In the pooled design both datasets are in the
+training set and cross-validation runs over both.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/cross_dataset.pdf}
-  \caption{Film-level macro-$F_1$ in the six shared genres for the three cross-dataset designs (VGGish).}
+  \caption{Film-level macro-$F_1$ for the three cross-dataset designs (six shared genres, VGGish).}
   \label{fig:cross_dataset}
 \end{figure}
 
 In Figure~\ref{fig:cross_dataset}, the left group is trained on Eerola and tested on
 Blockbuster, the middle group trained on Blockbuster and tested on Eerola, and the right
-group cross-validated with both datasets in training. Values are rounded to two decimals,
-and no error bars or chance floors are drawn; the relevant base-rate random-guess floors are
-0.292 on Blockbuster (left) and 0.243 on the Eerola films of the shared space (middle).
-Every bar is a film-level score; in the middle and right groups, the Eerola clips are
-averaged per film before scoring. The
-left group comes from a re-implementation in which the emotion regressor is trained on all
-360 rated clips, so it differs slightly from Figure~\ref{fig:zero_shot}.
+group cross-validated with both datasets in training. The error bars are the bootstrap
+standard deviation over the test films for the two transfer directions and the standard
+deviation of the five repeat means for the pooled design. The left group comes from a
+re-implementation in which the emotion regressor is trained on all 360 rated clips, so it
+differs slightly from Figure~\ref{fig:zero_shot}.
 
-The emotion route is ahead of the direct embedding in both transfer directions, but
-significantly only in one. From Eerola to Blockbuster, the re-implementation gives 0.508
-for the emotion route against 0.395 for direct VGGish ($+0.115$, $p=0.016$). From
-Blockbuster to Eerola, scored over the 41 Eerola films, it gives 0.430 against 0.356
-($+0.077$ [$-0.021$, $+0.176$], $p=0.127$), against a random-guess floor of
-0.243, so the reverse direction agrees in sign but is not significant. Over clips the
-same predictions differ by $+0.050$. An earlier analysis reported this clip-level
-difference as significant ($p<0.001$), but its bootstrap resampled clips, which are not
-independent; resampling films, as everywhere else in this thesis, is the appropriate
-test. The advantage disappears when both datasets are in the training set. Scored per
-film, the direct embedding (0.553) and the PCA-8 control (0.539) are even slightly
-ahead of the emotion route (0.529), though not significantly ($-0.023$, Nadeau--Bengio
-$p=0.571$; over clips $+0.004$, $p=0.850$). Once the classifier can see examples of
-the target distribution, direct features catch up. The pooled result also shows where
-each route is strong: on the Eerola films of the pooled test folds the emotion route
-leads (0.537 against 0.413), and on the Blockbuster films the direct embedding does
-(0.573 against 0.539).
+The emotion route is ahead of direct VGGish in both transfer directions, but significantly
+only from Eerola to Blockbuster (0.503 against 0.383, $+0.121$, $p=0.007$). From
+Blockbuster to Eerola it reaches 0.458 against 0.364 ($+0.089$ [$-0.017$, $+0.206$],
+$p=0.102$), against a random-guess floor of 0.240. Over clips, with whole films
+resampled, the reverse difference is $+0.027$ ($p=0.069$); an earlier version of this
+analysis resampled clips, which are not independent, and reported it as significant. When
+both datasets are in the
+training set the advantage disappears: per film, the emotion route (0.531) and direct
+VGGish (0.543) are level ($-0.011$, Nadeau--Bengio $p=0.688$). The pooled design also
+shows where each route is strong. On the Eerola films of the pooled test folds the emotion
+route leads (0.528 against 0.410), and on the Blockbuster films direct audio does
+(0.579 against 0.568).
 
-The comparison with the PCA-8 control is less robust than the one with the direct
-embedding. The two implementations of the Eerola-to-Blockbuster direction differ in one
-legitimate choice: the zero-shot experiment trains the emotion regressor on the 319
-clips of the shared space, the re-implementation on all 360 rated clips. The emotion
-route is stable between them (0.511 and 0.508), but the embedding-based arms move by up
-to 0.04, the PCA-8 control from 0.421 to 0.465. In the re-implementation the emotion
-route is still ahead of the control, but no longer significantly ($+0.045$, $p=0.258$),
-and the same holds in the reverse direction ($+0.058$, $p=0.145$). In the pooled design
-the two are level ($-0.010$, $p=0.825$). The emotion route is thus ahead of the control
-in both transfer directions, but significantly so only in the original zero-shot run; in-domain
-on Eerola it is not significantly ahead at film level, and over clips only under the film
-bootstrap (Table~\ref{tab:power_cmp}). The comparison with the direct embedding, in
-contrast, is significant from Eerola to Blockbuster in both implementations. Single-split numbers move by a few hundredths with such
-choices, so the conclusion rests on the bootstrap intervals and not on the third
-decimal.
+The comparison with the PCA-8 control is less robust than the one with direct audio. The
+two implementations of the Eerola-to-Blockbuster direction differ in one legitimate choice
+(the emotion regressor is trained on the 319 clips of the shared space in the zero-shot
+experiment and on all 360 rated clips in the re-implementation). The emotion route is
+stable between them (0.508 and 0.503), but the PCA-8 control moves from 0.417 to
+0.457, and the emotion route's lead over it is no longer significant ($+0.049$,
+$p=0.239$; reverse direction $+0.070$, $p=0.158$). Single-split scores move by a few
+hundredths with such choices, so the conclusion rests on the intervals rather than on the
+third decimal.
 
 % =============================================================================
 \section{Summary of Findings}
 \label{sec:eval_summary}
 
-\emph{RQ1: can a soundtrack's emotional profile predict its film's genre?} Yes, well
-above chance but far from perfectly. Scored per film on the five-genre subset, a classifier
-on the human emotion ratings reaches macro-$F_1$ 0.521 and the full pipeline, with emotions
-predicted from audio, 0.469, against a most-frequent baseline of 0.169 and a base-rate random
-guess of 0.301; on eight genres the values are 0.359 and 0.352 against floors of 0.103 and 0.221.
-Predicted emotions carry most of the information in the ratings. At film level the
-ratings are ahead by 0.053, which just misses significance ($p=0.053$), and over clips the
-two are level. The pipeline needs no annotation at deployment. The emotion regression it
-rests on reaches about 62\,\% of the $R^2$ that the agreement between two listener panels
-allows. The caveat is the size of the dataset: rare genres are barely learned, and the
-learning curve was still rising at the full dataset.
+\emph{RQ1.} The emotional profile of a soundtrack predicts its film's genres well above
+chance. On the five-genre subset the pipeline reaches a film-level macro-$F_1$ of 0.460,
+against 0.309 for a random guess, and the human ratings reach 0.491. The emotion
+regression it rests on reaches about 62\,\% of the $R^2$ that two listener
+panels allow.
 
-\emph{RQ2a and RQ3: which emotions relate to which genres, and which discriminate most?}
-Most genres carry a readable affective signature. Fear is the strongest discriminator
-(Horror $d=+0.75$, Comedy $-0.61$) and valence the second axis, while Adventure has no
-signature at all, which is why it is predicted poorly for its frequency. The signatures
-replicate on the independent Blockbuster dataset from predicted emotions ($r=0.836$ over
-48 genre--emotion cells, 92\,\% sign agreement). The caveat here is that fear is the most
-diagnostic emotion but not a necessary one, since the ablation shows that no single
-emotion is needed and that one to three emotions keep most of the genre information.
+\emph{RQ2a and RQ3.} Most genres carry a readable affective signature. Fear is the
+strongest discriminator and valence the second axis; Adventure has no signature. The
+signatures replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
 
-\emph{RQ2b in-domain: does the emotion intermediate beat direct audio?} At film level it
-is ahead of every directly used representation on five genres, by 0.085 to 0.216
-(0.095 against VGGish, its own input), in all or all but one of the ten repeats and
-under all five seeds. This is significant under the film bootstrap against every direct
-representation except MusiCNN; over clips the same leads are 0.040 to 0.055, significant
-under the film bootstrap and borderline under the stricter Nadeau--Bengio test. On eight
-genres it is ahead of AST and VGGish by 0.116 and 0.096, significant at film level and,
-over clips, under both tests. Routing the weakest representation, wav2vec~2.0, through
-emotion raises it by 0.222. Two results qualify this. First, the PCA-8 control is also
-ahead of VGGish at film level, under every seed, and the emotion route's lead over the
-control ($+0.051$, $p=0.326$) is not significant, so compression explains part of the
-in-domain gain. Second, part of the advantage is an operating-point effect. With
-per-genre thresholds tuned on the training folds, the routes converge over clips (0.427
-to 0.441), and the threshold-free ranking metrics place the emotion route first only by
-small, non-significant margins. In-domain, the emotion route therefore loses nothing
-against direct audio and is ahead at the default threshold, but it is not better under
-every way of scoring.
+\emph{RQ2b in-domain.} The emotion route is ahead of every direct audio representation
+(by $+0.093$ over VGGish, its own input) and of the PCA-8 control in nearly every repeat and
+under every seed, and it is the best route for Action, Crime and Comedy. Its lead is significant
+against the weaker direct representations, but not established against the stronger ones
+or against the PCA-8 control; part of the gain comes from compression, and with per-genre
+thresholds the routes converge.
 
-\emph{RQ2b under domain shift.} Trained on Eerola and tested on the 110 Blockbuster
-films, the emotion route reaches 0.511 against 0.407 for direct VGGish ($+0.106$,
-$p=0.018$) and 0.421 for the PCA-8 control ($+0.092$, $p=0.032$), against a random-guess
-floor of 0.292 in that label space. In the reverse direction it is ahead as well
-($+0.077$ over the 41 Eerola films), but not significantly ($p=0.127$), and when both datasets
-are in training the routes are level ($-0.023$, $p=0.571$). The advantage over the PCA-8
-control is positive in both transfer directions but significant only in the original
-zero-shot run. These transfer results use the default threshold on a single split, so
-the in-domain threshold finding does not carry over to them directly; whether they would
-survive threshold tuning was not tested.
+\emph{RQ2b across datasets.} Trained on Eerola and tested on the 110 Blockbuster films,
+the emotion route beats direct VGGish clearly (0.508 against 0.403, $p=0.013$). The
+reverse direction agrees in sign without being significant, and when both datasets are in
+training the routes are level. No film occurs in both datasets.
 
-Three limitations recur across these results. The size of the dataset is the first: 41
-to 43 films, a learning curve that has not flattened, and a film-sampling error of the
-same order as the effects being measured. At film level each rare genre rests on four or
-five films (two or three on eight genres), and for the borderline clip-level comparisons
-no amount of resampling could settle the question, only more films. A second limitation
-is the metric, since the in-domain advantage is clearest at the default decision
-threshold and shrinks when each route is given its best threshold. Finally, the settings
-give different pictures. The emotion route is clearly ahead where the genre classifier
-is trained on the small Eerola dataset, whether it is tested on unseen Eerola films or on
-Blockbuster, and level where the classifier is trained on the larger Blockbuster dataset
-or on both. The advantage of the interpretable intermediate is therefore largest where
-training data are scarce or the test data come from another collection of films.
+The main limitation is the size of the Eerola dataset: 40 films, two of the five
+genres with four or five films each, and a film-sampling error of the same order as the
+effects being measured. The results also give two different pictures. The emotion route
+is clearly ahead where the genre classifier is trained on the small Eerola dataset, and
+level where it is trained on the larger Blockbuster dataset or on both.

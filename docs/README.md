@@ -1572,6 +1572,83 @@ to Blockbuster) and level where it is trained on the 110 Blockbuster films or on
 "generalisation advantage" of the clip-level reading becomes "an advantage under scarce
 data and under a change of dataset". Thesis on Overleaf: commits `d84fe44`, `8658777`.
 
+## 24. Fifth meeting: one film counted twice, every Eerola result re-run; per genre, SD bars, a focused Evaluation (8 Oct 2026)
+
+### 24.1 The duplicate film
+
+Clip 256 of Set 1 is spelt "The Portait of a Lady", the film's other six clips "The
+Portrait of a Lady" (same IMDb id tt0117364). The soundtrack name is the grouping key of
+every film-grouped split, so the film counted as two and one clip could sit on the other
+side of a fold boundary. Found while checking the supervisor's leakage question. Fix:
+`config.SOUNDTRACK_NAME_FIXES`, applied in the loader; expected counts 42 films (8 genres),
+40 (5 genres and shared space), 45 rated films. All film-grouped Eerola experiments were
+re-run in dependency order (statistical_power → cv_corrected → metrics_stability →
+film_level → cross_dataset_cv → zero_shot → waveform_vs_spectrogram → w2v_layer_sweep →
+emotion_ablation → model_search, plus the print-only scripts). Every reproduction check
+held (cv_corrected vs statistical_power: 10 arms; metrics_stability vs cv_corrected;
+film_level: 107 numbers). Blockbuster-only results (blockbuster_deep, signature
+replication, the leave-one-film-out reproduction) do not group Eerola films and are
+unchanged.
+
+The shifts are of the order of the split noise (merging two groups changes every fold
+assignment), but they move several significance statements:
+
+| | before | after |
+|---|---:|---:|
+| film level, 5 genres: ratings / emotion / VGGish / MusiCNN / PCA-8 | 0.521 / 0.469 / 0.375 / 0.385 / 0.418 | 0.491 / 0.460 / 0.367 / 0.396 / 0.390 |
+| clip level, 5 genres: ratings / emotion / VGGish / AST | 0.428 / 0.417 / 0.377 / 0.371 | 0.416 / 0.405 / 0.366 / 0.368 |
+| emotion vs VGGish, film bootstrap | +0.095, p=0.047 | +0.093, p=0.052 |
+| emotion vs PCA-8, film bootstrap | +0.051, p=0.326 | +0.070, p=0.089 |
+| predicted vs rated | −0.053, p=0.053 | -0.032, p=0.277 |
+| 8 genres, film: emotion / VGGish / AST | 0.352 / 0.256 / 0.234 | 0.349 / 0.257 / 0.242 |
+| 8 genres, clip: ratings / emotion / AST | 0.321 / 0.318 / 0.276 | 0.328 / 0.317 / 0.278 |
+| zero-shot: emotion / direct / PCA-8 | 0.511 / 0.407 / 0.421 | 0.508 / 0.403 / 0.417 |
+| zero-shot: emotion − direct, − PCA-8 | +0.106 (p=0.018), +0.092 (p=0.032) | +0.106 (p=0.013), +0.093 (p=0.027) |
+| zero-shot, emotions from the film-average embedding | 0.482 | 0.502 |
+| E→B re-implementation: emotion / direct | 0.508 / 0.395 | 0.503 / 0.383 (+0.121, p=0.007) |
+| B→E, film level: emotion / direct | 0.430 / 0.356 (p=0.127) | 0.458 / 0.364 (p=0.102) |
+| B→E, clip level: emotion / direct | 0.370 / 0.320 | 0.347 / 0.320 (+0.027, p=0.069, now resampling films) |
+| pooled, clip level: emotion / direct | 0.432 / 0.428 | 0.424 / 0.420 |
+| Stage 1 R²: CLAP / VGGish / AST / MusiCNN / MIR / wav2vec | 0.561 / 0.558 / 0.560 / 0.541 / 0.490 / 0.323 | 0.558 / 0.553 / 0.545 / 0.512 / 0.476 / 0.299 |
+| emotion_ablation.json (old protocol): all 8 / 11 features / fear only / valence+energy | 0.426 / — / 0.433 / 0.420 | 0.383 / 0.388 / 0.398 / 0.384 |
+
+Clip level, 5 genres, all arms (cv_corrected.json): ratings 0.416, emotion route 0.405,
+VGGish 0.366, AST 0.368, CLAP 0.356, MusiCNN 0.359, MIR 0.362, wav2vec 0.328,
+PCA-8 0.364. Eight genres: ratings 0.328, emotion route 0.317, VGGish 0.272, AST
+0.278. Print-only scripts: leakage example AST 0.44 ungrouped vs 0.23 grouped; regressor
+choice ridge 0.39 / SVR 0.54 / random forest 0.55; over-prediction 3.55 vs 1.87 labels per
+clip; learning curve still rising (slowly); listener reliability unchanged (102 clips, 38
+soundtracks, ICC(C,1) 0.897). wav2vec 2.0 layer sweep: blocks 1–3 within 0.003
+(0.297 / 0.294 / 0.294); block 2 is kept (selected earlier, held fixed).
+
+**What changed in the conclusions.** In-domain the emotion route is still ahead of every
+direct representation in 9–10 of 10 repeats and under every seed, but its film-level lead is
+significant only against AST, MIR and wav2vec; VGGish p=0.052, CLAP, MusiCNN, PCA-8 not
+significant. Over clips the film bootstrap is significant against VGGish, CLAP, MusiCNN, MIR,
+wav2vec and PCA-8 but not AST, Nadeau–Bengio only against wav2vec. Film level is therefore
+the stricter unit here. Predicted vs rated is no longer close to significant. The ablation
+has one nominal single-emotion hit (removing tension raises the score, p=0.041). Transfer
+conclusions unchanged.
+
+### 24.2 The four notes
+
+1. **Bar charts with SD.** `make_figures.py`: new `blockbuster_cv` (10×5 CV over the 110
+   films, SD of the repeat means), error bars on `cross_dataset` (bootstrap SD over test films
+   for the two transfer directions, `boot_sd`; SD of the repeat means for the pooled design,
+   `repeat_sd`; both stored in `cross_dataset_cv.json`).
+2. **Leakage between the datasets.** No IMDb id or title in common (checked against
+   `data/processed/Blockbuster/box_office.csv`); Eerola films are pre-2011, Blockbuster
+   2014–2019. Shared composers (Danny Elfman: Batman / Justice League) noted as stylistic
+   overlap. The only leak was the duplicate above.
+3. **Per genre.** `film_level.json` now stores per-genre film-level precision, recall and
+   F1 (and clip-level ones) for every arm; new figure `per_genre` (heatmap, best route
+   boxed). Best route: emotion on Action (0.61), Crime (0.35) and Comedy
+   (0.34); MIR on Drama; CLAP on Horror.
+4. **Focused Evaluation.** Chapter 5 keeps Stage 1, RQ1, emotion vs direct audio (one
+   4-row table), per genre, signatures and transfer; everything else moved to a new
+   Appendix A (`appendix/supplementary.tex`). Discussion rebuilt around the settings table.
+   Overleaf `3b10594`.
+
 ## Next steps
 
 - **Content chapters** — drafted in `docs/latex/chapters/` (§22.4); the student reads,

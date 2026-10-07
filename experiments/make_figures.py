@@ -224,18 +224,86 @@ def fig_cross_dataset():
     blocks = [(d["eerola_to_blockbuster"], "Eerola → Blockbuster", "macro_f1"),
               (d["blockbuster_to_eerola"]["film_level"], "Blockbuster → Eerola", "macro_f1"),
               (d["pooled"]["film_level"], "both in training (pooled CV)", "mean")]
+    # error bars: bootstrap SD over test films for the two single splits, SD of the
+    # repeat means for the pooled cross-validation
+    sd_field = ["boot_sd", "boot_sd", "repeat_sd"]
     fig, ax = plt.subplots(figsize=(WIDTH, 2.4))
     w = 0.26
     for j, (k, lab) in enumerate(keys):
         y = [b["arms"][k][f] for b, _, f in blocks]
-        ax.bar(np.arange(3) + (j - 1) * w, y, w, color=route_colour(lab), label=lab)
-        for x, v in zip(np.arange(3) + (j - 1) * w, y):
-            ax.text(x, v + 0.008, f"{v:.2f}", ha="center", fontsize=7)
+        e = [b["arms"][k].get(s, 0.0) for (b, _, _), s in zip(blocks, sd_field)]
+        ax.bar(np.arange(3) + (j - 1) * w, y, w, yerr=e, color=route_colour(lab), label=lab,
+               error_kw={"lw": 0.8, "capsize": 2})
+        for x, v, s in zip(np.arange(3) + (j - 1) * w, y, e):
+            ax.text(x, v + s + 0.01, f"{v:.2f}", ha="center", fontsize=7)
     ax.set_xticks(range(3), [b[1] for b in blocks])
     ax.set_ylabel("film-level macro-F1 (6 genres)")
     ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.15), frameon=False)
-    ax.set_ylim(0, 0.62)
+    ax.set_ylim(0, 0.7)
     save(fig, "cross_dataset")
+
+
+def fig_blockbuster_cv():
+    """Blockbuster in-domain, 10x5 cross-validation over films: mean +- SD over the repeats."""
+    d = load("blockbuster_deep")
+    if not d:
+        return
+    pf = d["logreg"]["per_fold"]
+    n_rep = d["design"]["n_repeats"]
+    rows = [("emotion(11), per-cue -> pooled", "emotion route (per cue)"),
+            ("VGGish, instance majority voting", "VGGish, majority vote over cues"),
+            ("VGGish-128", "VGGish, film average"),
+            ("PCA-8(VGGish) [control]", "PCA-8 control"),
+            ("MIR-140 (full)", "hand-crafted MIR (140)"),
+            ("MFCC-78", "MFCC subset (78)"),
+            ("random-8(VGGish) [control]", "random 8-d projection")]
+    m = [np.mean(pf[k]) for k, _ in rows]
+    sd = [np.asarray(pf[k]).reshape(n_rep, -1).mean(1).std(ddof=1) for k, _ in rows]
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.6))
+    x = np.arange(len(rows))
+    cols = [route_colour(lab) if "random" not in lab and "MIR" not in lab and "MFCC" not in lab
+            else COL["other"] for _, lab in rows]
+    ax.bar(x, m, 0.6, yerr=sd, color=cols, error_kw={"lw": 0.8, "capsize": 2})
+    for xi, v, s in zip(x, m, sd):
+        ax.text(xi, v + s + 0.01, f"{v:.3f}", ha="center", fontsize=7)
+    ax.axhline(d["random_guess_floor"], color=COL["floor"], lw=0.8, ls=":",
+               label=f"base-rate random guess ({d['random_guess_floor']:.3f})")
+    ax.set_xticks(x, [lab for _, lab in rows], rotation=25, ha="right")
+    ax.set_ylabel("macro-F1 over the 110 films")
+    ax.set_ylim(0, 0.72)
+    ax.legend(loc="upper right", frameon=False, fontsize=7)
+    save(fig, "blockbuster_cv")
+
+
+def fig_per_genre():
+    """Film-level F1 per genre and route (five genres); the best route per genre is boxed."""
+    d = load("film_level")
+    if not d or "per_genre_precision" not in next(iter(d["subset5"]["arms"].values())):
+        return
+    b = d["subset5"]
+    rows = [("ground-truth emotion(11) [ceiling]", "ratings (ceiling)"),
+            ("VGGish -> predicted emotion(11), OOF-trained", "emotion route"),
+            ("PCA-8(VGGish) [control]", "PCA-8 control"),
+            ("MusiCNN-200", "MusiCNN"), ("VGGish-128 (direct)", "VGGish"),
+            ("CLAP-512", "CLAP"), ("MIR-103", "MIR"), ("AST-768", "AST"),
+            ("wav2vec2-768", "wav2vec 2.0"), ("dummy", "most frequent")]
+    genres = b["genres"]
+    films = b["films_per_genre"]
+    M = np.array([b["arms"][k]["per_genre_f1"] for k, _ in rows])
+    fig, ax = plt.subplots(figsize=(WIDTH, 3.0))
+    im = ax.imshow(M, cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    real = [i for i, (k, _) in enumerate(rows) if k not in ("ground-truth emotion(11) [ceiling]", "dummy")]
+    for j in range(M.shape[1]):
+        best = max(real, key=lambda i: M[i, j])
+        ax.add_patch(plt.Rectangle((j - 0.5, best - 0.5), 1, 1, fill=False, ec=COL["emotion"], lw=1.8))
+        for i in range(M.shape[0]):
+            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
+                    color="white" if M[i, j] > 0.6 else "black")
+    ax.set_xticks(range(len(genres)), [f"{g}\n({films[g]} films)" for g in genres])
+    ax.set_yticks(range(len(rows)), [lab for _, lab in rows])
+    ax.spines[:].set_visible(False)
+    fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="film-level F1")
+    save(fig, "per_genre")
 
 
 def fig_stage1():
@@ -343,7 +411,8 @@ FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
            "metrics": fig_metric_family, "zero_shot": fig_zero_shot,
            "cross_dataset": fig_cross_dataset, "stage1": fig_stage1,
            "ablation": fig_ablation, "signatures": fig_signatures,
-           "box_office": fig_box_office}
+           "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
+           "per_genre": fig_per_genre}
 
 
 def main() -> None:

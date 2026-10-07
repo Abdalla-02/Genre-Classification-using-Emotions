@@ -11,7 +11,7 @@ silently and are embarrassing to discover late:
      thesis-ready snippets in docs/latex/, which are pasted into the submitted document;
   3. the zero-shot bootstrap and the zero-shot score table use the SAME feature-scaling
      regime (they once did not, which flattered the reported margin by 0.013);
-  4. the dataset still cleans to 346 / 319 clips;
+  4. the dataset still cleans to 346 / 319 clips (42 / 40 films);
   5. all five embedding caches hold 360 clips;
   6. no file in the working tree has CRLF endings (the repo is LF);
   7. every section cross-reference in the docs points at a heading that exists;
@@ -76,21 +76,23 @@ for k, v in w['stage2']['arms'].items(): expected[f'wg:{k}'] = v['mean']
 # The full briefing carries every headline number; current_state.md is the short
 # update for the latest meeting and is checked separately (7c).
 cs = io.open(ROOT / 'docs' / 'briefing_full.md', encoding='utf-8', newline='').read()
+# Values after the duplicate-film correction of 8 Oct 2026 (log section 24). The
+# Blockbuster-only results (bb:, zs:loo) did not change.
 checks = [
-    ('0.397', 'sp5:ground-truth emotion(11) [ceiling]'), ('0.394', 'sp5:VGGish -> PREDICTED emotion(11)'),
-    ('0.350', 'sp5:VGGish-128 (direct)'), ('0.345', 'sp5:AST-768'),
-    ('0.343', 'sp5:PCA-8(VGGish) [control]'), ('0.335', 'sp5:CLAP-512'),
-    ('0.300', 'sp8:ground-truth emotion(11)'), ('0.257', 'sp8:AST-768'),
+    ('0.391', 'sp5:ground-truth emotion(11) [ceiling]'), ('0.390', 'sp5:VGGish -> PREDICTED emotion(11)'),
+    ('0.343', 'sp5:VGGish-128 (direct)'), ('0.344', 'sp5:AST-768'),
+    ('0.343', 'sp5:PCA-8(VGGish) [control]'), ('0.333', 'sp5:CLAP-512'),
+    ('0.304', 'sp8:ground-truth emotion(11)'), ('0.258', 'sp8:AST-768'),
     ('0.621', 'bb:VGGish, instance majority voting'), ('0.616', 'bb:emotion(11), per-cue -> pooled'),
     ('0.593', 'bb:VGGish-128'), ('0.587', 'bb:PCA-8(VGGish) [control]'),
     ('0.585', 'bb:MIR-140 (full)'), ('0.557', 'bb:emotion(11), pooled -> per-film'),
-    ('0.516', 'bb:MFCC-78'), ('0.620', 'zs:loo'), ('0.315', 'zs:eerola6'),
-    ('0.511', 'zs:VGGish -> predicted emotion(11), per-cue'),
-    ('0.482', 'zs:VGGish -> predicted emotion(11), film-level'),
-    ('0.407', 'zs:VGGish-128 direct'), ('0.421', 'zs:PCA-8(VGGish) [control]'),
-    ('0.323', 'r2:wav2vec2-768'), ('0.560', 'r2:AST-768'), ('0.561', 'r2:CLAP-512'),
-    ('0.558', 'r2:VGGish-128'), ('0.490', 'r2:MIR-103'),
-    ('0.376', 'wg:wav2vec2 -> predicted emotion(11)'), ('0.300', 'wg:wav2vec2-768'),
+    ('0.516', 'bb:MFCC-78'), ('0.620', 'zs:loo'), ('0.291', 'zs:eerola6'),
+    ('0.508', 'zs:VGGish -> predicted emotion(11), per-cue'),
+    ('0.502', 'zs:VGGish -> predicted emotion(11), film-level'),
+    ('0.403', 'zs:VGGish-128 direct'), ('0.417', 'zs:PCA-8(VGGish) [control]'),
+    ('0.299', 'r2:wav2vec2-768'), ('0.545', 'r2:AST-768'), ('0.558', 'r2:CLAP-512'),
+    ('0.553', 'r2:VGGish-128'), ('0.476', 'r2:MIR-103'),
+    ('0.382', 'wg:wav2vec2 -> predicted emotion(11)'), ('0.313', 'wg:wav2vec2-768'),
 ]
 for quoted, key in checks:
     if key not in expected:
@@ -156,40 +158,36 @@ for block, name in [('subset5', 'ground-truth emotion(11) [ceiling]'),
 # These are pasted straight into the thesis, so a number that drifts here is a number
 # that drifts into the submitted document. Only the figures at real risk are pinned:
 # the zero-shot table, whose two scaling regimes were confused once already.
+# The thesis text itself: docs/latex/chapters/ mirrors the Overleaf chapters (the older
+# paste-ready snippets at docs/latex/*.tex are superseded and no longer checked). The
+# figures that matter most are pinned: the film-level headline, the zero-shot table and
+# the Stage-1 table.
+fl_ = j('film_level')
+for k, v in fl_['subset5']['arms'].items():
+    expected[f'fl5:{k}'] = v['mean']
+for k, v in fl_['full8']['arms'].items():
+    expected[f'fl8:{k}'] = v['mean']
 tex_checks = {
-    'cross_dataset_transfer.tex': [
-        'zs:VGGish -> predicted emotion(11), per-cue',
-        'zs:VGGish -> predicted emotion(11), film-level',
-        'zs:VGGish-128 direct', 'zs:PCA-8(VGGish) [control]', 'zs:loo'],
-    # the in-domain Eerola figures are the corrected ones (cv_corrected.json, log 21)
-    'statistical_power.tex': [
-        'cc5:ground-truth emotion(11) [ceiling]',
-        'cc5:VGGish -> predicted emotion(11), OOF-trained', 'cc5:VGGish-128 (direct)',
-        'cc5:PCA-8(VGGish) [control]', 'cc5:AST-768', 'cc5:CLAP-512',
-        'cc8:ground-truth emotion(11)', 'cc8:VGGish -> predicted emotion(11), OOF-trained',
-        'cc8:AST-768'],
-    'emotion_regression_bridge.tex': [
-        'cc5:ground-truth emotion(11) [ceiling]',
-        'cc5:VGGish -> predicted emotion(11), OOF-trained', 'cc5:VGGish-128 (direct)',
-        'cc5:PCA-8(VGGish) [control]', 'bb:emotion(11), per-cue -> pooled', 'bb:VGGish-128'],
-    'waveform_vs_spectrogram.tex': [
-        'r2:wav2vec2-768', 'cc5:wav2vec2-768',
-        'cc5:wav2vec2 -> predicted emotion(11), OOF-trained'],
+    'chapters/3_evaluation.tex': [
+        'fl5:VGGish -> predicted emotion(11), OOF-trained', 'fl5:ground-truth emotion(11) [ceiling]',
+        'fl5:VGGish-128 (direct)', 'fl5:PCA-8(VGGish) [control]', 'fl5:MusiCNN-200', 'fl5:AST-768',
+        'fl8:VGGish -> predicted emotion(11), OOF-trained',
+        'zs:VGGish -> predicted emotion(11), per-cue', 'zs:VGGish-128 direct', 'zs:PCA-8(VGGish) [control]',
+        'zs:loo', 'r2:CLAP-512', 'r2:VGGish-128', 'r2:AST-768', 'r2:MIR-103', 'r2:wav2vec2-768'],
+    'chapters/supplementary.tex': [
+        'fl8:VGGish -> predicted emotion(11), OOF-trained', 'fl8:AST-768', 'fl8:VGGish-128 (direct)',
+        'fl5:wav2vec2-768', 'fl5:wav2vec2 -> predicted emotion(11), OOF-trained', 'zs:loo'],
 }
-for block, tag in (('subset5', 'cc5'), ('full8', 'cc8')):
-    for k, v in cc[block]['arms'].items():
-        expected[f'{tag}:{k}'] = v['mean']
 for fname, keys in tex_checks.items():
     p = ROOT / 'docs' / 'latex' / fname
     if not p.exists():
-        problems.append(f'[missing snippet] docs/latex/{fname}'); continue
+        problems.append(f'[missing chapter copy] docs/latex/{fname}'); continue
     text = io.open(p, encoding='utf-8', newline='').read()
     for key in keys:
         quoted = f'{expected[key]:.3f}'
-        # the tables use the leading-dot convention (.323), the prose writes 0.323
-        if quoted not in text and quoted[1:] not in text:
+        if quoted not in text:
             problems.append(f'[tex drift] docs/latex/{fname} does not quote {quoted} '
-                            f'for {key} -- the snippet and the JSON disagree')
+                            f'for {key} -- the chapter copy and the JSON disagree')
 
 # ------------------------------------- 3. zero_shot: regimes must be consistent --
 boot = zs.get('bootstrap', {})
@@ -198,7 +196,7 @@ if set(boot) != set(zs['zero_shot']):
 else:
     strict_boot = boot['strict (source scaler)']
     for label, quoted in [('VGGish -> predicted emotion(11), per-cue vs VGGish direct', 0.106),
-                          ('predicted-emotion vs PCA-8 control', 0.092)]:
+                          ('predicted-emotion vs PCA-8 control', 0.093)]:
         got = round(strict_boot[label]['diff_mean'], 3)
         if abs(got - quoted) > 5e-4:
             problems.append(f'[zs bootstrap] docs quote {quoted} for {label}, JSON {got}')

@@ -50,7 +50,7 @@ import numpy as np
 from joblib import Parallel, delayed
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_recall_fscore_support
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -159,12 +159,23 @@ def summarise(Y, runs, fl: Films, boot_film, boot_clip, n_splits):
         bc, pc = boot_clip.scores(r["hard"])
         lo, hi = np.percentile(bf, [2.5, 97.5])
         clo, chi = np.percentile(bc, [2.5, 97.5])
-        per_genre = np.mean([f1_score(fl.Y, f, average=None, zero_division=0) for f in Fh], 0)
+        # per genre, averaged over the repeats: film level, and clip level beside it
+        prf = np.mean([precision_recall_fscore_support(fl.Y, f, average=None,
+                                                       zero_division=0)[:3] for f in Fh], 0)
+        prc = np.mean([precision_recall_fscore_support(Y, h, average=None,
+                                                       zero_division=0)[:3] for h in r["hard"]], 0)
+        f1sd = np.std([f1_score(fl.Y, f, average=None, zero_division=0) for f in Fh], 0, ddof=1)
         arms[name] = {
             "mean": pf, "ci_lo": float(lo), "ci_hi": float(hi),
             "repeat_sd": float(rf.std(ddof=1)), "repeat_min": float(rf.min()),
             "repeat_max": float(rf.max()),
-            "per_genre_f1": [float(x) for x in per_genre],
+            "per_genre_f1": [float(x) for x in prf[2]],
+            "per_genre_precision": [float(x) for x in prf[0]],
+            "per_genre_recall": [float(x) for x in prf[1]],
+            "per_genre_f1_repeat_sd": [float(x) for x in f1sd],
+            "clip_per_genre_f1": [float(x) for x in prc[2]],
+            "clip_per_genre_precision": [float(x) for x in prc[0]],
+            "clip_per_genre_recall": [float(x) for x in prc[1]],
             "clip_level_mean": pc, "clip_level_ci_lo": float(clo), "clip_level_ci_hi": float(chi),
         }
         rep_film[name], rep_clip[name], draws_f[name], draws_c[name] = rf, rc, bf, bc

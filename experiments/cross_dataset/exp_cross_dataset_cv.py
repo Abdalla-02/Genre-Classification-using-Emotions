@@ -18,7 +18,9 @@ Three designs, same six-genre shared label space, same three arms in each:
 
 Arms: VGGish-128 direct, PCA-8 control, VGGish -> emotion (per cue) -> genre. Every
 transform is fitted inside the training portion. Macro-F1 throughout; uncertainty from a
-paired bootstrap over test films (designs 1-2) or repeated folds (design 3).
+paired bootstrap over test films (designs 1-2; where Eerola clips are scored, whole films
+are resampled) or repeated folds (design 3). Each arm also carries its spread: the
+bootstrap SD of its macro-F1 (designs 1-2) or the SD of the repeat means (design 3).
 
 Film level (the thesis headline, see exp_film_level.py). Blockbuster rows are films, so
 design 1 is film-level already. Where Eerola clips are tested (design 2 and the Eerola
@@ -97,15 +99,28 @@ def random_guess_films(Yf, n_sim=2000):
                                    average="macro", zero_division=0) for _ in range(n_sim)]))
 
 
-def bootstrap(Yte, pa, pb, n=2000):
+def draws(n_rows, groups=None, n=2000):
+    """Bootstrap index sets. With ``groups`` (the film of each clip), whole films are
+    resampled, because the clips of one film are not independent; without, rows are
+    resampled (the rows are films already). The same draws serve every arm, so the
+    arms are paired."""
     rng = np.random.default_rng(config.SEED)
-    d = []
-    for _ in range(n):
-        s = rng.integers(0, len(Yte), len(Yte))
-        if Yte[s].sum(0).min() == 0:
-            continue
-        d.append(macro_prf(Yte[s], pa[s])["macro_f1"] - macro_prf(Yte[s], pb[s])["macro_f1"])
-    d = np.array(d)
+    if groups is None:
+        return [rng.integers(0, n_rows, n_rows) for _ in range(n)]
+    uniq = np.unique(groups)
+    members = [np.flatnonzero(groups == g) for g in uniq]
+    return [np.concatenate([members[i] for i in rng.integers(0, len(uniq), len(uniq))])
+            for _ in range(n)]
+
+
+def boot_scores(Yte, pred, idx):
+    """macro-F1 of one arm on every valid draw (a genre without positives is skipped)."""
+    return np.array([macro_prf(Yte[s], pred[s])["macro_f1"] for s in idx
+                     if Yte[s].sum(0).min() > 0])
+
+
+def bootstrap(Yte, pa, pb, idx):
+    d = boot_scores(Yte, pa, idx) - boot_scores(Yte, pb, idx)
     return {"diff": float(d.mean()), "ci_lo": float(np.percentile(d, 2.5)),
             "ci_hi": float(np.percentile(d, 97.5)),
             "p": float(2 * min((d <= 0).mean(), (d >= 0).mean()))}
@@ -125,16 +140,21 @@ def three_arms(Xtr, Ytr, gtr, Xte, Ftr, Fte):
     }
 
 
-def print_block(title, res, Yte):
+def print_block(title, res, Yte, groups=None):
+    """Scores, the bootstrap SD of each arm's macro-F1 (``boot_sd``: how much the score
+    moves with the sample of test films) and the paired comparisons."""
     print(f"\n{title}")
-    print(f"  {'arm':44}{'prec':>7}{'recall':>8}{'F1':>7}")
-    print("  " + "-" * 66)
+    print(f"  {'arm':44}{'prec':>7}{'recall':>8}{'F1':>7}{'boot SD':>9}")
+    print("  " + "-" * 75)
+    idx = draws(len(Yte), groups)
     rows = {}
     for name, pred in res.items():
         m = macro_prf(Yte, pred)
+        m["boot_sd"] = float(boot_scores(Yte, pred, idx).std(ddof=1))
         rows[name] = m
-        print(f"  {name:44}{m['macro_precision']:>7.3f}{m['macro_recall']:>8.3f}{m['macro_f1']:>7.3f}")
-    b1 = bootstrap(Yte, res[EMO], res[DIRECT]); b2 = bootstrap(Yte, res[EMO], res[PCA8])
+        print(f"  {name:44}{m['macro_precision']:>7.3f}{m['macro_recall']:>8.3f}"
+              f"{m['macro_f1']:>7.3f}{m['boot_sd']:>9.3f}")
+    b1 = bootstrap(Yte, res[EMO], res[DIRECT], idx); b2 = bootstrap(Yte, res[EMO], res[PCA8], idx)
     print(f"  emotion vs direct : {b1['diff']:+.3f} [{b1['ci_lo']:+.3f}, {b1['ci_hi']:+.3f}] p={b1['p']:.3f}")
     print(f"  emotion vs PCA-8  : {b2['diff']:+.3f} [{b2['ci_lo']:+.3f}, {b2['ci_hi']:+.3f}] p={b2['p']:.3f}")
     return {"arms": rows, "emotion_vs_direct": b1, "emotion_vs_pca8": b2}
@@ -206,7 +226,8 @@ def main() -> None:
         for k in pred2:
             pred2[k][te], prob2[k][te] = r[k]
     out["blockbuster_to_eerola"] = print_block(
-        "2. BLOCKBUSTER -> EEROLA  (train 110 films, test Eerola clips out-of-fold)", pred2, Ye)
+        "2. BLOCKBUSTER -> EEROLA  (train 110 films, test Eerola clips out-of-fold)", pred2, Ye,
+        groups=ge)   # clips are scored, but whole films are resampled
     film2 = {}
     for k in prob2:
         Yf, film2[k] = to_films(Ye, prob2[k], ge)
@@ -264,6 +285,7 @@ def main() -> None:
         ci = repeat_ci(scores[k], 5)
         ce = np.nanmean(scores_by_corpus["eerola"][k]); cb = np.nanmean(scores_by_corpus["blockbuster"][k])
         rows3[k] = {"mean": ci.mean, "ci_lo": ci.lo, "ci_hi": ci.hi,
+                    "repeat_sd": float(scores[k].reshape(-1, 5).mean(1).std(ddof=1)),
                     "eerola_part": float(ce), "blockbuster_part": float(cb)}
         print(f"  {k:44}{ci.mean:>10.3f}{ce:>13.3f}{cb:>14.3f}")
     cmp = {}
@@ -279,6 +301,8 @@ def main() -> None:
     for k in fscores:
         ci = repeat_ci(fscores[k], 5)
         rowsf[k] = {"mean": ci.mean, "ci_lo": ci.lo, "ci_hi": ci.hi,
+                    # SD of the 5 repeat means: how much one 5-fold run moves
+                    "repeat_sd": float(fscores[k].reshape(-1, 5).mean(1).std(ddof=1)),
                     "eerola_part": float(np.nanmean(fscores_eerola[k])),
                     "blockbuster_part": float(np.nanmean(scores_by_corpus["blockbuster"][k]))}
         print(f"  {k:44}{ci.mean:>10.3f}{rowsf[k]['eerola_part']:>13.3f}"

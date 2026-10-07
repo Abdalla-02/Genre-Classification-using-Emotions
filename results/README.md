@@ -28,19 +28,23 @@ experiment that follows the same conventions renders without touching it.
 
 ## The files
 
+**Re-run on 8 Oct 2026.** Every file that groups Eerola clips by film was re-run after a
+duplicate film (two spellings of one title) was merged in the loader; the files of
+Blockbuster alone are unchanged (log section 24).
+
 "In the thesis" says whether the thesis quotes the file: **yes**, **superseded** (kept as
 the record of a corrected result; quote its successor instead) or **no** (analysis kept in
 the repository but left out of the thesis).
 
 | file | what it answers | in the thesis | progress log |
 |---|---|---|---|
-| `film_level.json` | **The Eerola headline (since 7 Oct 2026): every genre evaluation scored per film.** Clip probabilities averaged per film, genre predicted at ≥ 0.5, macro-F1 over the 41 (43) films. Same arms, folds and seeds as `cv_corrected.json`; every arm and comparison also carries its clip-level score, the clip-level Nadeau–Bengio p and `p_limit`; 5 and 8 genres, ablation, stability over five seeds, per-genre F1, film counts per genre. Its reproduction check (107 numbers of `cv_corrected` and `metrics_stability`) must hold. | yes (all in-domain genre results, Tables and Figures of Ch. 5) | §23 |
+| `film_level.json` | **The Eerola headline (since 7 Oct 2026): every genre evaluation scored per film.** Clip probabilities averaged per film, genre predicted at ≥ 0.5, macro-F1 over the 41 (43) films. Same arms, folds and seeds as `cv_corrected.json`; every arm and comparison also carries its clip-level score, the clip-level Nadeau–Bengio p and `p_limit`; 5 and 8 genres, ablation, stability over five seeds, per-genre F1, film counts per genre. Since 8 Oct each arm also carries per-genre film-level precision, recall and F1 (`per_genre_precision`, `per_genre_recall`, `per_genre_f1`, with `per_genre_f1_repeat_sd`) and the clip-level ones (`clip_per_genre_*`). Its reproduction check (107 numbers of `cv_corrected` and `metrics_stability`) must hold. | yes (all in-domain genre results, Ch. 5 and Appendix A; the per-genre figure and table) | §23, §24 |
 | `cv_corrected.json` | The **clip-level** Eerola results: the same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side. Until 7 Oct the headline; now the clip-level check beside `film_level.json`. | yes, as the clip-level values | §21 |
 | `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | yes (Section 5.4: the metric table and the metric-family figure; the stability figure and its film-level numbers now come from `film_level.json`) | §22.1 |
 | `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Default vs nested-CV-tuned `C`; Nadeau–Bengio `p_limit`. | superseded: `cv_corrected.json` repeats its Nadeau–Bengio p and `p_limit` (`old_metric_*` fields), so quote from there | §11, §11b |
 | `blockbuster_deep.json` | Blockbuster under the **same protocol** as Eerola: repeated CV, tuned `C`, cue-level arms, full 140-feature MIR. | yes (Blockbuster in-domain) | §17 |
 | `zero_shot.json` | **Train on Eerola, test on Blockbuster without training on it** (quote the strict, source-scaler regime). Also the in-domain reproduction of Ma et al. (2021). | yes (the main transfer result, 0.511 vs 0.407) | §15 |
-| `cross_dataset_cv.json` | Transfer in **every direction**: Eerola→Blockbuster, the reverse, and both datasets pooled. The pooled design was re-run at its default 5×5 on 7 Oct 2026 (the earlier file held a 3×5 run). The `film_level` blocks of the reverse and pooled designs (Eerola clips averaged per film) are what the thesis quotes; the clip-level blocks beside them are unchanged. Note: the clip-level reverse-direction bootstrap resamples clips, not films (§23.3). | yes (cross-dataset figure, Discussion table) | §19, §22.4, §23.3 |
+| `cross_dataset_cv.json` | Transfer in **every direction**: Eerola→Blockbuster, the reverse, and both datasets pooled. The pooled design was re-run at its default 5×5 on 7 Oct 2026 (the earlier file held a 3×5 run). The `film_level` blocks of the reverse and pooled designs (Eerola clips averaged per film) are what the thesis quotes; the clip-level blocks beside them are unchanged. Each arm carries its spread for the error bars: `boot_sd` (bootstrap SD over the test films) for the two transfer directions, `repeat_sd` (SD of the 5 repeat means) for the pooled design. Since 8 Oct the clip-level reverse-direction bootstrap resamples whole films (§24). | yes (cross-dataset figure, Discussion table) | §19, §22.4, §23.3 |
 | `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on Blockbuster (r = 0.836)? | yes (signatures figure) | §17.5 |
 | `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | superseded by the `ablation` block of `cv_corrected.json` | §18 |
 | `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | yes (Stage-1 table) | §16 |
@@ -271,9 +275,10 @@ unless given `--fresh`, because resolving 110 titles from scratch takes up to ha
 hour under Wikimedia's rate limit.
 
 `make_figures.py` draws every figure from the results files, never from typed-in
-numbers, so re-run it after re-running an experiment. The eight figures in the thesis are
-`indomain_eerola5`, `stability_repeats`, `metric_family`, `stage1_r2`, `ablation`,
-`signatures`, `zero_shot` and `cross_dataset`. It also draws `box_office_blockbuster`,
+numbers, so re-run it after re-running an experiment. The ten figures in the thesis are
+`indomain_eerola5`, `per_genre`, `stage1_r2`, `signatures`, `blockbuster_cv`, `zero_shot`
+and `cross_dataset` in Chapter 5, and `metric_family`, `stability_repeats` and `ablation`
+in Appendix A. It also draws `box_office_blockbuster`,
 which the thesis no longer uses.
 
 ### Experiments that only print their tables

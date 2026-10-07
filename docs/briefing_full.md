@@ -24,7 +24,16 @@ Implementation complete. Open item: content chapters.
 | D | The classifier must have the **same genre classes in both datasets** to be fair | **Done, and it found a real error in our own reporting.** Both corpora now share one 6-genre space. | §4.2 |
 | E | Emotion–genre relationship in the literature, **including in music** | **Done.** New literature section covering Hu & Downie (2007), Laurier et al. (2009), Eerola (2011), Saari et al. (2016). | §6 |
 
-### Round 4 (after the third meeting, 24 Sep 2026) — most recent
+### Round 5 (fifth meeting, 8 Oct 2026) — most recent
+
+| # | Note | Status |
+|---|---|---|
+| 1 | Blockbuster cross-validation as a bar chart with SD | **Done.** Blockbuster in-domain chart and SD bars on the cross-dataset chart (section 4.14) |
+| 2 | Common films between Eerola and Blockbuster (leakage) | **Done.** None in common; a duplicate film inside Eerola was found and fixed, all Eerola results re-run (section 4.14) |
+| 3 | F1, precision and recall per genre; best model per genre; a diagram | **Done.** Per-genre figure and table (section 4.14) |
+| 4 | Focus the Evaluation; a more precise Discussion | **Done.** Core results in Chapter 5, the rest in Appendix A; Discussion shortened |
+
+### Round 4 (after the third meeting, 24 Sep 2026)
 
 | # | Your note | Status |
 |---|---|---|
@@ -357,6 +366,10 @@ F1. Both are now computed on both corpora.
 ---
 
 ## 4. Results
+
+> **Note (8 Oct 2026).** Sections 4.1–4.13 show the Eerola numbers from before the
+> duplicate-film fix; section 4.14 has the current ones. Blockbuster-only results are
+> unchanged.
 
 ### 4.1 Eerola — the primary result
 
@@ -700,6 +713,36 @@ clip-level numbers of `cv_corrected` and `metrics_stability` exactly.
 Reading: the emotion route is clearly ahead where the classifier is trained on the 41
 Eerola films (in-domain and zero-shot), level where it is trained on the 110 Blockbuster
 films or both. Details and tables: `current_state.md` section 10.
+
+### 4.14 Fifth meeting: the duplicate film, per genre, SD bars, a focused Evaluation (8 Oct)
+
+**All Eerola numbers in sections 4.1–4.13 were computed before the duplicate-film fix** (one
+film was split into two by a spelling error; technical log section 24). The current values:
+
+- **Five genres, film level:** ratings 0.491, emotion route **0.460**, PCA-8 0.390,
+  MusiCNN 0.396, VGGish 0.367, AST 0.318; random guess 0.309. Emotion vs VGGish +0.093,
+  p=0.052 (9/10 repeats); vs PCA-8 +0.070, p=0.089; predicted vs rated -0.032, p=0.277.
+- **Five genres, clip level** (cv_corrected.json): ratings 0.416, emotion route
+  0.405, VGGish 0.366, AST 0.368, CLAP 0.356, PCA-8 0.364; Nadeau–Bengio vs
+  VGGish p=0.086.
+- **Eight genres:** film level emotion 0.349 vs VGGish 0.257 (+0.093, p=0.001); clip
+  level ratings 0.328, emotion 0.317, AST 0.278.
+- **Zero-shot (strict):** emotion 0.508, direct 0.403, PCA-8 0.417; emotion − direct
+  +0.106 [+0.021, +0.184], p=0.013; emotion − PCA-8 +0.093 (0.093), p=0.027;
+  film-average variant 0.502; Eerola in-domain reference 0.291.
+- **Cross-dataset:** E→B re-implementation 0.503 vs 0.383 (+0.121, p=0.007); B→E per film
+  0.458 vs 0.364 (+0.089, p=0.102); pooled per film 0.531 vs 0.543 (-0.011).
+- **Stage 1 R²:** CLAP 0.558, VGGish 0.553, AST 0.545, MusiCNN 0.512, MIR 0.476,
+  wav2vec 0.299; the older genre arms of waveform_vs_spectrogram.json: wav2vec → emotion
+  0.382, wav2vec direct 0.313. statistical_power.json (old per-fold protocol): ratings 0.391,
+  pipeline 0.390, VGGish 0.343, AST 0.344, PCA-8 0.343, CLAP 0.333; 8 genres ratings 0.304,
+  AST 0.258.
+- **Per genre:** the emotion route is the best route for Action, Crime and Comedy; MIR on Drama, CLAP
+  on Horror; mean recall 0.64 vs 0.38 for VGGish.
+- **No film is in both datasets**; Blockbuster in-domain unchanged (emotion 0.616 ± 0.022,
+  VGGish 0.593, majority vote 0.621).
+
+Details, figures and the before/after table: `current_state.md` and log section 24.
 
 ## 5. Numbers that changed — and why
 
