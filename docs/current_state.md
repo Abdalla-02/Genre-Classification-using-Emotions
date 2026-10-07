@@ -95,38 +95,42 @@ columns:
 - **most freq.**: a dummy that always predicts the most common genres (in practice Drama);
 - **random**: guesses each genre at its base rate (simulated).
 
-Bold is the best of the four audio routes (emotion, VGGish, AST, PCA-8).
+Bold is the best of the four audio routes (emotion, VGGish, AST, PCA-8). The last column
+is the emotion route minus the better of the two direct audio routes (VGGish or AST, named
+in brackets) under that metric; a positive value means the emotion route is ahead, except
+for Hamming loss, where lower is better. It is the difference of the two means, so it can
+differ by up to 0.002 from the bootstrap difference in the next table.
 
-| family | metric | ratings (ceiling) | **emotion route** | direct VGGish | direct AST | PCA-8 control | most freq. | random |
-|---|---|---:|---:|---:|---:|---:|---:|---:|
-| headline | **macro-F1** | 0.428 | **0.417** | 0.377 | 0.371 | 0.372 | 0.168 | 0.308 |
-| A | micro-F1 | 0.480 | 0.482 | 0.471 | **0.515** | 0.446 | 0.571 | 0.477 |
-| A | weighted-F1 | 0.546 | **0.550** | 0.504 | 0.534 | 0.491 | 0.396 | 0.477 |
-| A | samples-F1 | 0.477 | 0.485 | 0.451 | **0.495** | 0.431 | 0.574 | 0.438 |
-| B | macro-F1, tuned threshold | 0.461 | 0.440 | 0.429 | 0.427 | **0.441** | 0.168 | 0.308 |
-| C | macro average precision | 0.364 | **0.372** | 0.361 | 0.359 | 0.356 | 0.309 | 0.321 |
-| C | macro ROC-AUC | 0.619 | **0.608** | 0.567 | 0.571 | 0.567 | 0.500 | 0.501 |
-| D | film-level macro-F1 | 0.521 | **0.469** | 0.375 | 0.307 | 0.418 | 0.169 | 0.301 |
-| E | exact match | 0.067 | 0.082 | 0.105 | **0.170** | 0.095 | 0.283 | 0.133 |
-| E | Hamming loss (lower is better) | 0.417 | 0.404 | 0.359 | **0.314** | 0.393 | 0.218 | 0.323 |
-| E | Jaccard | 0.357 | 0.367 | 0.356 | **0.408** | 0.335 | 0.500 | 0.355 |
-| parts | macro precision | 0.376 | **0.371** | 0.350 | 0.356 | 0.340 | 0.145 | 0.308 |
-| parts | macro recall | 0.651 | **0.596** | 0.439 | 0.393 | 0.476 | 0.200 | 0.308 |
+| family | metric | ratings (ceiling) | **emotion route** | direct VGGish | direct AST | PCA-8 control | most freq. | random | Δ emotion − best direct |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| headline | **macro-F1** | 0.428 | **0.417** | 0.377 | 0.371 | 0.372 | 0.168 | 0.308 | **+0.040** (VGGish) |
+| A | micro-F1 | 0.480 | 0.482 | 0.471 | **0.515** | 0.446 | 0.571 | 0.477 | −0.033 (AST) |
+| A | weighted-F1 | 0.546 | **0.550** | 0.504 | 0.534 | 0.491 | 0.396 | 0.477 | +0.016 (AST) |
+| A | samples-F1 | 0.477 | 0.485 | 0.451 | **0.495** | 0.431 | 0.574 | 0.438 | −0.011 (AST) |
+| B | macro-F1, tuned threshold | 0.461 | 0.440 | 0.429 | 0.427 | **0.441** | 0.168 | 0.308 | +0.011 (VGGish) |
+| C | macro average precision | 0.364 | **0.372** | 0.361 | 0.359 | 0.356 | 0.309 | 0.321 | +0.011 (VGGish) |
+| C | macro ROC-AUC | 0.619 | **0.608** | 0.567 | 0.571 | 0.567 | 0.500 | 0.501 | +0.037 (AST) |
+| D | film-level macro-F1 | 0.521 | **0.469** | 0.375 | 0.307 | 0.418 | 0.169 | 0.301 | +0.094 (VGGish) |
+| E | exact match | 0.067 | 0.082 | 0.105 | **0.170** | 0.095 | 0.283 | 0.133 | −0.088 (AST) |
+| E | Hamming loss (lower is better) | 0.417 | 0.404 | 0.359 | **0.314** | 0.393 | 0.218 | 0.323 | +0.090 (AST), worse |
+| E | Jaccard | 0.357 | 0.367 | 0.356 | **0.408** | 0.335 | 0.500 | 0.355 | −0.041 (AST) |
+| parts | macro precision | 0.376 | **0.371** | 0.350 | 0.356 | 0.340 | 0.145 | 0.308 | +0.015 (AST) |
+| parts | macro recall | 0.651 | **0.596** | 0.439 | 0.393 | 0.476 | 0.200 | 0.308 | +0.157 (VGGish) |
 
 Is the emotion route's difference real? Emotion route minus each other route, with the
 paired film-bootstrap p-value (bold: p < 0.05), and in brackets the number of the 10
 repeats it wins:
 
-| metric | vs direct VGGish | vs direct AST | vs PCA-8 control |
-|---|---|---|---|
-| macro-F1 | **+0.041, p = 0.035** (10/10) | **+0.047, p = 0.020** (10/10) | **+0.045, p = 0.029** (10/10) |
-| micro-F1 | +0.012, p = 0.56 (7/10) | −0.032, p = 0.27 (1/10) | +0.037, p = 0.078 (10/10) |
-| weighted-F1 | **+0.048, p = 0.004** (10/10) | +0.020, p = 0.42 (7/10) | **+0.060, p < 0.001** (10/10) |
-| samples-F1 | +0.034, p = 0.12 (10/10) | −0.010, p = 0.70 (3/10) | **+0.054, p = 0.006** (10/10) |
-| macro-F1, tuned threshold | +0.011, p = 0.44 (7/10) | +0.013, p = 0.38 (8/10) | −0.001, p = 0.92 (4/10) |
-| macro average precision | +0.011, p = 0.53 (8/10) | +0.014, p = 0.43 (8/10) | +0.015, p = 0.46 (8/10) |
-| macro ROC-AUC | +0.041, p = 0.18 (10/10) | +0.038, p = 0.19 (7/10) | +0.041, p = 0.12 (10/10) |
-| film-level macro-F1 | **+0.096, p = 0.041** (10/10) | **+0.161, p < 0.001** (10/10) | +0.053, p = 0.32 (9/10) |
+| metric | vs direct VGGish | vs direct AST | vs PCA-8 control | vs best direct audio |
+|---|---|---|---|---|
+| macro-F1 | **+0.041, p = 0.035** (10/10) | **+0.047, p = 0.020** (10/10) | **+0.045, p = 0.029** (10/10) | VGGish: **+0.041, p = 0.035** (10/10) |
+| micro-F1 | +0.012, p = 0.56 (7/10) | −0.032, p = 0.27 (1/10) | +0.037, p = 0.078 (10/10) | AST: −0.032, p = 0.27 (1/10) |
+| weighted-F1 | **+0.048, p = 0.004** (10/10) | +0.020, p = 0.42 (7/10) | **+0.060, p < 0.001** (10/10) | AST: +0.020, p = 0.42 (7/10) |
+| samples-F1 | +0.034, p = 0.12 (10/10) | −0.010, p = 0.70 (3/10) | **+0.054, p = 0.006** (10/10) | AST: −0.010, p = 0.70 (3/10) |
+| macro-F1, tuned threshold | +0.011, p = 0.44 (7/10) | +0.013, p = 0.38 (8/10) | −0.001, p = 0.92 (4/10) | VGGish: +0.011, p = 0.44 (7/10) |
+| macro average precision | +0.011, p = 0.53 (8/10) | +0.014, p = 0.43 (8/10) | +0.015, p = 0.46 (8/10) | VGGish: +0.011, p = 0.53 (8/10) |
+| macro ROC-AUC | +0.041, p = 0.18 (10/10) | +0.038, p = 0.19 (7/10) | +0.041, p = 0.12 (10/10) | AST: +0.038, p = 0.19 (7/10) |
+| film-level macro-F1 | **+0.096, p = 0.041** (10/10) | **+0.161, p < 0.001** (10/10) | +0.053, p = 0.32 (9/10) | VGGish: **+0.096, p = 0.041** (10/10) |
 
 The bootstrap p for macro-F1 vs VGGish here (0.035) is from this script's own bootstrap;
 the thesis quotes 0.042 from the main analysis (`cv_corrected.json`), same data and a
@@ -410,12 +414,19 @@ every part and its level; the research questions, datasets and decisions are the
 Each row is its own label space, compared only against its own chance level (base-rate
 random guess):
 
-| setting | emotion route | best direct audio | random guess |
-|---|---:|---:|---:|
-| Eerola, 5 genres, in-domain (default threshold) | 0.417 | 0.377 | 0.308 |
-| Eerola, 5 genres, in-domain (tuned thresholds) | 0.440 | 0.429 | 0.308 |
-| Eerola → Blockbuster, zero-shot (6 genres) | **0.511** | 0.407 | 0.292 |
-| Blockbuster, in-domain (6 genres) | 0.616 | 0.593 | 0.295 |
+| setting | emotion route | best direct audio | Δ emotion − best direct | random guess |
+|---|---:|---:|---:|---:|
+| Eerola, 5 genres, in-domain (default threshold) | 0.417 | 0.377 (VGGish) | +0.040 | 0.308 |
+| Eerola, 5 genres, in-domain (tuned thresholds) | 0.440 | 0.429 (VGGish) | +0.011 | 0.308 |
+| Eerola → Blockbuster, zero-shot (6 genres) | **0.511** | 0.407 (VGGish) | **+0.105** | 0.292 |
+| Blockbuster, in-domain (6 genres) | 0.616 | 0.621 (VGGish, majority vote over cues) | −0.005 | 0.295 |
+
+On Blockbuster in-domain the best direct route is VGGish classified per cue with a majority
+vote over each film's cues (the architecture of Ma et al., 0.621). It is 0.005 ahead of the
+emotion route. This pair was not tested; for scale, majority voting's own lead over plain
+averaging (+0.028) is not significant (p = 0.388). The matched comparison with the same film-level VGGish embedding the emotion route starts from
+(0.593) is the one the thesis tests: +0.023, Nadeau–Bengio p = 0.536. The zero-shot Δ of
++0.105 is the difference of the two scores; the bootstrap mean quoted below is +0.106.
 
 In-domain significance (default threshold): emotion vs VGGish film bootstrap p = 0.042,
 Nadeau–Bengio p = 0.151. Zero-shot: +0.106 [+0.015, +0.186], p = 0.018. On 8 genres the
