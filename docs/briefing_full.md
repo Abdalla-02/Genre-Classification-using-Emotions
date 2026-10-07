@@ -41,7 +41,7 @@ Implementation complete. Open item: content chapters.
 |---|---|---|
 | 1 | Fundamentals: deeper, for a CS student new to ML | **Done.** Three new sections in Overleaf: audio representations (spectrogram, hand-crafted features, the five networks), ML background (regression/classification, multi-label, the two models, overfitting and `C`, the bottleneck), evaluation (grouped/nested/repeated CV, R², macro-F1, chance floors, Cohen's d, significance). |
 | 2 | Remove some emotions, test the difference | **Done -- and it makes NO difference.** Fear alone (0.433) and valence+energy alone (0.420) both match all eight (0.426), on the corrected protocol. This corrected a necessity claim in Fundamentals; see §4.8. |
-| 3 | Cross-validate through the datasets | **Done.** Both transfer directions (E→B p=0.016, B→E p<0.001) and a pooled design. Emotion wins on transfer, ties when both corpora are in training. See §4.9. |
+| 3 | Cross-validate through the datasets | **Done.** Both transfer directions (E→B p=0.016, B→E p<0.001 over clips; per film p=0.127, see section 4.13) and a pooled design. Emotion wins on transfer, ties when both corpora are in training. See §4.9. |
 | 4 | Box office vs classification (Eerola) | **Done, exploratory.** 37 films with gross. The only robust effect is Action films grossing more (p=0.004) -- genre, not soundtrack. Classification quality does not relate to gross. See §4.10. |
 | 5 | Start the next chapters, generally | Skeletons with the factual content are in Overleaf for you to write over. |
 | 6 | AI-usage and authorship declarations | The official FIN wording is in `thesis.tex`; the AI-usage page is a draft **you must verify and complete** -- see §8. |
@@ -610,7 +610,7 @@ interpretability, not accuracy. Better to say it than to be asked.
 | design | direct | PCA-8 | **emotion** | emotion vs direct |
 |---|---:|---:|---:|---|
 | Eerola → Blockbuster | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 |
-| Blockbuster → Eerola | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** |
+| Blockbuster → Eerola | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** (clip bootstrap; per film +0.077, p=0.127, section 4.13) |
 | pooled (both in training) | 0.428 | 0.405 | 0.432 | +0.004, p=0.850 |
 
 The advantage holds in **both** transfer directions and vanishes when both corpora are in

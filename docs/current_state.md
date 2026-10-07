@@ -177,7 +177,7 @@ Small means stable.
 
 1. **SD over the 10 repeats: the luck of the split.** One 5-fold run splits the 41 films
    into 5 groups at random. We repeat that with 10 different splits and compute macro-F1
-   once per repeat (on all 329 clips' out-of-fold predictions). The SD of these 10
+   once per repeat (on the out-of-fold predictions of all 41 films, or all 329 clips). The SD of these 10
    numbers says how much the score depends on *which films happened to be tested
    together*. This is the stability of the number we report.
 2. **SD over the 50 single folds: how noisy one test fold is.** The same 10 × 5 = 50 test
@@ -187,7 +187,8 @@ Small means stable.
    divides the swing by roughly √5, which is about where the repeat SD ends up.)
 3. **Film bootstrap SE: the luck of the dataset.** Even with a perfect procedure, the 41
    films are one sample of all films that could have been in the dataset. The bootstrap
-   draws 41 films *with replacement* 1000 times, re-scores the same predictions on each
+   draws 41 films *with replacement* 2000 times (1000 in the clip-level metric analysis),
+   re-scores the same predictions on each
    draw, and measures the spread. This is the **standard error**: how far the score
    would move with a different set of films of the same size. It is the uncertainty the
    95 % intervals in the thesis show (SE ≈ interval width / 3.92).
@@ -199,39 +200,57 @@ Small means stable.
 
 ### The numbers
 
-Macro-F1, 5 genres:
+Five genres. **Film level** (the headline since 7 Oct; `results/film_level.json`). The
+single-fold SD has no film-level version, because a test fold holds about 8 films and most
+genres have no positive film in it.
+
+| route | 1. repeats (split) | the 10 repeats lie in | 3. bootstrap SE (films) | 4. seeds (random numbers) |
+|---|---:|---|---:|---:|
+| human ratings (ceiling) | 0.017 | 0.486–0.543 | 0.038 | 0.011 |
+| **emotion route** | **0.026** | 0.423–0.513 | 0.035 | 0.010 |
+| direct VGGish | 0.055 | 0.281–0.442 | 0.037 | 0.015 |
+| direct AST | 0.047 | 0.204–0.364 | 0.027 | 0.008 |
+| PCA-8 control | 0.028 | 0.372–0.449 | 0.044 | 0.008 |
+
+**Clip level** (the check; `results/metrics_stability.json`):
 
 | route | 1. repeats (split) | 2. single folds | 3. bootstrap SE (films) | 4. seeds (random numbers) |
 |---|---:|---:|---:|---:|
 | human ratings (ceiling) | 0.009 | 0.057 | 0.027 | 0.002 |
-| **emotion route** | **0.011** | 0.054 | 0.024 | 0.003 |
+| **emotion route** | 0.011 | 0.054 | 0.024 | 0.003 |
 | direct VGGish | 0.020 | 0.057 | 0.023 | 0.008 |
 | direct AST | 0.023 | 0.050 | 0.018 | 0.001 |
 | PCA-8 control | 0.015 | 0.061 | 0.026 | 0.004 |
 
-How to read it, for the emotion route (score 0.417):
+How to read it, for the emotion route (film level 0.469, clip level 0.417):
 
-- **Splits**: the 10 repeats lie between 0.396 and 0.428 (SD 0.011, about 3 % of the
-  score). The emotion route is the steadiest of the four audio routes; direct VGGish
-  varies twice as much.
-- **Single folds**: SD 0.054, five times the repeat SD. One fold alone could not
-  separate two routes 0.04 apart; ten pooled repeats can.
-- **Which films**: SE 0.024, the largest of the meaningful sources. Only more films can
-  reduce it. This is why the significance tests resample films.
-- **Seeds**: the mean moves by 0.003 (0.410 to 0.417 across the five seeds). The lead over
-  direct VGGish is positive under **every** seed (+0.037 to +0.059), as are the leads over
-  AST and PCA-8. For contrast, the PCA-8-vs-VGGish difference changes sign between
-  seeds (−0.005 to +0.012), which is what "no effect" looks like.
+- **Splits**: the 10 repeats lie between 0.423 and 0.513 (SD 0.026, about
+  6 % of the score). Film-level SDs are about two to three times the clip-level ones (1.9 to 2.8), because each
+  genre's F1 now rests on a few films (Comedy 4, Horror 5): one film more or less moves it a
+  lot. The emotion route is still the steadiest of the four audio routes; direct VGGish
+  varies twice as much (0.055; its repeats span 0.281 to 0.442).
+- **Single folds** (clip level only): SD 0.054, five times the clip-level repeat SD. One
+  fold alone could not separate two routes 0.04 apart; ten pooled repeats can.
+- **Which films**: SE 0.035 at film level (0.024 over clips). Only more films can reduce it,
+  which is why the significance tests resample films.
+- **Seeds**: the mean moves by 0.010 (0.463 to 0.489 across the five seeds). The lead over
+  direct VGGish is positive under **every** seed (+0.093 to +0.128), as are the leads over AST
+  (+0.140 to +0.173) and PCA-8 (+0.040 to +0.070). Unlike over clips, where the PCA-8-vs-VGGish
+  difference changed sign between seeds (−0.005 to +0.012), at film level PCA-8 is ahead of
+  VGGish under every seed (+0.033 to +0.059): compression alone helps a little per film.
 
-**Ordering of the sources:** seed (≤ 0.008) < split (≤ 0.023) < films (0.018–0.027)
-< single fold (≈ 0.055). The result is stable against everything the code controls. What
-remains uncertain is the dataset itself.
+**Ordering of the sources at film level:** seed (0.008–0.015) < split (0.017–0.055) ≈ films
+(0.027–0.044). For the emotion route, PCA-8 and the ratings the film sample is the larger
+source, as over clips. For the two direct embeddings the split now varies more. The result
+is stable against everything the code controls (the seed); what remains uncertain is the
+dataset itself.
 
-**Reproducibility check.** Under seed 42 the new script reproduces the per-repeat scores of
-the main analysis (`cv_corrected.json`) exactly, for every route.
+**Reproducibility check.** Under seed 42 the film-level script reproduces every clip-level
+per-repeat score of the main analysis (`cv_corrected.json`) and the clip-level seed means of
+`metrics_stability.json` exactly (107 numbers).
 
-Figure: `figures/stability_repeats.pdf` (left: the 10 repeats per route; right: the mean
-under each of the five seeds).
+Figure: `figures/stability_repeats.pdf`, film level (dots and boxes: the 10 repeats per
+route under seed 42; black dashes: the 10-repeat mean under each of the five seeds).
 
 ---
 
@@ -316,14 +335,14 @@ figure can never disagree with a table.
 
 | figure | shows |
 |---|---|
-| `indomain_eerola5` | every representation and route on 5 genres, with 95 % intervals and both chance levels |
-| `stability_repeats` | the 10 repeats per route, and the mean under each of 5 seeds |
-| `metric_family` | the routes under 7 metrics, as distance above random guessing |
+| `indomain_eerola5` | every representation and route on 5 genres, **film level** with 95 % intervals, the clip-level score as a hollow marker, and both chance levels |
+| `stability_repeats` | the 10 repeats per route, and the mean under each of 5 seeds (film level) |
+| `metric_family` | the routes under 7 metrics, as distance above random guessing (film-level headline first, the rest per clip) |
 | `stage1_r2` | emotion-prediction R² per emotion × representation (heatmap) |
-| `ablation` | removing each emotion: difference to all eight, with intervals |
+| `ablation` | removing each emotion: difference to all eight, with intervals (film level) |
 | `signatures` | each genre's emotional signature, Eerola vs Blockbuster side by side |
 | `zero_shot` | Eerola → Blockbuster: emotion 0.511 vs PCA-8 0.421 vs direct 0.407 |
-| `cross_dataset` | both transfer directions and the pooled design |
+| `cross_dataset` | both transfer directions and the pooled design (film level) |
 
 ![In-domain, five genres: every route with 95 % intervals](../figures/indomain_eerola5.png)
 
@@ -350,8 +369,8 @@ directions reproduce exactly; the pooled numbers move slightly and the conclusio
 | emotion route / direct / PCA-8 | 0.424 / 0.421 / 0.398 | **0.432 / 0.428 / 0.405** |
 | emotion vs direct | +0.003, p = 0.906 | **+0.004, p = 0.850** |
 
-Once both datasets are in training, the two routes tie: the emotion advantage is a
-generalisation advantage.
+Once both datasets are in training, the two routes tie. (Scored per film, section 10, the
+pooled design is still a tie.)
 
 ---
 
@@ -382,24 +401,31 @@ and Hamming loss 0.218, better than every real model. Macro-F1 gives each genre 
 weight, so it cannot be won by ignoring the rare ones.
 
 **Is the emotion route better in-domain or not?**
-At the standard decision threshold, yes: ahead of every direct representation in all 10
-repeats and all 5 seeds, significant under the film bootstrap (p = 0.042) and borderline
-under Nadeau–Bengio (p = 0.151). With per-genre thresholds tuned on the training data, the
-routes converge and the lead is not significant. So in-domain it "loses nothing and is
-ahead at the default operating point", not "better under every metric".
+Scored per film (the headline), yes against direct audio: 0.469 vs 0.375 for VGGish
+(+0.095, p = 0.047), ahead in all 10 repeats and all 5 seeds. It is not significantly ahead
+of MusiCNN (p = 0.079) or the PCA-8 control (p = 0.326), and PCA-8 itself beats VGGish
+under every seed, so part of the gain is compression. Over clips the lead is +0.040,
+significant under the film bootstrap (p = 0.042) and borderline under Nadeau–Bengio
+(p = 0.151). With per-genre thresholds tuned on the training data, the routes converge over
+clips and the lead is not significant. So in-domain it "loses nothing and is ahead at the
+default operating point", not "better under every metric".
 
 **Then what is left of the main claim?**
-The cross-dataset result: 0.511 vs 0.407 (p = 0.018) from Eerola to Blockbuster, the
-reverse direction agreeing (p < 0.001), a tie once both datasets are in training
-(p = 0.850), and interpretable predictions whose emotional signatures replicate on a second
-dataset (r = 0.836). The advantage is a generalisation advantage; the thesis says so.
+The emotion route is clearly ahead where the genre classifier is trained on the 41 Eerola
+films: in-domain (5 and 8 genres) and from Eerola to Blockbuster (0.511 vs 0.407,
+p = 0.018). It is level where the classifier is trained on the 110 Blockbuster films or on
+both datasets. The reverse direction agrees in sign (+0.077 per film) but is not
+significant (p = 0.127). And its predictions are interpretable: the emotional signatures
+replicate on a second dataset (r = 0.836). The thesis calls this an advantage under scarce
+data and under a change of dataset (section 10).
 
 **Would threshold tuning also erase the zero-shot advantage?**
 Unknown: not tested yet (open item 2).
 
 **How stable are the numbers?**
-Very: the 10-repeat mean moves by at most 0.008 between seeds, and the emotion lead over
-VGGish stays between +0.037 and +0.059 under every seed. The main uncertainty is which
+Very. Per film, the 10-repeat mean moves by at most 0.015 between seeds, and the emotion lead
+over VGGish stays between +0.093 and +0.128 under every seed. Over clips the figures are
+0.008 and +0.037 to +0.059. The main uncertainty is which
 41 films the dataset contains (bootstrap SE about 0.02).
 
 **Why is the box-office analysis not in the thesis?**

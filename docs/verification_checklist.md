@@ -1,7 +1,7 @@
 # Thesis verification checklist
 
 Everything you should read again, decide, or check yourself before submission, collected
-from the whole project (state: 7 October 2026, Overleaf commit `1d38f31`). Tick items off as
+from the whole project (state: 7 October 2026, Overleaf commit `739943d`). Tick items off as
 you go. Sections A and B are the ones that need you; C to E are the record of what was
 found wrong and corrected, so you can confirm you agree with each correction.
 
