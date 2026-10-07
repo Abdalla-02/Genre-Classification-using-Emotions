@@ -26,6 +26,9 @@ torchvggish==0.2              # VGGish -- the bridge to the Blockbuster dataset
 joblib==1.4.2
 tqdm==4.66.4
 
+# ── Documents: experiments/export_current_state.py (.md -> .docx; LibreOffice for .pdf) ──
+python-docx==1.2.0
+
 # ── Interactive exploration only; imported by no experiment script ──────────
 # (the experiments are plain .py files under experiments/, so this block can be
 #  dropped for a leaner install)

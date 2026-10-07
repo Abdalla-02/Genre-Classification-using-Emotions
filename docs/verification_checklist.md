@@ -1,7 +1,7 @@
 # Thesis verification checklist
 
 Everything you should read again, decide, or check yourself before submission, collected
-from the whole project (state: 7 October 2026, Overleaf commit `8412658`). Tick items off as
+from the whole project (state: 7 October 2026, Overleaf commit `74c62c2`). Tick items off as
 you go. Sections A and B are the ones that need you; C to E are the record of what was
 found wrong and corrected, so you can confirm you agree with each correction.
 
@@ -12,13 +12,13 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 ## A. Only you can do these
 
 - [ ] **AI-usage declaration** (last page). Written by the assistant from the repository
-  and Overleaf history. Check every line, then fill the three red notes:
+  and Overleaf history. Check every line, then fill the remaining red notes:
   - [ ] any other tool you used (translation, grammar checker, other chatbots), or delete
         the note;
   - [ ] how you read, revised and adapted the drafted chapters (Introduction, Methods,
         Evaluation, Discussion);
-  - [ ] the level for Chapter 7, the abstract and the list of contributions, once you
-        have written them;
+  - [x] the level for Chapter 7, the abstract and the list of contributions: filled in on
+        Overleaf ("edited", 6 Oct);
   - [ ] the date next to the signature (its red box is also the cause of the one
         remaining "overfull box" warning; it disappears when you type the date).
   - Facts it states that you should confirm: models **Claude Opus 5** (9-22 Sep 2026) and

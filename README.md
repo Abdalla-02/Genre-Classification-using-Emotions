@@ -72,8 +72,10 @@ Implementation/
 │   └── evaluation/           # Repeated CV, confidence intervals, significance tests
 ├── docs/                     # current_state.md (latest supervisor meeting),
 │                             # briefing_full.md (complete briefing), README.md
-│                             # (technical log), literature reviews, thesis LaTeX
-└── results/                  # Machine-readable experiment output (JSON) + plots
+│                             # (technical log), verification_checklist.md,
+│                             # literature reviews, thesis LaTeX (docs/latex/)
+├── figures/                  # Result figures (PDF + PNG), drawn by experiments/make_figures.py
+└── results/                  # Machine-readable experiment output (JSON)
 ```
 
 ## Data
@@ -100,7 +102,9 @@ Experiments are plain Python scripts, runnable from the project root, e.g.:
 python experiments/features/verify_data.py              # load + clean + assert dataset counts
 python experiments/evaluation/exp_cv_corrected.py       # the headline Eerola numbers (~27 min)
 python experiments/cross_dataset/exp_zero_shot.py       # train on Eerola, test on Blockbuster (zero-shot)
-python experiments/diagnostics/exp_box_office.py        # box office vs the soundtrack (exploratory)
+python experiments/evaluation/exp_metrics_stability.py  # every route under 13 metrics; SD over repeats, folds, films, seeds
+python experiments/diagnostics/exp_box_office.py        # box office vs the soundtrack (exploratory, not in the thesis)
+python experiments/make_figures.py                      # redraw every figure in figures/ from the results files
 python experiments/show_results.py                      # list every saved result; render one as tables
 ```
 
@@ -115,6 +119,8 @@ Where to read:
 - `docs/README.md` — the full technical log, one section per experiment.
 - `results/README.md` — what each machine-readable results file contains and how to
   render it.
+- `docs/verification_checklist.md` — what to re-read and check before submission, and
+  every correction made along the way.
 
 ## Reproducibility
 

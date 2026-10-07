@@ -1,18 +1,16 @@
-# Ready-to-paste thesis sections — how to use them
+# Thesis LaTeX: what is in this folder
 
-The eight `.tex` files here are drafts of thesis sections, written from the saved results.
-They were checked against the Overleaf project as it stood on 23 September 2026
-(Overleaf commit `4ebbe0a`):
+**Current state (7 Oct 2026, Overleaf commit `74c62c2`).** The thesis lives on Overleaf.
+Chapters 1 to 6 are written there and compile with 0 errors; Chapter 7, the abstract and
+the list of contributions are held back for the author to write.
 
-- **Numbers:** every figure traces to a file in `results/`, or was re-verified by
-  re-running the script that prints it. The exceptions are listed at the end.
-- **Citations:** every citation key exists in `bib/library.bib` on Overleaf.
-- **Cross-references:** every `\ref` resolves, either to a label the thesis already has
-  or to one defined by another section here. The paste order below takes care of that.
-- **Terminology:** a *clip* (never "excerpt") and a *dataset* (never "corpus")
-  throughout, and numbers are written 0.xxx.
+| folder / file | what it is |
+|---|---|
+| `chapters/` | copies of the Overleaf chapters as they are now (Introduction, Methods, Evaluation, Discussion, the Conclusions skeleton). After editing Overleaf, copy the changed chapter here |
+| `held_back/` | drafts taken out of the Overleaf build: abstract, Conclusions and Future Work, the contributions list, the box-office section |
+| the eight `.tex` files at this level | the **original paste-ready sections** of 23 September. Superseded by `chapters/`; kept for the record |
 
-**Nothing has been pasted into Overleaf.** These are for you to read, adapt and add.
+What remains to check before submission is in `docs/verification_checklist.md`.
 
 ## Held back from the thesis: `held_back/`
 
@@ -45,7 +43,7 @@ adapted to each other.
 |---|---|---|
 | `chapters/0_intro.tex` | `chapter/0_intro.tex` | motivation, the research questions, contributions, structure |
 | `chapters/2_analysis.tex` | `chapter/2_analysis.tex` | Methods: datasets and the three label spaces, representations, Stage 1 (incl. the three derived features), Stage 2, baselines, the evaluation protocol, implementation; the pipeline figure in TikZ |
-| `chapters/3_evaluation.tex` | `chapter/3_evaluation.tex` | every result, with the figures; **new section "Robustness: Choice of Metric and Stability"** (supervisor notes 1 and 2) and the Blockbuster box-office analysis (note 3) |
+| `chapters/3_evaluation.tex` | `chapter/3_evaluation.tex` | every result, with the figures; **new section "Robustness: Choice of Metric and Stability"** (supervisor notes 1 and 2). The box-office analysis (note 3) was in it until 7 Oct and is now in `held_back/box_office.tex` |
 | `chapters/discussion.tex` | `chapter/discussion.tex` | interpretation, limitations, relation to prior work |
 | `chapters/4_conclusion.tex` | `chapter/4_conclusion.tex` | now only the headings and labels; the draft is in `held_back/` |
 | `held_back/abstract.tex` | the abstract on the title page | held back since 6 Oct (see above) |
@@ -54,14 +52,17 @@ adapted to each other.
 folder to the Overleaf project root (the PDFs only; the PNGs are previews). Every figure
 is drawn by `experiments/make_figures.py` from `results/*.json`.
 
-**Before pasting, search each file for `% CITATION NEEDED`.** Three places need a
-reference that is not in `bib/library.bib` yet: librosa (McFee et al., 2015); PyTorch,
-Hugging Face transformers and scikit-learn; and threshold tuning for F1 (Lipton et al.,
-2014). Add the BibTeX entries, then the `\citep`.
-
-Nothing has been compiled on Overleaf yet. Replace one chapter at a time and recompile.
+The references these chapters needed (librosa, PyTorch, transformers, scikit-learn,
+Lipton et al. 2014, LAION-CLAP) were added to `bib/library.bib` on 5 Oct, and all 36 entries
+were checked against Crossref and OpenAlex.
 
 ---
+
+# History: the original paste plan (23 September 2026)
+
+Everything below describes how the eight original sections were meant to be pasted into
+the Overleaf skeleton. It is **no longer needed**: the chapters in `chapters/` replaced
+it, and they are on Overleaf. It is kept as the record of where each section came from.
 
 ## Three rules before pasting
 
@@ -106,17 +107,18 @@ The skeleton notes on Overleaf list the facts and where they are for each of the
   ablation block.
 - **Evaluation → "Error analysis"** — technical log §7c, §7e.
 - **Evaluation → "Cross-Corpus Transfer", point (5)** — the reverse direction (Blockbuster →
-  Eerola, +0.050, p < 0.001) and the pooled design (+0.003, p = 0.906), from
+  Eerola, +0.050, p < 0.001) and the pooled design (+0.004, p = 0.850 since the 5×5 re-run), from
   `results/cross_dataset_cv.json`. `cross_dataset_transfer.tex` covers only Eerola →
   Blockbuster.
 - **Evaluation → "Blockbuster in-domain"** — `results/blockbuster_deep.json`.
-- **Evaluation → "Box Office"** — `results/box_office.json`, one short exploratory paragraph.
+- **Evaluation → "Box Office"** — `results/box_office.json`, one short exploratory paragraph
+  (written, then removed from the thesis on 7 Oct).
 - **Methods → Datasets, Stage 1, Stage 2, Baselines, Implementation** — plain facts,
   listed in the notes.
 
 ---
 
-## Also fix on Overleaf when you get to it
+## Also fix on Overleaf when you get to it (both done by 6 Oct)
 
 **Fundamentals, "Metrics", the macro-F1 paragraph** says a trivial classifier "scores
 *better* than every real model on both exact-match accuracy and Hamming loss". Whether

@@ -28,24 +28,32 @@ experiment that follows the same conventions renders without touching it.
 
 ## The files
 
-| file | what it answers | progress log |
-|---|---|---|
-| `cv_corrected.json` | **The Eerola results to quote.** The same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side, and a check that the old numbers reproduce exactly. | §21 |
-| `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Does emotion beat direct audio, and is it significant? Default vs nested-CV-tuned `C`. | §11, §11b |
-| `blockbuster_deep.json` | Blockbuster under the **same protocol** as Eerola: repeated CV, tuned `C`, cue-level arms, full 140-feature MIR. | §17 |
-| `zero_shot.json` | **Train on Eerola, test on Blockbuster without training on it.** Also the in-domain reproduction of Ma et al. (2021). | §15 |
-| `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | §16 |
-| `w2v_layer_sweep.json` | Which wav2vec 2.0 layer to pool — the control that makes §16's negative result defensible. | §16.2 |
-| `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on an independent corpus? | §17.5 |
-| `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | §18 |
-| `cross_dataset_cv.json` | Cross-validation in **every direction**: Eerola→Blockbuster, the reverse, and both corpora pooled. | §19 |
-| `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | §22.1 |
-| `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Eerola, exploratory, n = 37. | §20, §22.2 |
-| `box_office_blockbuster.json` | The same question on the **110 Blockbuster films**: gross against per-film classification quality under six per-film metrics (in-domain and zero-shot), predicted emotions, genre, cross-validated prediction of gross, and all 140 MIR descriptors, with Benjamini–Hochberg correction. | §22.3 |
-| `model_search.json` | Does any other model or feature combination beat the baseline? (No.) | §7d |
+"In the thesis" says whether the thesis quotes the file: **yes**, **superseded** (kept as
+the record of a corrected result; quote its successor instead) or **no** (analysis kept in
+the repository but left out of the thesis).
+
+| file | what it answers | in the thesis | progress log |
+|---|---|---|---|
+| `cv_corrected.json` | **The Eerola results to quote.** The same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side, and a check that the old numbers reproduce exactly. | yes (Ch. 5 in-domain levels, ablation) | §21 |
+| `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | yes (Section 5.4, metric table, stability figure) | §22.1 |
+| `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Default vs nested-CV-tuned `C`; Nadeau–Bengio `p_limit`. | superseded: `cv_corrected.json` repeats its Nadeau–Bengio p and `p_limit` (`old_metric_*` fields), so quote from there | §11, §11b |
+| `blockbuster_deep.json` | Blockbuster under the **same protocol** as Eerola: repeated CV, tuned `C`, cue-level arms, full 140-feature MIR. | yes (Blockbuster in-domain) | §17 |
+| `zero_shot.json` | **Train on Eerola, test on Blockbuster without training on it** (quote the strict, source-scaler regime). Also the in-domain reproduction of Ma et al. (2021). | yes (the main transfer result, 0.511 vs 0.407) | §15 |
+| `cross_dataset_cv.json` | Transfer in **every direction**: Eerola→Blockbuster, the reverse, and both datasets pooled. The pooled design was re-run at its default 5×5 on 7 Oct 2026 (the earlier file held a 3×5 run). | yes (cross-dataset figure, Discussion table) | §19, §22.4 |
+| `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on Blockbuster (r = 0.836)? | yes (signatures figure) | §17.5 |
+| `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | superseded by the `ablation` block of `cv_corrected.json` | §18 |
+| `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | yes (Stage-1 table) | §16 |
+| `w2v_layer_sweep.json` | Which wav2vec 2.0 layer to pool, the control that makes §16's negative result defensible. | yes (Methods, one sentence) | §16.2 |
+| `model_search.json` | Does any other model or feature combination beat the baseline? (No.) | yes (Methods: other classifiers tried, none better) | §7d |
+| `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Eerola, exploratory, n = 37. | **no** (author's decision, 7 Oct 2026) | §20, §22.2 |
+| `box_office_blockbuster.json` | The same question on the **110 Blockbuster films**: gross against per-film classification quality under six per-film metrics (in-domain and zero-shot), predicted emotions, genre, cross-validated prediction of gross, and all 140 MIR descriptors, with Benjamini–Hochberg correction. | **no** (draft text kept in `docs/latex/held_back/box_office.tex`) | §22.3 |
 
 `clip_length_by_genre.png` is the one non-JSON file here — a figure from
-`experiments/features/clip_length_analysis.py`, kept because §5–§6 argue from it.
+`experiments/features/clip_length_analysis.py`, kept because §5–§6 argue from it. The
+thesis figures are in `figures/` (see "Running the experiments" below).
+
+Some numbers in the thesis come from experiments that only print their output; they are
+listed, with their scripts, in `docs/verification_checklist.md` (section D).
 
 ---
 
@@ -64,10 +72,21 @@ described at the end.
 }
 ```
 
-`mean` is the average Macro-F1 over all folds. `ci_lo`/`ci_hi` are the **95 % confidence
-interval computed over the per-repeat means**, not over the individual folds — folds inside
-one repeat share training data and are not independent observations, so using all 50 would
-understate the interval.
+What `mean` averages depends on the file's scoring protocol (log §21):
+
+- **Pooled per repeat** (`cv_corrected.json`, `metrics_stability.json`): macro-F1 is
+  computed once per repeat on all clips' out-of-fold predictions, and `mean` is the average
+  of those 10 repeat scores. This is the protocol the thesis quotes. `ci_lo`/`ci_hi` are the
+  95 % interval from the film bootstrap; `pooled_repeat_min`/`_max` (or `sd`, `min`, `max`
+  in `metrics_stability.json`) describe the 10 repeats. `cv_corrected.json` also keeps the
+  old per-fold score of the same arm as `old_metric_mean`, and `C_selected` counts how
+  often each regularisation strength was chosen.
+- **Per fold** (`statistical_power.json`, `blockbuster_deep.json`, `emotion_ablation.json`):
+  `mean` is the average over all 50 folds, and `ci_lo`/`ci_hi` are the 95 % interval over
+  the per-repeat means, not over the individual folds. Folds inside one repeat share
+  training data and are not independent, so using all 50 would understate the interval.
+  On Eerola this per-fold score is biased low by 0.02–0.03, because a fold that lacks a
+  rare genre scores it 0; on Blockbuster (110 films) the bias is negligible.
 
 **Single-split experiments key the score `macro_f1` instead of `mean`** and carry
 `macro_precision` / `macro_recall` beside it, because there are no folds to average: the
@@ -93,6 +112,23 @@ against one reference rather than pairwise.
 | `p_limit` | the *p* this test converges to with **infinite** repeats. If `p_limit > 0.05`, more computation can never make the comparison significant — only more films can |
 | `win_rate` | fraction of folds on which `a` beats `b`; parameter-free and often more intuitive than *p* |
 
+The fields above are the **Nadeau–Bengio** form (`statistical_power.json`,
+`blockbuster_deep.json`, `emotion_ablation.json`). The pooled-protocol files test with the
+**paired film bootstrap** instead:
+
+```json
+{ "a": "VGGish -> predicted emotion(11), OOF-trained", "b": "VGGish-128 (direct)",
+  "diff": 0.040, "ci_lo": 0.001, "ci_hi": 0.084, "p_two_sided": 0.042,
+  "repeat_win_rate": 1.0, "old_metric_p_corrected": 0.151, "old_metric_p_limit": 0.130 }
+```
+
+`p_two_sided` comes from resampling films with replacement (2000 draws in
+`cv_corrected.json`, 1000 per metric in `metrics_stability.json`, which adds a `metric`
+field), and `repeat_win_rate` is the share of the 10 repeats that `a` wins. In
+`cv_corrected.json` the `old_metric_*` fields carry the Nadeau–Bengio test of the same pair
+on the per-fold scores. **The thesis reports both tests** (bootstrap p = 0.042,
+Nadeau–Bengio p = 0.151 for the comparison above).
+
 A comparison block is a **list** when the pairs are arbitrary (`a` vs `b`), and a **dict
 keyed by the comparison's name** when there is a fixed set of them — `zero_shot.json →
 bootstrap`, where the difference is `diff_mean` and the *p* is `p_two_sided` because it
@@ -109,6 +145,9 @@ comparisons properly paired. This is the material for any re-analysis: a differe
 significance test, a different aggregation, a box plot, or simply checking that a reported
 mean is what the folds actually say.
 
+Pooled-protocol files add **`per_repeat_pooled`**: `{arm: [10 values]}`, the score of each
+repeat on its pooled out-of-fold predictions. These are the numbers whose mean is quoted.
+
 ---
 
 ## Recipes
@@ -117,17 +156,19 @@ mean is what the folds actually say.
 
 ```python
 import json
+d = json.load(open("results/cv_corrected.json"))["subset5"]
+print(d["arms"]["VGGish -> predicted emotion(11), OOF-trained"]["mean"])   # 0.417, the emotion route
 d = json.load(open("results/blockbuster_deep.json"))
 print(d["logreg"]["arms"]["MIR-140 (full)"]["mean"])          # 0.585
 ```
 
-**Check that a mean matches its folds.**
+**Check that a mean matches its repeats.**
 
 ```python
 import json, numpy as np
-d = json.load(open("results/statistical_power.json"))["subset5"]["tuned"]
-for arm, folds in d["per_fold"].items():
-    print(f"{arm:40} stored {d['arms'][arm]['mean']:.3f}  recomputed {np.mean(folds):.3f}")
+d = json.load(open("results/cv_corrected.json"))["subset5"]
+for arm, reps in d["per_repeat_pooled"].items():
+    print(f"{arm:48} stored {d['arms'][arm]['mean']:.3f}  recomputed {np.mean(reps):.3f}")
 ```
 
 **Plot the fold distribution** (a box plot shows overlap that a mean ± CI hides):
@@ -156,6 +197,15 @@ plt.tight_layout(); plt.savefig("results/blockbuster_folds.png", dpi=150)
   the paper's own figures.
 - **scalars** — a plain `{field: value}` block: `design`, `summary`, and the single
   bootstrap results in `cross_dataset_cv.json` (`emotion_vs_direct`, `emotion_vs_pca8`).
+- **metric family** — `metrics_stability.json → metrics → <metric>` holds one `arms` block
+  per metric (each arm `mean`, `sd`, `min`, `max` over the 10 repeats) plus that metric's
+  `definition`, `lower_is_better` and simulated `base_rate_random_guess`.
+  `route_ranking_by_metric` lists the four audio routes best first under each metric.
+- **stability** — `metrics_stability.json → stability`: under `seed_42`, per arm, the SD
+  over the 10 repeats (`repeat_sd`), over the 50 single folds (`fold_sd`) and the film
+  bootstrap SE (`film_bootstrap_se_approx`, the 95 % interval width / 3.92); under
+  `seeds`, the 10-repeat mean for each of five master seeds and their SD (`sd_of_means`).
+  `docs/current_state.md` (section 3) explains what each of these measures.
 
 If a new experiment invents a shape none of these covers, `show_results.py` would silently
 drop it — so `audit_consistency.py` checks that every results file still renders a
@@ -191,7 +241,7 @@ python experiments/cross_dataset/exp_zero_shot.py            # zero_shot.json
 python experiments/cross_dataset/exp_cross_dataset_cv.py     # cross_dataset_cv.json
 python experiments/cross_dataset/exp_signature_replication.py  # signature_replication.json
 
-# --- Box office (exploratory) -----------------------------------------------------------
+# --- Box office (exploratory; not in the thesis) ----------------------------------------
 python experiments/features/fetch_box_office.py              # OPTIONAL, needs internet: refreshes data/processed/Eerola_DB/box_office.csv
 python experiments/diagnostics/exp_box_office.py             # box_office.json  (+ box_office_per_film.csv)
 python experiments/features/fetch_box_office_blockbuster.py  # OPTIONAL, needs internet: refreshes data/processed/Blockbuster/box_office.csv
@@ -210,7 +260,10 @@ unless given `--fresh`, because resolving 110 titles from scratch takes up to ha
 hour under Wikimedia's rate limit.
 
 `make_figures.py` draws every figure from the results files, never from typed-in
-numbers, so re-run it after re-running an experiment.
+numbers, so re-run it after re-running an experiment. The eight figures in the thesis are
+`indomain_eerola5`, `stability_repeats`, `metric_family`, `stage1_r2`, `ablation`,
+`signatures`, `zero_shot` and `cross_dataset`. It also draws `box_office_blockbuster`,
+which the thesis no longer uses.
 
 ### Experiments that only print their tables
 
@@ -227,7 +280,7 @@ python experiments/genre/exp_genre.py                   # stage 2: genre from em
 python experiments/genre/exp_genre_subset.py            # the 5-genre subset
 python experiments/genre/exp_emotion_genre.py           # Cohen's d signatures per genre (quoted in Fundamentals)
 python experiments/diagnostics/exp_error_analysis.py    # per-genre errors, over-prediction
-python experiments/diagnostics/exp_threshold_fix.py     # why raising the threshold does not help
+python experiments/diagnostics/exp_threshold_fix.py     # one global threshold, older protocol (per-genre tuning: metrics_stability.json)
 python experiments/diagnostics/exp_learning_curve.py    # would more data help?
 python experiments/diagnostics/exp_clip_length.py       # full-clip vs 10.24 s window (needs raw audio)
 python experiments/cross_dataset/exp_blockbuster.py         # first Blockbuster baseline (superseded by blockbuster_deep)
