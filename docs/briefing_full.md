@@ -677,6 +677,30 @@ Spearman with permutation p and Benjamini–Hochberg correction.
 Reading: the music mirrors the scale and kind of production (big action/sci-fi scores),
 not success as such. Exploratory, non-causal.
 
+### 4.13 Film-level macro-F1 becomes the headline (7 Oct, author's decision)
+
+`results/film_level.json` (`exp_film_level.py`; technical log, section 23). Every genre evaluation is now
+scored **per film**: clip probabilities averaged per film, genre predicted at ≥ 0.5,
+macro-F1 over the 41 (43) films. Clip level is kept beside every result; the thesis states
+that the unit was chosen after the clip-level results were known. Reproduces all 107
+clip-level numbers of `cv_corrected` and `metrics_stability` exactly.
+
+- 5 genres: ratings 0.521, **emotion route 0.469**, PCA-8 0.418, MusiCNN 0.385, VGGish
+  0.375, AST 0.307 (random 0.301). Emotion vs VGGish +0.095, p=0.047 (10/10 repeats);
+  vs MusiCNN p=0.079 and vs PCA-8 p=0.326 **not significant**; predicted vs rated
+  emotion −0.053, p=0.053 (ratings ahead in every repeat); PCA-8 beats VGGish under
+  every seed.
+- 8 genres: emotion 0.352 vs VGGish 0.256 (+0.096, p=0.002) and AST 0.234 (p<0.001).
+- Blockbuster → Eerola at film level: +0.077, **p=0.127**. The clip-level p<0.001 of section 4.9
+  resampled clips, not films; a correction.
+- Pooled design at film level: a tie (−0.023, p=0.571); emotion leads on the Eerola films,
+  direct audio on the Blockbuster films.
+- Zero-shot and Blockbuster in-domain: unchanged (already per film).
+
+Reading: the emotion route is clearly ahead where the classifier is trained on the 41
+Eerola films (in-domain and zero-shot), level where it is trained on the 110 Blockbuster
+films or both. Details and tables: `current_state.md` section 10.
+
 ## 5. Numbers that changed — and why
 
 Several previously reported figures moved. **In every case the evaluation got stricter, not
@@ -693,6 +717,8 @@ the models better.** This is worth stating plainly rather than quietly updating.
 | 338 clips | 346 clips | corrected inclusion rule |
 | **VGGish 0.582 ≫ MFCC 0.455 on Blockbuster** | **VGGish 0.593 vs full MIR 0.585, p = 0.787** | see below |
 | Blockbuster emotion 0.565, behind VGGish 0.582 | emotion 0.616, VGGish 0.593 | proper protocol + per-cue bridging |
+| Eerola headline scored per clip: pipeline 0.417 vs VGGish 0.377 | **scored per film: 0.469 vs 0.375** (clip level kept beside it) | genre is a film label; author's decision 7 Oct (section 4.13) |
+| Blockbuster → Eerola +0.050, p < 0.001 | +0.077 per film, **p = 0.127** | the old bootstrap resampled clips, which are not independent |
 
 ### The VGGish-vs-MFCC correction
 

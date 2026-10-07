@@ -2,7 +2,8 @@
 
 **Can a soundtrack's emotion predict a film's genre?** This page covers only what happened
 since the fourth meeting (24 September 2026): the six notes from that meeting, what came
-of them, and the work on the thesis text that followed (state: 7 October 2026). Earlier rounds, the three routes (direct audio, emotion route, PCA-8
+of them, the work on the thesis text that followed, and the switch to film-level scoring
+(section 10; state: 7 October 2026). Earlier rounds, the three routes (direct audio, emotion route, PCA-8
 control), the definitions, every result table and the previous Q&A are in
 `briefing_full.md`; every experiment in detail is in the technical log, `docs/README.md`
 (section 22 for this round).
@@ -363,7 +364,11 @@ generalisation advantage.
    analysis raises that has not been run.
 3. **AI-usage declaration**: two red notes (other tools, how the drafts were revised) and
    the date. The level for the held-back parts is filled in ("edited").
-4. **Read the whole thesis once**, using `docs/verification_checklist.md`: what to check,
+4. **Film-level switch (section 10)**: read the rewritten parts of Methods (evaluation
+   protocol), Evaluation and Discussion, and the new Limitations paragraph "Unit of
+   evaluation". The held-back drafts in `docs/latex/held_back/` still quote clip-level
+   numbers; use the film-level ones when writing the abstract and Chapter 7.
+5. **Read the whole thesis once**, using `docs/verification_checklist.md`: what to check,
    the numbers that no results file stores, every correction made, and what to look at in
    the PDF (the two TikZ diagrams have not been checked visually).
 
@@ -402,10 +407,89 @@ It was done (section 4) and its answer is clear: classification quality does not
 gross, and the emotions of the score relate to it only through the budget. It answers a
 question about commercial success rather than about genre, so it was left out.
 
+**Why score per film rather than per clip, and was that chosen to favour the method?**
+Genre is a film label, identical for all of a film's clips, and Blockbuster is scored per
+film anyway. The choice was made after the clip-level results were known, which the thesis
+states; the clip-level score of the same predictions is reported beside every result, and
+the conclusions that differ between the two (MusiCNN, PCA-8, predicted vs rated emotion,
+the reverse transfer) are named.
+
 **How was AI used?**
 As a programming and writing assistant (Claude Opus 5 and 5.5): code, documentation, chapter
 drafts, figures and reference checking. The declaration at the end of the thesis lists
 every part and its level; the research questions, datasets and decisions are the author's.
+
+## 10. Since then: film-level macro-F1 is the headline (7 Oct)
+
+**Decision.** Every genre evaluation in the thesis is now scored **per film**: the
+predicted probabilities of a film's clips are averaged, a genre is predicted at ≥ 0.5, and
+macro-F1 is computed over the films (41 on five genres, 43 on eight). The clip-level score
+of the same predictions stays beside every result as the check.
+
+**Why it is defensible.**
+- Genre is a film label: all clips of a film carry identical genres (checked for all 43).
+- Clip scoring weights a film by its number of clips (1 to 18, median 8) and counts a
+  film's clips as independent decisions.
+- Blockbuster rows are films, and the zero-shot test is scored per film, so every result
+  of the thesis is now on one unit.
+
+**The catch, stated in the thesis.**
+- The unit was chosen *after* the clip-level results were known. The Limitations say so,
+  and that is why the clip-level numbers stay.
+- Comedy has 4 films and Horror 5, so the film scores spread about twice as much as the
+  clip scores.
+- Nadeau–Bengio needs a score per test fold (about 8 films), which is not defined per film.
+  The thesis therefore gives the film bootstrap, plus the clip-level Nadeau–Bengio beside it.
+
+**How.** New experiment `experiments/evaluation/exp_film_level.py` →
+`results/film_level.json` (same arms, folds and seeds as before). It reproduces all 107
+clip-level numbers of `cv_corrected.json` and `metrics_stability.json` exactly.
+`exp_cross_dataset_cv.py` gained film-level blocks; its clip-level numbers are unchanged.
+
+| five genres, 41 films | film level | clip level |
+|---|---:|---:|
+| ratings (ceiling) | 0.521 | 0.428 |
+| **emotion route** | **0.469** | 0.417 |
+| PCA-8 control | 0.418 | 0.372 |
+| best direct: MusiCNN / VGGish | 0.385 / 0.375 | 0.363 / 0.377 |
+| AST | 0.307 | 0.371 |
+| random guess / most frequent | 0.301 / 0.169 | 0.308 / 0.168 |
+
+| comparison (film bootstrap) | film level | clip level |
+|---|---|---|
+| emotion vs VGGish | +0.095, p = 0.047, 10/10 repeats | +0.040, p = 0.042 (NB 0.151) |
+| emotion vs AST | +0.160, p < 0.001 | +0.047, p = 0.030 |
+| emotion vs MusiCNN | +0.085, **p = 0.079** | +0.054, p = 0.018 |
+| emotion vs PCA-8 | +0.051, **p = 0.326** | +0.045, p = 0.029 |
+| predicted vs rated emotion | **−0.053, p = 0.053, 0/10** | −0.011, p = 0.325 |
+| PCA-8 vs VGGish | +0.043, p = 0.163; positive under every seed | −0.005, p = 0.771 |
+
+**Other settings at film level.**
+- **8 genres:** emotion 0.352 vs VGGish 0.256 (+0.096, p = 0.002) and AST 0.234
+  (+0.116, p < 0.001); random guess 0.221.
+- **Blockbuster → Eerola:** 0.430 vs 0.356, +0.077, **p = 0.127, no longer significant**.
+  The clip-level p < 0.001 came from a bootstrap over *clips*, which overstates certainty;
+  this is a correction.
+- **Both datasets in training:** emotion 0.529, direct 0.553 (−0.023,
+  p = 0.571), a tie as before. On the Eerola films of the pooled folds emotion leads
+  (0.537 vs 0.413); on the Blockbuster films direct audio leads.
+- **Zero-shot and Blockbuster in-domain:** unchanged (already scored per film).
+- **Ablation:** no single emotion is needed (at most ±0.010). Fear alone (0.485 vs
+  0.521) now loses a little in every repeat, but not significantly (p = 0.082).
+
+**What the thesis now claims.**
+- In-domain on Eerola the emotion route is clearly ahead of direct audio: about +0.10 vs
+  VGGish, positive under every seed (+0.093 to +0.128).
+- Part of that gain is compression: PCA-8 also beats VGGish under every seed
+  (+0.033 to +0.059), and emotion vs PCA-8 is not significant in-domain.
+- Predicted emotions now fall a little short of the human ratings.
+- Across datasets: zero-shot significant; reverse direction same sign but not significant;
+  pooled a tie.
+
+The main result is reworded from "a generalisation advantage" to **"an advantage when the
+genre classifier is trained on few films (Eerola) or applied to another dataset; level
+when trained on the 110 Blockbuster films"**. Thesis: Overleaf `d84fe44`, `8658777`;
+technical log, section 23.
 
 ---
 
@@ -416,11 +500,16 @@ random guess):
 
 | setting | emotion route | best direct audio | Δ emotion − best direct | random guess |
 |---|---:|---:|---:|---:|
-| Eerola, 5 genres, in-domain (default threshold) | 0.417 | 0.377 (VGGish) | +0.040 | 0.308 |
-| Eerola, 5 genres, in-domain (tuned thresholds) | 0.440 | 0.429 (VGGish) | +0.011 | 0.308 |
-| Eerola → Blockbuster, zero-shot (6 genres) | **0.511** | 0.407 (VGGish) | **+0.105** | 0.292 |
-| Blockbuster, in-domain (6 genres) | 0.616 | 0.621 (VGGish, majority vote over cues) | −0.005 | 0.295 |
+| Eerola, 5 genres, in-domain, **film level** (headline) | **0.469** | 0.385 (MusiCNN) | +0.084 | 0.301 |
+| Eerola, 5 genres, in-domain, clip level (default threshold) | 0.417 | 0.377 (VGGish) | +0.040 | 0.308 |
+| Eerola, 5 genres, in-domain, clip level (tuned thresholds) | 0.440 | 0.429 (VGGish) | +0.011 | 0.308 |
+| Eerola, 8 genres, in-domain, film level | 0.352 | 0.256 (VGGish) | +0.095 | 0.221 |
+| Eerola → Blockbuster, zero-shot (6 genres, films) | **0.511** | 0.407 (VGGish) | **+0.105** | 0.292 |
+| Blockbuster → Eerola (6 genres, 41 films) | 0.430 | 0.356 (VGGish) | +0.074 | 0.243 |
+| Blockbuster, in-domain (6 genres, films) | 0.616 | 0.621 (VGGish, majority vote over cues) | −0.005 | 0.295 |
 
+On five genres at film level the best direct representation is MusiCNN; against VGGish,
+the emotion route's own input, the lead is +0.095 (p = 0.047).
 On Blockbuster in-domain the best direct route is VGGish classified per cue with a majority
 vote over each film's cues (the architecture of Ma et al., 0.621). It is 0.005 ahead of the
 emotion route. This pair was not tested; for scale, majority voting's own lead over plain
@@ -428,7 +517,8 @@ averaging (+0.028) is not significant (p = 0.388). The matched comparison with t
 (0.593) is the one the thesis tests: +0.023, Nadeau–Bengio p = 0.536. The zero-shot Δ of
 +0.105 is the difference of the two scores; the bootstrap mean quoted below is +0.106.
 
-In-domain significance (default threshold): emotion vs VGGish film bootstrap p = 0.042,
-Nadeau–Bengio p = 0.151. Zero-shot: +0.106 [+0.015, +0.186], p = 0.018. On 8 genres the
-pipeline scores 0.318 against 0.276 for AST (most-frequent baseline 0.102). The 5-genre
+In-domain significance (default threshold): emotion vs VGGish at film level +0.095,
+film bootstrap p = 0.047; over clips p = 0.042 (bootstrap) and 0.151 (Nadeau–Bengio). Zero-shot: +0.106 [+0.015, +0.186], p = 0.018. On 8 genres the
+pipeline scores 0.352 at film level against 0.234 for AST (clip level 0.318 against 0.276;
+most-frequent baseline 0.102 over clips). The 5-genre
 random guess is 0.308, the simulated value stored in `metrics_stability.json`.

@@ -1482,6 +1482,96 @@ and non-causal; a budget buys orchestra, marketing and franchise at once.
   clip, CLAP a 10 s crop); two table rows in `docs/latex/cross_dataset_transfer.tex` had
   a collapsed `\` and "datasets's" from the corpus→dataset rename (fixed).
 
+## 23. Film-level macro-F1 becomes the headline (7 Oct 2026, author's decision)
+
+**Why.** Genre is a film label, identical for every clip of a film (checked: true for all
+43 films). Clip-level scoring weights a film by its clip count (1 to 18, median 8) and
+counts a film's clips as independent decisions. Blockbuster rows are films, and the
+zero-shot test is scored per film, so film level puts every genre evaluation on one unit.
+The metric family of §22.1 had shown film-level macro-F1 as a strong separator, and the
+author chose it as the headline, **with clip level kept beside every result** (the choice
+was made after seeing results, so the thesis says so in its Limitations).
+
+**How.** `experiments/evaluation/exp_film_level.py` → `results/film_level.json`. Same arms,
+folds and seeds as `exp_cv_corrected.py`; the clip probabilities of a film are averaged,
+genre predicted at ≥ 0.5, macro-F1 over films per repeat on the pooled out-of-fold
+predictions. Film bootstrap with the 2000 draws of `cv_corrected.json`. Nadeau–Bengio is
+not defined per film (a test fold holds ~8 films), so the clip-level NB is stored beside
+each comparison. **Reproduction check: all 107 clip-level numbers (cv_corrected per-repeat
+scores and p-values, metrics_stability seed means and film-level means) identical.**
+`exp_cross_dataset_cv.py` gained `film_level` blocks for design 2 and the pooled design
+(clip-level numbers unchanged, checked against the previous file).
+
+**Caveat.** Comedy has 4 films, Horror 5 (8 genres: Documentary 2, Biography 3), so film
+scores spread about twice as much as clip scores (repeat SD 0.017–0.055 vs 0.009–0.023).
+
+### 23.1 Five genres, 41 films (film level; clip level in brackets)
+
+| arm | film-level | 95 % CI | clip |
+|---|---:|---|---:|
+| ratings (ceiling) | 0.521 | [0.440, 0.589] | 0.428 |
+| wav2vec 2.0 → predicted emotion | 0.475 | [0.401, 0.531] | 0.419 |
+| **VGGish → predicted emotion (the pipeline)** | **0.469** | [0.392, 0.529] | 0.417 |
+| PCA-8 control | 0.418 | [0.324, 0.495] | 0.372 |
+| MusiCNN | 0.385 | [0.293, 0.453] | 0.363 |
+| VGGish direct | 0.375 | [0.295, 0.439] | 0.377 |
+| CLAP | 0.371 | [0.284, 0.429] | 0.361 |
+| MIR | 0.367 | [0.296, 0.423] | 0.363 |
+| AST | 0.307 | [0.249, 0.355] | 0.371 |
+| wav2vec 2.0 direct | 0.249 | [0.201, 0.291] | 0.326 |
+| most frequent / random guess | 0.169 / 0.301 | | 0.168 / 0.308 |
+
+| comparison | film Δ, p (boot), won | clip Δ, p (boot), p (NB) |
+|---|---|---|
+| emotion vs VGGish | +0.095, p=0.047, 10/10 | +0.040, 0.042, 0.151 |
+| emotion vs AST | +0.160, p<0.001, 10/10 | +0.047, 0.030, 0.110 |
+| emotion vs MusiCNN | +0.085, **p=0.079**, 10/10 | +0.054, 0.018, 0.073 |
+| emotion vs PCA-8 | +0.051, **p=0.326**, 9/10 | +0.045, 0.029, 0.122 |
+| emotion vs ratings | **−0.053, p=0.053, 0/10** | −0.011, 0.325, 0.497 |
+| PCA-8 vs VGGish | **+0.043, p=0.163, 8/10** | −0.005, 0.771, 0.804 |
+| wav2vec emotion vs wav2vec direct | +0.222, p<0.001 | +0.091, <0.001, 0.012 |
+
+What changes against the clip-level reading: (1) the lead over direct audio roughly
+doubles; (2) it is **not significant against MusiCNN or the PCA-8 control**; (3) the
+**PCA-8 control beats VGGish under every seed** (+0.033 to +0.059), so compression explains
+part of the gain; (4) the **ratings beat predicted emotions in every repeat** (just short
+of significance); (5) AST collapses (Comedy F1 0.02, Horror 0.00 per film).
+
+### 23.2 Eight genres, ablation, stability
+
+- 8 genres: ratings 0.359, pipeline 0.352, VGGish 0.256, AST 0.234 (random 0.221, most
+  frequent 0.103). Pipeline vs AST +0.116 (p<0.001), vs VGGish +0.096 (p=0.002), both 10/10.
+  Documentary is never predicted correctly (F1 0 for every route).
+- Ablation (ratings, all eight 0.521): any single emotion removed changes the score by at
+  most 0.010, none significant (smallest p 0.101). Subsets lose a little, consistently but
+  not significantly: fear only 0.485 (p=0.082), 3-d scales 0.487 (p=0.066), valence+energy
+  0.498, fear+valence 0.496, five discrete 0.512.
+- Stability (seeds 42, 1–4): repeat SD 0.017–0.055 (emotion 0.026), bootstrap SE
+  0.027–0.044, SD of seed means 0.008–0.015 (emotion means 0.463–0.489). Emotion − VGGish
+  +0.093 to +0.128, − AST +0.140 to +0.173, − PCA-8 +0.040 to +0.070, all positive under
+  every seed.
+
+### 23.3 Cross-dataset designs at film level (`cross_dataset_cv.json → film_level`)
+
+| design | emotion | PCA-8 | direct | emotion vs direct |
+|---|---:|---:|---:|---|
+| Eerola → Blockbuster (already films) | 0.508 | 0.465 | 0.395 | +0.115, p=0.016 |
+| Blockbuster → Eerola, 41 films | 0.430 | 0.373 | 0.356 | +0.077, **p=0.127** |
+| pooled, film level (5×5) | 0.529 | 0.539 | 0.553 | −0.023, p=0.571 (NB) |
+| — Eerola films of the pooled folds | 0.537 | 0.460 | 0.413 | |
+| — Blockbuster films | 0.539 | 0.552 | 0.573 | |
+
+**A correction found on the way.** The clip-level Blockbuster → Eerola p<0.001 (§19) came
+from a bootstrap that resamples **clips**, which are not independent. Resampling films
+(the film-level test) gives p=0.127. The reverse direction therefore agrees in sign but
+is not significant; the thesis says so.
+
+**What the thesis now says.** The emotion route is clearly ahead where the genre
+classifier is trained on the 41 Eerola films (in-domain on 5 and 8 genres, and zero-shot
+to Blockbuster) and level where it is trained on the 110 Blockbuster films or on both. The
+"generalisation advantage" of the clip-level reading becomes "an advantage under scarce
+data and under a change of dataset". Thesis on Overleaf: commits `d84fe44`, `8658777`.
+
 ## Next steps
 
 - **Content chapters** — drafted in `docs/latex/chapters/` (§22.4); the student reads,

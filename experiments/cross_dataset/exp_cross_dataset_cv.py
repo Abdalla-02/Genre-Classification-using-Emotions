@@ -20,6 +20,13 @@ Arms: VGGish-128 direct, PCA-8 control, VGGish -> emotion (per cue) -> genre. Ev
 transform is fitted inside the training portion. Macro-F1 throughout; uncertainty from a
 paired bootstrap over test films (designs 1-2) or repeated folds (design 3).
 
+Film level (the thesis headline, see exp_film_level.py). Blockbuster rows are films, so
+design 1 is film-level already. Where Eerola clips are tested (design 2 and the Eerola
+share of design 3), each block also has a ``film_level`` entry: the clip probabilities of
+a film are averaged and a genre predicted if the average is at least 0.5, then macro-F1 is
+computed over films. The clip-level numbers are computed from the same predictions and
+are unchanged by this addition.
+
 If the emotion bottleneck's advantage is real it should show in all three; if it appears
 only in the direction reported so far, that is what this script is for finding out.
 
@@ -65,8 +72,29 @@ def fit_reg(X, E):
 
 
 def logreg_fit_predict(Xtr, Ytr, gtr, Xte):
+    """-> (0.5 decisions, probabilities) for Xte."""
     C = select_logreg_C(Xtr, Ytr, gtr)
-    return np.asarray(build_classifier("logreg", C=C).fit(Xtr, Ytr).predict(Xte))
+    clf = build_classifier("logreg", C=C).fit(Xtr, Ytr)
+    P = np.column_stack([p[:, 1] if p.shape[1] == 2 else np.zeros(len(Xte))
+                         for p in clf.predict_proba(Xte)])
+    return np.asarray(clf.predict(Xte)), P
+
+
+def to_films(Y, P, groups):
+    """Average clip probabilities per group (film); a film's labels are its clips'."""
+    uniq, inv = np.unique(groups, return_inverse=True)
+    M = np.zeros((len(uniq), len(groups)))
+    M[inv, np.arange(len(groups))] = 1
+    M /= M.sum(1, keepdims=True)
+    return (M @ Y > 0.5).astype(int), (M @ P >= 0.5).astype(int)
+
+
+def random_guess_films(Yf, n_sim=2000):
+    """Expected macro-F1 of a base-rate random guess over films."""
+    rng = np.random.default_rng(config.SEED)
+    prev = Yf.mean(0)
+    return float(np.mean([f1_score(Yf, (rng.random(Yf.shape) < prev).astype(int),
+                                   average="macro", zero_division=0) for _ in range(n_sim)]))
 
 
 def bootstrap(Yte, pa, pb, n=2000):
@@ -84,7 +112,9 @@ def bootstrap(Yte, pa, pb, n=2000):
 
 
 def three_arms(Xtr, Ytr, gtr, Xte, Ftr, Fte):
-    """Fit the three arms on (Xtr, Ftr) and predict Xte / Fte. Scaler+PCA fit on train."""
+    """Fit the three arms on (Xtr, Ftr) and predict Xte / Fte. Scaler+PCA fit on train.
+
+    Each arm -> (0.5 decisions, probabilities)."""
     sc = StandardScaler().fit(Xtr)
     pca = PCA(8, random_state=config.SEED).fit(sc.transform(Xtr))
     return {
@@ -157,12 +187,14 @@ def main() -> None:
     Fe_oof = oof_eerola_features(Xe, Ee, ge)
     res1 = three_arms(Xe, Ye, ge, Xb, Fe_oof, cue_emotion_features(reg_full))
     out["eerola_to_blockbuster"] = print_block(
-        "1. EEROLA -> BLOCKBUSTER  (train 319 clips, test 110 films, zero-shot)", res1, Yb)
+        "1. EEROLA -> BLOCKBUSTER  (train 319 clips, test 110 films, zero-shot)",
+        {k: v[0] for k, v in res1.items()}, Yb)
 
     # ---- 2. Blockbuster -> Eerola --------------------------------------------
     # 5-fold over Eerola films: regressor on the Eerola train fold, genre classifier on
     # ALL of Blockbuster, score the Eerola test fold. Pool the out-of-fold predictions.
     pred2 = {k: np.zeros_like(Ye) for k in (DIRECT, PCA8, EMO)}
+    prob2 = {k: np.zeros(Ye.shape) for k in (DIRECT, PCA8, EMO)}
     for tr, te in GroupKFold(5).split(Xe, Ye, ge):
         # regressor may use every rated clip whose FILM is in the training fold
         train_films = set(ge[tr])
@@ -172,9 +204,16 @@ def main() -> None:
         Fe_te = build_emotion_features(reg.predict(Xe[te]))
         r = three_arms(Xb, Yb, gb, Xe[te], Fb, Fe_te)
         for k in pred2:
-            pred2[k][te] = r[k]
+            pred2[k][te], prob2[k][te] = r[k]
     out["blockbuster_to_eerola"] = print_block(
         "2. BLOCKBUSTER -> EEROLA  (train 110 films, test Eerola clips out-of-fold)", pred2, Ye)
+    film2 = {}
+    for k in prob2:
+        Yf, film2[k] = to_films(Ye, prob2[k], ge)
+    out["blockbuster_to_eerola"]["film_level"] = print_block(
+        "2. BLOCKBUSTER -> EEROLA, FILM LEVEL  (41 Eerola films)", film2, Yf)
+    out["blockbuster_to_eerola"]["film_level"]["random_guess"] = random_guess_films(Yf)
+    out["blockbuster_to_eerola"]["film_level"]["n_films"] = int(len(Yf))
 
     # ---- 3. pooled repeated GroupKFold --------------------------------------
     print(f"\n3. POOLED  (both corpora, {args.repeats}x5 repeated GroupKFold by film)")
@@ -187,6 +226,9 @@ def main() -> None:
     # has no positive in that corpus's share of the fold) and are averaged with nanmean
     scores_by_corpus = {c: {k: np.full(len(folds), np.nan) for k in scores}
                         for c in ("eerola", "blockbuster")}
+    # film level: every test row becomes a film (Blockbuster rows already are)
+    fscores = {k: np.zeros(len(folds)) for k in scores}
+    fscores_eerola = {k: np.full(len(folds), np.nan) for k in scores}
     for i, (tr, te) in enumerate(folds):
         e_tr = tr[is_e[tr]]                      # Eerola rows in the training fold
         m = np.isin(ge_all, list(set(gp[e_tr])))
@@ -196,7 +238,7 @@ def main() -> None:
         F_b = cue_emotion_features(reg)
         Fp = np.vstack([F_e, F_b])
         r = three_arms(Xp[tr], Yp[tr], gp[tr], Xp[te], Fp[tr], Fp[te])
-        for k, pred in r.items():
+        for k, (pred, prob) in r.items():
             scores[k][i] = f1_score(Yp[te], pred, average="macro", zero_division=0)
             for c, mask in (("eerola", is_e[te]), ("blockbuster", ~is_e[te])):
                 if mask.sum() >= 10:
@@ -204,6 +246,14 @@ def main() -> None:
                     scores_by_corpus[c][k][i] = f1_score(
                         Yp[te][mask][:, present], pred[mask][:, present],
                         average="macro", zero_division=0)
+            Yf, Pf = to_films(Yp[te], prob, gp[te])
+            fscores[k][i] = f1_score(Yf, Pf, average="macro", zero_division=0)
+            em = is_e[te]
+            Yfe, Pfe = to_films(Yp[te][em], prob[em], gp[te][em])
+            if len(Yfe) >= 3:
+                present = Yfe.sum(0) > 0
+                fscores_eerola[k][i] = f1_score(Yfe[:, present], Pfe[:, present],
+                                                average="macro", zero_division=0)
         print(f"  fold {i + 1}/{len(folds)}", end="\r", flush=True)
     print(" " * 30, end="\r")
     n_test = float(np.mean([len(te) for _, te in folds])); n_train = len(Xp) - n_test
@@ -224,8 +274,28 @@ def main() -> None:
     out["pooled"] = {"arms": rows3, "comparisons": cmp,
                      "per_fold": {k: v.tolist() for k, v in scores.items()}}
 
+    print("\n  film level (every test row a film):")
+    rowsf, cmpf = {}, {}
+    for k in fscores:
+        ci = repeat_ci(fscores[k], 5)
+        rowsf[k] = {"mean": ci.mean, "ci_lo": ci.lo, "ci_hi": ci.hi,
+                    "eerola_part": float(np.nanmean(fscores_eerola[k])),
+                    "blockbuster_part": float(np.nanmean(scores_by_corpus["blockbuster"][k]))}
+        print(f"  {k:44}{ci.mean:>10.3f}{rowsf[k]['eerola_part']:>13.3f}"
+              f"{rowsf[k]['blockbuster_part']:>14.3f}")
+    n_test_f = float(np.mean([len(np.unique(gp[te])) for _, te in folds]))
+    n_train_f = len(np.unique(gp)) - n_test_f
+    for a, b in ((EMO, DIRECT), (EMO, PCA8)):
+        d = diff_ci(fscores[a], fscores[b], 5)
+        _, p = corrected_paired_t(fscores[a], fscores[b], n_train_f, n_test_f)
+        cmpf[f"{a} vs {b}"] = {"diff": d.mean, "p_corrected": p,
+                               "win_rate": win_rate(fscores[a], fscores[b])}
+        print(f"  {a} vs {b.split(' ')[0]}: {d.mean:+.3f}  p={p:.3f}")
+    out["pooled"]["film_level"] = {"arms": rowsf, "comparisons": cmpf,
+                                   "per_fold": {k: v.tolist() for k, v in fscores.items()}}
+
     RESULTS.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
     print(f"\nwrote {out_path}" + ("" if full else "  (reduced run: scratch file)"))
 
 

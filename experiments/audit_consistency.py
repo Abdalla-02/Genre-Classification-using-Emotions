@@ -277,6 +277,26 @@ short = [
     (bb['B_emotion_vs_gross']['mean anger']['spearman'], 2, '+', 'box office (Blockbuster): anger'),
     (bb['confounds']['budget']['rho'], 2, '+', 'box office (Blockbuster): budget'),
 ]
+# the film-level headline (log 23): its own reproduction check must hold, and the
+# briefing must quote the numbers the thesis now leads with
+fl = j('film_level')
+if not fl['reproduction_check']['all_match']:
+    problems.append('[film_level] its clip-level scores no longer reproduce cv_corrected / '
+                    'metrics_stability: ' + ', '.join(fl['reproduction_check']['mismatches'][:3]))
+EMO_ = 'VGGish -> predicted emotion(11), OOF-trained'
+fl_cmp = {(c['a'], c['b']): c for c in fl['subset5']['comparisons']}
+xfl = xc['blockbuster_to_eerola']['film_level']
+short += [
+    (fl['subset5']['arms'][EMO_]['mean'], 3, '', 'film level: emotion route, 5 genres'),
+    (fl['subset5']['arms']['VGGish-128 (direct)']['mean'], 3, '', 'film level: VGGish, 5 genres'),
+    (fl['subset5']['arms']['ground-truth emotion(11) [ceiling]']['mean'], 3, '', 'film level: ratings'),
+    (fl['subset5']['random_guess_film'], 3, '', 'film level: random guess, 5 genres'),
+    (fl_cmp[(EMO_, 'VGGish-128 (direct)')]['p_two_sided'], 3, '', 'film level: p emotion vs VGGish'),
+    (fl_cmp[(EMO_, 'PCA-8(VGGish) [control]')]['p_two_sided'], 3, '', 'film level: p emotion vs PCA-8'),
+    (fl['full8']['arms'][EMO_]['mean'], 3, '', 'film level: emotion route, 8 genres'),
+    (xfl['arms']['VGGish -> emotion (per cue) -> genre']['macro_f1'], 3, '', 'film level: B->E emotion'),
+    (xfl['emotion_vs_direct']['p'], 3, '', 'film level: B->E p'),
+]
 for value, nd, sign, label in short:
     quoted = f'{value:{sign}.{nd}f}'
     if quoted not in cur:

@@ -48,6 +48,9 @@ DESCRIPTIONS = {
     "cv_corrected": "Eerola re-run with the two CV corrections: pooled per-repeat "
                     "macro-F1 and out-of-fold emotion training; old vs new side by side "
                     "(section 21)",
+    "film_level": "THE EEROLA HEADLINE: every genre evaluation scored per film (clip "
+                  "probabilities averaged per film), clip level beside it; 5 and 8 genres, "
+                  "ablation, stability over seeds (section 23)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "

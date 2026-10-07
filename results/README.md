@@ -16,7 +16,7 @@ worth quoting is worth saving in machine-readable form.
 
 ```bash
 python experiments/show_results.py                          # list all result files
-python experiments/show_results.py statistical_power        # print its tables as Markdown
+python experiments/show_results.py film_level               # print its tables as Markdown
 python experiments/show_results.py --all --out report.md    # everything into one file
 ```
 
@@ -34,12 +34,13 @@ the repository but left out of the thesis).
 
 | file | what it answers | in the thesis | progress log |
 |---|---|---|---|
-| `cv_corrected.json` | **The Eerola results to quote.** The same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side, and a check that the old numbers reproduce exactly. | yes (Ch. 5 in-domain levels, ablation) | §21 |
+| `film_level.json` | **The Eerola headline (since 7 Oct 2026): every genre evaluation scored per film.** Clip probabilities averaged per film, genre predicted at ≥ 0.5, macro-F1 over the 41 (43) films. Same arms, folds and seeds as `cv_corrected.json`; every arm and comparison also carries its clip-level score, the clip-level Nadeau–Bengio p and `p_limit`; 5 and 8 genres, ablation, stability over five seeds, per-genre F1, film counts per genre. Its reproduction check (107 numbers of `cv_corrected` and `metrics_stability`) must hold. | yes (all in-domain genre results, Tables and Figures of Ch. 5) | §23 |
+| `cv_corrected.json` | The **clip-level** Eerola results: the same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side. Until 7 Oct the headline; now the clip-level check beside `film_level.json`. | yes, as the clip-level values | §21 |
 | `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | yes (Section 5.4, metric table, stability figure) | §22.1 |
 | `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Default vs nested-CV-tuned `C`; Nadeau–Bengio `p_limit`. | superseded: `cv_corrected.json` repeats its Nadeau–Bengio p and `p_limit` (`old_metric_*` fields), so quote from there | §11, §11b |
 | `blockbuster_deep.json` | Blockbuster under the **same protocol** as Eerola: repeated CV, tuned `C`, cue-level arms, full 140-feature MIR. | yes (Blockbuster in-domain) | §17 |
 | `zero_shot.json` | **Train on Eerola, test on Blockbuster without training on it** (quote the strict, source-scaler regime). Also the in-domain reproduction of Ma et al. (2021). | yes (the main transfer result, 0.511 vs 0.407) | §15 |
-| `cross_dataset_cv.json` | Transfer in **every direction**: Eerola→Blockbuster, the reverse, and both datasets pooled. The pooled design was re-run at its default 5×5 on 7 Oct 2026 (the earlier file held a 3×5 run). | yes (cross-dataset figure, Discussion table) | §19, §22.4 |
+| `cross_dataset_cv.json` | Transfer in **every direction**: Eerola→Blockbuster, the reverse, and both datasets pooled. The pooled design was re-run at its default 5×5 on 7 Oct 2026 (the earlier file held a 3×5 run). The `film_level` blocks of the reverse and pooled designs (Eerola clips averaged per film) are what the thesis quotes; the clip-level blocks beside them are unchanged. Note: the clip-level reverse-direction bootstrap resamples clips, not films (§23.3). | yes (cross-dataset figure, Discussion table) | §19, §22.4, §23.3 |
 | `signature_replication.json` | Do the **emotion→genre signatures** found on Eerola reappear on Blockbuster (r = 0.836)? | yes (signatures figure) | §17.5 |
 | `emotion_ablation.json` | **Which emotions carry the genre signal?** Leave-one-out over the eight, plus theory-motivated subsets. | superseded by the `ablation` block of `cv_corrected.json` | §18 |
 | `waveform_vs_spectrogram.json` | Does a **raw-waveform** model (wav2vec 2.0) match spectrogram front-ends? Both pipeline stages. | yes (Stage-1 table) | §16 |
@@ -72,11 +73,20 @@ described at the end.
 }
 ```
 
-What `mean` averages depends on the file's scoring protocol (log §21):
+What `mean` averages depends on the file's scoring protocol (log §21, §23):
 
-- **Pooled per repeat** (`cv_corrected.json`, `metrics_stability.json`): macro-F1 is
+- **Pooled per repeat, per film** (`film_level.json`, the thesis headline): the out-of-fold
+  clip probabilities of each repeat are averaged per film, a genre is predicted at ≥ 0.5,
+  and macro-F1 is computed over the films; `mean` is the average of the 10 repeat scores
+  (listed in `per_repeat_film`). `ci_lo`/`ci_hi` are the film bootstrap, `repeat_sd`,
+  `repeat_min`, `repeat_max` describe the repeats, `per_genre_f1` follows the block's
+  `genres`, and `clip_level_mean` (with its interval) is the clip-level score of the same
+  predictions. Its comparisons carry `p_two_sided` (film bootstrap at film level) plus
+  `clip_level_diff`, `clip_level_p_two_sided`, `clip_level_nb_p` and
+  `clip_level_nb_p_limit`.
+- **Pooled per repeat, per clip** (`cv_corrected.json`, `metrics_stability.json`): macro-F1 is
   computed once per repeat on all clips' out-of-fold predictions, and `mean` is the average
-  of those 10 repeat scores. This is the protocol the thesis quotes. `ci_lo`/`ci_hi` are the
+  of those 10 repeat scores. The thesis quotes it as the clip-level check. `ci_lo`/`ci_hi` are the
   95 % interval from the film bootstrap; `pooled_repeat_min`/`_max` (or `sd`, `min`, `max`
   in `metrics_stability.json`) describe the 10 repeats. `cv_corrected.json` also keeps the
   old per-fold score of the same arm as `old_metric_mean`, and `C_selected` counts how
@@ -156,8 +166,8 @@ repeat on its pooled out-of-fold predictions. These are the numbers whose mean i
 
 ```python
 import json
-d = json.load(open("results/cv_corrected.json"))["subset5"]
-print(d["arms"]["VGGish -> predicted emotion(11), OOF-trained"]["mean"])   # 0.417, the emotion route
+d = json.load(open("results/film_level.json"))["subset5"]
+print(d["arms"]["VGGish -> predicted emotion(11), OOF-trained"]["mean"])   # 0.469, the emotion route (film level)
 d = json.load(open("results/blockbuster_deep.json"))
 print(d["logreg"]["arms"]["MIR-140 (full)"]["mean"])          # 0.585
 ```
@@ -226,7 +236,8 @@ exactly. Reduced debug runs (`--repeats 2`, `--quick`) write a separate
 
 ```bash
 # --- Eerola, in-domain ------------------------------------------------------------------
-python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json  (~27 min, 12 cores) -- the numbers to quote
+python experiments/evaluation/exp_film_level.py              # film_level.json  (~38 min, 12 cores) -- THE numbers to quote (film level)
+python experiments/evaluation/exp_cv_corrected.py            # cv_corrected.json  (~27 min, 12 cores) -- the clip-level values
 python experiments/evaluation/exp_metrics_stability.py       # metrics_stability.json  (~19 min, 12 cores) -- metric family + stability
 python experiments/evaluation/exp_statistical_power.py       # statistical_power.json  (the original per-fold run)
 python experiments/genre/exp_emotion_ablation.py             # emotion_ablation.json

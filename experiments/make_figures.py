@@ -78,8 +78,10 @@ def route_colour(name: str) -> str:
 
 # --------------------------------------------------------------------------- #
 def fig_indomain():
-    """Eerola 5 genres: every representation, pooled macro-F1 with film-bootstrap CI."""
-    d = load("cv_corrected")
+    """Eerola 5 genres: every representation, film-level macro-F1 with film-bootstrap CI.
+
+    The clip-level score of the same predictions is drawn as a hollow marker beside it."""
+    d = load("film_level")
     if not d:
         return
     arms = d["subset5"]["arms"]
@@ -102,34 +104,26 @@ def fig_indomain():
         c = route_colour(name)
         ax.errorbar(v["mean"], i, xerr=[[v["mean"] - v["ci_lo"]], [v["ci_hi"] - v["mean"]]],
                     fmt="o", color=c, ms=5, capsize=2, lw=1.2)
+        ax.scatter(v["clip_level_mean"], i, s=18, facecolors="none", edgecolors=c, lw=0.9,
+                   zorder=3, label="clip level, same predictions" if i == 0 else None)
         ax.text(v["ci_hi"] + 0.004, i, f"{v['mean']:.3f}", va="center", fontsize=7)
     ax.set_yticks(range(len(rows)), [r[0] for r in rows])
     floor_line(ax, arms["dummy"]["mean"], "most-frequent baseline")
-    prev = _prevalence_floor(d)
-    if prev:
-        floor_line(ax, prev, "base-rate random guess", ":")
-    floor_legend(ax, "lower left")
-    ax.set_xlabel("macro-F1 (pooled per repeat, 10×5 grouped CV; bars: 95% film bootstrap)")
-    ax.set_xlim(0.14, 0.5)
+    floor_line(ax, d["subset5"]["random_guess_film"], "base-rate random guess", ":")
+    floor_legend(ax, "lower right")
+    ax.set_xlabel("film-level macro-F1, 41 films (bars: 95% film bootstrap)")
+    hi = max(v["ci_hi"] for _, v in rows)
+    ax.set_xlim(0.14, hi + 0.05)
     save(fig, "indomain_eerola5")
 
 
-def _prevalence_floor(d):
-    """Base-rate random guess on the 5-genre subset: the mean genre prevalence.
-    Taken from metrics_stability.json, where it is simulated, if that file exists."""
-    m = load("metrics_stability")
-    if m:
-        return m["metrics"]["macro_f1"]["base_rate_random_guess"]
-    return None
-
-
 def fig_repeat_spread():
-    """Stability: the 10 pooled repeat scores per route, and the means under 5 seeds."""
-    d = load("cv_corrected")
-    m = load("metrics_stability")
+    """Stability: the 10 film-level repeat scores per route, and the means under 5 seeds."""
+    d = load("film_level")
     if not d:
         return
-    pr = d["subset5"]["per_repeat_pooled"]
+    pr = d["subset5"]["per_repeat_film"]
+    seeds = d["stability"]["per_seed"]
     keys = [("ground-truth emotion(11) [ceiling]", "ratings\n(ceiling)"),
             ("VGGish -> predicted emotion(11), OOF-trained", "emotion\nroute"),
             ("VGGish-128 (direct)", "direct\nVGGish"),
@@ -145,13 +139,12 @@ def fig_repeat_spread():
                    whiskerprops={"color": c}, capprops={"color": c})
         ax.scatter(i + rng.uniform(-0.12, 0.12, len(v)), v, s=9, color=c, alpha=0.7,
                    zorder=3, label="one repeat (seed 42)" if i == 0 else None)
-        if m:
-            seeds = m["stability"]["seeds"]["per_seed_mean"]
-            sm = [seeds[s][k] for s in seeds]
+        if seeds:
+            sm = [seeds[s][k]["film"] for s in seeds]
             ax.scatter([i + 0.33] * len(sm), sm, marker="_", s=90, color="k", lw=1.2,
                        label="mean of 10 repeats, per seed" if i == 0 else None)
     ax.set_xticks(range(len(keys)), [k[1] for k in keys])
-    ax.set_ylabel("macro-F1")
+    ax.set_ylabel("film-level macro-F1")
     ax.legend(loc="lower left", frameon=False)
     save(fig, "stability_repeats")
 
@@ -161,10 +154,11 @@ def fig_metric_family():
     m = load("metrics_stability")
     if not m:
         return
-    show = [("macro_f1", "macro-F1\n(headline)"), ("macro_f1_tuned_threshold",
+    show = [("film_level_macro_f1", "macro-F1\nper film\n(headline)"),
+            ("macro_f1", "macro-F1\nper clip"), ("macro_f1_tuned_threshold",
             "macro-F1,\ntuned cut"), ("macro_average_precision", "macro AP\n(no cut)"),
-            ("macro_roc_auc", "macro\nROC-AUC"), ("film_level_macro_f1", "macro-F1\nper film"),
-            ("micro_f1", "micro-F1"), ("samples_f1", "samples-F1")]
+            ("macro_roc_auc", "macro\nROC-AUC"), ("micro_f1", "micro-F1"),
+            ("samples_f1", "samples-F1")]
     arms = [("VGGish -> predicted emotion(11), OOF-trained", "emotion route"),
             ("VGGish-128 (direct)", "direct audio (VGGish)"),
             ("AST-768", "direct audio (AST)"),
@@ -212,7 +206,8 @@ def fig_zero_shot():
     p2 = b["predicted-emotion vs PCA-8 control"]["p_two_sided"]
     ax.text(0.99, 1.02, f"film bootstrap: emotion vs direct p = {p1:.3f}, "
             f"vs PCA-8 p = {p2:.3f}", transform=ax.transAxes, ha="right", fontsize=7)
-    ax.set_xlabel("macro-F1 on Blockbuster (6 shared genres), trained on Eerola only")
+    ax.set_xlabel("film-level macro-F1 on the 110 Blockbuster films (6 shared genres), "
+                  "trained on Eerola only")
     ax.set_xlim(0, 0.6)
     save(fig, "zero_shot")
 
@@ -224,18 +219,20 @@ def fig_cross_dataset():
         return
     keys = [("VGGish-128 direct", "direct audio"), ("PCA-8(VGGish) [control]", "PCA-8 control"),
             ("VGGish -> emotion (per cue) -> genre", "emotion route")]
-    blocks = [("eerola_to_blockbuster", "Eerola → Blockbuster", "macro_f1"),
-              ("blockbuster_to_eerola", "Blockbuster → Eerola", "macro_f1"),
-              ("pooled", "both in training (pooled CV)", "mean")]
+    # every design scored per film: Blockbuster rows are films; Eerola clips are averaged
+    # per film (the film_level blocks of designs 2 and 3)
+    blocks = [(d["eerola_to_blockbuster"], "Eerola → Blockbuster", "macro_f1"),
+              (d["blockbuster_to_eerola"]["film_level"], "Blockbuster → Eerola", "macro_f1"),
+              (d["pooled"]["film_level"], "both in training (pooled CV)", "mean")]
     fig, ax = plt.subplots(figsize=(WIDTH, 2.4))
     w = 0.26
     for j, (k, lab) in enumerate(keys):
-        y = [d[b]["arms"][k][f] for b, _, f in blocks]
+        y = [b["arms"][k][f] for b, _, f in blocks]
         ax.bar(np.arange(3) + (j - 1) * w, y, w, color=route_colour(lab), label=lab)
         for x, v in zip(np.arange(3) + (j - 1) * w, y):
             ax.text(x, v + 0.008, f"{v:.2f}", ha="center", fontsize=7)
     ax.set_xticks(range(3), [b[1] for b in blocks])
-    ax.set_ylabel("macro-F1 (6 shared genres)")
+    ax.set_ylabel("film-level macro-F1 (6 genres)")
     ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.15), frameon=False)
     ax.set_ylim(0, 0.62)
     save(fig, "cross_dataset")
@@ -266,8 +263,8 @@ def fig_stage1():
 
 
 def fig_ablation():
-    """Leave-one-emotion-out and theory-driven subsets: difference to all eight."""
-    d = load("cv_corrected")
+    """Leave-one-emotion-out and theory-driven subsets: difference to all eight (film level)."""
+    d = load("film_level")
     if not d:
         return
     comps = [c for c in d["ablation"]["comparisons"]]
@@ -280,7 +277,7 @@ def fig_ablation():
                     fmt="o", color=col, ms=4, capsize=2, lw=1)
     ax.axvline(0, color="k", lw=0.8)
     ax.set_yticks(range(len(comps)), [c["a"] for c in comps])
-    ax.set_xlabel("macro-F1 difference to all eight emotions (ratings; 95% film bootstrap)")
+    ax.set_xlabel("difference to all eight emotions (film-level macro-F1; bars: 95% bootstrap)")
     save(fig, "ablation")
 
 

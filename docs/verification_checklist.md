@@ -1,7 +1,7 @@
 # Thesis verification checklist
 
 Everything you should read again, decide, or check yourself before submission, collected
-from the whole project (state: 7 October 2026, Overleaf commit `74c62c2`). Tick items off as
+from the whole project (state: 7 October 2026, Overleaf commit `8658777`). Tick items off as
 you go. Sections A and B are the ones that need you; C to E are the record of what was
 found wrong and corrected, so you can confirm you agree with each correction.
 
@@ -69,15 +69,31 @@ at in particular:
   what you are willing to defend.
 - [ ] **Discussion.** It interprets the results. Make the interpretation your own; in
   particular "Interpreting the Main Result" and "Why the Bottleneck Helps".
+- [ ] **Film-level switch (7 Oct, Overleaf `d84fe44`, `8658777`).** Every genre number in
+  Methods (evaluation protocol), Evaluation and Discussion was rewritten to film-level
+  macro-F1, with clip level beside it, and six figures and the comparison table were
+  redrawn. The Discussion's main result changed from "a generalisation advantage" to "an
+  advantage when trained on few films or applied to another dataset". Read these parts
+  again in full, and the new Limitations paragraph "Unit of evaluation". The held-back
+  drafts still quote clip-level numbers (each has a note at the top).
 - [ ] **Figures and table legends** were moved out of the captions into the text right
   after the first mention of each figure or table (7 Oct). Check that each legend reads
   naturally where it now stands.
 
 ## C. Claims an examiner is likely to challenge (know your answer)
 
-- [ ] In-domain (5 genres) the emotion route is ahead in every repeat and seed, but
-  **borderline under Nadeau-Bengio** (p = 0.151 vs VGGish) and **not significant once
-  per-genre thresholds are tuned** (+0.011, p = 0.439). The thesis says so.
+- [ ] **The film-level unit was chosen after the clip-level results were known.** The
+  thesis says so (Limitations, "Unit of evaluation") and keeps clip level beside every
+  result. Know the four places where the two disagree: MusiCNN and PCA-8 (significant
+  over clips, not over films), predicted vs rated emotion (level over clips, ratings
+  ahead over films, p = 0.053), and the reverse transfer (significant only under a
+  clip-resampling bootstrap).
+- [ ] In-domain (5 genres, film level) the emotion route is ahead of VGGish by +0.095
+  (p = 0.047) in every repeat and seed, but **not significantly ahead of MusiCNN
+  (p = 0.079) or the PCA-8 control (p = 0.326)**, and the **PCA-8 control itself beats
+  VGGish under every seed**. Over clips it is **borderline under Nadeau-Bengio**
+  (p = 0.151 vs VGGish) and **not significant once per-genre thresholds are tuned**
+  (+0.011, p = 0.439); thresholds were never tuned per film. The thesis says so.
 - [ ] The **zero-shot** result (0.511 vs 0.407, p = 0.018) is one split, one
   representation (VGGish), and partly recall-driven (precision 0.488 vs 0.576 for direct
   audio). A source-tuned threshold was not tested.
@@ -103,13 +119,17 @@ script before submission, or be ready to explain where the number comes from.
 | 3.49 vs 1.87 predicted vs true labels per clip | Evaluation, error analysis | `experiments/diagnostics/exp_error_analysis.py` (older protocol) |
 | learning curve still rising | Evaluation, Discussion | `experiments/diagnostics/exp_learning_curve.py` |
 | Cohen's d per genre (Horror-fear +0.75, the 8-genre signature table) | Fundamentals, Evaluation | `experiments/genre/exp_emotion_genre.py` |
-| random-guess floor "about 0.23" on 8 genres | Fundamentals, Evaluation | mean genre prevalence (a formula, never simulated) |
+| (removed) the 8-genre random-guess floor is now 0.22 at film level, simulated and stored in `film_level.json` | Fundamentals, Evaluation | `exp_film_level.py` |
 | VGGish per-dimension means of the two datasets correlate at r = 0.97 | Methods, Evaluation | earlier zero-shot analysis (log §15) |
 | wav2vec layer 2: R² 0.324 (sweep) vs 0.323 (main run) | Methods | two different runs, both stated |
 
 ## E. Errors found and corrected along the way (confirm you agree)
 
 **Results and method**
+- [ ] **Blockbuster → Eerola significance** (§23.3): the clip-level p < 0.001 came from a
+  bootstrap that resampled clips, which are not independent. Resampling films gives
+  +0.077, p = 0.127. The thesis now says the reverse direction agrees in sign but is not
+  significant.
 - [ ] **Cross-validation scoring** (§21): per-fold macro-F1 scored rare genres as 0 in
   folds that lack them; now scored once per repeat on pooled predictions. All in-domain
   levels rose by 0.02-0.03 (e.g. pipeline 0.394 -> 0.417); rankings unchanged.
