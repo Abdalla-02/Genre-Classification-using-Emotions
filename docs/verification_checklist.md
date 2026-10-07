@@ -1,7 +1,7 @@
 # Thesis verification checklist
 
 Everything you should read again, decide, or check yourself before submission, collected
-from the whole project (state: 7 October 2026, Overleaf commit `8658777`). Tick items off as
+from the whole project (state: 7 October 2026, Overleaf commit `1d38f31`). Tick items off as
 you go. Sections A and B are the ones that need you; C to E are the record of what was
 found wrong and corrected, so you can confirm you agree with each correction.
 
@@ -153,6 +153,14 @@ script before submission, or be ready to explain where the number comes from.
   Prejudice* point at the wrong films (excluded from the box-office analysis).
 
 **Text, found in the examiner-style review (5 Oct) and the consistency pass (6 Oct)**
+- [ ] **Related Work:** LMTD was expanded as "Largest Movie Trailer Dataset"; it is the
+  *Labeled* Movie Trailer Dataset (fixed 7 Oct). Check the "3,500 films, 9 genres" against
+  Behrouzi et al. (2023) yourself.
+- [ ] **Abbreviations and Notations** (appendix) rewritten on 7 Oct from the abbreviations
+  the chapters actually use: about 25 added (e.g. SVM, SVR, kNN, CNN, LSTM, GRU, ICC, CI,
+  AUC, AP, NB, RQ, MSD, LMTD, $p_{boot}$, $p_{NB}$, $p_{lim}$, $\Delta$), three removed that the
+  text never uses (IMV, BR, CV). $p_{limit}$ in Methods is now written $p_{lim}$ as in the
+  Evaluation.
 - [ ] CLAP was cited to the Microsoft model; the checkpoint used is LAION-CLAP, now cited
   as Wu et al. (2023).
 - [ ] The reliability ceiling 0.897 is an intraclass correlation (ICC(C,1)) on 102 matched
