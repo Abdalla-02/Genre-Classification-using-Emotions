@@ -15,6 +15,16 @@ given where it matters.
 
 ## 1. Your notes from the meeting
 
+Your four notes from 8 October, as written down after the meeting:
+
+1. "Blockbuster cross validation (bar chart is ok, but with SD)"
+2. "Common films between Eerola and Blockbuster should be considered in the Evaluation
+   part (leakage)"
+3. "Each genre: F1-score, precision and recall; check the highest model for each genre and
+   maybe make a diagram out of the results"
+4. "More focus in the Evaluation part on only a couple of results, so the reader is not
+   distracted; be more precise in the Discussion and the whole thesis"
+
 | # | Your note | What was done | Result |
 |---|---|---|---|
 | 1 | Blockbuster cross-validation as a bar chart, but with SD | Two bar charts with error bars (section 3) | Blockbuster in-domain: the routes are level; across datasets the error bars show how much a single split can move |
@@ -189,6 +199,122 @@ A film was counted twice in Eerola; fixing it changed every split (section 2).
 It answers a question about commercial success, not genre: classification quality does
 not relate to gross (Eerola ρ = +0.197), and the score's emotions relate to it only
 through the budget (anger ρ = +0.43, budget–gross ρ = +0.78).
+
+---
+
+## 10. For the author: what was added, and how to explain it
+
+*This section is your preparation, not part of the briefing.* For every addition since the
+fifth meeting: where it is in the thesis, how it was computed, what to say, and where the
+weak spot is.
+
+### 10.1 The duplicate film (the change that moved every number)
+
+- **Where:** Chapter 5, Section 5.6 (paragraph "No film occurs in both datasets", last
+  sentences); log section 24; `src/config.py` (`SOUNDTRACK_NAME_FIXES`), applied in
+  `src/features/loader.py`.
+- **What happened:** cross-validation groups clips by the soundtrack name so that a film
+  is never in training and test at once. Clip 256 had the typo "The Portait of a Lady", so
+  the grouping saw two films. That one clip could be tested while the film's other six
+  clips were in training.
+- **How it was fixed:** the loader maps the misspelt name to the correct one before
+  anything else runs. All 16 film-grouped experiments were then re-run in their dependency
+  order (about two hours). Each script first reproduces the stored numbers of the one before
+  it, so the changes come from the merge alone, not from a code change.
+- **What to say:** "While checking the leakage between the datasets I found a leak inside
+  Eerola, fixed it and re-ran everything. The numbers moved by about the size of the split
+  noise; the conclusions changed in one place: the in-domain lead over VGGish went from
+  p = 0.047 to p = 0.052."
+- **Weak spot:** the earlier p = 0.047 was "significant", the new p = 0.052 is not. Do not
+  round it; the thesis says it "just misses".
+
+### 10.2 Note 1: the bar charts with SD
+
+- **Where:** Figure `blockbuster_cv` (Section 5.6.1) and Figure `cross_dataset`
+  (Section 5.6.3), now with error bars; scripts `experiments/make_figures.py`.
+- **Blockbuster in-domain chart:** 10×5 cross-validation over the 110 films. Each bar is
+  the mean over the 50 folds; the **error bar is the SD of the ten repeat means**, i.e. how
+  much the result moves when the films are shuffled into different folds. The p-values
+  beside it are Nadeau–Bengio (there are folds here, so that test works).
+- **Cross-dataset chart:** a transfer direction is one fixed train–test split, so there
+  are no repeats to take an SD over. Its error bar is the **bootstrap SD over the test
+  films** (draw the test films with replacement 2000 times, rescore, take the SD). For the
+  pooled design, which is cross-validated, it is again the SD of the repeat means.
+- **What to say:** "The bars show that a single transfer split can move by ±0.03 to ±0.07,
+  which is why I compare the routes with a paired bootstrap rather than by whether bars
+  overlap."
+- **Weak spot:** the two error bars measure different things (fold shuffling vs which films
+  are sampled). The figure text says which is which; if asked, say that.
+
+### 10.3 Note 2: the leakage check
+
+- **Where:** Chapter 5, Section 5.6, paragraph "No film occurs in both datasets".
+- **How:** every Eerola film's IMDb id was compared with the 110 Blockbuster ids, and the
+  titles were compared exactly and loosely (lower case, punctuation removed). Nothing
+  matched. The release years explain why: Eerola before 2011, Blockbuster 2014–2019.
+- **What to say:** "No film is in both datasets, so the transfer result cannot come from a
+  shared film. The datasets do share composers, e.g. Danny Elfman (*Batman* / *Justice
+  League*), which is a possible stylistic overlap; I name it as a limitation."
+
+### 10.4 Note 3: precision, recall and F1 per genre
+
+- **Where:** Chapter 5, Section 5.4: Figure `per_genre` (heatmap) and Table `per_genre`.
+  Numbers in `results/film_level.json` (`per_genre_precision`, `per_genre_recall`,
+  `per_genre_f1` for every route; `clip_per_genre_*` for clip level).
+- **How:** the same predictions as the headline. Per repeat, all out-of-fold predictions
+  are pooled, each film gets the average of its clips' probabilities, a genre is predicted
+  at ≥ 0.5, and precision, recall and F1 are computed per genre over the 40 films. These
+  are averaged over the ten repeats. Macro-F1 is simply the mean of the five per-genre F1s.
+- **The heatmap:** rows are routes, columns genres; the box marks the best route per genre
+  among the emotion route, PCA-8 and the six direct representations (the ratings and the
+  baseline are shown but not boxed, since they are a ceiling and a floor, not competitors).
+- **What to say:** "The emotion route is the best route for Action, Crime and Comedy. Its
+  advantage is mainly recall: it finds the rare genres (Comedy recall 0.78 vs 0.12), at
+  the price of more false positives. Horror is the exception: although fear defines it, the
+  emotion route predicts Horror for too many films."
+- **Weak spot:** Comedy has 4 films and Horror 5. One film more or less changes their F1 by
+  about 0.2, so the per-genre comparison is a description, not a test. No p-values are
+  given per genre on purpose.
+
+### 10.5 Note 4: a focused Evaluation and Discussion
+
+- **Chapter 5 now has seven sections:** 5.1 Stage 1 → 5.2 RQ1 → 5.3 emotion vs direct
+  audio (one table, four comparisons) → 5.4 per genre → 5.5 emotional signatures → 5.6
+  transfer (Blockbuster in-domain, leakage, zero-shot, three designs) → 5.7 summary.
+- **New Appendix A** (`appendix/supplementary.tex`) holds everything that checks a result
+  without changing it: A.1 all paired comparisons and why Nadeau–Bengio stays borderline,
+  A.2 choice of metric and stability, A.3 the emotion ablation, A.4 the waveform model,
+  A.5 all eight genres, A.6 the reproduction of Ma et al. and cue-level prediction, A.7
+  error analysis. The main text points to each with one sentence.
+- **Chapter 6 (Discussion)** is built around one table of all settings. 6.1 interprets the
+  main result, 6.2 explains why the bottleneck helps where it does (meaning vs
+  compression, little data, domain shift), 6.3 limitations, 6.4 prior work.
+- **What to say:** "The main text now answers the research questions and nothing else;
+  everything that only confirms a result is in the appendix."
+
+### 10.6 Background you may be asked about
+
+- **How Stage 1 is evaluated.** A random forest predicts each of the eight emotion ratings
+  from an audio embedding. It is scored by R² on out-of-fold predictions of five-fold
+  cross-validation grouped by film, over all 360 rated clips, and averaged over the
+  emotions. R² = 0 means "as good as always predicting the mean rating"; the best
+  embeddings reach 0.558, i.e. 62 % of the 0.897 at which two independent listener panels
+  agree with each other.
+- **What "random guess" means.** The base-rate random guess predicts each genre at random
+  with its frequency in the training data (Drama often, Comedy rarely). It is the fair
+  chance floor for macro-F1 (0.309 on 5 genres). The **most-frequent** baseline decides
+  each genre by its majority in training, so in practice it predicts Drama for every film
+  and never a rare genre; it scores much lower (0.168). Always name which floor you quote.
+- **Film level vs clip level.** Film level: average the clip probabilities of a film, then
+  score the film once (the headline). Clip level: score every clip. Film level was chosen
+  after the clip results were known, and the thesis says so; it turned out the *stricter*
+  unit, because over clips more of the comparisons are significant.
+- **The two tests.** The film bootstrap resamples films (a test fold holds about 8 films,
+  so a per-fold t-test cannot be computed per film). Nadeau–Bengio is the corrected t-test
+  over folds, used at clip level. It also charges for which films were used for training,
+  so it is the more conservative test. Adding repeats cannot push its p-value below a floor
+  (p_lim); for every borderline comparison of the emotion route that floor is 0.069 to
+  0.200 (Appendix A.1). Only more films could make those comparisons significant.
 
 ---
 
