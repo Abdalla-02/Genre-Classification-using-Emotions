@@ -292,7 +292,7 @@ open item 3 in `current_state.md`.
 
 ---
 
-## 8. For Overleaf: a paragraph for Appendix A.2
+## 8. For Overleaf: a paragraph for Appendix A.2 (added on 15 Oct 2026)
 
 Suggested place: `appendix/supplementary.tex`, Section "Does the Choice of Metric
 Matter?", directly after the paragraph that ends "…which is why macro-$F_1$ is used.

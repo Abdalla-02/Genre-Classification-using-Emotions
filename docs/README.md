@@ -1672,7 +1672,10 @@ negatives, derived from the per-genre clip precision and recall in `film_level.j
 - Conclusion: Hamming loss and macro-F1 rank the routes almost in reverse; it is the
   recall-driven operating point of §22.1 seen from the other side. Full explanation of
   every metric, and a paste-ready paragraph for Appendix A.2, in
-  `docs/evaluation_metrics.md`. Not yet on Overleaf.
+  `docs/evaluation_metrics.md`. On Overleaf since 15 Oct (Appendix A.2, after the
+  paragraph on the metrics dominated by frequent genres), together with a correction of
+  that paragraph: weighted-F1 is the one metric of its block that the always-Drama dummy
+  does not win.
 
 ## Next steps
 

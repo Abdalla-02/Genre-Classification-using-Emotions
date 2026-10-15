@@ -126,13 +126,31 @@ minus the random guess of that metric; the whiskers are the standard deviation o
 repeats.
 
 The metrics in the last block reward predicting the frequent genres and hardly care about
-the rare ones. Under every one of them the most-frequent baseline, which predicts Drama
-for every clip, beats every model: 0.571 micro-$F_1$ against at most 0.517, an
+the rare ones. Under every one of them except weighted $F_1$, which still scores each genre
+separately, the most-frequent baseline, which predicts Drama for every clip, beats every
+model: 0.571 micro-$F_1$ against at most 0.517, an
 exact-match rate of 0.283 against at most 0.168, and a Hamming loss of
 0.218 against at least 0.311. A metric under which a model that has learned
 nothing ranks first is not a suitable headline for a question about genres such as Horror
 and Comedy, which is why macro-$F_1$ is used. Among the metrics that weight genres equally,
 the emotion route ranks first under both macro-$F_1$ scores and both threshold-free metrics.
+
+Hamming loss deserves a closer look, because under it the emotion route is the weakest
+of the four audio routes (0.406) and even falls behind the random guess (0.323). The
+reason is the number of genres it predicts: 2.35 per clip on average, against 1.54 true
+genres, 1.85 for VGGish and 1.68 for AST. Hamming loss counts each of the five decisions
+per clip equally, so an unnecessary positive costs as much as a missed genre, and for a
+rare genre the lowest loss is reached by never predicting it, which costs only the
+genre's base rate (0.085 for Horror). Split by genre, the emotion route makes fewer
+errors than VGGish on Action (0.371 against 0.411) and Drama (0.356 against 0.396) and
+about as many on Crime; the whole difference comes from Comedy (0.438 against 0.286) and
+Horror (0.403 against 0.235). It predicts these two genres for 148 and 135 of the 329
+clips, although only 40 and 28 carry them. This is the recall-driven operating point
+described below, seen from the other side: macro-$F_1$ rewards finding a rare genre,
+Hamming loss penalises every attempt. The human ratings predict even more genres per clip
+(2.47) and have the highest Hamming loss of all (0.427), so the effect belongs to the
+emotion features themselves, in which a tense crime clip resembles a horror clip, and not
+to errors of the emotion regression.
 
 The decision threshold matters more. When each genre's threshold is chosen to maximise
 $F_1$ on the training fold, every route improves and, over clips, the four routes converge
