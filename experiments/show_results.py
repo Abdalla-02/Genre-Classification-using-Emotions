@@ -51,6 +51,8 @@ DESCRIPTIONS = {
     "film_level": "THE EEROLA HEADLINE: every genre evaluation scored per film (clip "
                   "probabilities averaged per film), clip level beside it; 5 and 8 genres, "
                   "ablation, stability over seeds (section 23)",
+    "hamming_breakdown": "Hamming loss split by genre and into false positives/negatives; "
+                         "genres predicted per clip per route (section 25)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "

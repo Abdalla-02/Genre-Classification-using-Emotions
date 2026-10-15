@@ -1649,6 +1649,31 @@ conclusions unchanged.
    Appendix A (`appendix/supplementary.tex`). Discussion rebuilt around the settings table.
    Overleaf `3b10594`.
 
+## 25. Why the emotion route has the worst Hamming loss (15 Oct 2026)
+
+Asked by the author: under Hamming loss (share of wrong clip–genre decisions, lower is
+better) the emotion route is the weakest audio route on the five-genre subset (0.406;
+VGGish 0.358, AST 0.311, random guess 0.323, always-Drama dummy 0.218), although it has
+the best macro-F1. `experiments/diagnostics/exp_hamming_breakdown.py` →
+`hamming_breakdown.json` splits each route's loss by genre and into false positives and
+negatives, derived from the per-genre clip precision and recall in `film_level.json`
+(checked against `metrics_stability.json` within 0.005; no model re-fitted).
+
+- The emotion route predicts **2.35 genres per clip** against 1.54 true (VGGish 1.85, AST
+  1.68): 1.42 false positives per clip, but the fewest false negatives (0.62).
+- Per genre it makes **fewer** errors than VGGish on Action (0.371 vs 0.411) and Drama
+  (0.356 vs 0.396), as many on Crime (0.473 vs 0.468); the whole gap is Comedy (0.438 vs
+  0.286) and Horror (0.403 vs 0.235), predicted for 148 and 135 of 329 clips (40 and 28
+  true).
+- The human ratings predict even more (2.47) and have the highest loss (0.427), so it is a
+  property of the emotion space (tense crime clips resemble horror), not of regression
+  error. Cause of the over-prediction: class-balanced logistic regression with `C` chosen
+  for macro-F1, applied to every route alike.
+- Conclusion: Hamming loss and macro-F1 rank the routes almost in reverse; it is the
+  recall-driven operating point of §22.1 seen from the other side. Full explanation of
+  every metric, and a paste-ready paragraph for Appendix A.2, in
+  `docs/evaluation_metrics.md`. Not yet on Overleaf.
+
 ## Next steps
 
 - **Content chapters** — drafted in `docs/latex/chapters/` (§22.4); the student reads,
@@ -1719,5 +1744,5 @@ conclusions unchanged.
   `statistical_power.json`, `model_search.json`, `zero_shot.json`,
   `waveform_vs_spectrogram.json`, `w2v_layer_sweep.json`, `blockbuster_deep.json`,
   `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
-  `box_office.json`, `cv_corrected.json`. Render any of them as Markdown tables with
+  `box_office.json`, `cv_corrected.json`, `hamming_breakdown.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.

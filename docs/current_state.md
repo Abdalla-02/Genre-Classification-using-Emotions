@@ -294,6 +294,9 @@ weak spot is.
 
 ### 10.6 Background you may be asked about
 
+*Every metric, why it was chosen and what it showed, including why the emotion route has
+the worst Hamming loss, is explained in `docs/evaluation_metrics.md`.*
+
 - **How Stage 1 is evaluated.** A random forest predicts each of the eight emotion ratings
   from an audio embedding. It is scored by R² on out-of-fold predictions of five-fold
   cross-validation grouped by film, over all 360 rated clips, and averaged over the
