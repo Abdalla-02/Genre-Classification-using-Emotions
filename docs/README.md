@@ -1676,6 +1676,15 @@ negatives, derived from the per-genre clip precision and recall in `film_level.j
   paragraph on the metrics dominated by frequent genres), together with a correction of
   that paragraph: weighted-F1 is the one metric of its block that the always-Drama dummy
   does not win.
+- **Figure check (15 Oct, Overleaf `4a77de0`).** All ten figures regenerate identically
+  from the results files (PNG byte-identical, PDF differs only in its timestamp) and the
+  Overleaf copies equal the repository's. Fixed: the in-domain axis said "41 films" (now
+  read from `film_level.json`: 40) and two value labels covered clip markers; the
+  zero-shot and ablation axis labels were cut off at the right edge; "wav2vec2" in the
+  Stage 1 heatmap renamed "wav2vec 2.0". In the text, "41 films" survived in Methods
+  (shared space) and in the Discussion (reverse transfer), now 40; the MFCC and
+  random-projection bars of the Blockbuster chart are explained in Chapter 5. The audit
+  now flags any "41 / 43 films" in the chapters or the figure script.
 
 ## Next steps
 

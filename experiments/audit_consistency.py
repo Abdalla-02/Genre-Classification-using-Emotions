@@ -189,6 +189,14 @@ for fname, keys in tex_checks.items():
             problems.append(f'[tex drift] docs/latex/{fname} does not quote {quoted} '
                             f'for {key} -- the chapter copy and the JSON disagree')
 
+# Film counts from before the duplicate-film merge (log section 24) must not survive in the
+# chapters or in the figure script: 43 / 41 films became 42 / 40.
+for p in sorted((ROOT / 'docs' / 'latex' / 'chapters').glob('*.tex')) + [ROOT / 'experiments' / 'make_figures.py']:
+    text = io.open(p, encoding='utf-8', newline='').read()
+    for m in re.finditer(r'\b(41|43)\s+(?:test\s+|Eerola\s+)?films\b', text):
+        problems.append(f'[stale count] {p.relative_to(ROOT)} says "{m.group(0)}" '
+                        f'(42 / 40 films since the duplicate fix)')
+
 # ------------------------------------- 3. zero_shot: regimes must be consistent --
 boot = zs.get('bootstrap', {})
 if set(boot) != set(zs['zero_shot']):

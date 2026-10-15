@@ -106,12 +106,15 @@ def fig_indomain():
                     fmt="o", color=c, ms=5, capsize=2, lw=1.2)
         ax.scatter(v["clip_level_mean"], i, s=18, facecolors="none", edgecolors=c, lw=0.9,
                    zorder=3, label="clip level, same predictions" if i == 0 else None)
-        ax.text(v["ci_hi"] + 0.004, i, f"{v['mean']:.3f}", va="center", fontsize=7)
+        # right of the whisker and of the clip-level marker, so the number never covers it
+        ax.text(max(v["ci_hi"], v["clip_level_mean"]) + 0.006, i, f"{v['mean']:.3f}",
+                va="center", fontsize=7)
     ax.set_yticks(range(len(rows)), [r[0] for r in rows])
     floor_line(ax, arms["dummy"]["mean"], "most-frequent baseline")
     floor_line(ax, d["subset5"]["random_guess_film"], "base-rate random guess", ":")
     floor_legend(ax, "lower right")
-    ax.set_xlabel("film-level macro-F1, 41 films (bars: 95% film bootstrap)")
+    ax.set_xlabel(f"film-level macro-F1, {d['subset5']['n_films']} films "
+                  "(bars: 95% film bootstrap)")
     hi = max(v["ci_hi"] for _, v in rows)
     ax.set_xlim(0.14, hi + 0.05)
     save(fig, "indomain_eerola5")
@@ -206,7 +209,7 @@ def fig_zero_shot():
     p2 = b["predicted-emotion vs PCA-8 control"]["p_two_sided"]
     ax.text(0.99, 1.02, f"film bootstrap: emotion vs direct p = {p1:.3f}, "
             f"vs PCA-8 p = {p2:.3f}", transform=ax.transAxes, ha="right", fontsize=7)
-    ax.set_xlabel("film-level macro-F1 on the 110 Blockbuster films (6 shared genres), "
+    ax.set_xlabel("film-level macro-F1 on the 110 Blockbuster films (6 shared genres),\n"
                   "trained on Eerola only")
     ax.set_xlim(0, 0.6)
     save(fig, "zero_shot")
@@ -324,7 +327,8 @@ def fig_stage1():
                     color="white" if M[i, j] > 0.5 else "black",
                     fontweight="bold" if j == M.shape[1] - 1 else "normal")
     ax.set_xticks(range(len(emos) + 1), emos + ["mean"])
-    ax.set_yticks(range(len(order)), [k.replace("-", " (") + ")" for k in order])
+    ax.set_yticks(range(len(order)), [k.replace("wav2vec2", "wav2vec 2.0").replace("-", " (") + ")"
+                                      for k in order])
     ax.spines[:].set_visible(False)
     fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="$R^2$")
     save(fig, "stage1_r2")
@@ -345,7 +349,7 @@ def fig_ablation():
                     fmt="o", color=col, ms=4, capsize=2, lw=1)
     ax.axvline(0, color="k", lw=0.8)
     ax.set_yticks(range(len(comps)), [c["a"] for c in comps])
-    ax.set_xlabel("difference to all eight emotions (film-level macro-F1; bars: 95% bootstrap)")
+    ax.set_xlabel("difference to all eight emotions\n(film-level macro-F1; bars: 95% bootstrap)")
     save(fig, "ablation")
 
 

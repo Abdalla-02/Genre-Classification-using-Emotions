@@ -391,7 +391,9 @@ In Figure~\ref{fig:blockbuster_cv}, each bar is the mean over the 50 folds and t
 bar the standard deviation of the ten repeat means; the dotted line is the base-rate
 random guess (0.295). The emotion route is applied per cue and its emotions averaged per
 film; ``majority vote over cues'' classifies each cue and lets the cues vote, as in the
-best model of \citet{ma2021computational}.
+best model of \citet{ma2021computational}. The light blue bars are hand-crafted features
+published with the dataset (all 140 MIR descriptors, and the 78 of them from the MFCC
+family) and a random eight-dimensional projection of the VGGish embedding.
 
 In-domain on Blockbuster, the emotion route (0.616 $\pm$ 0.022) is level with
 direct audio. It is nominally ahead of the film-average VGGish embedding (0.593;
