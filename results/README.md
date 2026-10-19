@@ -172,7 +172,7 @@ repeat on its pooled out-of-fold predictions. These are the numbers whose mean i
 ```python
 import json
 d = json.load(open("results/film_level.json"))["subset5"]
-print(d["arms"]["VGGish -> predicted emotion(11), OOF-trained"]["mean"])   # 0.469, the emotion route (film level)
+print(d["arms"]["VGGish -> predicted emotion(11), OOF-trained"]["mean"])   # 0.460, the emotion route (film level)
 d = json.load(open("results/blockbuster_deep.json"))
 print(d["logreg"]["arms"]["MIR-140 (full)"]["mean"])          # 0.585
 ```
@@ -298,6 +298,7 @@ python experiments/genre/exp_genre_subset.py            # the 5-genre subset
 python experiments/genre/exp_emotion_genre.py           # Cohen's d signatures per genre (quoted in Fundamentals)
 python experiments/diagnostics/exp_error_analysis.py    # per-genre errors, over-prediction
 python experiments/diagnostics/exp_threshold_fix.py     # one global threshold, older protocol (per-genre tuning: metrics_stability.json)
+python experiments/diagnostics/exp_hamming_breakdown.py # Hamming loss per genre and error type (after film_level, metrics_stability)
 python experiments/diagnostics/exp_learning_curve.py    # would more data help?
 python experiments/diagnostics/exp_clip_length.py       # full-clip vs 10.24 s window (needs raw audio)
 python experiments/cross_dataset/exp_blockbuster.py         # first Blockbuster baseline (superseded by blockbuster_deep)

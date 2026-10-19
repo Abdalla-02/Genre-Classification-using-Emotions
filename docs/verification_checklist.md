@@ -93,25 +93,26 @@ at in particular:
 
 - [ ] **The film-level unit was chosen after the clip-level results were known.** The
   thesis says so (Limitations, "Unit of evaluation") and keeps clip level beside every
-  result. Know the four places where the two disagree: MusiCNN and PCA-8 (significant
-  over clips, not over films), predicted vs rated emotion (level over clips, ratings
-  ahead over films, p = 0.053), and the reverse transfer (significant only under a
-  clip-resampling bootstrap).
-- [ ] In-domain (5 genres, film level) the emotion route is ahead of VGGish by +0.095
-  (p = 0.047) in every repeat and seed, but **not significantly ahead of MusiCNN
-  (p = 0.079) or the PCA-8 control (p = 0.326)**, and the **PCA-8 control itself beats
-  VGGish under every seed**. Over clips it is **borderline under Nadeau-Bengio**
-  (p = 0.151 vs VGGish) and **not significant once per-genre thresholds are tuned**
-  (+0.011, p = 0.439); thresholds were never tuned per film. The thesis says so.
-- [ ] The **zero-shot** result (0.511 vs 0.407, p = 0.018) is one split, one
-  representation (VGGish), and partly recall-driven (precision 0.488 vs 0.576 for direct
-  audio). A source-tuned threshold was not tested.
+  result. Know where the two disagree (after the 8 Oct fix): over clips the film
+  bootstrap finds the lead significant against VGGish, CLAP, MusiCNN and PCA-8, over films
+  it does not; against AST it is the other way round. Film level is the stricter unit, so
+  the choice does not favour the method.
+- [ ] In-domain (5 genres, film level) the emotion route is ahead of VGGish by +0.093
+  in 9 of 10 repeats and under every seed, but **not significantly (p = 0.052)**, nor ahead
+  of MusiCNN (p = 0.241) or the PCA-8 control (p = 0.089); significant only against AST,
+  MIR and wav2vec 2.0. The **PCA-8 control itself beats VGGish under every seed**. Over
+  clips it is **borderline under Nadeau-Bengio** (p = 0.086 vs VGGish) and **no longer
+  ahead once per-genre thresholds are tuned** (-0.004, p = 0.813); thresholds were never
+  tuned per film. The thesis says so.
+- [ ] The **zero-shot** result (0.508 vs 0.403, p = 0.013) is one split, one
+  representation (VGGish), and partly recall-driven (recall 0.651 vs 0.435, precision
+  0.480 vs 0.705 for direct audio). A source-tuned threshold was not tested.
 - [ ] The win over the **PCA-8 control** across datasets is significant only in the
-  original zero-shot run (p = 0.032), not in the re-implementation (+0.045, p = 0.258).
+  original zero-shot run (p = 0.027), not in the re-implementation (+0.049, p = 0.239).
 - [ ] The **5-genre subset** was chosen partly by emotional signature, which can favour
   the emotion route (stated as a limitation; the 8-genre results guard against it).
-- [ ] **Dataset size:** 41/43 films; for the borderline comparisons no number of repeats
-  could reach p < 0.05 (p_lim > 0.05).
+- [ ] **Dataset size:** 40/42 films; for the borderline comparisons no number of repeats
+  could reach p < 0.05 (p_lim 0.069 to 0.200).
 - [ ] **Blockbuster emotions are predicted**, never rated; the signature replication
   (r = 0.836) cannot show independence from the Eerola listener panel.
 - [ ] **Label noise:** genres are film-level IMDb labels applied to every clip.
@@ -123,14 +124,14 @@ script before submission, or be ready to explain where the number comes from.
 
 | number in the thesis | where | source |
 |---|---|---|
-| AST 0.44 ungrouped vs 0.26 grouped (leakage) | Fundamentals, Methods, Evaluation | `experiments/genre/exp_genre.py` (8 genres, single untuned five-fold run) |
-| ridge 0.37 / SVR 0.54 / random forest 0.56 | Methods, Stage 1 | `experiments/emotion/exp_emotion_improve.py` |
-| 3.49 vs 1.87 predicted vs true labels per clip | Evaluation, error analysis | `experiments/diagnostics/exp_error_analysis.py` (older protocol) |
+| AST 0.44 ungrouped vs 0.23 grouped (leakage) | Fundamentals, Methods, Evaluation | `experiments/genre/exp_genre.py` (8 genres, single untuned five-fold run) |
+| ridge 0.39 / SVR 0.54 / random forest 0.55 | Methods, Stage 1 | `experiments/emotion/exp_emotion_improve.py` |
+| 3.55 vs 1.87 predicted vs true labels per clip (8 genres) | Appendix A, error analysis | `experiments/diagnostics/exp_error_analysis.py` (older protocol) |
 | learning curve still rising | Evaluation, Discussion | `experiments/diagnostics/exp_learning_curve.py` |
 | Cohen's d per genre (Horror-fear +0.75, the 8-genre signature table) | Fundamentals, Evaluation | `experiments/genre/exp_emotion_genre.py` |
 | (removed) the 8-genre random-guess floor is now 0.22 at film level, simulated and stored in `film_level.json` | Fundamentals, Evaluation | `exp_film_level.py` |
 | VGGish per-dimension means of the two datasets correlate at r = 0.97 | Methods, Evaluation | earlier zero-shot analysis (log §15) |
-| wav2vec layer 2: R² 0.324 (sweep) vs 0.323 (main run) | Methods | two different runs, both stated |
+| wav2vec layer 2: R² 0.294 (sweep) vs 0.299 (main run) | Methods | two different runs, both stated |
 
 ## E. Errors found and corrected along the way (confirm you agree)
 
@@ -141,8 +142,8 @@ script before submission, or be ready to explain where the number comes from.
   film level moved from p = 0.047 to p = 0.052.
 - [ ] **Blockbuster → Eerola significance** (§23.3): the clip-level p < 0.001 came from a
   bootstrap that resampled clips, which are not independent. Resampling films gives
-  +0.077, p = 0.127. The thesis now says the reverse direction agrees in sign but is not
-  significant.
+  +0.077, p = 0.127 (after the 8 Oct fix +0.089, p = 0.102). The thesis now says the
+  reverse direction agrees in sign but is not significant.
 - [ ] **Cross-validation scoring** (§21): per-fold macro-F1 scored rare genres as 0 in
   folds that lack them; now scored once per repeat on pooled predictions. All in-domain
   levels rose by 0.02-0.03 (e.g. pipeline 0.394 -> 0.417); rankings unchanged.
@@ -158,8 +159,9 @@ script before submission, or be ready to explain where the number comes from.
 - [ ] **Metric analysis** (§22.1, 4th meeting): the in-domain lead depends on the decision
   threshold. Added to Evaluation, Discussion and the Q&A.
 - [ ] **Pooled cross-dataset design** (§22.4): the results file held a 3x5 run while the
-  script says 5x5. Re-run at 5x5 on 7 Oct; numbers updated everywhere (emotion 0.432,
-  direct 0.428, PCA-8 0.405; +0.004, p = 0.850). Conclusion unchanged.
+  script says 5x5. Re-run at 5x5 on 7 Oct; numbers updated everywhere. Now (after the
+  8 Oct fix) per film: emotion 0.531, direct 0.543, p = 0.688; per clip 0.424 vs 0.420,
+  p = 0.816. Conclusion unchanged.
 - [ ] **Box Office Mojo parser** (§22.2) read the navigation menu and stored US-only
   grosses; fixed and the Eerola analysis re-run. (Box office is no longer in the thesis.)
 - [ ] **Data quality** in the enriched Eerola CSV: the IMDb ids of *Blanc* and *Pride and
@@ -178,9 +180,10 @@ script before submission, or be ready to explain where the number comes from.
   as Wu et al. (2023).
 - [ ] The reliability ceiling 0.897 is an intraclass correlation (ICC(C,1)) on 102 matched
   clips, not r squared (0.91 squared would be 0.83).
-- [ ] Clips are about 17 s long (not 10 s) for VGGish; the shared space has 41 films,
-  not 43; the Eerola dataset has 360 clips from 46 films, 346 (43 films) with a modelled
-  genre.
+- [ ] Clips are about 17 s long (not 10 s) for VGGish. Film counts, as corrected on
+  6 Oct and again after the duplicate-film fix of 8 Oct: 360 rated clips from 45 films,
+  346 clips (42 films) with a modelled genre, 329 (40) on five genres, 319 (40) in the
+  shared space.
 - [ ] A circular argument (the scaling ablation "supporting" the emotion route, although
   the emotion inputs are never re-scaled) was rewritten.
 - [ ] "The margin roughly doubles across datasets" compared two label spaces; replaced by

@@ -28,15 +28,23 @@ See `results/README.md` for what each file contains.
 ## audit_consistency.py — check the documents against the results
 
 Also not an experiment. It re-reads every saved result and verifies that the numbers
-quoted in `docs/current_state.md`, `docs/briefing_full.md` and `docs/README.md` still match them, that every file
-path named in the documents resolves, that the dataset still cleans to the expected
-counts, that the embedding caches are complete, that no file has picked up CRLF endings,
-and that every results file still renders. It exits non-zero, so it can be wired into a
+quoted in `docs/current_state.md`, `docs/briefing_full.md`, `docs/README.md` and the
+chapter copies in `docs/latex/chapters/` still match them, that every file path named in
+the documents resolves, that the dataset still cleans to the expected counts, that the
+embedding caches are complete, that no file has picked up CRLF endings, that no chapter
+or figure still gives the film counts from before the duplicate fix, and that every
+results file still renders. It exits non-zero, so it can be wired into a
 pre-commit hook. **Run it before committing anything that touches a number.**
 
 ```bash
 python experiments/audit_consistency.py
 ```
+
+## make_figures.py and export_current_state.py
+
+`make_figures.py` draws the ten thesis figures into `figures/` (PDF + PNG) from
+`results/*.json`; give figure names to draw only some. `export_current_state.py` turns
+`docs/current_state.md` into `.docx` and `.pdf` (needs LibreOffice).
 
 ## features — dataset and features
 | Script | Purpose | Log |
@@ -49,6 +57,7 @@ python experiments/audit_consistency.py
 | `exp_w2v_layer_sweep.py` | Control for the above: which wav2vec 2.0 layer to pool | §16 |
 | `extract_musicnn.py` | MusiCNN embeddings -- runs in the separate `.venv-musicnn` (TensorFlow) | §16.4b |
 | `fetch_box_office.py` | Box office per film from Wikidata / Box Office Mojo, by IMDb id | §20 |
+| `fetch_box_office_blockbuster.py` | The same for the 110 Blockbuster films | §22.3 |
 
 ## emotion — stage 1, audio -> emotion
 | Script | Purpose | Log |
@@ -74,6 +83,8 @@ python experiments/audit_consistency.py
 | `exp_learning_curve.py` | Would more data help? (yes, still rising) | §7e |
 | `exp_clip_length.py` | Full-clip windowed pooling vs the 10.24 s window | §6 |
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
+| `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
+| `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
 
 ## cross_dataset — transfer to Blockbuster
 | Script | Purpose | Log |
@@ -89,16 +100,20 @@ python experiments/audit_consistency.py
 | Script | Purpose | Log |
 |---|---|---|
 | `exp_statistical_power.py` | Repeated GroupKFold, confidence intervals, corrected significance tests, nested-CV tuning | §11 |
-| `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check | §21 |
+| `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check. Now the clip-level check | §21 |
+| `exp_metrics_stability.py` | Every route under 13 metrics (tuned thresholds, AP, ROC-AUC, Hamming, ...) and the spread over repeats, folds, films and five seeds | §22.1 |
+| `exp_film_level.py` | **The headline**: every in-domain genre result scored per film, clip level beside it; 5 and 8 genres, per-genre precision/recall/F1, ablation, five seeds | §23, §24 |
 
 **Which numbers to quote.** The single-run numbers printed by the older scripts in
 `genre/` and `cross_dataset/` are superseded by the repeated-CV experiments. For Eerola
-in-domain results, quote **`evaluation/exp_cv_corrected.py`** (§21): the same 50 folds as
-`exp_statistical_power.py` (§11), scored on pooled out-of-fold predictions, with both
-significance tests. `exp_statistical_power.py` is kept as the record of the per-fold
-protocol, and the corrected run reproduces it exactly under the old metric.
+in-domain results, quote **`evaluation/exp_film_level.py`** (§23): the headline, macro-F1
+over films on the same 50 folds, with the film bootstrap. Its clip-level values reproduce
+**`evaluation/exp_cv_corrected.py`** (§21), which supplies the clip-level Nadeau-Bengio
+test quoted beside it. `exp_statistical_power.py` is kept as the record of the per-fold
+protocol, and the corrected run reproduces it exactly under the old metric. Every
+film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Eleven scripts write machine-readable output to `results/`; `results/README.md` lists
+Fifteen scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.

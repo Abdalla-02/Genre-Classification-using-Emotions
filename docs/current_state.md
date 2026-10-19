@@ -2,7 +2,7 @@
 
 **Can a soundtrack's emotion predict a film's genre?** This page covers what was done after
 the fifth meeting: the four notes, a data error found while answering the second one, and
-what both changed. The briefing for the fourth meeting is archived in
+what both changed; section 7b adds the checks of 15–20 October. The briefing for the fourth meeting is archived in
 `docs/archive/current_state_2026-10-07.md`; every earlier round is in `briefing_full.md`,
 and every experiment in detail in the technical log, `docs/README.md` (section 24 for this
 round). The thesis on Overleaf is up to date with everything below.
@@ -162,15 +162,50 @@ compression, scarce data and domain shift; limitations as short paragraphs.
 
 ---
 
+## 7b. Since then (15–20 October): one new analysis, a figure check, two corrections
+
+No result changed. The thesis on Overleaf (`4a77de0`) contains all of it.
+
+1. **Why the emotion route has the worst Hamming loss** (new paragraph in Appendix A.2).
+   Hamming loss counts every wrong clip–genre decision equally, so for a rare genre the
+   safest strategy is never to predict it. The emotion route predicts 2.35 genres per clip
+   (truth 1.54, VGGish 1.85) and so makes more false alarms: Hamming loss 0.406 vs 0.358
+   for VGGish. Split by genre, it makes *fewer* errors than VGGish on Action and Drama and
+   as many on Crime; the whole gap comes from Comedy and Horror, which it predicts for 148
+   and 135 of the 329 clips (40 and 28 are). The human ratings do the same (2.47 genres per
+   clip, Hamming loss 0.427), so it is a property of the emotion features, not of
+   prediction errors. Reproducible from `results/hamming_breakdown.json`.
+   The paragraph before it was corrected: it said the always-"Drama" baseline wins every
+   frequency-dominated metric, but it does not win weighted-F1.
+2. **All ten figures checked.** They regenerate identically from the results files and the
+   Overleaf copies equal the repository's. Four were fixed: the in-domain figure's axis
+   still said "41 films" (now 40) and two value labels covered clip-level markers; the
+   axis labels of the zero-shot and ablation figures were cut off; the Stage 1 heatmap now
+   writes "wav2vec 2.0" as the text does.
+3. **Two stale film counts in the text**, missed in the re-run of 8 Oct: Methods (shared
+   space: "319 clips from 41 films", now 40) and Discussion (reverse transfer: "41 test
+   films", now 40). Chapter 5 now also says what the light-blue bars of the Blockbuster
+   chart are (the 140 published MIR features, the 78 MFCC features among them, a random
+   eight-dimensional projection).
+4. **Documentation.** Every evaluation metric, why it was chosen and what it showed, is
+   explained in `docs/evaluation_metrics.md`. The repository's READMEs and the verification
+   checklist were brought up to date with the post-fix numbers, and the consistency audit
+   now flags any film count from before the fix.
+
+---
+
 ## 8. Open items
 
 1. **Write the held-back parts** (abstract, Chapter 7, contributions). The drafts in
    `docs/latex/held_back/` quote numbers from before the film-level switch *and* the fix;
    use section 7 above.
-2. **Read Chapters 5, 6 and Appendix A in full.** They were rebuilt today; the Discussion's
-   interpretation must become your own.
-3. **Zero-shot with a threshold tuned on the source dataset** — still not run.
-4. **AI declaration**: two red notes and the date.
+2. **Read Chapters 5, 6 and Appendix A in full.** They were rebuilt on 8 Oct; the
+   Discussion's interpretation must become your own.
+3. **Zero-shot with a threshold tuned on the source dataset** — still not run (about 30
+   minutes); otherwise name it in Chapter 7 as future work.
+4. **wav2vec 2.0 layer**: after the fix, block 1 is nominally best (0.297 vs 0.294 for the
+   block 2 the thesis keeps). Decide whether that is acceptable.
+5. **AI declaration**: only the date is missing.
 
 ---
 
@@ -194,6 +229,13 @@ No: no film is in both (section 4).
 
 **Why do the numbers differ from the last meeting?**
 A film was counted twice in Eerola; fixing it changed every split (section 2).
+
+**Why does the emotion route score worst on Hamming loss?**
+It predicts more genres per clip (2.35 against 1.54 true), which is how it finds the rare
+genres. Hamming loss counts every false alarm as an error, macro-F1 rewards every rare
+genre found. On Action and Drama it makes fewer errors than VGGish; the whole gap is
+Comedy and Horror. A model that always says "Drama" wins Hamming loss, which is why it is
+not the headline (section 7b; Appendix A.2).
 
 **Why is box office not in the thesis?**
 It answers a question about commercial success, not genre: classification quality does

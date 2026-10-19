@@ -1,12 +1,15 @@
 # Thesis LaTeX: what is in this folder
 
-**Current state (7 Oct 2026, Overleaf commit `74c62c2`).** The thesis lives on Overleaf.
-Chapters 1 to 6 are written there and compile with 0 errors; Chapter 7, the abstract and
-the list of contributions are held back for the author to write.
+**Current state (15 Oct 2026, Overleaf commit `4a77de0`).** The thesis lives on Overleaf.
+Chapters 1 to 6 and Appendix A are written there; Chapter 7, the abstract and the list of
+contributions are held back for the author to write. Since the fifth meeting (8 Oct) the
+Evaluation holds only the core results and every further check is in Appendix A
+(`chapters/supplementary.tex`); all Eerola numbers were re-run after a duplicate film was
+merged.
 
 | folder / file | what it is |
 |---|---|
-| `chapters/` | copies of the Overleaf chapters as they are now (Introduction, Methods, Evaluation, Discussion, the Conclusions skeleton). After editing Overleaf, copy the changed chapter here |
+| `chapters/` | copies of the Overleaf chapters as they are now (Introduction, Methods, Evaluation, Discussion, the Conclusions skeleton, Appendix A). After editing Overleaf, copy the changed chapter here; the audit checks these copies against the results |
 | `held_back/` | drafts taken out of the Overleaf build: abstract, Conclusions and Future Work, the contributions list, the box-office section |
 | the eight `.tex` files at this level | the **original paste-ready sections** of 23 September. Superseded by `chapters/`; kept for the record |
 
@@ -43,14 +46,16 @@ adapted to each other.
 |---|---|---|
 | `chapters/0_intro.tex` | `chapter/0_intro.tex` | motivation, the research questions, contributions, structure |
 | `chapters/2_analysis.tex` | `chapter/2_analysis.tex` | Methods: datasets and the three label spaces, representations, Stage 1 (incl. the three derived features), Stage 2, baselines, the evaluation protocol, implementation; the pipeline figure in TikZ |
-| `chapters/3_evaluation.tex` | `chapter/3_evaluation.tex` | every result, with the figures; **new section "Robustness: Choice of Metric and Stability"** (supervisor notes 1 and 2). The box-office analysis (note 3) was in it until 7 Oct and is now in `held_back/box_office.tex` |
-| `chapters/discussion.tex` | `chapter/discussion.tex` | interpretation, limitations, relation to prior work |
+| `chapters/3_evaluation.tex` | `chapter/3_evaluation.tex` | since 8 Oct only the core results: Stage 1, RQ1, emotion vs direct audio (one table), results per genre, signatures, transfer with the leakage check. The box-office analysis was in it until 7 Oct and is now in `held_back/box_office.tex` |
+| `chapters/supplementary.tex` | `appendix/supplementary.tex` | Appendix A (new 8 Oct): all paired comparisons, choice of metric (incl. Hamming loss) and stability, ablation, waveform model, eight genres, the Blockbuster reproduction, error analysis |
+| `chapters/discussion.tex` | `chapter/discussion.tex` | interpretation around one table of all settings, limitations, relation to prior work |
 | `chapters/4_conclusion.tex` | `chapter/4_conclusion.tex` | now only the headings and labels; the draft is in `held_back/` |
 | `held_back/abstract.tex` | the abstract on the title page | held back since 6 Oct (see above) |
 
-**Figures.** The chapters include `figures/<name>.pdf`. Upload the repository's `figures/`
-folder to the Overleaf project root (the PDFs only; the PNGs are previews). Every figure
-is drawn by `experiments/make_figures.py` from `results/*.json`.
+**Figures.** The chapters include `figures/<name>.pdf`, ten in all. Overleaf holds copies
+of the repository's PDFs (the PNGs are previews); after redrawing a figure, copy only the
+ones whose content changed. Every figure is drawn by `experiments/make_figures.py` from
+`results/*.json`; all ten were checked against the text on 15 Oct.
 
 The references these chapters needed (librosa, PyTorch, transformers, scikit-learn,
 Lipton et al. 2014, LAION-CLAP) were added to `bib/library.bib` on 5 Oct, and all 36 entries
