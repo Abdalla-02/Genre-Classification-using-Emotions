@@ -1701,11 +1701,15 @@ RQ2b is now **RQ3**. Earlier sections of this log keep the old labels.
 
 ## Next steps
 
-- **Content chapters** — drafted in `docs/latex/chapters/` (§22.4); the student reads,
-  adapts and pastes them, replacing one Overleaf chapter at a time and recompiling. Three
-  citations still need BibTeX entries (`% CITATION NEEDED`).
+- ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and
+  compile (§22.4, §24, §26); `docs/latex/chapters/` holds copies, and no citation is
+  missing. Left for the author: the abstract, Chapter 7 and the contributions list (drafts
+  in `docs/latex/held_back/`, written with the old numbers and the old four research
+  questions), the date of the AI declaration, and the wording of the main research
+  question, to be agreed with the supervisor (`docs/review_2026-10-16.md`, item 5).
 - **Zero-shot with thresholds tuned on the source** — the one open check the metric
   analysis (§22.1) raises: does the transfer advantage survive per-genre thresholds?
+  Not run; the Discussion names it as future work.
 - ~~**Bib entries to add on Overleaf**~~ — **done.** `hu2007exploring`, `laurier2009mood`,
   `eerola2011genrespecific`, `saari2016genre`, `nadeau2003inference`,
   `sokolova2009systematic`, `baevski2020wav2vec` and `pons2019musicnn` are all in
