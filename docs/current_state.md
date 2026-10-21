@@ -2,7 +2,7 @@
 
 **Can a soundtrack's emotion predict a film's genre?** This page covers what was done after
 the fifth meeting: the four notes, a data error found while answering the second one, and
-what both changed; section 7b adds the checks of 15–20 October. The briefing for the fourth meeting is archived in
+what both changed; section 7b adds the work of 15–21 October. The briefing for the fourth meeting is archived in
 `docs/archive/current_state_2026-10-07.md`; every earlier round is in `briefing_full.md`,
 and every experiment in detail in the technical log, `docs/README.md` (section 24 for this
 round). The thesis on Overleaf is up to date with everything below.
@@ -162,9 +162,9 @@ compression, scarce data and domain shift; limitations as short paragraphs.
 
 ---
 
-## 7b. Since then (15–20 October): one new analysis, a figure check, two corrections
+## 7b. Since then (15–21 October): one new analysis, a figure check, your comments
 
-No result changed. The thesis on Overleaf (`4a77de0`) contains all of it.
+No result changed. The thesis on Overleaf (`497c6db`) contains all of it.
 
 1. **Why the emotion route has the worst Hamming loss** (new paragraph in Appendix A.2).
    Hamming loss counts every wrong clip–genre decision equally, so for a rare genre the
@@ -187,7 +187,15 @@ No result changed. The thesis on Overleaf (`4a77de0`) contains all of it.
    films", now 40). Chapter 5 now also says what the light-blue bars of the Blockbuster
    chart are (the 140 published MIR features, the 78 MFCC features among them, a random
    eight-dimensional projection).
-4. **Documentation.** Every evaluation metric, why it was chosen and what it showed, is
+4. **Your comments on the draft of 16 Oct** (all 14 answered in `docs/review_2026-10-16.md`):
+   plainer wording in the Introduction and a paragraph naming the datasets and the
+   approach; in Fundamentals the leakage share corrected ("about half", not "roughly forty
+   percent"), the rating ceiling explained, and Cohen's d and the corrected t-test given
+   with their formulas. **The research questions are now three**: RQ2a and RQ3 were merged
+   into RQ2 (which emotions characterise each genre, and do these signatures hold on
+   Blockbuster), and the old RQ2b is RQ3. The wording of the main research question is
+   for the supervisor to comment on.
+5. **Documentation.** Every evaluation metric, why it was chosen and what it showed, is
    explained in `docs/evaluation_metrics.md`. The repository's READMEs and the verification
    checklist were brought up to date with the post-fix numbers, and the consistency audit
    now flags any film count from before the fix.

@@ -1686,6 +1686,19 @@ negatives, derived from the per-genre clip precision and recall in `film_level.j
   random-projection bars of the Blockbuster chart are explained in Chapter 5. The audit
   now flags any "41 / 43 films" in the chapters or the figure script.
 
+## 26. The author's comments of 16 Oct; three research questions (21 Oct 2026)
+
+The author's 14 comments on the draft (`Drafts of the Thesis/Commented_Thesis_16.10.pdf`)
+are answered one by one in `docs/review_2026-10-16.md`. Applied on Overleaf (`352a922`):
+a plainer opening of the Introduction, RQ1 reworded, a paragraph naming the datasets and
+the approach; in Fundamentals the leakage share corrected from "roughly forty percent" to
+"about half" (re-run of `exp_genre.py` on 21 Oct: AST 0.437 naive vs 0.226 grouped, so
+48 %), the rating ceiling explained, Cohen's d and the Nadeau–Bengio test given with their
+formulas, and the significance section rewritten around the film bootstrap. Then
+(`497c6db`) the research questions were reduced to three at the author's decision: RQ2a
+and RQ3 merged into **RQ2** (signatures and their replication on Blockbuster), the old
+RQ2b is now **RQ3**. Earlier sections of this log keep the old labels.
+
 ## Next steps
 
 - **Content chapters** — drafted in `docs/latex/chapters/` (§22.4); the student reads,

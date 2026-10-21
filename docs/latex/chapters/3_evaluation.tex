@@ -6,11 +6,12 @@ and concentrates on the results that answer the research questions.
 Section~\ref{sec:eval_emotion} first establishes how well emotion can be predicted from
 audio, since the pipeline depends on it. Section~\ref{sec:eval_genre} answers RQ1, whether
 a soundtrack's emotional profile predicts its film's genre, and
-Section~\ref{sec:eval_direct} answers RQ2b within one dataset: whether the detour through
+Section~\ref{sec:eval_direct} answers RQ3 within one dataset: whether the detour through
 emotion beats classifying genre directly from audio. Section~\ref{sec:eval_pergenre}
-breaks this comparison down by genre. Section~\ref{sec:eval_signatures} answers RQ2a and
-RQ3, which emotions relate to which genres, and Section~\ref{sec:eval_transfer} answers
-RQ2b across datasets, on film music the model has never seen. Analyses that check these
+breaks this comparison down by genre. Section~\ref{sec:eval_signatures} answers RQ2,
+which emotions characterise each genre and whether these signatures replicate on the
+second dataset, and Section~\ref{sec:eval_transfer} answers RQ3 across datasets, on film
+music the model has never seen. Analyses that check these
 results without changing them (the choice of metric, stability over seeds, the emotion
 ablation, the waveform representation, all eight genres, the reproduction of the published
 Blockbuster result and an error analysis) are reported in
@@ -139,10 +140,10 @@ trained on, so the pipeline needs no emotion annotation at deployment, although 
 emotion model might still gain a little.
 
 % =============================================================================
-\section{Emotion versus Direct Audio, In-domain (RQ2b)}
+\section{Emotion versus Direct Audio, In-domain (RQ3)}
 \label{sec:eval_direct}
 
-Figure~\ref{fig:indomain_eerola5} also answers RQ2b within one dataset. Used directly, the
+Figure~\ref{fig:indomain_eerola5} also answers RQ3 within one dataset. Used directly, the
 six representations reach MusiCNN 0.396, CLAP 0.390, VGGish 0.367, the hand-crafted descriptors 0.365, AST 0.318 and wav2vec~2.0 0.261. The PCA-8 control, which compresses the VGGish
 embedding to eight principal components, reaches 0.390. The emotion route from the same
 VGGish embedding reaches 0.460 and is ahead of all of them, by 0.065 to 0.196.
@@ -190,7 +191,7 @@ the emotion route's lead over the control, $+0.070$, is not significant ($p=0.08
 clips the control is level with VGGish and the emotion route is ahead of it ($+0.042$,
 $p=0.020$). Third, part of the advantage is an operating-point effect. With a decision
 threshold tuned per genre on the training folds, the routes converge over clips (0.420
-to 0.433; Appendix~\ref{sec:eval_robustness}). The in-domain answer to RQ2b is
+to 0.433; Appendix~\ref{sec:eval_robustness}). The in-domain answer to RQ3 is
 therefore that the emotion route is consistently ahead of direct audio at the default
 threshold, in nearly every repeat and under every seed, but that the size of its lead over
 the strongest direct representations is not established on 40 films.
@@ -266,11 +267,11 @@ genres, their $F_1$ values move by about 0.2 when a single film changes, and the
 comparison should be read as a description, not as a test.
 
 % =============================================================================
-\section{Emotional Signatures of Genres (RQ2a, RQ3)}
+\section{Emotional Signatures of Genres (RQ2)}
 \label{sec:eval_signatures}
 
-RQ2a and RQ3 concern the content of the relationship rather than its predictive strength.
-They are answered with Cohen's $d$ (Section~\ref{sec:fund_evaluation}), computed for each
+RQ2 concerns the content of the relationship rather than its predictive strength. It is
+answered with Cohen's $d$ (Section~\ref{sec:fund_evaluation}), computed for each
 emotion rating between the clips of a genre and all other clips.
 Table~\ref{tab:emotion_genre_signatures} summarises the dominant signature of each of the
 eight Eerola genres; a positive $d$ means that the emotion is elevated in the genre.
@@ -307,8 +308,9 @@ rest on very few films. Adventure has no signature: no emotion exceeds $|d|=0.25
 genre co-occurs with several others and shares their affective palette. This mirrors the
 asymmetry reported by \citet{austin2010characterization}: genres with a conventional
 affective identity are recoverable from the music, while genres defined by narrative or
-setting are not. For RQ2a, emotions relate to most genres in a systematic and readable
-way; for RQ3, fear is the most discriminating emotion overall, followed by valence.
+setting are not. For the first part of RQ2, emotions relate to most genres in a
+systematic and readable way, and fear is the most discriminating emotion overall, followed
+by valence.
 
 \subsection{Do the Signatures Replicate?}
 \label{subsec:signature_replication}
@@ -339,11 +341,11 @@ Sci-Fi, Action and Horror and weakest for Comedy, whose strongest emotion change
 to happiness. The absolute effect sizes do not transfer: averaging some 39 cues per film
 inflates $d$, and measured per cue the values are of the same order as on Eerola. The
 structure of the emotion--genre relationship therefore generalises beyond its own
-dataset, although, since the Blockbuster emotions are predicted by a model trained on the
+dataset, which answers the second part of RQ2, although, since the Blockbuster emotions are predicted by a model trained on the
 Eerola panel, the replication cannot show independence from that panel.
 
 % =============================================================================
-\section{Cross-Dataset Transfer (RQ2b under domain shift)}
+\section{Cross-Dataset Transfer (RQ3 under domain shift)}
 \label{sec:eval_transfer}
 
 The results so far are cross-validated within one dataset. They show that a representation
@@ -447,7 +449,7 @@ the base-rate random guess; the $p$-values are paired bootstraps over the 110 fi
 Genre information transfers between the datasets. The emotion route reaches 0.508
 against a random-guess floor of 0.292, about 82\,\% of the 0.620 obtained with
 in-domain training, although each training row is a clip of about 17 seconds and the
-test items are whole films. The central result for RQ2b is that the emotion route
+test items are whole films. The central result for RQ3 is that the emotion route
 transfers better than the representation it is derived from: it exceeds direct VGGish
 (0.403) by $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$), and the PCA-8 control
 (0.417) by $+0.093$ [$+0.013$, $+0.171$] ($p=0.027$), whereas compressing the
@@ -509,24 +511,24 @@ third decimal.
 \section{Summary of Findings}
 \label{sec:eval_summary}
 
-\emph{RQ1.} The emotional profile of a soundtrack predicts its film's genres well above
+\emph{RQ1.} The emotions expressed by a soundtrack predict its film's genres well above
 chance. On the five-genre subset the pipeline reaches a film-level macro-$F_1$ of 0.460,
 against 0.309 for a random guess, and the human ratings reach 0.491. The emotion
 regression it rests on reaches about 62\,\% of the $R^2$ that two listener
 panels allow.
 
-\emph{RQ2a and RQ3.} Most genres carry a readable affective signature. Fear is the
+\emph{RQ2.} Most genres carry a readable affective signature. Fear is the
 strongest discriminator and valence the second axis; Adventure has no signature. The
 signatures replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
 
-\emph{RQ2b in-domain.} The emotion route is ahead of every direct audio representation
+\emph{RQ3 in-domain.} The emotion route is ahead of every direct audio representation
 (by $+0.093$ over VGGish, its own input) and of the PCA-8 control in nearly every repeat and
 under every seed, and it is the best route for Action, Crime and Comedy. Its lead is significant
 against the weaker direct representations, but not established against the stronger ones
 or against the PCA-8 control; part of the gain comes from compression, and with per-genre
 thresholds the routes converge.
 
-\emph{RQ2b across datasets.} Trained on Eerola and tested on the 110 Blockbuster films,
+\emph{RQ3 across datasets.} Trained on Eerola and tested on the 110 Blockbuster films,
 the emotion route beats direct VGGish clearly (0.508 against 0.403, $p=0.013$). The
 reverse direction agrees in sign without being significant, and when both datasets are in
 training the routes are level. No film occurs in both datasets.

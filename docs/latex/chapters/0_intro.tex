@@ -4,10 +4,10 @@
 \section{Motivation}
 \label{sec:motivation}
 
-A few seconds of a film score are often enough to tell what kind of film it belongs to.
-A sustained dissonant string cluster over a low pulse points to a horror film, and a brass
-fanfare over driving percussion to an action film. A solo piano over soft strings suggests
-a drama or a romance. Listeners make this judgement without seeing a single frame, and
+A few seconds of a film's music are often enough to tell what kind of film it belongs to.
+Long, clashing string chords over a low, steady beat suggest a horror film, and loud brass
+over fast, heavy drums suggests an action film. A solo piano over soft strings suggests a
+drama or a romance. Listeners make this judgement without seeing a single frame, and
 they make it with some confidence. The starting point of this thesis is that the judgement
 is not really about genre at all. A listener first perceives an emotion (threat,
 excitement, tenderness, melancholy) and infers the genre from it.
@@ -25,7 +25,7 @@ detail. For this thesis, it follows that the link between a film's soundtrack an
 genre is expected to run through emotion, because composers place it there.
 
 Automatic genre prediction from film audio is an established task with practical value.
-Genre metadata organises film archives and streaming catalogues, drives recommendation,
+Genre metadata organises film archives and streaming libraries, drives recommendation,
 and supports the search for music that fits a scene. Existing work, however, treats the
 task as a pure pattern-recognition problem. \citet{austin2010characterization} classify
 film genre from low-level features of the score, \citet{ma2021computational} from learned
@@ -64,25 +64,37 @@ intermediate step do better than classifying genre directly from audio?}
 \label{sec:aim}
 
 The aim is to test whether soundtrack emotion is a usable and interpretable route from
-film audio to film genre. The work is organised around four research questions, and
+film audio to film genre. The work is organised around three research questions, and
 Chapter~\ref{ch:evaluation} states which of its sections answers each.
 
 \begin{description}
-  \item[RQ1] Can a soundtrack's emotional profile predict its film's genre?
-  \item[RQ2a] Which emotions relate to which genres?
-  \item[RQ2b] Does routing audio through an emotion intermediate beat classifying genre
-    directly from audio?
-  \item[RQ3] Which emotions are the strongest discriminators for each genre?
+  \item[RQ1] Can the emotions expressed by a soundtrack predict its film's genre?
+  \item[RQ2] Which emotions characterise each genre, and do these emotional signatures
+    hold on a second, independent dataset?
+  \item[RQ3] Does routing audio through an emotion intermediate beat classifying genre
+    directly from audio, within one dataset and when the model is applied to another?
 \end{description}
 
 RQ1 asks whether the signal exists at all, first with emotions rated by human listeners
-and then with emotions predicted from audio. RQ2a and RQ3 concern the form of the
-signal. RQ2a maps the relationship between every emotion and every genre, and RQ3
-identifies for each genre the emotions that distinguish it from the rest. Together they
-test whether the intermediate can be read in the way the motivation above argues. RQ2b
-is the central comparative question of the thesis. It is asked within a single dataset
+and then with emotions predicted from audio. RQ2 concerns the form of the signal: which
+emotions distinguish each genre from the others, and whether the same emotional
+signatures appear in a second collection of films. It tests whether the intermediate can
+be read in the way the motivation above argues. RQ3 is the central comparative question
+of the thesis. It is asked within a single dataset
 and across datasets, where a model trained on one collection of films is applied to
 another without seeing any of its labels.
+
+The questions are answered with two datasets. The first, by \citet{eerola2011comparison},
+contains 360 film-music excerpts that listeners rated on eight emotion scales, from 45
+films whose genres are taken from IMDb. The second, by \citet{ma2021computational},
+contains 110 recent films, each described by audio features of the music cues it uses,
+but without emotion ratings and without audio. A first model predicts the eight emotions
+from a pre-trained audio representation, and a second model predicts the genres from
+these emotions. This route is compared with classifying genre from the same audio
+representation directly, and with a control that compresses the representation to as
+many numbers as there are emotions without giving them any emotional meaning. Only the
+music is used, without images, dialogue or plot, and the pre-trained audio models are
+used as they are, without fine-tuning.
 
 \mytodo{To be written by the author: the list of contributions. A draft is kept outside the project.}
 
@@ -91,7 +103,7 @@ another without seeing any of its labels.
 
 Chapter~\ref{ch:fundamentals} explains, for readers new to the field, the models of
 emotion, the audio representations, the two learning methods and the evaluation
-apparatus used in this thesis. Chapter~\ref{ch:relatedwork} reviews the surveys of music
+methods used in this thesis. Chapter~\ref{ch:relatedwork} reviews the surveys of music
 emotion recognition, the evidence for an emotion--genre relationship in music, and the
 four film-genre studies this work is compared with. Chapter~\ref{ch:methods} describes
 the two datasets, the genre labels, the two-stage pipeline, the baselines and controls,

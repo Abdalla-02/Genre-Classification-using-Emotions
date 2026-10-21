@@ -38,6 +38,12 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ## B. Read again: text produced by the assistant
 
+- [ ] **Your comments of 16 Oct** (Overleaf `352a922`, `497c6db`): check the new opening
+  of the Introduction, the approach paragraph after the research questions, the rewritten
+  R² ceiling, Cohen's d and significance parts of Fundamentals 2.6, and the **three
+  research questions** (RQ2 = old RQ2a + RQ3, RQ3 = old RQ2b) wherever the Evaluation
+  names them. The held-back Chapter 7 draft still uses the old numbering.
+
 - [ ] **Fifth meeting (8 Oct, Overleaf `3b10594`).** Chapter 5 was rebuilt around the core
   results, the rest moved to the new Appendix A, and Chapter 6 was shortened and rewritten
   around one table. All Eerola numbers changed after the duplicate-film fix. Read Chapters 5
