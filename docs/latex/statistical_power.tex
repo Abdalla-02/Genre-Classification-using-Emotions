@@ -20,11 +20,14 @@
 % =============================================================================
 
 % ---------------------------------------------------------------- METHODS ----
+% If evaluation_protocol.tex goes into Methods (recommended), SKIP this METHODS part:
+% that section already describes the same protocol, pooled scoring, both tests and
+% the nested tuning. Paste only the RESULTS part below. See docs/latex/README.md.
 \paragraph{Evaluation protocol and statistical reliability.}
 All genre results are obtained under cross-validation grouped by film, so that clips
 from the same soundtrack never appear in both the training and the test partition; this
 is essential, since an ungrouped split lets a classifier recognise the film rather than
-the genre (Section~\ref{subsec:leakage}). A single five-fold run, however, yields only
+the genre (Section~\ref{sec:fund_evaluation}). A single five-fold run, however, yields only
 five score samples, which is too few to distinguish a difference of a few macro-$F_1$
 points from the variation caused by the particular partition. The evaluation is
 therefore repeated: the assignment of films to folds is re-randomised ten times, giving
@@ -49,7 +52,7 @@ re-scored on each resample. The films, not the clips, are resampled, because cli
 same film are not independent. Two methods are compared by two tests, which answer
 slightly different questions. The \emph{paired film bootstrap} applies the same resampling
 to the difference between two methods and asks how much it depends on which films happen
-to make up the corpus, with the trained models held fixed. The Nadeau--Bengio corrected
+to make up the dataset, with the trained models held fixed. The Nadeau--Bengio corrected
 resampled $t$-test \citep{nadeau2003inference}, applied to the fifty per-fold scores, also
 accounts for which films the models happened to be trained on, and is the more conservative
 of the two. An ordinary paired $t$-test would be inadmissible here: it treats the fifty
@@ -61,7 +64,7 @@ size,
 \]
 where $\bar{d}$ and $\sigma^2_d$ are the mean and variance of the per-fold differences
 and $n=50$. Because only the $1/n$ term shrinks when repeats are added, this test has a
-lower bound on the attainable $p$-value for a given corpus; that bound is reported as
+lower bound on the attainable $p$-value for a given dataset; that bound is reported as
 $p_{\lim}$ and is what makes it possible to distinguish a comparison that needs more
 resampling from one that needs more data. Where the two tests disagree, both are reported.
 
@@ -114,7 +117,7 @@ repeated protocol, and Table~\ref{tab:power_cmp} the corresponding paired compar
     difference on the pooled predictions with a $95\,\%$ interval from the film bootstrap;
     $p_{\text{boot}}$ is the paired film bootstrap, $p_{\text{NB}}$ the Nadeau--Bengio
     corrected resampled $t$-test on the per-fold scores, and $p_{\lim}$ the smallest
-    $p_{\text{NB}}$ this corpus allows with an unlimited number of repeats; ``won'' is the
+    $p_{\text{NB}}$ this dataset allows with an unlimited number of repeats; ``won'' is the
     number of the ten repeats in which the first method scores higher.}
   \label{tab:power_cmp}
   \begin{tabular}{lcccccc}
@@ -159,15 +162,15 @@ charges for the variation that comes from which films were used for training. Th
 advantage is therefore reported as consistent and substantial, significant under one test
 and borderline under the stricter one, rather than as an unqualified significant result.
 
-That remaining uncertainty is a property of the corpus rather than of the evaluation
+That remaining uncertainty is a property of the dataset rather than of the evaluation
 procedure. Because only the $1/n$ term of the corrected test shrinks with additional
 repeats, the attainable $p$-value has a floor for a given dataset; at ten repeats the
 test is already within about $0.02$ of it, and for every comparison of the pipeline
 against a single representation or the control that floor lies above $0.05$
 ($p_{\lim}$ between $0.055$ and $0.130$). No number of repeats could make these
 comparisons significant under this test; only more films could. This agrees with the
-learning-curve analysis in Section~\ref{subsec:learning_curve}, where neither model had
-reached a plateau at the full corpus size.
+learning-curve analysis in Section~\ref{sec:eval_genre}, where neither model had
+reached a plateau at the full dataset size.
 
 On the full eight-genre task the advantage is significant under both tests. Ground-truth
 emotion features attain $0.321$ $[0.280,\,0.352]$ against $0.276$ $[0.243,\,0.296]$ for

@@ -1178,9 +1178,9 @@ Shared 6-genre space, three designs, same three arms.
 |---|---:|---:|---:|---|---|
 | 1. Eerola -> Blockbuster (zero-shot) | 0.395 | 0.465 | **0.508** | +0.115, p=0.016 | +0.045, p=0.258 |
 | 2. Blockbuster -> Eerola (reverse) | 0.320 | 0.352 | **0.370** | +0.050, **p<0.001** | +0.018, p=0.184 |
-| 3. pooled, both corpora in training | 0.421 | 0.398 | 0.424 | +0.003, p=0.906 | +0.026, p=0.329 |
-| &nbsp;&nbsp; 3a. Eerola part of the pooled test folds | 0.426 | 0.411 | **0.479** | | |
-| &nbsp;&nbsp; 3b. Blockbuster part | **0.562** | 0.538 | 0.540 | | |
+| 3. pooled, both corpora in training (5x5) | 0.428 | 0.405 | 0.432 | +0.004, p=0.850 | +0.027, p=0.231 |
+| &nbsp;&nbsp; 3a. Eerola part of the pooled test folds | 0.422 | 0.410 | **0.476** | | |
+| &nbsp;&nbsp; 3b. Blockbuster part | **0.573** | 0.552 | 0.539 | | |
 
 Design 2 is new and non-trivial: the emotion regressor needs ratings, which only Eerola
 has, so it is fitted on the Eerola *training* fold, the genre classifier on all of
@@ -1188,7 +1188,7 @@ Blockbuster, and the held-out Eerola fold is scored -- no test clip touches eith
 
 **What it establishes.** The emotion advantage over the direct embedding holds in **both
 transfer directions** (p=0.016 and p<0.001). It **vanishes when both corpora are in the
-training set** (p=0.906) -- once the classifier can see the target distribution, direct
+training set** (p=0.850) -- once the classifier can see the target distribution, direct
 features catch up. So the advantage is specifically a *generalisation-across-corpora*
 advantage, which is exactly the property an interpretable, corpus-independent
 representation should have. In-domain the emotion route is ahead by a smaller and
@@ -1362,12 +1362,354 @@ for a "necessary emotion". Not a finding.
 The §11 tables remain valid as a record of the per-fold protocol and are reproduced
 exactly here. For new writing, use this section.
 
+## 22. Fourth meeting: the metric, stability, box office on Blockbuster, figures
+
+Supervisor notes of the fourth meeting (24 Sep 2026): (1) explain the F1 metric and check
+whether there is a better approach; (2) report the standard deviation / variance of the
+cross-validation, to show the numbers are stable and reproducible; (3) correlate
+box-office gross with the Blockbuster dataset under all the different metrics; (4) write
+the remaining chapters; (5) show results as graphs, not only tables; (6) figures from
+other papers may be used with their source.
+
+### 22.1 Metric family and stability (`exp_metrics_stability.py`, `metrics_stability.json`)
+
+Same protocol as §21 (5 genres, 329 clips / 41 films, 10x5 grouped folds, nested C,
+OOF-trained emotions). Every metric is computed once per repeat on the pooled
+out-of-fold predictions. **Under seed 42 the script reproduces the per-repeat macro-F1
+of `cv_corrected.json` exactly for all six arms.** Paired film bootstrap, 1000 draws (so
+the macro-F1 row reads p=0.035 where §21, with 2000 draws, has 0.042).
+
+| metric (mean of 10 repeats) | emotion | VGGish | AST | PCA-8 | most freq. | random | emotion − VGGish |
+|---|---:|---:|---:|---:|---:|---:|---|
+| macro-F1 (headline) | **0.417** | 0.377 | 0.371 | 0.372 | 0.168 | 0.308 | +0.041, p=0.035 |
+| macro-F1, per-genre threshold tuned on train | 0.440 | 0.429 | 0.427 | **0.441** | 0.168 | 0.308 | +0.011, p=0.439 |
+| macro average precision (threshold-free) | **0.372** | 0.361 | 0.359 | 0.356 | 0.309 | 0.321 | +0.011, p=0.533 |
+| macro ROC-AUC (threshold-free) | **0.608** | 0.567 | 0.571 | 0.567 | 0.500 | 0.501 | +0.041, p=0.176 |
+| film-level macro-F1 | **0.469** | 0.375 | 0.307 | 0.418 | 0.169 | 0.301 | +0.096, p=0.041 |
+| weighted F1 | **0.550** | 0.504 | 0.534 | 0.491 | 0.396 | 0.477 | +0.048, p=0.004 |
+| micro-F1 | 0.482 | 0.471 | 0.515 | 0.446 | **0.571** | 0.477 | +0.012, p=0.563 |
+| samples-F1 | 0.485 | 0.451 | 0.495 | 0.431 | **0.574** | 0.438 | +0.034, p=0.116 |
+| exact match | 0.082 | 0.105 | 0.170 | 0.095 | **0.283** | 0.133 | |
+| Hamming loss (lower better) | 0.404 | 0.359 | 0.314 | 0.393 | **0.218** | 0.323 | |
+
+What it establishes:
+
+- **Macro-F1 is the right headline.** Micro-F1, samples-F1, Jaccard, exact match and
+  Hamming loss are all won by the most-frequent baseline (always "Drama"): they reward
+  ignoring the rare genres. Under every metric that weights genres equally the emotion
+  route is first (or, with tuned thresholds, level first).
+- **The in-domain advantage is partly an operating-point effect.** With per-genre
+  thresholds tuned on the training fold every route rises and they converge
+  (0.427–0.441); the emotion lead over VGGish is +0.011 (n.s.) and over PCA-8 −0.001.
+  The threshold-free ranking metrics also put the emotion route first, but not
+  significantly. At the default cut the emotion route's advantage comes mostly from
+  recall (0.596 vs 0.439) at slightly higher precision. Defensible wording: *in-domain the
+  emotion route loses nothing and is ahead at the default operating point; it is not
+  better under every way of scoring.* The zero-shot result is separate: no target labels
+  exist to tune a threshold on, and a source-tuned threshold was not tested.
+- **Stability.** Macro-F1 SD over the 10 repeats 0.009–0.023 (emotion 0.011, VGGish
+  0.020, AST 0.023); SD over the 50 single folds 0.050–0.061; film-bootstrap SE
+  0.018–0.027 (the largest source: which films are in the dataset); SD of the 10-repeat
+  mean over five master seeds (42, 1, 2, 3, 4 — changes folds *and* the random forest)
+  0.001–0.008. Emotion route per seed 0.410–0.417. Emotion − VGGish is positive under
+  every seed (+0.037 to +0.059), as are emotion − AST and emotion − PCA-8; PCA-8 − VGGish
+  changes sign (−0.005 to +0.012), which is what a true null looks like.
+
+### 22.2 Box Office Mojo parser fixed; Eerola box office re-run
+
+`fetch_box_office.from_box_office_mojo` searched the whole page for "Worldwide", found the
+navigation menu first and took the next dollar figure — the domestic *opening weekend* —
+so every film taken from Box Office Mojo was stored as "domestic only". It now reads the
+page's performance summary. On Eerola this affected the 12 films Wikidata lacked; 7
+grosses changed (Oliver Twist $2.1M → $42.6M, The Four Feathers $18.3M → $29.9M, ...),
+all Wikidata figures were unchanged, and all 38 usable grosses are now worldwide.
+`box_office.json` was re-run: nothing that was reported changes its conclusion —
+per-film F1 vs gross rho=+0.197 (p=0.246; was +0.196, p=0.244); anger rho=+0.335
+(p=0.043; was +0.337, 0.045), still explained by Action; Action median $267M vs $44M
+(p=0.004; was $41M). New: Biography (3 films) now reaches p=0.045 — with 3 films and 6
+genre tests, chance.
+
+### 22.3 Box office on Blockbuster (`exp_box_office_blockbuster.py`, `box_office_blockbuster.json`)
+
+Data: `fetch_box_office_blockbuster.py` resolves each of the 110 title slugs to Wikidata
+(title + release year from Ma et al.'s Appendix S1, ±1 year; an English-Wikipedia
+"<Title> (<year> film)" lookup for Focus, Pan and The Intern, which the label search
+misses) and takes the **worldwide** gross from Box Office Mojo by IMDb id: 110/110 films,
+one source, USD 9M (Tolkien) to 2.8B (Endgame). Budget from Wikidata for 84 films.
+Emotions are predicted per cue by the Eerola-trained VGGish regressor and pooled per film.
+Spearman with 5000-permutation p, Benjamini–Hochberg within each family; Pearson (log)
+and Kendall reported alongside. The zero-shot predictions are re-derived and checked
+against `zero_shot.json` (0.511 / 0.407 / 0.421, exact).
+
+| question | result |
+|---|---|
+| A. per-film classification quality vs gross (6 per-film metrics × 4 routes in-domain + 3 zero-shot = 42 tests) | **no relation**: largest ρ=+0.240 (PCA-8, in-domain F1), nothing survives BH (smallest p_BH=0.163), no pattern across routes |
+| B. predicted emotions vs gross | anger **+0.427**, tension +0.358, fear +0.299, energy +0.227, tender −0.366, valence −0.317, happy −0.255 (all BH-significant); between-cue spread of anger +0.451, energy +0.430; number of cues +0.572. Year control: no change. **Budget control: all emotions within −0.11…+0.08** |
+| C. genre | action median $475M vs $129M, sci-fi $615M vs $159M (both p<0.001); drama and comedy gross less; romance, horror n.s. |
+| D. ridge, 10×5 CV, R² out of fold | emotion 0.284, VGGish 0.348, MIR 0.214, genre labels 0.253; **log budget alone 0.491** (84 films); emotion on the same 84 films 0.118; budget + emotion 0.452 (no gain over budget) |
+| E. all 140 MIR descriptors | 1 constant (skipped); 45 of 139 at p<0.05 uncorrected (≈7 expected), 20 after BH — mostly MFCC means, spectral crest, pulse clarity |
+| confounds | ρ(gross, year)=+0.138 (p=0.148); ρ(gross, budget)=+0.781 |
+
+**What it establishes.** How well a soundtrack reveals its genre is unrelated to gross.
+The *emotions* of the score do track gross, but only as far as they track the budget:
+expensive action and sci-fi films are scored with tense, angry, energetic music, use more
+cues, and earn more. Once the budget is known the soundtrack adds nothing. Exploratory
+and non-causal; a budget buys orchestra, marketing and franchise at once.
+
+### 22.4 Chapters and figures (notes 4–6)
+
+- **Fold count of the pooled cross-dataset design.** `results/cross_dataset_cv.json` held
+  a **3x5** run although the script's default (and its docstring) is 5x5, so a default
+  re-run did not reproduce it. Re-run at the default 5x5 on 7 Oct 2026: designs 1 and 2
+  are identical; the pooled design moves slightly (emotion 0.424 -> 0.432, direct
+  0.421 -> 0.428, PCA-8 0.398 -> 0.405; emotion vs direct +0.003, p=0.906 -> +0.004,
+  p=0.850; vs PCA-8 p=0.329 -> 0.231). The conclusion (a tie once both datasets are in
+  training) is unchanged; thesis, briefings and log updated.
+
+- `docs/latex/chapters/`: full drafts of Introduction, Methods, Evaluation, Discussion,
+  Conclusions and the abstract, each replacing its Overleaf file (guide:
+  `docs/latex/README.md`). Three `% CITATION NEEDED` (librosa; PyTorch/transformers/
+  scikit-learn; threshold tuning for F1). Not compiled yet.
+- `experiments/make_figures.py` draws nine figures from the results files into
+  `figures/` (PDF + PNG): in-domain comparison, stability, metric family, zero-shot,
+  cross-dataset, Stage-1 R² heatmap, ablation, signatures, box office.
+- Issues the drafting surfaced, fixed or documented: the zero-shot win over PCA-8
+  (p=0.032) does not recur in the `cross_dataset_cv` re-run (+0.045, p=0.258), so the
+  PCA-8 claim across datasets is stated with that caveat; the zero-shot lead over direct
+  audio is recall-driven too (precision 0.488 vs 0.576) — a source-tuned-threshold
+  transfer run is listed as future work; the Methods skeleton's "first 10.24 s for every
+  representation" is true only for AST, MusiCNN and wav2vec (VGGish and MIR use the whole
+  clip, CLAP a 10 s crop); two table rows in `docs/latex/cross_dataset_transfer.tex` had
+  a collapsed `\` and "datasets's" from the corpus→dataset rename (fixed).
+
+## 23. Film-level macro-F1 becomes the headline (7 Oct 2026, author's decision)
+
+**Why.** Genre is a film label, identical for every clip of a film (checked: true for all
+43 films). Clip-level scoring weights a film by its clip count (1 to 18, median 8) and
+counts a film's clips as independent decisions. Blockbuster rows are films, and the
+zero-shot test is scored per film, so film level puts every genre evaluation on one unit.
+The metric family of §22.1 had shown film-level macro-F1 as a strong separator, and the
+author chose it as the headline, **with clip level kept beside every result** (the choice
+was made after seeing results, so the thesis says so in its Limitations).
+
+**How.** `experiments/evaluation/exp_film_level.py` → `results/film_level.json`. Same arms,
+folds and seeds as `exp_cv_corrected.py`; the clip probabilities of a film are averaged,
+genre predicted at ≥ 0.5, macro-F1 over films per repeat on the pooled out-of-fold
+predictions. Film bootstrap with the 2000 draws of `cv_corrected.json`. Nadeau–Bengio is
+not defined per film (a test fold holds ~8 films), so the clip-level NB is stored beside
+each comparison. **Reproduction check: all 107 clip-level numbers (cv_corrected per-repeat
+scores and p-values, metrics_stability seed means and film-level means) identical.**
+`exp_cross_dataset_cv.py` gained `film_level` blocks for design 2 and the pooled design
+(clip-level numbers unchanged, checked against the previous file).
+
+**Caveat.** Comedy has 4 films, Horror 5 (8 genres: Documentary 2, Biography 3), so film
+scores spread about twice as much as clip scores (repeat SD 0.017–0.055 vs 0.009–0.023).
+
+### 23.1 Five genres, 41 films (film level; clip level in brackets)
+
+| arm | film-level | 95 % CI | clip |
+|---|---:|---|---:|
+| ratings (ceiling) | 0.521 | [0.440, 0.589] | 0.428 |
+| wav2vec 2.0 → predicted emotion | 0.475 | [0.401, 0.531] | 0.419 |
+| **VGGish → predicted emotion (the pipeline)** | **0.469** | [0.392, 0.529] | 0.417 |
+| PCA-8 control | 0.418 | [0.324, 0.495] | 0.372 |
+| MusiCNN | 0.385 | [0.293, 0.453] | 0.363 |
+| VGGish direct | 0.375 | [0.295, 0.439] | 0.377 |
+| CLAP | 0.371 | [0.284, 0.429] | 0.361 |
+| MIR | 0.367 | [0.296, 0.423] | 0.363 |
+| AST | 0.307 | [0.249, 0.355] | 0.371 |
+| wav2vec 2.0 direct | 0.249 | [0.201, 0.291] | 0.326 |
+| most frequent / random guess | 0.169 / 0.301 | | 0.168 / 0.308 |
+
+| comparison | film Δ, p (boot), won | clip Δ, p (boot), p (NB) |
+|---|---|---|
+| emotion vs VGGish | +0.095, p=0.047, 10/10 | +0.040, 0.042, 0.151 |
+| emotion vs AST | +0.160, p<0.001, 10/10 | +0.047, 0.030, 0.110 |
+| emotion vs MusiCNN | +0.085, **p=0.079**, 10/10 | +0.054, 0.018, 0.073 |
+| emotion vs PCA-8 | +0.051, **p=0.326**, 9/10 | +0.045, 0.029, 0.122 |
+| emotion vs ratings | **−0.053, p=0.053, 0/10** | −0.011, 0.325, 0.497 |
+| PCA-8 vs VGGish | **+0.043, p=0.163, 8/10** | −0.005, 0.771, 0.804 |
+| wav2vec emotion vs wav2vec direct | +0.222, p<0.001 | +0.091, <0.001, 0.012 |
+
+What changes against the clip-level reading: (1) the lead over direct audio roughly
+doubles; (2) it is **not significant against MusiCNN or the PCA-8 control**; (3) the
+**PCA-8 control beats VGGish under every seed** (+0.033 to +0.059), so compression explains
+part of the gain; (4) the **ratings beat predicted emotions in every repeat** (just short
+of significance); (5) AST collapses (Comedy F1 0.02, Horror 0.00 per film).
+
+### 23.2 Eight genres, ablation, stability
+
+- 8 genres: ratings 0.359, pipeline 0.352, VGGish 0.256, AST 0.234 (random 0.221, most
+  frequent 0.103). Pipeline vs AST +0.116 (p<0.001), vs VGGish +0.096 (p=0.002), both 10/10.
+  Documentary is never predicted correctly (F1 0 for every route).
+- Ablation (ratings, all eight 0.521): any single emotion removed changes the score by at
+  most 0.010, none significant (smallest p 0.101). Subsets lose a little, consistently but
+  not significantly: fear only 0.485 (p=0.082), 3-d scales 0.487 (p=0.066), valence+energy
+  0.498, fear+valence 0.496, five discrete 0.512.
+- Stability (seeds 42, 1–4): repeat SD 0.017–0.055 (emotion 0.026), bootstrap SE
+  0.027–0.044, SD of seed means 0.008–0.015 (emotion means 0.463–0.489). Emotion − VGGish
+  +0.093 to +0.128, − AST +0.140 to +0.173, − PCA-8 +0.040 to +0.070, all positive under
+  every seed.
+
+### 23.3 Cross-dataset designs at film level (`cross_dataset_cv.json → film_level`)
+
+| design | emotion | PCA-8 | direct | emotion vs direct |
+|---|---:|---:|---:|---|
+| Eerola → Blockbuster (already films) | 0.508 | 0.465 | 0.395 | +0.115, p=0.016 |
+| Blockbuster → Eerola, 41 films | 0.430 | 0.373 | 0.356 | +0.077, **p=0.127** |
+| pooled, film level (5×5) | 0.529 | 0.539 | 0.553 | −0.023, p=0.571 (NB) |
+| — Eerola films of the pooled folds | 0.537 | 0.460 | 0.413 | |
+| — Blockbuster films | 0.539 | 0.552 | 0.573 | |
+
+**A correction found on the way.** The clip-level Blockbuster → Eerola p<0.001 (§19) came
+from a bootstrap that resamples **clips**, which are not independent. Resampling films
+(the film-level test) gives p=0.127. The reverse direction therefore agrees in sign but
+is not significant; the thesis says so.
+
+**What the thesis now says.** The emotion route is clearly ahead where the genre
+classifier is trained on the 41 Eerola films (in-domain on 5 and 8 genres, and zero-shot
+to Blockbuster) and level where it is trained on the 110 Blockbuster films or on both. The
+"generalisation advantage" of the clip-level reading becomes "an advantage under scarce
+data and under a change of dataset". Thesis on Overleaf: commits `d84fe44`, `8658777`.
+
+## 24. Fifth meeting: one film counted twice, every Eerola result re-run; per genre, SD bars, a focused Evaluation (8 Oct 2026)
+
+### 24.1 The duplicate film
+
+Clip 256 of Set 1 is spelt "The Portait of a Lady", the film's other six clips "The
+Portrait of a Lady" (same IMDb id tt0117364). The soundtrack name is the grouping key of
+every film-grouped split, so the film counted as two and one clip could sit on the other
+side of a fold boundary. Found while checking the supervisor's leakage question. Fix:
+`config.SOUNDTRACK_NAME_FIXES`, applied in the loader; expected counts 42 films (8 genres),
+40 (5 genres and shared space), 45 rated films. All film-grouped Eerola experiments were
+re-run in dependency order (statistical_power → cv_corrected → metrics_stability →
+film_level → cross_dataset_cv → zero_shot → waveform_vs_spectrogram → w2v_layer_sweep →
+emotion_ablation → model_search, plus the print-only scripts). Every reproduction check
+held (cv_corrected vs statistical_power: 10 arms; metrics_stability vs cv_corrected;
+film_level: 107 numbers). Blockbuster-only results (blockbuster_deep, signature
+replication, the leave-one-film-out reproduction) do not group Eerola films and are
+unchanged.
+
+The shifts are of the order of the split noise (merging two groups changes every fold
+assignment), but they move several significance statements:
+
+| | before | after |
+|---|---:|---:|
+| film level, 5 genres: ratings / emotion / VGGish / MusiCNN / PCA-8 | 0.521 / 0.469 / 0.375 / 0.385 / 0.418 | 0.491 / 0.460 / 0.367 / 0.396 / 0.390 |
+| clip level, 5 genres: ratings / emotion / VGGish / AST | 0.428 / 0.417 / 0.377 / 0.371 | 0.416 / 0.405 / 0.366 / 0.368 |
+| emotion vs VGGish, film bootstrap | +0.095, p=0.047 | +0.093, p=0.052 |
+| emotion vs PCA-8, film bootstrap | +0.051, p=0.326 | +0.070, p=0.089 |
+| predicted vs rated | −0.053, p=0.053 | -0.032, p=0.277 |
+| 8 genres, film: emotion / VGGish / AST | 0.352 / 0.256 / 0.234 | 0.349 / 0.257 / 0.242 |
+| 8 genres, clip: ratings / emotion / AST | 0.321 / 0.318 / 0.276 | 0.328 / 0.317 / 0.278 |
+| zero-shot: emotion / direct / PCA-8 | 0.511 / 0.407 / 0.421 | 0.508 / 0.403 / 0.417 |
+| zero-shot: emotion − direct, − PCA-8 | +0.106 (p=0.018), +0.092 (p=0.032) | +0.106 (p=0.013), +0.093 (p=0.027) |
+| zero-shot, emotions from the film-average embedding | 0.482 | 0.502 |
+| E→B re-implementation: emotion / direct | 0.508 / 0.395 | 0.503 / 0.383 (+0.121, p=0.007) |
+| B→E, film level: emotion / direct | 0.430 / 0.356 (p=0.127) | 0.458 / 0.364 (p=0.102) |
+| B→E, clip level: emotion / direct | 0.370 / 0.320 | 0.347 / 0.320 (+0.027, p=0.069, now resampling films) |
+| pooled, clip level: emotion / direct | 0.432 / 0.428 | 0.424 / 0.420 |
+| Stage 1 R²: CLAP / VGGish / AST / MusiCNN / MIR / wav2vec | 0.561 / 0.558 / 0.560 / 0.541 / 0.490 / 0.323 | 0.558 / 0.553 / 0.545 / 0.512 / 0.476 / 0.299 |
+| emotion_ablation.json (old protocol): all 8 / 11 features / fear only / valence+energy | 0.426 / — / 0.433 / 0.420 | 0.383 / 0.388 / 0.398 / 0.384 |
+
+Clip level, 5 genres, all arms (cv_corrected.json): ratings 0.416, emotion route 0.405,
+VGGish 0.366, AST 0.368, CLAP 0.356, MusiCNN 0.359, MIR 0.362, wav2vec 0.328,
+PCA-8 0.364. Eight genres: ratings 0.328, emotion route 0.317, VGGish 0.272, AST
+0.278. Print-only scripts: leakage example AST 0.44 ungrouped vs 0.23 grouped; regressor
+choice ridge 0.39 / SVR 0.54 / random forest 0.55; over-prediction 3.55 vs 1.87 labels per
+clip; learning curve still rising (slowly); listener reliability unchanged (102 clips, 38
+soundtracks, ICC(C,1) 0.897). wav2vec 2.0 layer sweep: blocks 1–3 within 0.003
+(0.297 / 0.294 / 0.294); block 2 is kept (selected earlier, held fixed).
+
+**What changed in the conclusions.** In-domain the emotion route is still ahead of every
+direct representation in 9–10 of 10 repeats and under every seed, but its film-level lead is
+significant only against AST, MIR and wav2vec; VGGish p=0.052, CLAP, MusiCNN, PCA-8 not
+significant. Over clips the film bootstrap is significant against VGGish, CLAP, MusiCNN, MIR,
+wav2vec and PCA-8 but not AST, Nadeau–Bengio only against wav2vec. Film level is therefore
+the stricter unit here. Predicted vs rated is no longer close to significant. The ablation
+has one nominal single-emotion hit (removing tension raises the score, p=0.041). Transfer
+conclusions unchanged.
+
+### 24.2 The four notes
+
+1. **Bar charts with SD.** `make_figures.py`: new `blockbuster_cv` (10×5 CV over the 110
+   films, SD of the repeat means), error bars on `cross_dataset` (bootstrap SD over test films
+   for the two transfer directions, `boot_sd`; SD of the repeat means for the pooled design,
+   `repeat_sd`; both stored in `cross_dataset_cv.json`).
+2. **Leakage between the datasets.** No IMDb id or title in common (checked against
+   `data/processed/Blockbuster/box_office.csv`); Eerola films are pre-2011, Blockbuster
+   2014–2019. Shared composers (Danny Elfman: Batman / Justice League) noted as stylistic
+   overlap. The only leak was the duplicate above.
+3. **Per genre.** `film_level.json` now stores per-genre film-level precision, recall and
+   F1 (and clip-level ones) for every arm; new figure `per_genre` (heatmap, best route
+   boxed). Best route: emotion on Action (0.61), Crime (0.35) and Comedy
+   (0.34); MIR on Drama; CLAP on Horror.
+4. **Focused Evaluation.** Chapter 5 keeps Stage 1, RQ1, emotion vs direct audio (one
+   4-row table), per genre, signatures and transfer; everything else moved to a new
+   Appendix A (`appendix/supplementary.tex`). Discussion rebuilt around the settings table.
+   Overleaf `3b10594`.
+
+## 25. Why the emotion route has the worst Hamming loss (15 Oct 2026)
+
+Asked by the author: under Hamming loss (share of wrong clip–genre decisions, lower is
+better) the emotion route is the weakest audio route on the five-genre subset (0.406;
+VGGish 0.358, AST 0.311, random guess 0.323, always-Drama dummy 0.218), although it has
+the best macro-F1. `experiments/diagnostics/exp_hamming_breakdown.py` →
+`hamming_breakdown.json` splits each route's loss by genre and into false positives and
+negatives, derived from the per-genre clip precision and recall in `film_level.json`
+(checked against `metrics_stability.json` within 0.005; no model re-fitted).
+
+- The emotion route predicts **2.35 genres per clip** against 1.54 true (VGGish 1.85, AST
+  1.68): 1.42 false positives per clip, but the fewest false negatives (0.62).
+- Per genre it makes **fewer** errors than VGGish on Action (0.371 vs 0.411) and Drama
+  (0.356 vs 0.396), as many on Crime (0.473 vs 0.468); the whole gap is Comedy (0.438 vs
+  0.286) and Horror (0.403 vs 0.235), predicted for 148 and 135 of 329 clips (40 and 28
+  true).
+- The human ratings predict even more (2.47) and have the highest loss (0.427), so it is a
+  property of the emotion space (tense crime clips resemble horror), not of regression
+  error. Cause of the over-prediction: class-balanced logistic regression with `C` chosen
+  for macro-F1, applied to every route alike.
+- Conclusion: Hamming loss and macro-F1 rank the routes almost in reverse; it is the
+  recall-driven operating point of §22.1 seen from the other side. Full explanation of
+  every metric, and a paste-ready paragraph for Appendix A.2, in
+  `docs/evaluation_metrics.md`. On Overleaf since 15 Oct (Appendix A.2, after the
+  paragraph on the metrics dominated by frequent genres), together with a correction of
+  that paragraph: weighted-F1 is the one metric of its block that the always-Drama dummy
+  does not win.
+- **Figure check (15 Oct, Overleaf `4a77de0`).** All ten figures regenerate identically
+  from the results files (PNG byte-identical, PDF differs only in its timestamp) and the
+  Overleaf copies equal the repository's. Fixed: the in-domain axis said "41 films" (now
+  read from `film_level.json`: 40) and two value labels covered clip markers; the
+  zero-shot and ablation axis labels were cut off at the right edge; "wav2vec2" in the
+  Stage 1 heatmap renamed "wav2vec 2.0". In the text, "41 films" survived in Methods
+  (shared space) and in the Discussion (reverse transfer), now 40; the MFCC and
+  random-projection bars of the Blockbuster chart are explained in Chapter 5. The audit
+  now flags any "41 / 43 films" in the chapters or the figure script.
+
+## 26. The author's comments of 16 Oct; three research questions (21 Oct 2026)
+
+The author's 14 comments on the draft (`Drafts of the Thesis/Commented_Thesis_16.10.pdf`)
+are answered one by one in `docs/review_2026-10-16.md`. Applied on Overleaf (`352a922`):
+a plainer opening of the Introduction, RQ1 reworded, a paragraph naming the datasets and
+the approach; in Fundamentals the leakage share corrected from "roughly forty percent" to
+"about half" (re-run of `exp_genre.py` on 21 Oct: AST 0.437 naive vs 0.226 grouped, so
+48 %), the rating ceiling explained, Cohen's d and the Nadeau–Bengio test given with their
+formulas, and the significance section rewritten around the film bootstrap. Then
+(`497c6db`) the research questions were reduced to three at the author's decision: RQ2a
+and RQ3 merged into **RQ2** (signatures and their replication on Blockbuster), the old
+RQ2b is now **RQ3**. Earlier sections of this log keep the old labels.
+
 ## Next steps
 
-- **Content chapters** — student; the LaTeX snippets in `docs/latex/` are ready to fold
-  in. Eight are now available: `evaluation_protocol`, `cross_dataset_transfer`,
-  `waveform_vs_spectrogram`, `emotion_genre_relationship`, `genre_subset`,
-  `emotion_regression_bridge`, `statistical_power`, `rating_reliability`.
+- ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and
+  compile (§22.4, §24, §26); `docs/latex/chapters/` holds copies, and no citation is
+  missing. Left for the author: the abstract, Chapter 7 and the contributions list (drafts
+  in `docs/latex/held_back/`, written with the old numbers and the old four research
+  questions), the date of the AI declaration, and the wording of the main research
+  question, to be agreed with the supervisor (`docs/review_2026-10-16.md`, item 5).
+- **Zero-shot with thresholds tuned on the source** — the one open check the metric
+  analysis (§22.1) raises: does the transfer advantage survive per-genre thresholds?
+  Not run; the Discussion names it as future work.
 - ~~**Bib entries to add on Overleaf**~~ — **done.** `hu2007exploring`, `laurier2009mood`,
   `eerola2011genrespecific`, `saari2016genre`, `nadeau2003inference`,
   `sokolova2009systematic`, `baevski2020wav2vec` and `pons2019musicnn` are all in
@@ -1431,5 +1773,5 @@ exactly here. For new writing, use this section.
   `statistical_power.json`, `model_search.json`, `zero_shot.json`,
   `waveform_vs_spectrogram.json`, `w2v_layer_sweep.json`, `blockbuster_deep.json`,
   `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
-  `box_office.json`, `cv_corrected.json`. Render any of them as Markdown tables with
+  `box_office.json`, `cv_corrected.json`, `hamming_breakdown.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.

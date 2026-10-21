@@ -1,0 +1,239 @@
+{
+  "what": "Hamming loss of each route split by genre and into false positives and false negatives (five-genre subset, clip level, seed 42, mean of ten repeats); derived from the per-genre clip precision and recall stored in film_level.json",
+  "n_clips": 329,
+  "genres": [
+    "Action",
+    "Crime",
+    "Drama",
+    "Comedy",
+    "Horror"
+  ],
+  "positives_per_genre": {
+    "Action": 103,
+    "Crime": 98,
+    "Drama": 239,
+    "Comedy": 40,
+    "Horror": 28
+  },
+  "base_rate": {
+    "Action": 0.313,
+    "Crime": 0.298,
+    "Drama": 0.726,
+    "Comedy": 0.122,
+    "Horror": 0.085
+  },
+  "true_genres_per_clip": 1.544,
+  "random_guess_hamming": 0.323,
+  "arms": {
+    "ratings (ceiling)": {
+      "hamming_loss_stored": 0.427,
+      "hamming_loss_derived": 0.428,
+      "predicted_genres_per_clip": 2.47,
+      "false_positives_per_clip": 1.54,
+      "false_negatives_per_clip": 0.61,
+      "error_rate_per_genre": {
+        "Action": 0.446,
+        "Crime": 0.428,
+        "Drama": 0.398,
+        "Comedy": 0.471,
+        "Horror": 0.398
+      },
+      "predicted_clips_per_genre": {
+        "Action": 172,
+        "Crime": 156,
+        "Drama": 176,
+        "Comedy": 166,
+        "Horror": 143
+      },
+      "false_positives_per_genre": {
+        "Action": 108,
+        "Crime": 100,
+        "Drama": 34,
+        "Comedy": 140,
+        "Horror": 123
+      },
+      "false_negatives_per_genre": {
+        "Action": 39,
+        "Crime": 41,
+        "Drama": 97,
+        "Comedy": 15,
+        "Horror": 8
+      }
+    },
+    "emotion route": {
+      "hamming_loss_stored": 0.406,
+      "hamming_loss_derived": 0.408,
+      "predicted_genres_per_clip": 2.35,
+      "false_positives_per_clip": 1.42,
+      "false_negatives_per_clip": 0.62,
+      "error_rate_per_genre": {
+        "Action": 0.371,
+        "Crime": 0.473,
+        "Drama": 0.356,
+        "Comedy": 0.438,
+        "Horror": 0.403
+      },
+      "predicted_clips_per_genre": {
+        "Action": 135,
+        "Crime": 156,
+        "Drama": 197,
+        "Comedy": 148,
+        "Horror": 135
+      },
+      "false_positives_per_genre": {
+        "Action": 77,
+        "Crime": 107,
+        "Drama": 38,
+        "Comedy": 126,
+        "Horror": 120
+      },
+      "false_negatives_per_genre": {
+        "Action": 45,
+        "Crime": 49,
+        "Drama": 80,
+        "Comedy": 18,
+        "Horror": 13
+      }
+    },
+    "direct VGGish": {
+      "hamming_loss_stored": 0.358,
+      "hamming_loss_derived": 0.359,
+      "predicted_genres_per_clip": 1.85,
+      "false_positives_per_clip": 1.05,
+      "false_negatives_per_clip": 0.74,
+      "error_rate_per_genre": {
+        "Action": 0.411,
+        "Crime": 0.468,
+        "Drama": 0.396,
+        "Comedy": 0.286,
+        "Horror": 0.235
+      },
+      "predicted_clips_per_genre": {
+        "Action": 125,
+        "Crime": 131,
+        "Drama": 209,
+        "Comedy": 78,
+        "Horror": 67
+      },
+      "false_positives_per_genre": {
+        "Action": 79,
+        "Crime": 94,
+        "Drama": 50,
+        "Comedy": 66,
+        "Horror": 58
+      },
+      "false_negatives_per_genre": {
+        "Action": 57,
+        "Crime": 60,
+        "Drama": 80,
+        "Comedy": 28,
+        "Horror": 19
+      }
+    },
+    "direct AST": {
+      "hamming_loss_stored": 0.311,
+      "hamming_loss_derived": 0.311,
+      "predicted_genres_per_clip": 1.68,
+      "false_positives_per_clip": 0.84,
+      "false_negatives_per_clip": 0.71,
+      "error_rate_per_genre": {
+        "Action": 0.362,
+        "Crime": 0.403,
+        "Drama": 0.347,
+        "Comedy": 0.261,
+        "Horror": 0.182
+      },
+      "predicted_clips_per_genre": {
+        "Action": 116,
+        "Crime": 110,
+        "Drama": 225,
+        "Comedy": 59,
+        "Horror": 42
+      },
+      "false_positives_per_genre": {
+        "Action": 66,
+        "Crime": 72,
+        "Drama": 50,
+        "Comedy": 53,
+        "Horror": 37
+      },
+      "false_negatives_per_genre": {
+        "Action": 53,
+        "Crime": 60,
+        "Drama": 64,
+        "Comedy": 33,
+        "Horror": 23
+      }
+    },
+    "PCA-8 control": {
+      "hamming_loss_stored": 0.396,
+      "hamming_loss_derived": 0.397,
+      "predicted_genres_per_clip": 2.04,
+      "false_positives_per_clip": 1.24,
+      "false_negatives_per_clip": 0.75,
+      "error_rate_per_genre": {
+        "Action": 0.445,
+        "Crime": 0.535,
+        "Drama": 0.39,
+        "Comedy": 0.347,
+        "Horror": 0.27
+      },
+      "predicted_clips_per_genre": {
+        "Action": 142,
+        "Crime": 148,
+        "Drama": 189,
+        "Comedy": 101,
+        "Horror": 89
+      },
+      "false_positives_per_genre": {
+        "Action": 93,
+        "Crime": 113,
+        "Drama": 39,
+        "Comedy": 88,
+        "Horror": 75
+      },
+      "false_negatives_per_genre": {
+        "Action": 54,
+        "Crime": 63,
+        "Drama": 89,
+        "Comedy": 26,
+        "Horror": 14
+      }
+    },
+    "most frequent": {
+      "hamming_loss_stored": 0.218,
+      "hamming_loss_derived": 0.218,
+      "predicted_genres_per_clip": 1.0,
+      "false_positives_per_clip": 0.27,
+      "false_negatives_per_clip": 0.82,
+      "error_rate_per_genre": {
+        "Action": 0.313,
+        "Crime": 0.298,
+        "Drama": 0.274,
+        "Comedy": 0.122,
+        "Horror": 0.085
+      },
+      "predicted_clips_per_genre": {
+        "Action": 0,
+        "Crime": 0,
+        "Drama": 329,
+        "Comedy": 0,
+        "Horror": 0
+      },
+      "false_positives_per_genre": {
+        "Action": 0,
+        "Crime": 0,
+        "Drama": 90,
+        "Comedy": 0,
+        "Horror": 0
+      },
+      "false_negatives_per_genre": {
+        "Action": 103,
+        "Crime": 98,
+        "Drama": 0,
+        "Comedy": 40,
+        "Horror": 28
+      }
+    }
+  }
+}

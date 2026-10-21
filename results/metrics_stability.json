@@ -1,0 +1,1421 @@
+{
+  "design": {
+    "dataset": "Eerola 5-genre subset, 329 clips / 40 films",
+    "genres": [
+      "Action",
+      "Crime",
+      "Drama",
+      "Comedy",
+      "Horror"
+    ],
+    "protocol": "10x5 RepeatedGroupKFold by film, nested C (inner GroupKFold(3)), training emotions predicted out-of-fold; as exp_cv_corrected.py",
+    "pooling": "every metric computed once per repeat on the pooled out-of-fold predictions (all clips, all genres present)",
+    "threshold_tuning": "per genre, the F1-maximising cut in 0.05..0.95 on inner GroupKFold(3) out-of-fold probabilities of the training fold",
+    "bootstrap": "paired over films, 1000 draws, averaged over the repeats",
+    "seeds": [
+      42,
+      1,
+      2,
+      3,
+      4
+    ],
+    "arm_labels": {
+      "ground-truth emotion(11) [ceiling]": "ratings (ceiling)",
+      "VGGish -> predicted emotion(11), OOF-trained": "emotion route",
+      "VGGish-128 (direct)": "direct audio (VGGish)",
+      "AST-768": "direct audio (AST)",
+      "PCA-8(VGGish) [control]": "PCA-8 control",
+      "dummy": "most frequent"
+    },
+    "metric_definitions": {
+      "macro_f1": "F1 per genre, then the unweighted mean over genres (the headline)",
+      "micro_f1": "F1 over all clip-genre decisions pooled; dominated by frequent genres",
+      "weighted_f1": "F1 per genre, averaged with weights proportional to genre frequency",
+      "samples_f1": "F1 per clip over its genre vector, averaged over clips",
+      "macro_f1_tuned_threshold": "macro-F1 with each genre's cut tuned on the training fold",
+      "macro_average_precision": "area under each genre's precision-recall curve, averaged; threshold-free",
+      "macro_roc_auc": "probability a random positive clip outranks a random negative one, averaged over genres; threshold-free, 0.5 is chance",
+      "film_level_macro_f1": "macro-F1 over films, from clip probabilities averaged per film",
+      "macro_precision": "of the clips predicted as a genre, the share that are",
+      "macro_recall": "of the clips that are a genre, the share found",
+      "hamming_loss": "share of individual clip-genre decisions that are wrong (lower is better)",
+      "exact_match": "share of clips whose whole genre vector is right",
+      "jaccard_samples": "per clip, the genres both predicted and true divided by those predicted or true, averaged"
+    }
+  },
+  "metrics": {
+    "macro_f1": {
+      "definition": "F1 per genre, then the unweighted mean over genres (the headline)",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.30730543470934946,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.41566702161041774,
+          "sd": 0.015618325457769984,
+          "min": 0.37480106065451446,
+          "max": 0.42984434741114236
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.40536648544911724,
+          "sd": 0.0189179221307794,
+          "min": 0.35794780338139065,
+          "max": 0.42520221631664235
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.36630610746063647,
+          "sd": 0.017360644328078895,
+          "min": 0.33665512667998365,
+          "max": 0.400525971073696
+        },
+        "AST-768": {
+          "mean": 0.3682251587419187,
+          "sd": 0.018001766515039642,
+          "min": 0.34549186792028724,
+          "max": 0.4021842809055398
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.363576753089297,
+          "sd": 0.015623647507029442,
+          "min": 0.33499402853744586,
+          "max": 0.38469789460400033
+        },
+        "dummy": {
+          "mean": 0.1683098591549296,
+          "sd": 2.925694557147251e-17,
+          "min": 0.16830985915492958,
+          "max": 0.16830985915492958
+        }
+      }
+    },
+    "micro_f1": {
+      "definition": "F1 over all clip-genre decisions pooled; dominated by frequent genres",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.47653161912766434,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.46786999728130524,
+          "sd": 0.01041736142928843,
+          "min": 0.4511627906976744,
+          "max": 0.48323170731707316
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.47619471566364613,
+          "sd": 0.011213916837367301,
+          "min": 0.4533120510774142,
+          "max": 0.49144634525660963
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.47253790251018035,
+          "sd": 0.013980850053855378,
+          "min": 0.4541406945681211,
+          "max": 0.49644128113879005
+        },
+        "AST-768": {
+          "mean": 0.5171378153208137,
+          "sd": 0.020574709844380652,
+          "min": 0.4874418604651163,
+          "max": 0.5504761904761905
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.44578380019404484,
+          "sd": 0.012348892310797449,
+          "min": 0.42759795570698467,
+          "max": 0.4717948717948718
+        },
+        "dummy": {
+          "mean": 0.5710872162485066,
+          "sd": 0.0,
+          "min": 0.5710872162485066,
+          "max": 0.5710872162485066
+        }
+      }
+    },
+    "weighted_f1": {
+      "definition": "F1 per genre, averaged with weights proportional to genre frequency",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.47615523968880874,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.5350094474687608,
+          "sd": 0.010639466714675937,
+          "min": 0.5205217218803043,
+          "max": 0.5506573206639723
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.5462232017639181,
+          "sd": 0.009356311536779979,
+          "min": 0.5307519647273902,
+          "max": 0.5593531378499836
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.5053293776380254,
+          "sd": 0.013904190976278782,
+          "min": 0.48739623933105475,
+          "max": 0.5304380125640106
+        },
+        "AST-768": {
+          "mean": 0.5344902828216063,
+          "sd": 0.018550820292323723,
+          "min": 0.5109420957963599,
+          "max": 0.5660182737373427
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.49418780375076726,
+          "sd": 0.013037433206544853,
+          "min": 0.4800192783775383,
+          "max": 0.523823580887276
+        },
+        "dummy": {
+          "mean": 0.3959257513585449,
+          "sd": 5.851389114294502e-17,
+          "min": 0.39592575135854496,
+          "max": 0.39592575135854496
+        }
+      }
+    },
+    "samples_f1": {
+      "definition": "F1 per clip over its genre vector, averaged over clips",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.437264336372847,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.4667781155015197,
+          "sd": 0.009370291136935658,
+          "min": 0.4515704154002026,
+          "max": 0.479128672745694
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.4786828774062816,
+          "sd": 0.011559845122208813,
+          "min": 0.4631205673758865,
+          "max": 0.49756838905775075
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.45258358662613973,
+          "sd": 0.015357780613342495,
+          "min": 0.434143870314083,
+          "max": 0.4810536980749746
+        },
+        "AST-768": {
+          "mean": 0.49677811550151973,
+          "sd": 0.021076548391178455,
+          "min": 0.4660587639311043,
+          "max": 0.530192502532928
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.4295585468229845,
+          "sd": 0.013262580179354756,
+          "min": 0.4141843971631205,
+          "max": 0.45542046605876385
+        },
+        "dummy": {
+          "mean": 0.5739614994934144,
+          "sd": 0.0,
+          "min": 0.5739614994934144,
+          "max": 0.5739614994934144
+        }
+      }
+    },
+    "macro_f1_tuned_threshold": {
+      "definition": "macro-F1 with each genre's cut tuned on the training fold",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.30730543470934946,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.4413086645414512,
+          "sd": 0.02322758051123243,
+          "min": 0.3839549136658264,
+          "max": 0.46858108332639087
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.419982027183333,
+          "sd": 0.030434616956905063,
+          "min": 0.37424266940476775,
+          "max": 0.46576948096119863
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.4233567060284293,
+          "sd": 0.020712476917682816,
+          "min": 0.3723605610502726,
+          "max": 0.44303350249721163
+        },
+        "AST-768": {
+          "mean": 0.4304342186463618,
+          "sd": 0.022070944794891474,
+          "min": 0.3786992523605427,
+          "max": 0.4667596111557087
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.43318534484739857,
+          "sd": 0.019794605007106343,
+          "min": 0.39816344738655535,
+          "max": 0.4650477086359485
+        },
+        "dummy": {
+          "mean": 0.1683098591549296,
+          "sd": 2.925694557147251e-17,
+          "min": 0.16830985915492958,
+          "max": 0.16830985915492958
+        }
+      }
+    },
+    "macro_average_precision": {
+      "definition": "area under each genre's precision-recall curve, averaged; threshold-free",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.3199288580146743,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.36549323392135297,
+          "sd": 0.00957593374289279,
+          "min": 0.3543512920881121,
+          "max": 0.3850477742082151
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.3699077709685573,
+          "sd": 0.009783227695092683,
+          "min": 0.349586895050295,
+          "max": 0.38312686683152886
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.3567202596027815,
+          "sd": 0.019309038815207593,
+          "min": 0.3301678069295495,
+          "max": 0.3915121106487537
+        },
+        "AST-768": {
+          "mean": 0.35695491054484707,
+          "sd": 0.01378959509642784,
+          "min": 0.338007872161202,
+          "max": 0.3812757703655619
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.3502395747813379,
+          "sd": 0.014673739665482565,
+          "min": 0.3348237852003656,
+          "max": 0.37754007399038336
+        },
+        "dummy": {
+          "mean": 0.30881458966565345,
+          "sd": 0.0,
+          "min": 0.30881458966565345,
+          "max": 0.30881458966565345
+        }
+      }
+    },
+    "macro_roc_auc": {
+      "definition": "probability a random positive clip outranks a random negative one, averaged over genres; threshold-free, 0.5 is chance",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.500152649879573,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.6071322546504241,
+          "sd": 0.03472907618116789,
+          "min": 0.5132923389463162,
+          "max": 0.6325436632891981
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.592263391194504,
+          "sd": 0.038034167314178774,
+          "min": 0.4927721806768842,
+          "max": 0.6282521412446713
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.5423357374345182,
+          "sd": 0.03226574332278876,
+          "min": 0.47629382099984896,
+          "max": 0.5993796726627071
+        },
+        "AST-768": {
+          "mean": 0.5634694777453364,
+          "sd": 0.035990882939859824,
+          "min": 0.49712939314235055,
+          "max": 0.629352588630292
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.5448253566370586,
+          "sd": 0.032908835789233974,
+          "min": 0.47375100232716816,
+          "max": 0.597814535376094
+        },
+        "dummy": {
+          "mean": 0.5,
+          "sd": 0.0,
+          "min": 0.5,
+          "max": 0.5
+        }
+      }
+    },
+    "film_level_macro_f1": {
+      "definition": "macro-F1 over films, from clip probabilities averaged per film",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.3091655521105383,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.49074647621165857,
+          "sd": 0.03382882354839632,
+          "min": 0.4360617365225661,
+          "max": 0.5311512811123318
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.4600883327155536,
+          "sd": 0.03775448556001259,
+          "min": 0.3993853340709324,
+          "max": 0.5039402427637721
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.3665688796033823,
+          "sd": 0.03897022941810133,
+          "min": 0.3139920948616601,
+          "max": 0.42407407407407405
+        },
+        "AST-768": {
+          "mean": 0.31831802002129667,
+          "sd": 0.044517957145920974,
+          "min": 0.2833467850417003,
+          "max": 0.43602484472049696
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.38958393596839647,
+          "sd": 0.03512086205053524,
+          "min": 0.34538784067085954,
+          "max": 0.4532740019084557
+        },
+        "dummy": {
+          "mean": 0.1681159420289855,
+          "sd": 0.0,
+          "min": 0.1681159420289855,
+          "max": 0.1681159420289855
+        }
+      }
+    },
+    "macro_precision": {
+      "definition": "of the clips predicted as a genre, the share that are",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.30796212312450993,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.3673155040227975,
+          "sd": 0.010075430780360193,
+          "min": 0.3441305756000718,
+          "max": 0.3799401921497815
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.36309768276568977,
+          "sd": 0.01217758137518789,
+          "min": 0.33268442904811635,
+          "max": 0.376076945789176
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.34073605246204336,
+          "sd": 0.01296321751553953,
+          "min": 0.320374473709258,
+          "max": 0.36783493623611185
+        },
+        "AST-768": {
+          "mean": 0.35559498449212185,
+          "sd": 0.014817263617016943,
+          "min": 0.33523857611714214,
+          "max": 0.3795258870955295
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.3335665156245972,
+          "sd": 0.012773693550977032,
+          "min": 0.31214074561040706,
+          "max": 0.3553634555899249
+        },
+        "dummy": {
+          "mean": 0.1452887537993921,
+          "sd": 0.0,
+          "min": 0.1452887537993921,
+          "max": 0.1452887537993921
+        }
+      }
+    },
+    "macro_recall": {
+      "definition": "of the clips that are a genre, the share found",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.30768767046665113,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.6295787306432505,
+          "sd": 0.04375645427231053,
+          "min": 0.5073894098403875,
+          "max": 0.6523770946409192
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.5660839584889487,
+          "sd": 0.04561364852928524,
+          "min": 0.45042516661374704,
+          "max": 0.6049849324301357
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.4228001459916948,
+          "sd": 0.028098882686505844,
+          "min": 0.3745326151746802,
+          "max": 0.4753868406850086
+        },
+        "AST-768": {
+          "mean": 0.38756936305009065,
+          "sd": 0.024320881493151668,
+          "min": 0.3594081574621155,
+          "max": 0.44231860262486605
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.4602899348633307,
+          "sd": 0.02644138677707977,
+          "min": 0.4156024996828971,
+          "max": 0.5048253363985233
+        },
+        "dummy": {
+          "mean": 0.2,
+          "sd": 0.0,
+          "min": 0.2,
+          "max": 0.2
+        }
+      }
+    },
+    "hamming_loss": {
+      "definition": "share of individual clip-genre decisions that are wrong (lower is better)",
+      "lower_is_better": true,
+      "base_rate_random_guess": 0.32326200607902733,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.426565349544073,
+          "sd": 0.008994084811108695,
+          "min": 0.4121580547112462,
+          "max": 0.44072948328267475
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.4064437689969605,
+          "sd": 0.007205350083847364,
+          "min": 0.3939209726443769,
+          "max": 0.41641337386018235
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.3577507598784195,
+          "sd": 0.011366498816074351,
+          "min": 0.34407294832826746,
+          "max": 0.37264437689969604
+        },
+        "AST-768": {
+          "mean": 0.31082066869300917,
+          "sd": 0.013951040354512846,
+          "min": 0.28693009118541035,
+          "max": 0.33495440729483283
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.39586626139817627,
+          "sd": 0.009218410654935208,
+          "min": 0.3756838905775076,
+          "max": 0.4085106382978723
+        },
+        "dummy": {
+          "mean": 0.21823708206686931,
+          "sd": 0.0,
+          "min": 0.21823708206686931,
+          "max": 0.21823708206686931
+        }
+      }
+    },
+    "exact_match": {
+      "definition": "share of clips whose whole genre vector is right",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.1303768996960486,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.056838905775075985,
+          "sd": 0.012739394374062738,
+          "min": 0.030395136778115502,
+          "max": 0.07598784194528875
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.07234042553191489,
+          "sd": 0.0170622366241304,
+          "min": 0.0425531914893617,
+          "max": 0.1033434650455927
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.10212765957446808,
+          "sd": 0.01955184220154641,
+          "min": 0.06990881458966565,
+          "max": 0.13069908814589665
+        },
+        "AST-768": {
+          "mean": 0.16778115501519758,
+          "sd": 0.017001967143589085,
+          "min": 0.14285714285714285,
+          "max": 0.19148936170212766
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.08085106382978723,
+          "sd": 0.011300379731386982,
+          "min": 0.0668693009118541,
+          "max": 0.1094224924012158
+        },
+        "dummy": {
+          "mean": 0.2826747720364741,
+          "sd": 5.851389114294502e-17,
+          "min": 0.2826747720364742,
+          "max": 0.2826747720364742
+        }
+      }
+    },
+    "jaccard_samples": {
+      "definition": "per clip, the genres both predicted and true divided by those predicted or true, averaged",
+      "lower_is_better": false,
+      "base_rate_random_guess": 0.3541298885511651,
+      "arms": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean": 0.3470111448834853,
+          "sd": 0.009035987899292114,
+          "min": 0.33318135764944273,
+          "max": 0.36028368794326243
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean": 0.3598074974670719,
+          "sd": 0.012202562161350647,
+          "min": 0.33890577507598785,
+          "max": 0.37715298885511656
+        },
+        "VGGish-128 (direct)": {
+          "mean": 0.3561803444782169,
+          "sd": 0.016362967979816786,
+          "min": 0.33915906788247213,
+          "max": 0.3839918946301925
+        },
+        "AST-768": {
+          "mean": 0.40818135764944274,
+          "sd": 0.018801103010459976,
+          "min": 0.37867274569402226,
+          "max": 0.43718338399189455
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean": 0.33100810536980746,
+          "sd": 0.01217910786486079,
+          "min": 0.3178824721377913,
+          "max": 0.3583586626139818
+        },
+        "dummy": {
+          "mean": 0.5,
+          "sd": 0.0,
+          "min": 0.5,
+          "max": 0.5
+        }
+      }
+    }
+  },
+  "route_ranking_by_metric": {
+    "macro_f1": [
+      "emotion route",
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "micro_f1": [
+      "direct audio (AST)",
+      "emotion route",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "weighted_f1": [
+      "emotion route",
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "samples_f1": [
+      "direct audio (AST)",
+      "emotion route",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "macro_f1_tuned_threshold": [
+      "PCA-8 control",
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "emotion route"
+    ],
+    "macro_average_precision": [
+      "emotion route",
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "macro_roc_auc": [
+      "emotion route",
+      "direct audio (AST)",
+      "PCA-8 control",
+      "direct audio (VGGish)"
+    ],
+    "film_level_macro_f1": [
+      "emotion route",
+      "PCA-8 control",
+      "direct audio (VGGish)",
+      "direct audio (AST)"
+    ],
+    "macro_precision": [
+      "emotion route",
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ],
+    "macro_recall": [
+      "emotion route",
+      "PCA-8 control",
+      "direct audio (VGGish)",
+      "direct audio (AST)"
+    ],
+    "hamming_loss": [
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control",
+      "emotion route"
+    ],
+    "exact_match": [
+      "direct audio (AST)",
+      "direct audio (VGGish)",
+      "PCA-8 control",
+      "emotion route"
+    ],
+    "jaccard_samples": [
+      "direct audio (AST)",
+      "emotion route",
+      "direct audio (VGGish)",
+      "PCA-8 control"
+    ]
+  },
+  "comparisons": [
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1",
+      "diff": 0.03901432594481928,
+      "ci_lo": 0.006281617946484631,
+      "ci_hi": 0.07405313177347364,
+      "p_two_sided": 0.014256619144602852,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "micro_f1",
+      "diff": 0.0037452915444851436,
+      "ci_lo": -0.032671748632020915,
+      "ci_hi": 0.03926731101927977,
+      "p_two_sided": 0.8635437881873728,
+      "repeat_win_rate": 0.6,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "weighted_f1",
+      "diff": 0.04241813252773579,
+      "ci_lo": 0.008737975369389516,
+      "ci_hi": 0.07711366001478297,
+      "p_two_sided": 0.008146639511201629,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "samples_f1",
+      "diff": 0.025928886264953793,
+      "ci_lo": -0.010612778067323506,
+      "ci_hi": 0.06189279277391234,
+      "p_two_sided": 0.15682281059063136,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": -0.0036856006942904687,
+      "ci_lo": -0.032646645127818626,
+      "ci_hi": 0.023907095844227268,
+      "p_two_sided": 0.8126272912423625,
+      "repeat_win_rate": 0.5,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_average_precision",
+      "diff": 0.014223155224038641,
+      "ci_lo": -0.01572037590050264,
+      "ci_hi": 0.0433658240880025,
+      "p_two_sided": 0.35234215885947046,
+      "repeat_win_rate": 0.7,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_roc_auc",
+      "diff": 0.04938290300083105,
+      "ci_lo": -0.0024468138099027342,
+      "ci_hi": 0.10439328368322087,
+      "p_two_sided": 0.06313645621181263,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "metric": "film_level_macro_f1",
+      "diff": 0.0933164072736253,
+      "ci_lo": -0.0037337138476208225,
+      "ci_hi": 0.19002292114456254,
+      "p_two_sided": 0.06313645621181263,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "macro_f1",
+      "diff": 0.04157911385281727,
+      "ci_lo": 0.00800672062093473,
+      "ci_hi": 0.07334574398348966,
+      "p_two_sided": 0.02240325865580448,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "micro_f1",
+      "diff": 0.03037692483113883,
+      "ci_lo": -0.008840765633023221,
+      "ci_hi": 0.06761422427066387,
+      "p_two_sided": 0.11812627291242363,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "weighted_f1",
+      "diff": 0.0526456537159473,
+      "ci_lo": 0.014543969989801493,
+      "ci_hi": 0.09051402243561088,
+      "p_two_sided": 0.014256619144602852,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "samples_f1",
+      "diff": 0.04914483609007292,
+      "ci_lo": 0.00872119106336985,
+      "ci_hi": 0.08826727593394262,
+      "p_two_sided": 0.02240325865580448,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": -0.012898921143307183,
+      "ci_lo": -0.04213121184833446,
+      "ci_hi": 0.016130854242448374,
+      "p_two_sided": 0.4215885947046843,
+      "repeat_win_rate": 0.4,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "macro_average_precision",
+      "diff": 0.019557219262861355,
+      "ci_lo": -0.011484173615883603,
+      "ci_hi": 0.05136798462715026,
+      "p_two_sided": 0.20773930753564154,
+      "repeat_win_rate": 0.8,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "macro_roc_auc",
+      "diff": 0.04799261724021962,
+      "ci_lo": 0.0030417968921928264,
+      "ci_hi": 0.10148034219281872,
+      "p_two_sided": 0.034623217922606926,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "PCA-8(VGGish) [control]",
+      "metric": "film_level_macro_f1",
+      "diff": 0.07018982073707661,
+      "ci_lo": -0.012749539825254176,
+      "ci_hi": 0.16018517331957713,
+      "p_two_sided": 0.07942973523421588,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "macro_f1",
+      "diff": 0.03663823818401824,
+      "ci_lo": -0.008263382020367612,
+      "ci_hi": 0.08244322413166934,
+      "p_two_sided": 0.11405295315682282,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "micro_f1",
+      "diff": -0.0413624746061082,
+      "ci_lo": -0.09221595066733503,
+      "ci_hi": 0.012419151708144869,
+      "p_two_sided": 0.13238289205702647,
+      "repeat_win_rate": 0.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "weighted_f1",
+      "diff": 0.014100286966189266,
+      "ci_lo": -0.03177374038660858,
+      "ci_hi": 0.06194636832037415,
+      "p_two_sided": 0.5723014256619144,
+      "repeat_win_rate": 0.7,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "samples_f1",
+      "diff": -0.018749829879953907,
+      "ci_lo": -0.06721367442954602,
+      "ci_hi": 0.030493004866180055,
+      "p_two_sided": 0.48879837067209775,
+      "repeat_win_rate": 0.2,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": -0.01098019678297202,
+      "ci_lo": -0.037151589816536656,
+      "ci_hi": 0.016375433842979067,
+      "p_two_sided": 0.3971486761710794,
+      "repeat_win_rate": 0.5,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "macro_average_precision",
+      "diff": 0.013158189230743873,
+      "ci_lo": -0.01726742102371201,
+      "ci_hi": 0.04763467786457453,
+      "p_two_sided": 0.48268839103869654,
+      "repeat_win_rate": 0.7,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "macro_roc_auc",
+      "diff": 0.029185579778772845,
+      "ci_lo": -0.025989279942594277,
+      "ci_hi": 0.08614758395597977,
+      "p_two_sided": 0.32382892057026474,
+      "repeat_win_rate": 0.6,
+      "draws_kept": 982
+    },
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "AST-768",
+      "metric": "film_level_macro_f1",
+      "diff": 0.139046903137768,
+      "ci_lo": 0.0615315051707147,
+      "ci_hi": 0.22014588338057448,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1",
+      "diff": -0.0025647879079979926,
+      "ci_lo": -0.03441108151050091,
+      "ci_hi": 0.026240697950633475,
+      "p_two_sided": 0.8655804480651731,
+      "repeat_win_rate": 0.3,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "micro_f1",
+      "diff": -0.02663163328665369,
+      "ci_lo": -0.062216882261347084,
+      "ci_hi": 0.0055727277071811404,
+      "p_two_sided": 0.12219959266802444,
+      "repeat_win_rate": 0.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "weighted_f1",
+      "diff": -0.01022752118821152,
+      "ci_lo": -0.04642184726801085,
+      "ci_hi": 0.021208204173370996,
+      "p_two_sided": 0.5539714867617108,
+      "repeat_win_rate": 0.2,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "samples_f1",
+      "diff": -0.023215949825119122,
+      "ci_lo": -0.058193207147984434,
+      "ci_hi": 0.010595348182076894,
+      "p_two_sided": 0.19144602851323828,
+      "repeat_win_rate": 0.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": 0.009213320449016713,
+      "ci_lo": -0.002563240053673421,
+      "ci_hi": 0.020416344347163363,
+      "p_two_sided": 0.109979633401222,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_average_precision",
+      "diff": -0.005334064038822712,
+      "ci_lo": -0.02844192775350947,
+      "ci_hi": 0.01826371659699517,
+      "p_two_sided": 0.6639511201629328,
+      "repeat_win_rate": 0.4,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_roc_auc",
+      "diff": 0.001390285760611413,
+      "ci_lo": -0.03696159601391748,
+      "ci_hi": 0.03949611064752652,
+      "p_two_sided": 0.9144602851323829,
+      "repeat_win_rate": 0.6,
+      "draws_kept": 982
+    },
+    {
+      "a": "PCA-8(VGGish) [control]",
+      "b": "VGGish-128 (direct)",
+      "metric": "film_level_macro_f1",
+      "diff": 0.02312658653654867,
+      "ci_lo": -0.04023771681792148,
+      "ci_hi": 0.08400874171799848,
+      "p_two_sided": 0.4908350305498982,
+      "repeat_win_rate": 0.7,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1",
+      "diff": 0.049380736326317023,
+      "ci_lo": 0.01787790275088297,
+      "ci_hi": 0.0831669284154513,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "micro_f1",
+      "diff": -0.004559160393436646,
+      "ci_lo": -0.042487028815343116,
+      "ci_hi": 0.03509906492241754,
+      "p_two_sided": 0.8126272912423625,
+      "repeat_win_rate": 0.4,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "weighted_f1",
+      "diff": 0.03203488606594319,
+      "ci_lo": -0.006719602876329826,
+      "ci_hi": 0.07604468445604483,
+      "p_two_sided": 0.12016293279022404,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "samples_f1",
+      "diff": 0.014106105308996975,
+      "ci_lo": -0.02572010100162273,
+      "ci_hi": 0.05682353266888154,
+      "p_two_sided": 0.5295315682281059,
+      "repeat_win_rate": 0.8,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": 0.017453551989240257,
+      "ci_lo": -0.009169335880804506,
+      "ci_hi": 0.0444695683918716,
+      "p_two_sided": 0.18329938900203666,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_average_precision",
+      "diff": 0.010561133988262882,
+      "ci_lo": -0.01790966890493666,
+      "ci_hi": 0.03981778125282534,
+      "p_two_sided": 0.5010183299389002,
+      "repeat_win_rate": 0.7,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "macro_roc_auc",
+      "diff": 0.06510298888498083,
+      "ci_lo": 0.017581137081603686,
+      "ci_hi": 0.11764469523286684,
+      "p_two_sided": 0.004073319755600814,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish-128 (direct)",
+      "metric": "film_level_macro_f1",
+      "diff": 0.12493455538847488,
+      "ci_lo": 0.036060409576347395,
+      "ci_hi": 0.2150680846979766,
+      "p_two_sided": 0.004073319755600814,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "macro_f1",
+      "diff": 0.010366410381497743,
+      "ci_lo": -0.009897100556955838,
+      "ci_hi": 0.03118349328554247,
+      "p_two_sided": 0.329938900203666,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "micro_f1",
+      "diff": -0.00830445193792179,
+      "ci_lo": -0.03340442866235989,
+      "ci_hi": 0.017449378041386167,
+      "p_two_sided": 0.4989816700610998,
+      "repeat_win_rate": 0.1,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "weighted_f1",
+      "diff": -0.010383246461792601,
+      "ci_lo": -0.0397499956733311,
+      "ci_hi": 0.01855734947685607,
+      "p_two_sided": 0.48268839103869654,
+      "repeat_win_rate": 0.1,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "samples_f1",
+      "diff": -0.011822780955956817,
+      "ci_lo": -0.039850531427524295,
+      "ci_hi": 0.014751370479463281,
+      "p_two_sided": 0.37678207739307534,
+      "repeat_win_rate": 0.0,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "macro_f1_tuned_threshold",
+      "diff": 0.021139152683530726,
+      "ci_lo": 0.0035206513956375493,
+      "ci_hi": 0.039412519107627275,
+      "p_two_sided": 0.016293279022403257,
+      "repeat_win_rate": 0.8,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "macro_average_precision",
+      "diff": -0.0036620212357757597,
+      "ci_lo": -0.03642878714415034,
+      "ci_hi": 0.02670427483704571,
+      "p_two_sided": 0.8716904276985743,
+      "repeat_win_rate": 0.4,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "macro_roc_auc",
+      "diff": 0.015720085884149786,
+      "ci_lo": -0.028429988390332634,
+      "ci_hi": 0.05306058274166959,
+      "p_two_sided": 0.42973523421588594,
+      "repeat_win_rate": 0.9,
+      "draws_kept": 982
+    },
+    {
+      "a": "ground-truth emotion(11) [ceiling]",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "metric": "film_level_macro_f1",
+      "diff": 0.0316181481148496,
+      "ci_lo": -0.02054137997489465,
+      "ci_hi": 0.09201520051568807,
+      "p_two_sided": 0.2830957230142566,
+      "repeat_win_rate": 1.0,
+      "draws_kept": 982
+    }
+  ],
+  "reproduction_check": {
+    "all_match": true,
+    "arms": {
+      "ground-truth emotion(11) [ceiling]": true,
+      "VGGish -> predicted emotion(11), OOF-trained": true,
+      "VGGish-128 (direct)": true,
+      "AST-768": true,
+      "PCA-8(VGGish) [control]": true,
+      "dummy": true
+    },
+    "what": "pooled per-repeat macro-F1 under seed 42 vs cv_corrected.json subset5.per_repeat_pooled"
+  },
+  "stability": {
+    "seed_42": {
+      "ground-truth emotion(11) [ceiling]": {
+        "repeat_sd": 0.015618325457769984,
+        "repeat_range": 0.055043286756627896,
+        "fold_sd": 0.060074965143896965,
+        "fold_mean": 0.3906731504958058,
+        "coefficient_of_variation_repeats": 0.03757412699535302,
+        "film_bootstrap_ci_width": 0.09876507406817575,
+        "film_bootstrap_se_approx": 0.025195171956167283
+      },
+      "VGGish -> predicted emotion(11), OOF-trained": {
+        "repeat_sd": 0.0189179221307794,
+        "repeat_range": 0.0672544129352517,
+        "fold_sd": 0.058389511783608884,
+        "fold_mean": 0.38008955450347104,
+        "coefficient_of_variation_repeats": 0.046668688236077754,
+        "film_bootstrap_ci_width": 0.08839962039083099,
+        "film_bootstrap_se_approx": 0.02255092356908954
+      },
+      "VGGish-128 (direct)": {
+        "repeat_sd": 0.017360644328078895,
+        "repeat_range": 0.06387084439371232,
+        "fold_sd": 0.05828502249116032,
+        "fold_mean": 0.34326049645700074,
+        "coefficient_of_variation_repeats": 0.047393816194955155,
+        "film_bootstrap_ci_width": 0.08072964741478572,
+        "film_bootstrap_se_approx": 0.020594297809894316
+      },
+      "AST-768": {
+        "repeat_sd": 0.018001766515039642,
+        "repeat_range": 0.05669241298525257,
+        "fold_sd": 0.04907631687818668,
+        "fold_mean": 0.3437044270147971,
+        "coefficient_of_variation_repeats": 0.04888793198309598,
+        "film_bootstrap_ci_width": 0.07452325692137857,
+        "film_bootstrap_se_approx": 0.019011034928923105
+      },
+      "PCA-8(VGGish) [control]": {
+        "repeat_sd": 0.015623647507029442,
+        "repeat_range": 0.04970386606655447,
+        "fold_sd": 0.06110585446105047,
+        "fold_mean": 0.34336104443699006,
+        "coefficient_of_variation_repeats": 0.04297207501380641,
+        "film_bootstrap_ci_width": 0.0958919722263154,
+        "film_bootstrap_se_approx": 0.024462237812835564
+      },
+      "dummy": {
+        "repeat_sd": 2.925694557147251e-17,
+        "repeat_range": 0.0,
+        "fold_sd": 0.024389406979926705,
+        "fold_mean": 0.16582348380556144,
+        "coefficient_of_variation_repeats": 1.7382787745393707e-16,
+        "film_bootstrap_ci_width": 0.040654958301940686,
+        "film_bootstrap_se_approx": 0.010371162832127726
+      }
+    },
+    "seeds": {
+      "per_seed_mean": {
+        "42": {
+          "ground-truth emotion(11) [ceiling]": 0.41566702161041774,
+          "VGGish -> predicted emotion(11), OOF-trained": 0.40536648544911724,
+          "VGGish-128 (direct)": 0.36630610746063647,
+          "AST-768": 0.3682251587419187,
+          "PCA-8(VGGish) [control]": 0.363576753089297,
+          "dummy": 0.1683098591549296
+        },
+        "1": {
+          "ground-truth emotion(11) [ceiling]": 0.42489616697690413,
+          "VGGish -> predicted emotion(11), OOF-trained": 0.40881235935228205,
+          "VGGish-128 (direct)": 0.37118894899022264,
+          "AST-768": 0.3655128931767882,
+          "PCA-8(VGGish) [control]": 0.3678224097514032,
+          "dummy": 0.1683098591549296
+        },
+        "2": {
+          "ground-truth emotion(11) [ceiling]": 0.4264616745147178,
+          "VGGish -> predicted emotion(11), OOF-trained": 0.40948918060541795,
+          "VGGish-128 (direct)": 0.3804563336405849,
+          "AST-768": 0.37117603698215546,
+          "PCA-8(VGGish) [control]": 0.3687250836327728,
+          "dummy": 0.1683098591549296
+        },
+        "3": {
+          "ground-truth emotion(11) [ceiling]": 0.42064574781998554,
+          "VGGish -> predicted emotion(11), OOF-trained": 0.41178882315016513,
+          "VGGish-128 (direct)": 0.36045724027746096,
+          "AST-768": 0.35641423632364966,
+          "PCA-8(VGGish) [control]": 0.3693542234592722,
+          "dummy": 0.1683098591549296
+        },
+        "4": {
+          "ground-truth emotion(11) [ceiling]": 0.4288285164563946,
+          "VGGish -> predicted emotion(11), OOF-trained": 0.4159812943016258,
+          "VGGish-128 (direct)": 0.3762618687558893,
+          "AST-768": 0.3733499676936658,
+          "PCA-8(VGGish) [control]": 0.3736571063493538,
+          "dummy": 0.1683098591549296
+        }
+      },
+      "across_seeds": {
+        "ground-truth emotion(11) [ceiling]": {
+          "mean_of_means": 0.423299825475684,
+          "sd_of_means": 0.005206146428560392,
+          "range_of_means": 0.01316149484597684,
+          "sd_all_repeats": 0.010545428750581147
+        },
+        "VGGish -> predicted emotion(11), OOF-trained": {
+          "mean_of_means": 0.41028762857172163,
+          "sd_of_means": 0.003927562942338096,
+          "range_of_means": 0.01061480885250854,
+          "sd_all_repeats": 0.015737200362253102
+        },
+        "VGGish-128 (direct)": {
+          "mean_of_means": 0.3709340998249589,
+          "sd_of_means": 0.007910529470586966,
+          "range_of_means": 0.019999093363123943,
+          "sd_all_repeats": 0.019250752388436487
+        },
+        "AST-768": {
+          "mean_of_means": 0.3669356585836356,
+          "sd_of_means": 0.00658618950448041,
+          "range_of_means": 0.016935731370016138,
+          "sd_all_repeats": 0.021788472139933165
+        },
+        "PCA-8(VGGish) [control]": {
+          "mean_of_means": 0.3686271152564197,
+          "sd_of_means": 0.0036053017732682654,
+          "range_of_means": 0.010080353260056796,
+          "sd_all_repeats": 0.01763023247543271
+        },
+        "dummy": {
+          "mean_of_means": 0.1683098591549296,
+          "sd_of_means": 0.0,
+          "range_of_means": 0.0,
+          "sd_all_repeats": 0.0
+        }
+      },
+      "differences_per_seed": {
+        "emotion route - direct audio (VGGish)": {
+          "42": 0.03906037798848078,
+          "1": 0.037623410362059406,
+          "2": 0.029032846964833048,
+          "3": 0.05133158287270417,
+          "4": 0.039719425545736486
+        },
+        "emotion route - PCA-8 control": {
+          "42": 0.04178973235982025,
+          "1": 0.04098994960087887,
+          "2": 0.04076409697264516,
+          "3": 0.042434599690892916,
+          "4": 0.042324187952272
+        },
+        "emotion route - direct audio (AST)": {
+          "42": 0.03714132670719855,
+          "1": 0.04329946617549385,
+          "2": 0.03831314362326249,
+          "3": 0.05537458682651547,
+          "4": 0.042631326607959985
+        },
+        "PCA-8 control - direct audio (VGGish)": {
+          "42": -0.0027293543713394763,
+          "1": -0.003366539238819466,
+          "2": -0.01173125000781211,
+          "3": 0.008896983181811258,
+          "4": -0.00260476240653551
+        },
+        "ratings (ceiling) - direct audio (VGGish)": {
+          "42": 0.049360914149781276,
+          "1": 0.05370721798668149,
+          "2": 0.04600534087413288,
+          "3": 0.06018850754252458,
+          "4": 0.05256664770050529
+        },
+        "ratings (ceiling) - emotion route": {
+          "42": 0.0103005361613005,
+          "1": 0.016083807624622082,
+          "2": 0.016972493909299835,
+          "3": 0.00885692466982041,
+          "4": 0.0128472221547688
+        }
+      },
+      "difference_sign_stable": {
+        "emotion route - direct audio (VGGish)": true,
+        "emotion route - PCA-8 control": true,
+        "emotion route - direct audio (AST)": true,
+        "PCA-8 control - direct audio (VGGish)": false,
+        "ratings (ceiling) - direct audio (VGGish)": true,
+        "ratings (ceiling) - emotion route": true
+      }
+    }
+  }
+}

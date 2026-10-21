@@ -49,14 +49,15 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ## Project Structure
 
 ```text
-Implementation/
+Genre-Classification-using-Emotions/
 ├── requirements.txt          # Python dependencies (pip)
 ├── README.md                 # This file
 ├── data/
 │   ├── raw/
 │   │   ├── Eerola_DB/        # Audio + enriched rating CSVs (primary dataset)
 │   │   └── Blockbuster_DB/   # Ma et al. 2021 VGGish/MIR features (second corpus)
-│   └── processed/Eerola_DB/  # embeddings/<model>/<set>/ per-clip caches (committed)
+│   └── processed/            # Eerola_DB/embeddings/<model>/<set>/ per-clip caches,
+│                             # Blockbuster/ derived tables (committed)
 ├── src/
 │   ├── config.py             # Paths, constants, expected dataset counts
 │   ├── utils.py              # Reproducibility (seeding)
@@ -72,8 +73,11 @@ Implementation/
 │   └── evaluation/           # Repeated CV, confidence intervals, significance tests
 ├── docs/                     # current_state.md (latest supervisor meeting),
 │                             # briefing_full.md (complete briefing), README.md
-│                             # (technical log), literature reviews, thesis LaTeX
-└── results/                  # Machine-readable experiment output (JSON) + plots
+│                             # (technical log), evaluation_metrics.md (every metric
+│                             # explained), verification_checklist.md, literature
+│                             # reviews, copies of the thesis chapters (docs/latex/)
+├── figures/                  # Result figures (PDF + PNG), drawn by experiments/make_figures.py
+└── results/                  # Machine-readable experiment output (JSON)
 ```
 
 ## Data
@@ -98,10 +102,15 @@ Experiments are plain Python scripts, runnable from the project root, e.g.:
 
 ```bash
 python experiments/features/verify_data.py              # load + clean + assert dataset counts
-python experiments/evaluation/exp_cv_corrected.py       # the headline Eerola numbers (~27 min)
+python experiments/evaluation/exp_film_level.py         # the headline: every Eerola genre result per film, clip level beside it
+python experiments/evaluation/exp_cv_corrected.py       # the clip-level check (~27 min)
 python experiments/cross_dataset/exp_zero_shot.py       # train on Eerola, test on Blockbuster (zero-shot)
-python experiments/diagnostics/exp_box_office.py        # box office vs the soundtrack (exploratory)
+python experiments/evaluation/exp_metrics_stability.py  # every route under 13 metrics; SD over repeats, folds, films, seeds
+python experiments/diagnostics/exp_hamming_breakdown.py # why the emotion route has the worst Hamming loss
+python experiments/diagnostics/exp_box_office.py        # box office vs the soundtrack (exploratory, not in the thesis)
+python experiments/make_figures.py                      # redraw every figure in figures/ from the results files
 python experiments/show_results.py                      # list every saved result; render one as tables
+python experiments/audit_consistency.py                 # check every document against the results (run before committing)
 ```
 
 **The command for every experiment**, grouped and with what each needs, is in
@@ -113,8 +122,12 @@ Where to read:
 - `docs/briefing_full.md` — the complete supervisor briefing: every round of notes, the
   definitions and all results.
 - `docs/README.md` — the full technical log, one section per experiment.
+- `docs/evaluation_metrics.md` — every evaluation metric, why it was chosen and what it
+  showed.
 - `results/README.md` — what each machine-readable results file contains and how to
   render it.
+- `docs/verification_checklist.md` — what to re-read and check before submission, and
+  every correction made along the way.
 
 ## Reproducibility
 
@@ -122,7 +135,13 @@ Where to read:
 2. Random seeds are fixed everywhere (`SEED = 42`, see `src/utils.py`).
 3. Per-clip embeddings are cached to `data/processed/` and committed, so a clone
    reproduces every result without re-running any model over the audio.
-4. Cross-validation is grouped by film (`GroupKFold` on `soundtrack`) to prevent leakage.
+4. Cross-validation is grouped by film (`GroupKFold` on `soundtrack`) to prevent leakage;
+   a misspelt film name would split a film across folds, so known spellings are merged in
+   the loader (`config.SOUNDTRACK_NAME_FIXES`).
+5. Genre results are scored per film (macro-F1 over films, the clip probabilities of a film
+   averaged), with the clip-level score kept beside every result.
+6. `experiments/audit_consistency.py` checks that every number in the documents matches
+   the results files.
 
 ## Dependencies and Notes
 

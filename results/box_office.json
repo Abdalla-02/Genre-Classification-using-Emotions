@@ -5,70 +5,70 @@
     2006
   ],
   "A_f1_vs_gross": {
-    "rho": 0.19554133811743948,
-    "p_perm": 0.2442,
-    "rho_partial_year": 0.23043132436654887
+    "rho": 0.19684573758335328,
+    "p_perm": 0.2462,
+    "rho_partial_year": 0.22363529181018355
   },
   "B_emotion_vs_gross": {
     "valence": {
-      "rho": -0.15647226173541962,
-      "p_perm": 0.3628,
-      "rho_partial_year": -0.11728714947769805
+      "rho": -0.1391654812707444,
+      "p_perm": 0.4218,
+      "rho_partial_year": -0.11044431961138897
     },
     "energy": {
-      "rho": 0.06875296348980559,
-      "p_perm": 0.685,
-      "rho_partial_year": 0.05220414737835662
+      "rho": 0.10455192034139402,
+      "p_perm": 0.534,
+      "rho_partial_year": 0.09257603675214415
     },
     "tension": {
-      "rho": 0.25985418811577315,
-      "p_perm": 0.124,
-      "rho_partial_year": 0.2330001606249697
+      "rho": 0.26459605286241134,
+      "p_perm": 0.117,
+      "rho_partial_year": 0.24620521530496173
     },
     "anger": {
-      "rho": 0.33736367946894263,
-      "p_perm": 0.0454,
-      "rho_partial_year": 0.33405809954354754
+      "rho": 0.3354670459933617,
+      "p_perm": 0.0434,
+      "rho_partial_year": 0.33239444166551985
     },
     "fear": {
-      "rho": 0.16097676623992413,
-      "p_perm": 0.3424,
-      "rho_partial_year": 0.13398461226207492
+      "rho": 0.17069701280227595,
+      "p_perm": 0.3116,
+      "rho_partial_year": 0.1513373136694285
     },
     "happy": {
-      "rho": -0.21148147474172266,
-      "p_perm": 0.217,
-      "rho_partial_year": -0.20980102721172803
+      "rho": -0.1845570245081999,
+      "p_perm": 0.281,
+      "rho_partial_year": -0.18271310851007838
     },
     "sad": {
-      "rho": -0.0478899952584163,
-      "p_perm": 0.788,
-      "rho_partial_year": -0.014096702691028532
+      "rho": -0.0867709815078236,
+      "p_perm": 0.6078,
+      "rho_partial_year": -0.06297673122587298
     },
     "tender": {
-      "rho": -0.048155624646741106,
-      "p_perm": 0.7708,
-      "rho_partial_year": -0.02038897802314741
+      "rho": -0.0727078766218037,
+      "p_perm": 0.6598,
+      "rho_partial_year": -0.05259758855581372
     }
   },
   "C_genre_vs_gross": {
     "Action": {
       "n_with": 9,
       "median_with": 266915287.0,
-      "median_without": 40904549.5,
-      "p_mw": 0.0039132822347393275
+      "median_without": 44248545.0,
+      "p_mw": 0.004376473317926435
     },
     "Crime": {
       "n_with": 12,
       "median_with": 128635966.0,
       "median_without": 60900000.0,
-      "p_mw": 0.9095905654482328
+      "p_mw": 0.6150441395583106
     },
     "Drama": {
       "n_with": 27,
       "median_with": 50000000.0,
       "median_without": 199077330.5,
-      "p_mw": 0.34697132375827244
+      "p_mw": 0.4215800499998258
     },
     "Adventure": {
       "n_with": 8,
@@ -80,33 +80,33 @@
       "n_with": 3,
       "median_with": 4100000.0,
       "median_without": 152000739.0,
-      "p_mw": 0.08082368082368083
+      "p_mw": 0.044787644787644784
     },
     "Horror": {
       "n_with": 5,
       "median_with": 50000000.0,
       "median_without": 152000739.0,
-      "p_mw": 0.58942823648706
+      "p_mw": 0.5308501779090015
     }
   },
   "D_mediation": {
     "anger": {
-      "rho_raw": 0.33736367946894263,
-      "rho_partial_action": 0.19087641242399356,
-      "rho_non_action_only": 0.24192665571975916,
-      "p_non_action_only": 0.2178,
+      "rho_raw": 0.3354670459933617,
+      "rho_partial_action": 0.19058046863623881,
+      "rho_non_action_only": 0.24904214559386975,
+      "p_non_action_only": 0.1958,
       "n_non_action": 28
     },
     "tension": {
-      "rho_raw": 0.25985418811577315,
-      "rho_partial_action": 0.10336932419643696,
-      "rho_non_action_only": 0.12643678160919541,
-      "p_non_action_only": 0.5238,
+      "rho_raw": 0.26459605286241134,
+      "rho_partial_action": 0.11139710375198279,
+      "rho_non_action_only": 0.15216201423097975,
+      "p_non_action_only": 0.4382,
       "n_non_action": 28
     }
   },
   "confound_year": {
-    "rho": -0.14604627160098252,
-    "p_perm": 0.3844
+    "rho": -0.11030649294090468,
+    "p_perm": 0.5062
   }
 }

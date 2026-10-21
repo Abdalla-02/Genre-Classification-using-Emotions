@@ -21,6 +21,14 @@
 % either (0.565 / 0.559 / 0.582).
 % =============================================================================
 
+% =============================================================================
+% MOSTLY SUPERSEDED -- do not paste as a whole. Its three-row regression table is
+% replaced by the six-row tab:waveform_stage1 (waveform_vs_spectrogram.tex), and its
+% Eerola results repeat statistical_power.tex. Worth keeping: the regressor-choice
+% paragraph (Ridge / SVR / random forest -> Methods, "Stage 1") and the face-validity
+% paragraph on Blockbuster (-> Evaluation, "Blockbuster in-domain"). See
+% docs/latex/README.md.
+% =============================================================================
 \subsection{Predicting Emotion from Audio Embeddings}
 \label{subsec:emotion_regression}
 
@@ -67,7 +75,7 @@ The Blockbuster dataset of \citet{ma2021computational} provides genre labels and
 pre-extracted VGGish features but no audio and no emotion annotations, so it cannot by itself
 support an emotion pipeline. Because VGGish is a fixed pretrained model, extracting it for the
 Eerola clips yields a feature space identical to the one shipped with Blockbuster. A
-VGGish$\to$emotion random forest was trained on the entire Eerola corpus and used to predict
+VGGish$\to$emotion random forest was trained on the entire Eerola dataset and used to predict
 emotions for both datasets, from which genre was then classified. To test whether the
 \emph{emotion} bottleneck carries information beyond that of an arbitrary low-dimensional
 projection, an eight-component PCA of the VGGish features was included as a control.
@@ -75,12 +83,12 @@ projection, an eight-component PCA of the VGGish features was included as a cont
 \begin{table}[t]
   \centering
   \caption{Genre classification through the predicted-emotion bottleneck versus the raw
-    embedding and an eight-dimensional PCA control (logistic regression, Macro-F1). The
+    embedding and an eight-dimensional PCA control (logistic regression, Macro-F1).
     Both columns are $10\times5$ repeated cross-validation with nested-CV-tuned
     regularisation. \textbf{The two columns are not comparable to one another} --- they
     differ in label space (5 vs 6 genres), in unit (a 10\,s clip vs a whole film) and
     in chance level (a base-rate random guess scores $0.309$ on the left and $0.295$ on
-    the right). Compare \emph{within} a column only; the like-for-like cross-corpus
+    the right). Compare \emph{within} a column only; the like-for-like cross-dataset
     comparison is Table~\ref{tab:zero_shot}.}
   \label{tab:emotion_transfer}
   \begin{tabular}{lrr}
@@ -98,7 +106,7 @@ projection, an eight-component PCA of the VGGish features was included as a cont
   \end{tabular}
 \end{table}
 
-Table~\ref{tab:emotion_transfer} yields three results. First, on the primary Eerola corpus
+Table~\ref{tab:emotion_transfer} yields three results. First, on the primary Eerola dataset
 the predicted-emotion bottleneck ($0.417$) exceeds both the PCA-8 control ($0.372$) and the
 raw embedding ($0.377$): the eight emotions retain more genre-relevant signal than an
 arbitrary eight-dimensional compression, so the representation is not merely an interpretable
@@ -111,7 +119,7 @@ film-level Blockbuster task the emotion bottleneck leads the control nominally b
 significantly ($0.616$ vs $0.587$, $p=0.369$), so it is reported there as competitive
 rather than superior. Notably, the full 140-feature hand-crafted MIR set ($0.585$) is
 statistically indistinguishable from the VGGish embedding ($0.593$, $p=0.787$) on that
-corpus, so no claim of a learned-embedding advantage is made. Second, the predicted emotions are as genre-informative as the human
+dataset, so no claim of a learned-embedding advantage is made. Second, the predicted emotions are as genre-informative as the human
 ratings ($0.417$ against a ground-truth ceiling of $0.428$, a difference that is not
 significant, $p=0.33$), so the regressor recovers the genre-relevant emotional content
 without requiring manual annotation. Nor does adding the raw embedding back help: on the
@@ -121,13 +129,13 @@ the transferred emotions are face-valid: on Blockbuster, the films of a genre de
 the mean predicted emotion exactly as film-scoring convention predicts -- horror toward fear
 ($+0.99$), romance toward tenderness ($+1.05$), comedy toward happiness, drama toward
 tenderness and action toward anger -- even though the regressor was trained on a different
-corpus and never saw Blockbuster. This is a form of the transfer behaviour expected of
+dataset and never saw Blockbuster. This is a form of the transfer behaviour expected of
 pretrained audio embeddings \citep{choi2017transfer}.
 
 Two caveats temper these results. Even over fifty folds, the margins by which the emotion
 bottleneck exceeds the control and the direct embeddings on Eerola (of the order of
 $0.04$--$0.05$ macro-$F_1$) are significant under the film bootstrap but only borderline
-under the Nadeau--Bengio test, whose attainable $p$-value on this corpus lies above $0.05$
+under the Nadeau--Bengio test, whose attainable $p$-value on this dataset lies above $0.05$
 for these comparisons; settling them requires more films rather than more computation. And, because Blockbuster contains no human
 emotion ratings, the predicted emotions there can be validated only indirectly, through their
 downstream genre-predictive value and face validity, not against a ground truth
