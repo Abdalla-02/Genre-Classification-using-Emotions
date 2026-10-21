@@ -227,8 +227,9 @@ compression (PCA-8 is also ahead of VGGish under every seed) and part is the def
 threshold (with tuned thresholds the routes converge, 0.420–0.433 over clips).
 
 **What is the main result then?**
-The emotion route is clearly ahead where the classifier is trained on the small Eerola
-dataset — in-domain and from Eerola to Blockbuster (0.508 vs 0.403, p = 0.013) — and
+The emotion route is well ahead where the classifier is trained on the small Eerola
+dataset — significantly from Eerola to Blockbuster (0.508 vs 0.403, p = 0.013), just short
+of significance in-domain (p = 0.052) — and
 level where it is trained on the 110 Blockbuster films or on both. Its emotional
 signatures replicate on Blockbuster (r = 0.836).
 
