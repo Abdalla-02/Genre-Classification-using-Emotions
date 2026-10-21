@@ -2,7 +2,8 @@
 
 Written 15 October 2026, for the author. It answers three questions: what Hamming loss
 means, why the emotion route scores worst on it, and why each metric of the evaluation was
-chosen. Section 8 holds a LaTeX paragraph that can go into Appendix A as it is.
+chosen. Section 2.1 explains principal component analysis and the PCA-8 control (added
+21 Oct). Section 8 holds the LaTeX paragraph that is now in Appendix A.2.
 
 Every number is from the five-genre Eerola subset (329 clips, 40 films), seed 42, mean of
 the ten repeats, unless stated otherwise. Sources: `results/metrics_stability.json`
@@ -133,6 +134,64 @@ at the default threshold is therefore an operating-point effect (section 5).
 | Score per repeat | pooled over the five test folds, then averaged over repeats | per-fold macro-F1 is biased low (Comedy is missing from 17 of 50 folds) |
 | Three label spaces (8 genres, 5 genres, 6 shared) | never compared with each other | different genres have different chance levels |
 | Chance floor | base-rate random guess *and* most-frequent baseline | they differ by over 0.1; each metric has its own fair floor (section 4) |
+| Control | **PCA-8**: the same VGGish embedding compressed to 8 numbers without emotional meaning | separates "it helps because it is emotion" from "it helps because it is small" (section 2.1) |
+
+### 2.1 The PCA-8 control, and what principal component analysis is
+
+**PCA in everyday terms.** Principal component analysis shrinks many numbers to a few
+while keeping as much of their variation as possible. Imagine describing people by 128
+measurements: height, arm length, leg length, shoe size, weight, and so on. Many of these
+move together, because tall people tend to have long arms, long legs and big feet. One new
+number, "overall size", captures most of what they say together. PCA finds such combined
+numbers automatically:
+
+1. **The first component** is the direction through the data along which the items differ
+   most: a weighted mix of all 128 original numbers, like "overall size".
+2. **The second component** is the direction with the most remaining variation, at a
+   right angle to the first, so it carries new information (for people, perhaps "slim vs.
+   heavy").
+3. **And so on.** Each further component explains a little less. Keeping the first few and
+   dropping the rest compresses the data while losing as little of its variation as
+   possible.
+
+**Why the thesis needs it.** VGGish describes each clip with 128 numbers. The emotion
+route squeezes them into 8 predicted emotions (plus 3 features derived from them) and
+predicts genre from those. If that helps, a sceptic can ask: does it help because the
+numbers are *emotions*, or simply because a few numbers overfit less than 128 on a small
+dataset? The PCA-8 control answers this. It compresses the same 128 VGGish numbers to
+their **8 principal components** and predicts genre from them in exactly the same way. The
+two routes differ in one thing only:
+
+| | features | what they mean |
+|---|---|---|
+| emotion route | 8 emotions (+3 derived) | anger, fear, tension, … — the same meaning in any dataset |
+| PCA-8 control | 8 components | mixtures of VGGish dimensions with no fixed meaning; they depend on the data PCA was fitted on |
+
+If the emotion route only helped because it is small, PCA-8 would help just as much.
+
+**What happened** (film-level macro-F1; `film_level.json`, `zero_shot.json`):
+
+- **In-domain (Eerola, 5 genres):** PCA-8 (0.390) also gains over raw VGGish (0.367, under
+  every seed), so part of the emotion route's lead is plain compression. The emotion route
+  (0.460) is ahead of PCA-8 by +0.070, but not significantly (p = 0.089).
+- **Zero-shot (Eerola → Blockbuster):** the emotion route (0.508) beats PCA-8 (0.417)
+  clearly, +0.093, p = 0.027, while compression alone gains almost nothing over raw VGGish
+  (+0.013, p = 0.737). Here the *meaning* of the features matters, not their number.
+- **Blockbuster in-domain:** PCA-8 (0.587) is a serious baseline, far ahead of a random
+  8-dimensional projection of the same embedding (0.487). The choice of the 8 directions
+  matters, so the control is not a straw man.
+
+As the Discussion puts it, a principal component has no meaning that could carry over to a
+new dataset, while "fear" does.
+
+**Two details you may be asked about.**
+
+- **No leakage:** PCA is fitted only on the training folds of each split, after the
+  features are standardised (`experiments/evaluation/exp_cv_corrected.py`). The test films
+  never influence which 8 directions are chosen.
+- **The other PCA:** VGGish's own post-processing also contains a PCA step (with 8-bit
+  quantisation), done in the same way as in the published Blockbuster features (Methods).
+  That is part of how VGGish features are made, not the control.
 
 ---
 
