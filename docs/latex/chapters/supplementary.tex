@@ -3,7 +3,10 @@
 
 This appendix reports the analyses that check the results of
 Chapter~\ref{ch:evaluation} without changing them. All genre scores are film-level
-macro-$F_1$ on the five-genre subset unless stated otherwise.
+macro-$F_1$ on the five-genre subset unless stated otherwise. As in
+Chapter~\ref{ch:evaluation}, the emotion pipeline is VGGish, the random-forest emotion
+regressor and the logistic-regression genre classifier, and every other pipeline ends in
+the same classifier (Table~\ref{tab:pipelines}).
 
 % =============================================================================
 \section{All Paired Comparisons}
@@ -231,7 +234,7 @@ interpretability.
 
 Used directly, wav2vec~2.0 is the weakest representation for genre (0.261 at film level),
 behind each of the other five by 0.057 to 0.131. Used as the input of the emotion
-pipeline, the same representation reaches 0.472, level with the VGGish pipeline and not
+pipeline, with the same random forest and classifier, the same representation reaches 0.472, level with the VGGish pipeline and not
 significantly below the ground-truth ceiling ($-0.018$, $p=0.546$). The gain over its direct
 use, $+0.209$ [$+0.137$, $+0.277$], holds in all ten repeats ($p<0.001$; over clips $+0.086$,
 Nadeau--Bengio $p=0.014$). The benefit of the emotion intermediate is therefore not tied
@@ -241,9 +244,9 @@ to one embedding, and it is largest where the underlying representation is weake
 \section{All Eight Genres}
 \label{sec:app_eight}
 
-On the full eight-genre task (42 films), the pipeline reaches 0.349 [0.295,
+On the full eight-genre task (42 films), the emotion pipeline reaches 0.349 [0.295,
 0.389] at film level and the ratings 0.381, against a most-frequent baseline of
-0.102 and a random guess of 0.226 (over clips: 0.317 and 0.328). The pipeline is
+0.102 and a random guess of 0.226 (over clips: 0.317 and 0.328). It is
 ahead of AST (0.242) by $+0.107$ ($p=<0.001$) and of the VGGish embedding it starts from
 (0.257) by $+0.093$ ($p=0.001$), in all ten repeats. Over clips the Nadeau--Bengio test
 gives $p=0.022$ against VGGish and $p=0.136$ against AST. The rarest
@@ -257,7 +260,8 @@ signature (Section~\ref{sec:eval_signatures}).
 \section{Blockbuster: Reproduction and Cue-Level Prediction}
 \label{sec:app_blockbuster}
 
-Table~\ref{tab:blockbuster_reference} compares the pipeline of this thesis with the
+Table~\ref{tab:blockbuster_reference} compares the direct pipeline of this thesis (the
+film-average VGGish embedding given to the logistic regression) with the
 published results of \citet{ma2021computational} under their own protocol
 (leave-one-film-out over the 110 films, macro-averaged precision, recall and $F_1$).
 
@@ -285,7 +289,7 @@ published results of \citet{ma2021computational} under their own protocol
 \end{table}
 
 In Table~\ref{tab:blockbuster_reference}, the published values are quoted from
-\citet{ma2021computational}, Table~4. The simple pipeline is within the range of their
+\citet{ma2021computational}, Table~4. This direct pipeline is within the range of their
 VGGish models, and both of their baselines reproduce to within 0.03, so the classifier is
 validated against an external result before it is used for transfer. Under the repeated
 protocol of Figure~\ref{fig:blockbuster_cv}, the learned embedding (0.593) does not beat the

@@ -43,7 +43,8 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   instead of "route" everywhere; the new precision/recall figure and the Horror paragraph in
   Section 5.4 with the new Appendix A section; the definitions under the Blockbuster chart;
   the abbreviations now spelled out at first use (read the affected sentences, some became
-  longer).
+  longer). Overleaf `4ab939c`: the new table of pipelines and models in Methods, and the
+  model names added at the first mention of each pipeline per section.
 
 - [ ] **Your comments of 16 Oct** (Overleaf `352a922`, `497c6db`): check the new opening
   of the Introduction, the approach paragraph after the research questions, the rewritten

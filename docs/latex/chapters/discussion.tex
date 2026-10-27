@@ -11,7 +11,10 @@ Section~\ref{sec:disc_relatedwork} relates the findings to the literature.
 \label{sec:disc_main}
 
 Table~\ref{tab:disc_settings} lists the emotion pipeline, the PCA-8 control and direct audio
-(VGGish) for every setting in which all three were run. Every score is film-level
+for every setting in which all three were run. All three start from VGGish and end in the
+same logistic-regression classifier; in between, the emotion pipeline predicts the eight
+emotions with a random forest, the control compresses the embedding to eight principal
+components, and direct audio has no intermediate step. Every score is film-level
 macro-$F_1$, and each row is compared only with the chance floor of its own label space.
 
 \begin{table}[t]
@@ -126,7 +129,8 @@ Apart from accuracy, the emotion pipeline provides what it was designed for. Eac
 model predicts well has a readable affective signature. The per-genre results show where
 this helps and where it does not. The emotion pipeline gains most on Comedy, whose signature is
 the absence of fear, and on Action. On Horror, the genre with the strongest signature, it
-finds half of the films but predicts the genre for too many others. Adventure, the one genre
+finds half of the films but predicts the genre for too many others, because the random
+forest of Stage~1 underestimates the fear of Horror clips. Adventure, the one genre
 without a signature, is predicted poorly for its frequency. Both the successes and the errors of the pipeline come with an explanation that
 can be checked against film-music practice.
 

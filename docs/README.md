@@ -1727,6 +1727,13 @@ all applied on Overleaf (`011fc8c`):
 6. **Abbreviations spelled out at first use** (IMDb, MIR, MER, MIREX, MSD, STFT, CLAP,
    PCA, CI, NB, RMS, SVR, RBF, CPU, AP, ROC-AUC, RMSE, LSTM, CNN, ML-kNN, ML-SMOTE, ResNet,
    AUC), checked by a script that finds each abbreviation's first use in reading order.
+7. **The model of each step is named** (author's request after the comments, Overleaf
+   `4ab939c`): a new table in Methods (`tab:pipelines`) lists every pipeline with its
+   embedding, intermediate step and genre classifier. In the text, the embedding, the
+   random forest and the logistic regression are named at the first mention of a pipeline
+   in each section, in the figure legends and in the summary of findings; the Blockbuster
+   reproduction (0.620) is identified as the direct pipeline (film-average VGGish, logistic
+   regression).
 
 ## Next steps
 

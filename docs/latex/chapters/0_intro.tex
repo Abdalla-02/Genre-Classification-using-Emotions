@@ -91,9 +91,10 @@ The questions are answered with two datasets. The first, by \citet{eerola2011com
 contains 360 film-music excerpts that listeners rated on eight emotion scales, from 45
 films whose genres are taken from the Internet Movie Database (IMDb). The second, by \citet{ma2021computational},
 contains 110 recent films, each described by audio features of the music cues it uses,
-but without emotion ratings and without audio. A first model predicts the eight emotions
-from a pre-trained audio representation, and a second model predicts the genres from
-these emotions. This emotion pipeline is compared with classifying genre from the same audio
+but without emotion ratings and without audio. A first model, a random forest, predicts
+the eight emotions from a pre-trained audio representation (VGGish in the main
+experiments), and a second model, a logistic regression for each genre, predicts the
+genres from these emotions. This emotion pipeline is compared with classifying genre from the same audio
 representation directly, and with a control that compresses the representation to as
 many numbers as there are emotions without giving them any emotional meaning. Only the
 music is used, without images, dialogue or plot, and the pre-trained audio models are

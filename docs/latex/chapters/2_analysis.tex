@@ -16,7 +16,7 @@ In the method of this thesis, a clip of film music is mapped to eight predicted 
     \node[box, text width=2.9cm] (direct) at (6.45,2.0)
       {\textbf{Direct}\\full embedding\\(103--768 dimensions)};
     \node[box, text width=2.9cm, fill=gray!15] (emo) at (6.45,0)
-      {\textbf{Emotion pipeline}\\Stage~1: random forest\\$\rightarrow$ 8 emotions + 3 derived\\$=$ 11 features};
+      {\textbf{Emotion pipeline}\\Stage~1: random forest regressor\\$\rightarrow$ 8 emotions + 3 derived\\$=$ 11 features};
     \node[box, text width=2.9cm] (pca) at (6.45,-2.0)
       {\textbf{PCA-8 control}\\embedding compressed to 8 principal components};
     % one shared classifier and the output
@@ -38,7 +38,7 @@ In the method of this thesis, a clip of film music is mapped to eight predicted 
   \label{fig:pipeline}
 \end{figure}
 
-All three pipelines in Figure~\ref{fig:pipeline} start from the same frozen embedding and end in the same Stage~2 classifier, trained and tuned identically; only the input of that classifier differs. The emotion pipeline (shaded) is the method under test and the direct pipeline is the baseline. The PCA-8 pipeline is a control that is as narrow as the emotion pipeline but has no emotional meaning.
+All three pipelines in Figure~\ref{fig:pipeline} start from the same frozen embedding and end in the same Stage~2 classifier, trained and tuned identically; only the input of that classifier differs. The emotion pipeline (shaded) is the method under test and the direct pipeline is the baseline. The PCA-8 pipeline is a control that is as narrow as the emotion pipeline but has no emotional meaning. Table~\ref{tab:pipelines} in Section~\ref{sec:methods_baselines} lists every pipeline with the model used in each step.
 
 \section{Datasets}
 \label{sec:methods_data}
@@ -177,6 +177,27 @@ Every result is compared with a set of reference arms, each of which answers a s
 \paragraph{PCA-8 control.} The emotion pipeline compresses the audio to eight numbers, and on a small dataset any strong compression might help simply by acting as a regulariser. The control tests this (Section~\ref{subsec:fund_bottleneck}). The same VGGish embedding is standardised and projected onto its first eight principal components, with both steps fitted on the training fold only, and the result is fed into the same classifier on the same folds. If the emotion pipeline beat the direct embedding only because it is small, the PCA-8 control would beat it as well. The control is as narrow as the emotion pipeline, but it has no emotional meaning and is defined relative to the dataset it was fitted on.
 
 \paragraph{Random-8 projection.} On the Blockbuster dataset in-domain, a Gaussian random projection of the VGGish embedding to eight dimensions is added below the PCA-8 control. As the floor for the control, it shows how much of what eight dimensions can carry depends on choosing them well, and therefore whether PCA-8 is a serious competitor or only a straw man.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{The pipelines compared in this thesis and the model used in each step.}
+  \label{tab:pipelines}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.21\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.2\linewidth}}
+    \toprule
+    Pipeline & Input & Intermediate step & Genre classifier \\
+    \midrule
+    Emotion pipeline & VGGish embedding & Stage~1 random forest regressor $\rightarrow$ 11 emotion features & logistic regression per genre \\
+    Ground-truth emotion & human ratings & 11 emotion features from the ratings & logistic regression per genre \\
+    Direct & one of the six representations & none & logistic regression per genre \\
+    PCA-8 control & VGGish embedding & PCA to 8 components & logistic regression per genre \\
+    Random-8 projection & VGGish embedding & Gaussian random projection to 8 dimensions & logistic regression per genre \\
+    Direct VGGish, vote over cues & VGGish embedding of each cue & none & logistic regression per genre and cue, majority vote per film \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:pipelines}, the intermediate step is the only part that differs between the pipelines; the genre classifier is the same Stage~2 model of Section~\ref{sec:methods_stage2} throughout. The emotion pipeline uses VGGish in every experiment except the waveform comparison (Appendix~\ref{sec:app_waveform}), where it is run on wav2vec~2.0 as well. The random-8 projection and the vote over cues are used only on the Blockbuster dataset.
 
 \paragraph{Chance floors.} Both chance levels of Section~\ref{sec:fund_evaluation} are computed, since the literature uses both and they differ by more than a tenth of an $F_1$ point. The \emph{most-frequent} baseline predicts, for each genre, its majority value in the training data. Because Drama applies to more than half of the Eerola clips, this amounts to predicting ``Drama'' and nothing else. It is the floor for exact match and Hamming loss, where it is hard to beat. The \emph{base-rate random guess} predicts each genre independently with a probability equal to its base rate. Its expected macro-$F_1$ is approximately the mean base rate, which makes it the higher and more appropriate floor for macro-$F_1$. \citet{ma2021computational} report the random guess ($0.32$ on their dataset) and the plurality baseline ($0.19$) separately, and both are reproduced here so that their results are compared with the right one. Chapter~\ref{ch:evaluation} states for each score which of the two floors is meant.
 
