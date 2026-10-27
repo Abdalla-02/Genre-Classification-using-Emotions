@@ -40,6 +40,7 @@ the repository but left out of the thesis).
 |---|---|---|---|
 | `film_level.json` | **The Eerola headline (since 7 Oct 2026): every genre evaluation scored per film.** Clip probabilities averaged per film, genre predicted at ≥ 0.5, macro-F1 over the 40 (42) films. Same arms, folds and seeds as `cv_corrected.json`; every arm and comparison also carries its clip-level score, the clip-level Nadeau–Bengio p and `p_limit`; 5 and 8 genres, ablation, stability over five seeds, per-genre F1, film counts per genre. Since 8 Oct each arm also carries per-genre film-level precision, recall and F1 (`per_genre_precision`, `per_genre_recall`, `per_genre_f1`, with `per_genre_f1_repeat_sd`) and the clip-level ones (`clip_per_genre_*`). Its reproduction check (107 numbers of `cv_corrected` and `metrics_stability`) must hold. | yes (all in-domain genre results, Ch. 5 and Appendix A; the per-genre figure and table) | §23, §24 |
 | `hamming_breakdown.json` | **Why the emotion route has the worst Hamming loss.** Each route's Hamming loss on the five-genre subset split by genre and into false positives and negatives, and the genres predicted per clip (emotion route 2.35, VGGish 1.85, true 1.54). Derived from the per-genre clip precision and recall in `film_level.json`, checked against `metrics_stability.json` (within 0.005). Written by `experiments/diagnostics/exp_hamming_breakdown.py`. | yes (Appendix A.2, the Hamming loss paragraph) | §25 |
+| `horror_diagnosis.json` | **Why Horror is the weakest genre of the emotion pipeline.** Rated vs out-of-fold predicted emotions on the five-genre subset (random forest on VGGish, the 10x5 folds of the main analysis, mean over repeats): Cohen's d of every emotion per genre from ratings and from predictions, mean rated and predicted fear per genre (Horror 4.35 rated vs 3.73 predicted; Action 3.42 / 3.46), R^2 and slope of predicted on rated fear within the Horror clips (0.37, 0.45). Written by `experiments/diagnostics/exp_horror_diagnosis.py`. | yes (Section 5.4 and Appendix A, "Why Horror Is the Weakest Genre") | §27 |
 | `cv_corrected.json` | The **clip-level** Eerola results: the same folds as `statistical_power.json`, re-scored with the two CV corrections (macro-F1 on pooled out-of-fold predictions; out-of-fold emotion training). All six representations and the ablation on one protocol, old and new metric side by side. Until 7 Oct the headline; now the clip-level check beside `film_level.json`. | yes, as the clip-level values | §21 |
 | `metrics_stability.json` | **Is macro-F1 the right metric, and how stable are the numbers?** Every route under 13 multi-label metrics (incl. tuned thresholds, macro AP, ROC-AUC, film-level F1), paired film-bootstrap tests per metric, and the spread over repeats, folds, films and five master seeds. Seed 42 reproduces `cv_corrected.json` exactly. | yes (Section 5.4: the metric table and the metric-family figure; the stability figure and its film-level numbers now come from `film_level.json`) | §22.1 |
 | `statistical_power.json` | The **original headline Eerola results** (per-fold metric), kept as the record §21 corrects. Default vs nested-CV-tuned `C`; Nadeau–Bengio `p_limit`. | superseded: `cv_corrected.json` repeats its Nadeau–Bengio p and `p_limit` (`old_metric_*` fields), so quote from there | §11, §11b |
@@ -276,9 +277,9 @@ unless given `--fresh`, because resolving 110 titles from scratch takes up to ha
 hour under Wikimedia's rate limit.
 
 `make_figures.py` draws every figure from the results files, never from typed-in
-numbers, so re-run it after re-running an experiment. The ten figures in the thesis are
-`indomain_eerola5`, `per_genre`, `stage1_r2`, `signatures`, `blockbuster_cv`, `zero_shot`
-and `cross_dataset` in Chapter 5, and `metric_family`, `stability_repeats` and `ablation`
+numbers, so re-run it after re-running an experiment. The eleven figures in the thesis are
+`indomain_eerola5`, `per_genre`, `per_genre_pr`, `stage1_r2`, `signatures`, `blockbuster_cv`,
+`zero_shot` and `cross_dataset` in Chapter 5, and `metric_family`, `stability_repeats` and `ablation`
 in Appendix A. It also draws `box_office_blockbuster`,
 which the thesis no longer uses.
 
@@ -299,6 +300,7 @@ python experiments/genre/exp_emotion_genre.py           # Cohen's d signatures p
 python experiments/diagnostics/exp_error_analysis.py    # per-genre errors, over-prediction
 python experiments/diagnostics/exp_threshold_fix.py     # one global threshold, older protocol (per-genre tuning: metrics_stability.json)
 python experiments/diagnostics/exp_hamming_breakdown.py # Hamming loss per genre and error type (after film_level, metrics_stability)
+python experiments/diagnostics/exp_horror_diagnosis.py  # rated vs predicted emotions: why Horror is weak (about a minute)
 python experiments/diagnostics/exp_learning_curve.py    # would more data help?
 python experiments/diagnostics/exp_clip_length.py       # full-clip vs 10.24 s window (needs raw audio)
 python experiments/cross_dataset/exp_blockbuster.py         # first Blockbuster baseline (superseded by blockbuster_deep)

@@ -30,7 +30,7 @@ REPO = Path(__file__).resolve().parents[1]
 RES = REPO / "results"
 OUT = REPO / "figures"
 
-# One colour per route, used in every figure (Okabe-Ito, colour-blind safe).
+# One colour per pipeline, used in every figure (Okabe-Ito, colour-blind safe).
 COL = {"emotion": "#D55E00", "direct": "#0072B2", "pca": "#7F7F7F",
        "ceiling": "#009E73", "other": "#56B4E9", "floor": "#000000"}
 WIDTH = 5.9          # inches, the text width of the thesis template
@@ -87,8 +87,8 @@ def fig_indomain():
     arms = d["subset5"]["arms"]
     label = {
         "ground-truth emotion(11) [ceiling]": "emotion from human ratings (ceiling)",
-        "VGGish -> predicted emotion(11), OOF-trained": "emotion route (VGGish)",
-        "wav2vec2 -> predicted emotion(11), OOF-trained": "emotion route (wav2vec 2.0)",
+        "VGGish -> predicted emotion(11), OOF-trained": "emotion pipeline (VGGish)",
+        "wav2vec2 -> predicted emotion(11), OOF-trained": "emotion pipeline (wav2vec 2.0)",
         "VGGish-128 (direct)": "direct: VGGish",
         "AST-768": "direct: AST",
         "CLAP-512": "direct: CLAP",
@@ -121,14 +121,14 @@ def fig_indomain():
 
 
 def fig_repeat_spread():
-    """Stability: the 10 film-level repeat scores per route, and the means under 5 seeds."""
+    """Stability: the 10 film-level repeat scores per pipeline, and the means under 5 seeds."""
     d = load("film_level")
     if not d:
         return
     pr = d["subset5"]["per_repeat_film"]
     seeds = d["stability"]["per_seed"]
     keys = [("ground-truth emotion(11) [ceiling]", "ratings\n(ceiling)"),
-            ("VGGish -> predicted emotion(11), OOF-trained", "emotion\nroute"),
+            ("VGGish -> predicted emotion(11), OOF-trained", "emotion\npipeline"),
             ("VGGish-128 (direct)", "direct\nVGGish"),
             ("AST-768", "direct\nAST"),
             ("PCA-8(VGGish) [control]", "PCA-8\ncontrol")]
@@ -153,7 +153,7 @@ def fig_repeat_spread():
 
 
 def fig_metric_family():
-    """The ranking of the routes under every metric (metrics_stability.json)."""
+    """The ranking of the pipelines under every metric (metrics_stability.json)."""
     m = load("metrics_stability")
     if not m:
         return
@@ -162,7 +162,7 @@ def fig_metric_family():
             "macro-F1,\ntuned cut"), ("macro_average_precision", "macro AP\n(no cut)"),
             ("macro_roc_auc", "macro\nROC-AUC"), ("micro_f1", "micro-F1"),
             ("samples_f1", "samples-F1")]
-    arms = [("VGGish -> predicted emotion(11), OOF-trained", "emotion route"),
+    arms = [("VGGish -> predicted emotion(11), OOF-trained", "emotion pipeline"),
             ("VGGish-128 (direct)", "direct audio (VGGish)"),
             ("AST-768", "direct audio (AST)"),
             ("PCA-8(VGGish) [control]", "PCA-8 control")]
@@ -190,7 +190,7 @@ def fig_zero_shot():
     if not d:
         return
     z = d["zero_shot"]["strict (source scaler)"]
-    rows = [("VGGish -> predicted emotion(11), per-cue", "emotion route"),
+    rows = [("VGGish -> predicted emotion(11), per-cue", "emotion pipeline"),
             ("PCA-8(VGGish) [control]", "PCA-8 control"),
             ("VGGish-128 direct", "direct audio (VGGish)")]
     fig, ax = plt.subplots(figsize=(WIDTH, 1.9))
@@ -221,7 +221,7 @@ def fig_cross_dataset():
     if not d:
         return
     keys = [("VGGish-128 direct", "direct audio"), ("PCA-8(VGGish) [control]", "PCA-8 control"),
-            ("VGGish -> emotion (per cue) -> genre", "emotion route")]
+            ("VGGish -> emotion (per cue) -> genre", "emotion pipeline")]
     # every design scored per film: Blockbuster rows are films; Eerola clips are averaged
     # per film (the film_level blocks of designs 2 and 3)
     blocks = [(d["eerola_to_blockbuster"], "Eerola → Blockbuster", "macro_f1"),
@@ -253,60 +253,86 @@ def fig_blockbuster_cv():
         return
     pf = d["logreg"]["per_fold"]
     n_rep = d["design"]["n_repeats"]
-    rows = [("emotion(11), per-cue -> pooled", "emotion route (per cue)"),
-            ("VGGish, instance majority voting", "VGGish, majority vote over cues"),
-            ("VGGish-128", "VGGish, film average"),
-            ("PCA-8(VGGish) [control]", "PCA-8 control"),
-            ("MIR-140 (full)", "hand-crafted MIR (140)"),
-            ("MFCC-78", "MFCC subset (78)"),
-            ("random-8(VGGish) [control]", "random 8-d projection")]
+    # Only the pipelines the thesis compares; the hand-crafted features and the random
+    # projection are discussed in Appendix A.6 (reproduction of Ma et al.).
+    rows = [("emotion(11), per-cue -> pooled", "emotion pipeline"),
+            ("VGGish-128", "direct VGGish,\nfilm average"),
+            ("VGGish, instance majority voting", "direct VGGish,\nvote over cues"),
+            ("PCA-8(VGGish) [control]", "PCA-8 control")]
     m = [np.mean(pf[k]) for k, _ in rows]
     sd = [np.asarray(pf[k]).reshape(n_rep, -1).mean(1).std(ddof=1) for k, _ in rows]
-    fig, ax = plt.subplots(figsize=(WIDTH, 2.6))
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.4))
     x = np.arange(len(rows))
-    cols = [route_colour(lab) if "random" not in lab and "MIR" not in lab and "MFCC" not in lab
-            else COL["other"] for _, lab in rows]
-    ax.bar(x, m, 0.6, yerr=sd, color=cols, error_kw={"lw": 0.8, "capsize": 2})
+    cols = [route_colour(lab) for _, lab in rows]
+    ax.bar(x, m, 0.55, yerr=sd, color=cols, error_kw={"lw": 0.8, "capsize": 2})
     for xi, v, s in zip(x, m, sd):
         ax.text(xi, v + s + 0.01, f"{v:.3f}", ha="center", fontsize=7)
     ax.axhline(d["random_guess_floor"], color=COL["floor"], lw=0.8, ls=":",
                label=f"base-rate random guess ({d['random_guess_floor']:.3f})")
-    ax.set_xticks(x, [lab for _, lab in rows], rotation=25, ha="right")
+    ax.set_xticks(x, [lab for _, lab in rows])
     ax.set_ylabel("macro-F1 over the 110 films")
-    ax.set_ylim(0, 0.72)
-    ax.legend(loc="upper right", frameon=False, fontsize=7)
+    ax.set_ylim(0, 0.82)
+    ax.legend(loc="upper center", frameon=False, fontsize=7)
     save(fig, "blockbuster_cv")
 
 
-def fig_per_genre():
-    """Film-level F1 per genre and route (five genres); the best route per genre is boxed."""
-    d = load("film_level")
-    if not d or "per_genre_precision" not in next(iter(d["subset5"]["arms"].values())):
-        return
-    b = d["subset5"]
-    rows = [("ground-truth emotion(11) [ceiling]", "ratings (ceiling)"),
-            ("VGGish -> predicted emotion(11), OOF-trained", "emotion route"),
-            ("PCA-8(VGGish) [control]", "PCA-8 control"),
-            ("MusiCNN-200", "MusiCNN"), ("VGGish-128 (direct)", "VGGish"),
-            ("CLAP-512", "CLAP"), ("MIR-103", "MIR"), ("AST-768", "AST"),
-            ("wav2vec2-768", "wav2vec 2.0"), ("dummy", "most frequent")]
-    genres = b["genres"]
-    films = b["films_per_genre"]
-    M = np.array([b["arms"][k]["per_genre_f1"] for k, _ in rows])
-    fig, ax = plt.subplots(figsize=(WIDTH, 3.0))
+PER_GENRE_ROWS = [("ground-truth emotion(11) [ceiling]", "ratings (ceiling)"),
+                  ("VGGish -> predicted emotion(11), OOF-trained", "emotion pipeline"),
+                  ("PCA-8(VGGish) [control]", "PCA-8 control"),
+                  ("MusiCNN-200", "MusiCNN"), ("VGGish-128 (direct)", "VGGish"),
+                  ("CLAP-512", "CLAP"), ("MIR-103", "MIR"), ("AST-768", "AST"),
+                  ("wav2vec2-768", "wav2vec 2.0"), ("dummy", "most frequent")]
+NOT_BOXED = ("ground-truth emotion(11) [ceiling]", "dummy")
+
+
+def _genre_heatmap(ax, b, key, xlabels):
+    """One per-genre heatmap of `key` (film level); the best real pipeline per genre is boxed."""
+    rows = PER_GENRE_ROWS
+    M = np.array([b["arms"][k][key] for k, _ in rows])
     im = ax.imshow(M, cmap="Blues", vmin=0, vmax=1, aspect="auto")
-    real = [i for i, (k, _) in enumerate(rows) if k not in ("ground-truth emotion(11) [ceiling]", "dummy")]
+    real = [i for i, (k, _) in enumerate(rows) if k not in NOT_BOXED]
     for j in range(M.shape[1]):
         best = max(real, key=lambda i: M[i, j])
         ax.add_patch(plt.Rectangle((j - 0.5, best - 0.5), 1, 1, fill=False, ec=COL["emotion"], lw=1.8))
         for i in range(M.shape[0]):
             ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
                     color="white" if M[i, j] > 0.6 else "black")
-    ax.set_xticks(range(len(genres)), [f"{g}\n({films[g]} films)" for g in genres])
+    ax.set_xticks(range(len(b["genres"])), xlabels)
     ax.set_yticks(range(len(rows)), [lab for _, lab in rows])
     ax.spines[:].set_visible(False)
+    return im
+
+
+def fig_per_genre():
+    """Film-level F1 per genre and pipeline (five genres); the best pipeline per genre is boxed."""
+    d = load("film_level")
+    if not d or "per_genre_precision" not in next(iter(d["subset5"]["arms"].values())):
+        return
+    b = d["subset5"]
+    films = b["films_per_genre"]
+    fig, ax = plt.subplots(figsize=(WIDTH, 3.0))
+    im = _genre_heatmap(ax, b, "per_genre_f1", [f"{g}\n({films[g]} films)" for g in b["genres"]])
     fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="film-level F1")
     save(fig, "per_genre")
+
+
+def fig_per_genre_pr():
+    """Film-level precision and recall per genre and pipeline, side by side."""
+    d = load("film_level")
+    if not d or "per_genre_precision" not in next(iter(d["subset5"]["arms"].values())):
+        return
+    b = d["subset5"]
+    films = b["films_per_genre"]
+    labels = [f"{g}\n({films[g]})" for g in b["genres"]]
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 3.0), sharey=True)
+    for ax, key, title in ((axes[0], "per_genre_precision", "precision"),
+                           (axes[1], "per_genre_recall", "recall")):
+        im = _genre_heatmap(ax, b, key, labels)
+        ax.set_title(title)
+        ax.tick_params(axis="x", labelsize=7)
+    axes[1].tick_params(axis="y", left=False)
+    fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02, label="film level")
+    save(fig, "per_genre_pr")
 
 
 def fig_stage1():
@@ -416,7 +442,7 @@ FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
            "cross_dataset": fig_cross_dataset, "stage1": fig_stage1,
            "ablation": fig_ablation, "signatures": fig_signatures,
            "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
-           "per_genre": fig_per_genre}
+           "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr}
 
 
 def main() -> None:

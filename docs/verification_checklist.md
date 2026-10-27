@@ -38,6 +38,13 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ## B. Read again: text produced by the assistant
 
+- [ ] **Your comments of 21 Oct** (Overleaf `011fc8c`): the **four research questions**
+  (RQ3 = comparison, RQ4 = generalisation) and the main question as how-questions; "pipeline"
+  instead of "route" everywhere; the new precision/recall figure and the Horror paragraph in
+  Section 5.4 with the new Appendix A section; the definitions under the Blockbuster chart;
+  the abbreviations now spelled out at first use (read the affected sentences, some became
+  longer).
+
 - [ ] **Your comments of 16 Oct** (Overleaf `352a922`, `497c6db`): check the new opening
   of the Introduction, the approach paragraph after the research questions, the rewritten
   R² ceiling, Cohen's d and significance parts of Fundamentals 2.6, and the **three

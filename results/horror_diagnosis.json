@@ -1,0 +1,155 @@
+{
+  "what": "rated vs out-of-fold predicted emotions on the five-genre subset (VGGish, random forest, the 10x5 folds of the main analysis, mean over repeats)",
+  "n_clips": 329,
+  "n_horror_clips": 28,
+  "cohens_d_rated": {
+    "Action": {
+      "valence": -0.408,
+      "energy": 0.182,
+      "tension": 0.432,
+      "anger": 0.345,
+      "fear": 0.326,
+      "happy": -0.498,
+      "sad": 0.08,
+      "tender": -0.319
+    },
+    "Crime": {
+      "valence": -0.339,
+      "energy": 0.26,
+      "tension": 0.312,
+      "anger": 0.225,
+      "fear": 0.374,
+      "happy": -0.075,
+      "sad": -0.366,
+      "tender": -0.311
+    },
+    "Drama": {
+      "valence": 0.714,
+      "energy": -0.161,
+      "tension": -0.622,
+      "anger": -0.453,
+      "fear": -0.595,
+      "happy": 0.476,
+      "sad": 0.15,
+      "tender": 0.443
+    },
+    "Comedy": {
+      "valence": 0.544,
+      "energy": -0.167,
+      "tension": -0.499,
+      "anger": -0.541,
+      "fear": -0.637,
+      "happy": 0.387,
+      "sad": 0.303,
+      "tender": 0.136
+    },
+    "Horror": {
+      "valence": -0.615,
+      "energy": -0.15,
+      "tension": 0.478,
+      "anger": 0.309,
+      "fear": 0.726,
+      "happy": -0.513,
+      "sad": 0.051,
+      "tender": -0.317
+    }
+  },
+  "cohens_d_predicted": {
+    "Action": {
+      "valence": -0.501,
+      "energy": 0.262,
+      "tension": 0.473,
+      "anger": 0.463,
+      "fear": 0.518,
+      "happy": -0.491,
+      "sad": -0.241,
+      "tender": -0.393
+    },
+    "Crime": {
+      "valence": -0.21,
+      "energy": 0.23,
+      "tension": 0.204,
+      "anger": 0.18,
+      "fear": 0.188,
+      "happy": -0.008,
+      "sad": -0.201,
+      "tender": -0.227
+    },
+    "Drama": {
+      "valence": 0.69,
+      "energy": -0.446,
+      "tension": -0.657,
+      "anger": -0.638,
+      "fear": -0.667,
+      "happy": 0.478,
+      "sad": 0.448,
+      "tender": 0.571
+    },
+    "Comedy": {
+      "valence": 0.639,
+      "energy": -0.234,
+      "tension": -0.582,
+      "anger": -0.668,
+      "fear": -0.714,
+      "happy": 0.877,
+      "sad": 0.236,
+      "tender": 0.331
+    },
+    "Horror": {
+      "valence": -0.567,
+      "energy": 0.384,
+      "tension": 0.562,
+      "anger": 0.369,
+      "fear": 0.586,
+      "happy": -0.338,
+      "sad": -0.403,
+      "tender": -0.477
+    }
+  },
+  "fear_by_genre": {
+    "Action": {
+      "clips": 103,
+      "rated_mean": 3.418,
+      "predicted_mean": 3.456
+    },
+    "Crime": {
+      "clips": 98,
+      "rated_mean": 3.5,
+      "predicted_mean": 3.14
+    },
+    "Drama": {
+      "clips": 239,
+      "rated_mean": 2.592,
+      "predicted_mean": 2.688
+    },
+    "Comedy": {
+      "clips": 40,
+      "rated_mean": 1.742,
+      "predicted_mean": 2.045
+    },
+    "Horror": {
+      "clips": 28,
+      "rated_mean": 4.354,
+      "predicted_mean": 3.726
+    },
+    "all non-Horror clips": {
+      "clips": 301,
+      "rated_mean": 2.803,
+      "predicted_mean": 2.873
+    }
+  },
+  "fear_within": {
+    "Horror clips": {
+      "r2": 0.373,
+      "slope_pred_on_rated": 0.446
+    },
+    "all clips": {
+      "r2": 0.59,
+      "slope_pred_on_rated": 0.518
+    }
+  },
+  "fear_overlap": {
+    "rated: non-Horror clips above the Horror median": 77,
+    "predicted: non-Horror clips above the Horror median": 91
+  }
+}

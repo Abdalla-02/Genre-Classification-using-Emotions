@@ -1699,6 +1699,35 @@ formulas, and the significance section rewritten around the film bootstrap. Then
 and RQ3 merged into **RQ2** (signatures and their replication on Blockbuster), the old
 RQ2b is now **RQ3**. Earlier sections of this log keep the old labels.
 
+## 27. The author's comments of 21 Oct (27 Oct 2026)
+
+Six comments on the draft of 21 Oct (`Drafts of the Thesis/Commented_Thesis_21.10.pdf`),
+all applied on Overleaf (`011fc8c`):
+
+1. **No yes/no questions.** The main research question and all research questions are now
+   "how well / how does" questions.
+2. **"Route" → "pipeline"** throughout the thesis (109 places) and in every figure label;
+   the docs of this repository keep "route".
+3. **RQ3 split in two:** RQ3 is now the comparison of the two pipelines within one dataset,
+   **RQ4** the generalisation to the other dataset (Chapter 5 Section 5.6). The thesis has
+   four research questions again (RQ1–RQ4).
+4. **Precision and recall per genre:** new figure `per_genre_pr` (two heatmaps, best real
+   pipeline boxed) in Section 5.4. **Why Horror is weak:** `exp_horror_diagnosis.py` →
+   `horror_diagnosis.json`. Given the ratings, the classifier reaches Horror F1 0.41
+   (P 0.27, R 0.78), from predicted emotions 0.23 (P 0.15, R 0.50), so the loss is in
+   Stage 1. Rated fear of the Horror clips 4.35, predicted 3.73, close to Action (3.46
+   predicted): the Horror–Action gap shrinks from 0.93 to 0.27. Within Horror clips
+   R² of fear 0.37 (all clips 0.59), slope 0.45; Cohen's d of fear 0.73 → 0.59, of energy
+   −0.15 → +0.38. Regression to the mean on 28 of 329 clips. New Appendix A section
+   "Why Horror Is the Weakest Genre of the Emotion Pipeline" (`sec:app_horror`).
+5. **Blockbuster in-domain chart** reduced to the four compared pipelines (emotion
+   pipeline, direct VGGish film average, direct VGGish vote over cues, PCA-8), each defined
+   in a list under the figure. MIR-140, MFCC-78 and the random projection moved to
+   Appendix A.6.
+6. **Abbreviations spelled out at first use** (IMDb, MIR, MER, MIREX, MSD, STFT, CLAP,
+   PCA, CI, NB, RMS, SVR, RBF, CPU, AP, ROC-AUC, RMSE, LSTM, CNN, ML-kNN, ML-SMOTE, ResNet,
+   AUC), checked by a script that finds each abbreviation's first use in reading order.
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

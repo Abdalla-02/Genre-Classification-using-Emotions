@@ -53,6 +53,8 @@ DESCRIPTIONS = {
                   "ablation, stability over seeds (section 23)",
     "hamming_breakdown": "Hamming loss split by genre and into false positives/negatives; "
                          "genres predicted per clip per route (section 25)",
+    "horror_diagnosis": "Rated vs predicted emotions on the five-genre subset: why Horror is "
+                        "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "
