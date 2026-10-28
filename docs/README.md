@@ -1735,6 +1735,43 @@ all applied on Overleaf (`011fc8c`):
    reproduction (0.620) is identified as the direct pipeline (film-average VGGish, logistic
    regression).
 
+## 28. Why wav2vec 2.0 is weak directly but strong in the emotion pipeline (28 Oct 2026)
+
+The author noticed that wav2vec 2.0, the weakest representation used directly (film-level
+macro-F1 0.261), gives the highest emotion-pipeline score (0.472, VGGish 0.460) although
+its Stage-1 R^2 is the lowest (0.299). `exp_w2v_diagnosis.py` → `w2v_diagnosis.json`
+(five-genre subset, film level, the folds of `film_level.json`, whose five shared arms it
+reproduces exactly):
+
+1. **Not better, level.** wav2vec emotion pipeline vs VGGish emotion pipeline +0.013
+   (film bootstrap p = 0.537, 6 of 10 repeats; clip +0.009, Nadeau–Bengio p = 0.438). The
+   nominal lead is one genre: Crime F1 0.49 vs 0.35.
+2. **Compression explains part of the gain, the emotion target the larger part.** PCA-8 on
+   wav2vec reaches 0.344: +0.082 over direct wav2vec (p = 0.004), and the emotion pipeline
+   is +0.127 above it (p < 0.001, 10 of 10 repeats; clip +0.049, NB p = 0.061). For VGGish
+   the split is +0.023 and +0.070 (`film_level.json`).
+3. **Non-linearity alone does not help.** A random-forest genre classifier on the embedding
+   directly (300 trees per genre, balanced, untuned) reaches 0.186 on wav2vec and 0.172 on
+   VGGish, below the logistic regression on the same embeddings (−0.071, −0.186).
+4. **Low clip R^2 is not fatal, because genre is scored per film.** Correlation of
+   predicted and rated emotion on film means: wav2vec 0.724 on average (VGGish 0.840), and
+   on the threat-versus-warmth emotions that carry genre close to VGGish (valence 0.83 vs
+   0.91, tension 0.84 vs 0.92, fear 0.85 vs 0.92, anger 0.80 vs 0.87); weak where genre
+   needs little (happy 0.57, sad 0.54, energy 0.57). The predictions spread only half as
+   wide as the ratings (SD ratio 0.50; VGGish 0.66), which costs nothing because Stage 2
+   standardises its inputs. The genre signatures of the predicted emotions correlate
+   r = 0.846 with those of the ratings (VGGish 0.919), and their mean |d| is 0.454 (rated
+   0.371): the random forest averages away clip-to-clip variation and keeps the tone shared
+   across a film (between-film variance share 0.350, ratings 0.283).
+5. **Hypothesis rejected: film identity.** wav2vec does not encode the film more strongly
+   than the others (5-NN same-film share 0.094 vs VGGish 0.148; chance 0.027), so the
+   direct failure is not a film shortcut. Direct wav2vec misses the rare genres entirely
+   (Comedy F1 0.00, Horror 0.07): the genre information is there but spread over 768
+   speech-oriented dimensions, which a linear classifier cannot find from 32 training films;
+   the emotion target tells the forest which acoustic directions matter.
+6. The two emotion predictions agree only moderately per clip (r 0.54 to 0.74), so the two
+   embeddings capture partly different information (combining them is untested).
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

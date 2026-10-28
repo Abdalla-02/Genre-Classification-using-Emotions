@@ -85,6 +85,7 @@ python experiments/audit_consistency.py
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 | `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
 | `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_w2v_diagnosis.py` | Why wav2vec 2.0 is weak directly but strong as the emotion input: paired test of the two emotion pipelines, PCA-8 and random-forest controls, Stage-1 profile per clip and per film, film identity | §28 |
 | `exp_horror_diagnosis.py` | Why Horror is weak in the emotion pipeline: rated vs predicted emotions, fear per genre | §27 |
 
 ## cross_dataset — transfer to Blockbuster
@@ -114,7 +115,7 @@ test quoted beside it. `exp_statistical_power.py` is kept as the record of the p
 protocol, and the corrected run reproduces it exactly under the old metric. Every
 film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Sixteen scripts write machine-readable output to `results/`; `results/README.md` lists
+Seventeen scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.

@@ -53,6 +53,8 @@ DESCRIPTIONS = {
                   "ablation, stability over seeds (section 23)",
     "hamming_breakdown": "Hamming loss split by genre and into false positives/negatives; "
                          "genres predicted per clip per route (section 25)",
+    "w2v_diagnosis": "Why wav2vec 2.0 is the weakest direct representation but level with "
+                     "VGGish in the emotion pipeline: controls and Stage-1 profile (section 28)",
     "horror_diagnosis": "Rated vs predicted emotions on the five-genre subset: why Horror is "
                         "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
