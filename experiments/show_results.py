@@ -124,7 +124,8 @@ def is_arms(v) -> bool:
 
 def is_stage1(v) -> bool:
     return (isinstance(v, dict) and bool(v)
-            and all(isinstance(x, dict) and "mean_r2" in x for x in v.values()))
+            and all(isinstance(x, dict) and {"mean_r2", "input_domain", "dim"} <= x.keys()
+                    for x in v.values()))
 
 
 def is_comparisons(v) -> bool:
