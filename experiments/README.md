@@ -42,8 +42,8 @@ python experiments/audit_consistency.py
 
 ## make_figures.py and export_current_state.py
 
-`make_figures.py` draws the ten thesis figures into `figures/` (PDF + PNG) from
-`results/*.json`; give figure names to draw only some. `export_current_state.py` turns
+`make_figures.py` draws thirteen figures into `figures/` (PDF + PNG) from
+`results/*.json` (twelve are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
 `docs/current_state.md` into `.docx` and `.pdf` (needs LibreOffice).
 
 ## features — dataset and features
