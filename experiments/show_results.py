@@ -53,6 +53,14 @@ DESCRIPTIONS = {
                   "ablation, stability over seeds (section 23)",
     "hamming_breakdown": "Hamming loss split by genre and into false positives/negatives; "
                          "genres predicted per clip per route (section 25)",
+    "emotion_pipeline_grid": "Emotion pipeline for six representations x random forest / ridge / "
+                             "SVR, film level, with the direct pipelines (section 30)",
+    "per_genre_analysis": "Per-genre figure: the all-positive floor, film-level AUC per genre, "
+                          "per-genre bootstrap of the emotion pipeline (section 29)",
+    "w2v_diagnosis": "Why wav2vec 2.0 is the weakest direct representation but level with "
+                     "VGGish in the emotion pipeline: controls and Stage-1 profile (section 28)",
+    "horror_diagnosis": "Rated vs predicted emotions on the five-genre subset: why Horror is "
+                        "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "
@@ -120,7 +128,8 @@ def is_arms(v) -> bool:
 
 def is_stage1(v) -> bool:
     return (isinstance(v, dict) and bool(v)
-            and all(isinstance(x, dict) and "mean_r2" in x for x in v.values()))
+            and all(isinstance(x, dict) and {"mean_r2", "input_domain", "dim"} <= x.keys()
+                    for x in v.values()))
 
 
 def is_comparisons(v) -> bool:

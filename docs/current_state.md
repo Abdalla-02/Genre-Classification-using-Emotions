@@ -2,7 +2,7 @@
 
 **Can a soundtrack's emotion predict a film's genre?** This page covers what was done after
 the fifth meeting: the four notes, a data error found while answering the second one, and
-what both changed; section 7b adds the work of 15–21 October. The briefing for the fourth meeting is archived in
+what both changed; sections 7b and 7c add the work of 15 October to 1 November. The briefing for the fourth meeting is archived in
 `docs/archive/current_state_2026-10-07.md`; every earlier round is in `briefing_full.md`,
 and every experiment in detail in the technical log, `docs/README.md` (section 24 for this
 round). The thesis on Overleaf is up to date with everything below.
@@ -162,9 +162,9 @@ compression, scarce data and domain shift; limitations as short paragraphs.
 
 ---
 
-## 7b. Since then (15–21 October): one new analysis, a figure check, your comments
+## 7b. Since then (15–27 October): two new analyses, a figure check, your comments
 
-No result changed. The thesis on Overleaf (`497c6db`) contains all of it.
+No headline result changed. The thesis on Overleaf (`011fc8c`) contains all of it.
 
 1. **Why the emotion route has the worst Hamming loss** (new paragraph in Appendix A.2).
    Hamming loss counts every wrong clip–genre decision equally, so for a rare genre the
@@ -195,10 +195,59 @@ No result changed. The thesis on Overleaf (`497c6db`) contains all of it.
    into RQ2 (which emotions characterise each genre, and do these signatures hold on
    Blockbuster), and the old RQ2b is RQ3. The wording of the main research question is
    for the supervisor to comment on.
-5. **Documentation.** Every evaluation metric, why it was chosen and what it showed, is
+5. **Your comments on the draft of 21 Oct** (27 Oct; `docs/review_2026-10-16.md`, third
+   part): the research questions are now **four how-questions** (RQ3 compares the two
+   pipelines within one dataset, RQ4 asks how they generalise to the other); "route" is
+   now "pipeline" throughout; Section 5.4 has a new precision/recall heatmap and explains
+   **why Horror is weak**: the emotion regression pulls the high fear of Horror clips
+   towards the level of Action (predicted 3.73 vs 3.46, rated 4.35 vs 3.42), so with
+   rated emotions Horror reaches F1 0.41 but with predicted ones only 0.23; the Blockbuster
+   chart shows only the four compared pipelines, each defined; every abbreviation is
+   spelled out at its first use.
+6. **Documentation.** Every evaluation metric, why it was chosen and what it showed, is
    explained in `docs/evaluation_metrics.md`. The repository's READMEs and the verification
    checklist were brought up to date with the post-fix numbers, and the consistency audit
    now flags any film count from before the fix.
+
+## 7c. Since then (28 October – 1 November): three analyses, one correction
+
+The headline result (emotion pipeline 0.460 on five genres, film level) did not change.
+The thesis on Overleaf (`240b538`, compiled with 0 errors) contains items 1, 2 and 4.
+
+1. **Models named in the thesis** (Overleaf `4ab939c`): a new table in Methods lists every
+   pipeline with its embedding, intermediate step and classifier, and the models (VGGish,
+   random forest, logistic regression) are named at the first mention of a pipeline in
+   each section.
+2. **Why wav2vec 2.0 is weak directly but level with VGGish in the emotion pipeline**
+   (log section 28, Appendix, waveform section). Used directly it scores 0.261; as the emotion
+   input 0.472 (VGGish 0.460, difference +0.013, p = 0.54, so level, not better). Its
+   clip-level emotion R² is low (0.299), but genre is scored per film, and on film means
+   its predicted emotions correlate 0.72 with the ratings, close to VGGish on the emotions
+   that carry genre (valence, tension, fear, anger). The direct failure is not a film
+   shortcut: the genre information is spread over 768 speech-oriented dimensions that a
+   linear classifier cannot find from 32 training films.
+3. **What lies behind the per-genre figure** (log section 29; **not in the thesis**). Assigning
+   every genre to every film scores 0.434 on five genres, above both chance floors the
+   thesis quotes (0.168 and 0.309); the emotion pipeline is +0.022 above it (p = 0.52).
+   Threshold-free, the emotion pipeline ranks films well above chance (film-level ROC AUC
+   0.655, p < 0.001). The clearest emotion result is Comedy (AUC 0.76, the highest of all
+   pipelines); Crime has almost no emotional signature. How to report the 0.434 floor is
+   your decision; for now it is left out.
+4. **The emotion pipeline for every representation and every emotion regressor** (log sections 30
+   and 30.1; Chapter 5, new subsection "Other Representations and Emotion Regressors", and a
+   new Appendix section with a figure). Six representations × random forest, ridge
+   regression and SVR. The emotion pipeline is ahead of the direct use of its
+   representation in all 18 combinations (+0.032 to +0.209), and in all 90 pairs of seed
+   and combination over five master seeds. Through the emotions the representations end
+   close together (0.416 to 0.481, against 0.261 to 0.396 directly). The regressor matters
+   little for VGGish. Over five seeds CLAP with ridge regression is ahead of the VGGish
+   pipeline (0.502 vs 0.469); this was found after the results were known, so the thesis
+   reports it but keeps the VGGish pipeline. Figure 5.2 now says it shows seed 42, which is
+   the least favourable of the five seeds for the emotion pipeline.
+5. **Correction.** Methods said ridge regression reaches R² 0.39 on VGGish against 0.55
+   for the random forest (Fundamentals: 37 % vs 56 %). That ridge was untuned; tuned, it
+   reaches 0.584, slightly above the forest. The text now says so and explains why the
+   random forest is kept.
 
 ---
 
@@ -214,6 +263,10 @@ No result changed. The thesis on Overleaf (`497c6db`) contains all of it.
 4. **wav2vec 2.0 layer**: after the fix, block 1 is nominally best (0.297 vs 0.294 for the
    block 2 the thesis keeps). Decide whether that is acceptable.
 5. **AI declaration**: only the date is missing.
+6. **Read the new subsection of Chapter 5** "Other Representations and Emotion Regressors"
+   (1 Nov, Overleaf `5a4ca23`): the emotion pipeline is ahead of direct use for all six
+   representations and all three regressors (18 of 18 cells; 90 of 90 over five seeds).
+   The all-positive floor (0.434) is still left out of the thesis, by your decision.
 
 ---
 

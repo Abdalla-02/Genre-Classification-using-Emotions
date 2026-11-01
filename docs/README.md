@@ -1699,6 +1699,226 @@ formulas, and the significance section rewritten around the film bootstrap. Then
 and RQ3 merged into **RQ2** (signatures and their replication on Blockbuster), the old
 RQ2b is now **RQ3**. Earlier sections of this log keep the old labels.
 
+## 27. The author's comments of 21 Oct (27 Oct 2026)
+
+Six comments on the draft of 21 Oct (`Drafts of the Thesis/Commented_Thesis_21.10.pdf`),
+all applied on Overleaf (`011fc8c`):
+
+1. **No yes/no questions.** The main research question and all research questions are now
+   "how well / how does" questions.
+2. **"Route" → "pipeline"** throughout the thesis (109 places) and in every figure label;
+   the docs of this repository keep "route".
+3. **RQ3 split in two:** RQ3 is now the comparison of the two pipelines within one dataset,
+   **RQ4** the generalisation to the other dataset (Chapter 5 Section 5.6). The thesis has
+   four research questions again (RQ1–RQ4).
+4. **Precision and recall per genre:** new figure `per_genre_pr` (two heatmaps, best real
+   pipeline boxed) in Section 5.4. **Why Horror is weak:** `exp_horror_diagnosis.py` →
+   `horror_diagnosis.json`. Given the ratings, the classifier reaches Horror F1 0.41
+   (P 0.27, R 0.78), from predicted emotions 0.23 (P 0.15, R 0.50), so the loss is in
+   Stage 1. Rated fear of the Horror clips 4.35, predicted 3.73, close to Action (3.46
+   predicted): the Horror–Action gap shrinks from 0.93 to 0.27. Within Horror clips
+   R² of fear 0.37 (all clips 0.59), slope 0.45; Cohen's d of fear 0.73 → 0.59, of energy
+   −0.15 → +0.38. Regression to the mean on 28 of 329 clips. New Appendix A section
+   "Why Horror Is the Weakest Genre of the Emotion Pipeline" (`sec:app_horror`).
+5. **Blockbuster in-domain chart** reduced to the four compared pipelines (emotion
+   pipeline, direct VGGish film average, direct VGGish vote over cues, PCA-8), each defined
+   in a list under the figure. MIR-140, MFCC-78 and the random projection moved to
+   Appendix A.6.
+6. **Abbreviations spelled out at first use** (IMDb, MIR, MER, MIREX, MSD, STFT, CLAP,
+   PCA, CI, NB, RMS, SVR, RBF, CPU, AP, ROC-AUC, RMSE, LSTM, CNN, ML-kNN, ML-SMOTE, ResNet,
+   AUC), checked by a script that finds each abbreviation's first use in reading order.
+7. **The model of each step is named** (author's request after the comments, Overleaf
+   `4ab939c`): a new table in Methods (`tab:pipelines`) lists every pipeline with its
+   embedding, intermediate step and genre classifier. In the text, the embedding, the
+   random forest and the logistic regression are named at the first mention of a pipeline
+   in each section, in the figure legends and in the summary of findings; the Blockbuster
+   reproduction (0.620) is identified as the direct pipeline (film-average VGGish, logistic
+   regression).
+
+## 28. Why wav2vec 2.0 is weak directly but strong in the emotion pipeline (28 Oct 2026)
+
+The author noticed that wav2vec 2.0, the weakest representation used directly (film-level
+macro-F1 0.261), gives the highest emotion-pipeline score (0.472, VGGish 0.460) although
+its Stage-1 R^2 is the lowest (0.299). `exp_w2v_diagnosis.py` → `w2v_diagnosis.json`
+(five-genre subset, film level, the folds of `film_level.json`, whose five shared arms it
+reproduces exactly):
+
+1. **Not better, level.** wav2vec emotion pipeline vs VGGish emotion pipeline +0.013
+   (film bootstrap p = 0.537, 6 of 10 repeats; clip +0.009, Nadeau–Bengio p = 0.438). The
+   nominal lead is one genre: Crime F1 0.49 vs 0.35.
+2. **Compression explains part of the gain, the emotion target the larger part.** PCA-8 on
+   wav2vec reaches 0.344: +0.082 over direct wav2vec (p = 0.004), and the emotion pipeline
+   is +0.127 above it (p < 0.001, 10 of 10 repeats; clip +0.049, NB p = 0.061). For VGGish
+   the split is +0.023 and +0.070 (`film_level.json`).
+3. **Non-linearity alone does not help.** A random-forest genre classifier on the embedding
+   directly (300 trees per genre, balanced, untuned) reaches 0.186 on wav2vec and 0.172 on
+   VGGish, below the logistic regression on the same embeddings (−0.071, −0.186).
+4. **Low clip R^2 is not fatal, because genre is scored per film.** Correlation of
+   predicted and rated emotion on film means: wav2vec 0.724 on average (VGGish 0.840), and
+   on the threat-versus-warmth emotions that carry genre close to VGGish (valence 0.83 vs
+   0.91, tension 0.84 vs 0.92, fear 0.85 vs 0.92, anger 0.80 vs 0.87); weak where genre
+   needs little (happy 0.57, sad 0.54, energy 0.57). The predictions spread only half as
+   wide as the ratings (SD ratio 0.50; VGGish 0.66), which costs nothing because Stage 2
+   standardises its inputs. The genre signatures of the predicted emotions correlate
+   r = 0.846 with those of the ratings (VGGish 0.919), and their mean |d| is 0.454 (rated
+   0.371): the random forest averages away clip-to-clip variation and keeps the tone shared
+   across a film (between-film variance share 0.350, ratings 0.283).
+5. **Hypothesis rejected: film identity.** wav2vec does not encode the film more strongly
+   than the others (5-NN same-film share 0.094 vs VGGish 0.148; chance 0.027), so the
+   direct failure is not a film shortcut. Direct wav2vec misses the rare genres entirely
+   (Comedy F1 0.00, Horror 0.07): the genre information is there but spread over 768
+   speech-oriented dimensions, which a linear classifier cannot find from 32 training films;
+   the emotion target tells the forest which acoustic directions matter.
+6. The two emotion predictions agree only moderately per clip (r 0.54 to 0.74), so the two
+   embeddings capture partly different information (combining them is untested).
+
+## 29. What lies behind the per-genre figure; the all-positive floor (1 Nov 2026)
+
+The author asked for a full analysis of the per-genre figure (film-level F1 per genre and
+pipeline, five genres). `exp_per_genre_analysis.py` → `per_genre_analysis.json` (the arms
+and folds of `film_level.json`, which every shared arm reproduces, macro and per genre):
+
+1. **A higher floor than both chance floors of the thesis.** Assigning every genre to every
+   film gives F1 = 2p/(1+p) per genre (p = share of films with the genre): Action and Crime
+   0.462, Drama 0.841, Comedy 0.182, Horror 0.222, macro **0.434** (clip 0.430; eight
+   genres 0.338 per film, against the emotion pipeline's 0.349). The most-frequent baseline
+   (0.168) and the random guess (0.309) are far below it. Paired film bootstrap against it:
+   emotion pipeline +0.022 (p = 0.518, 8 of 10 repeats), wav2vec emotion pipeline +0.035
+   (p = 0.242), ratings +0.054 (p = 0.086); every direct representation and the PCA-8
+   control are below it (VGGish −0.071, p = 0.043; MusiCNN −0.043, p = 0.269). Over clips
+   even the ratings are below it (−0.016). At the 0.5 threshold, macro-F1 on 40 films is
+   dominated by how often a pipeline says yes: the emotion pipeline assigns 2.27 genres per
+   film, the ratings 2.21, the direct representations 1.27 to 1.65, the truth is 1.55.
+   Blockbuster (six genres, 110 films): the same floor is 0.438, below the in-domain
+   results (0.59 to 0.62) and the zero-shot emotion pipeline (0.508), but above direct
+   VGGish in zero-shot transfer (0.403).
+2. **Threshold-free, the emotion pipeline ranks films well above chance.** Film-level ROC
+   AUC averaged over genres: ratings 0.691, emotion pipeline 0.655 (+0.155 over 0.5,
+   p < 0.001), wav2vec emotion 0.644, direct 0.511 (wav2vec) to 0.622 (AST), PCA-8 0.585.
+   The emotion pipeline's lead in AUC is about the size of its F1 lead but, like it, not
+   significant except against wav2vec: vs VGGish +0.071 (p = 0.093), vs MusiCNN +0.078
+   (p = 0.096), vs PCA-8 +0.071 (p = 0.087), vs ratings −0.037 (p = 0.192). So the lead is
+   not only an operating-point effect.
+3. **Per genre.**
+   - *Action*: emotion F1 0.61 (floor 0.46), AUC 0.72; ahead of VGGish (F1 +0.19, p = 0.01;
+     AUC +0.13, p = 0.02) and PCA-8 (+0.19 / +0.17, both p ≤ 0.004). AST ranks Action films
+     best (AUC 0.79) but assigns Action to a quarter of the films, so its F1 is 0.47.
+   - *Crime*: no pipeline beats assigning Crime to every film (0.46) except the wav2vec
+     emotion pipeline (0.49). The VGGish emotion pipeline ranks Crime at chance (AUC 0.47);
+     its F1 of 0.35 comes from assigning Crime to half the films (truth 30 %). The ratings
+     reach only AUC 0.58: Crime has little emotional signature.
+   - *Drama*: nothing beats always predicting Drama (0.84; best MIR 0.82). AUC: MIR 0.78,
+     emotion 0.71, ratings 0.70.
+   - *Comedy* (4 films): the clearest emotion result. F1 0.34 against a floor of 0.18
+     (p = 0.01); AUC 0.76, the highest of all arms (ratings 0.71), ahead of VGGish (+0.17,
+     p < 0.001), PCA-8 (+0.17, p = 0.02), CLAP, AST, MIR.
+   - *Horror* (5 films): emotion F1 0.23, at the floor (0.22); AUC 0.61 against ratings 0.77
+     (−0.15, p < 0.001), CLAP 0.76, PCA-8 0.76. The information is in the VGGish embedding
+     but lost in Stage 1 (see the Horror diagnosis).
+4. **Where the macro lead comes from.** Of the emotion pipeline's +0.093 over VGGish,
+   Action contributes 0.038 and Comedy 0.044 (88 %); against PCA-8 (+0.071) Horror
+   subtracts 0.033.
+5. The emotion pipeline's F1 is above the ratings' in Drama and Comedy (+0.03, p = 0.33):
+   noise, not a better model.
+
+Not yet in the thesis: how to report the all-positive floor is the author's decision.
+
+## 30. The emotion pipeline for every representation and every regressor (1 Nov 2026)
+
+The author asked for a comparison of the emotion pipeline across feature extractors and
+emotion regressors. Until now only VGGish and wav2vec 2.0 had been run through it (both with
+the random forest), and the regressor had been chosen on emotion R^2 alone, on VGGish only.
+`exp_emotion_pipeline_grid.py` → `emotion_pipeline_grid.json` (film level, the folds of
+`film_level.json`, which its shared arms reproduce; about 55 minutes). Film-level macro-F1
+(macro AUC):
+
+| representation | direct | random forest | ridge | SVR |
+|---|---|---|---|---|
+| VGGish | 0.367 (0.58) | 0.460 (0.66) | 0.459 (0.66) | 0.458 (0.68) |
+| AST | 0.318 (0.62) | 0.452 (0.66) | 0.465 (0.66) | 0.460 (0.65) |
+| CLAP | 0.390 (0.60) | 0.469 (0.66) | 0.479 (0.68) | 0.481 (0.68) |
+| MusiCNN | 0.396 (0.58) | 0.426 (0.59) | 0.442 (0.61) | 0.443 (0.62) |
+| MIR | 0.365 (0.61) | 0.461 (0.65) | 0.416 (0.61) | 0.431 (0.63) |
+| wav2vec 2.0 | 0.261 (0.51) | 0.472 (0.64) | 0.426 (0.60) | 0.439 (0.62) |
+
+Ratings (ceiling) 0.491 (0.691); every genre for every film 0.434 (0.50).
+
+1. **The emotion pipeline is ahead of direct use for every representation and every
+   regressor** (18 of 18 cells, +0.032 to +0.209); significant at film level for AST and
+   wav2vec 2.0 with every regressor, MIR with the random forest and SVR, VGGish with SVR
+   (p = 0.040); not for MusiCNN (+0.032 to +0.049, p ≥ 0.32), the strongest direct
+   representation.
+2. **The regressor hardly matters for the spectrogram embeddings.** Ridge and SVR against
+   the random forest: VGGish −0.002/−0.003, AST +0.013/+0.007, CLAP +0.010/+0.013, MusiCNN
+   +0.015/+0.017, none significant. It matters for the weaker inputs, where the random
+   forest is best: MIR ridge −0.044 (p = 0.037), wav2vec ridge −0.046 (p = 0.002), SVR
+   −0.029 and −0.033 (p = 0.10, 0.06).
+3. **The representation hardly matters either.** With the random forest, every input is
+   within 0.034 of VGGish (CLAP +0.008, MIR +0.001, AST −0.008, wav2vec +0.013, MusiCNN
+   −0.033; all p ≥ 0.15). The spread of the emotion cells (0.416 to 0.481) is half of
+   that of the direct pipelines (0.261 to 0.396). The best cell, CLAP with SVR (0.481),
+   is +0.021 above the thesis pipeline and not tested against it; it would be a choice made
+   after seeing the results.
+4. **Emotion R^2 does not predict the genre result.** Ridge has the highest R^2 for VGGish
+   (0.58), AST and CLAP (0.61, 0.60), but the same F1 as the random forest; wav2vec has the
+   lowest R^2 (0.29 to 0.36) and, with the random forest, one of the highest F1.
+5. **Correction to Methods.** The thesis says the ridge reaches R^2 0.39 on VGGish against
+   0.55 for the random forest, which justified the random forest. That ridge had alpha = 1
+   on 128 to 768 dimensions; with alpha chosen by film-grouped CV it reaches 0.58 on VGGish.
+   The random forest stays a defensible choice (best for the weak inputs, equal elsewhere),
+   but the sentence in Section 3 (regressor choice) needs correcting.
+
+### 30.1 How final the grid is, and the thesis (1 Nov 2026)
+
+The author asked for the grid in the main text and whether the numbers are final. The
+script was extended and re-run (about 4.4 h for five seeds; `--no-seeds` runs seed 42 only):
+
+1. **Spread over repeats.** Every cell now stores its repeat SD, min, max and per-repeat
+   values. Repeat SD 0.019 to 0.048 for the emotion cells, 0.026 to 0.045 for the direct
+   ones; the film-bootstrap 95 % CI of every cell is about 0.13 wide.
+2. **Holm over the 18 emotion-vs-direct tests** (`p_holm_over_18`): AST and wav2vec 2.0 stay
+   significant with every regressor (p < 0.001); MIR with the random forest becomes 0.086;
+   all others are 0.44 to 0.97.
+3. **Four further master seeds (1 to 4; change folds and model seeds).** The shared arms
+   (ceiling, VGGish emotion pipeline, direct VGGish and AST) reproduce `film_level.json`
+   per seed (asserted). Seed means move by at most 0.047 (direct VGGish), 0.042 for an
+   emotion cell (MIR SVR); SD of the five seed means 0.003 to 0.019. Emotion > direct in
+   **90 of 90** seed x cell pairs, minimum +0.007 (MusiCNN random forest, seed 4). VGGish
+   random forest 0.460 to 0.481 (mean 0.469). Patterns that seed 42 hid: on CLAP, ridge
+   beats the random forest under every seed (+0.010 to +0.039); MusiCNN ridge and SVR too
+   (+0.016 to +0.049); VGGish ridge is below the random forest under every seed (−0.001 to
+   −0.018), MIR and wav2vec ridge/SVR always below. **CLAP with ridge beats the VGGish
+   pipeline under every seed** (+0.019 to +0.044; mean 0.502 vs 0.469) and reaches the
+   ratings arm (0.498 on average). This is a post-hoc pick, not tested; the thesis says so
+   and keeps the pre-specified VGGish pipeline. It also means the ratings arm is not a
+   strict upper bound.
+4. **Stage 1 on all 360 clips, four regressors** (`stage1_all_clips`; the random-forest
+   column reproduces `waveform_vs_spectrogram.json`, asserted). Mean R^2:
+
+   | representation | random forest | ridge, alpha = 1 | ridge, tuned | SVR |
+   |---|---|---|---|---|
+   | VGGish | 0.553 | 0.385 | **0.584** | 0.535 |
+   | AST | 0.545 | 0.217 | **0.606** | 0.601 |
+   | CLAP | 0.558 | 0.041 | **0.585** | 0.585 |
+   | MusiCNN | **0.512** | −1.739 | 0.492 | 0.479 |
+   | MIR | **0.476** | 0.246 | 0.443 | 0.472 |
+   | wav2vec 2.0 | 0.299 | −0.496 | **0.339** | 0.335 |
+
+   **Correction.** The thesis numbers "ridge 0.39 / SVR 0.54 / random forest 0.55" (Methods)
+   and "37 % / 56 %" (Fundamentals) came from `exp_emotion_improve.py`, which only prints,
+   with an untuned ridge (alpha = 1). They are now reproduced from a results file (0.385 /
+   0.535 / 0.553) and the text says that tuned ridge reaches 0.584. The random forest is
+   kept (no tuning, best on MusiCNN and MIR, genre result unchanged for VGGish).
+5. **In the thesis (Overleaf `5a4ca23`).** Chapter 5, new subsection "Other Representations
+   and Emotion Regressors" (`subsec:eval_grid`) with Table `tab:emotion_grid` (film F1 with
+   repeat SD, clip F1, bold = p < 0.05 vs direct), the three results, the R^2 paragraph and
+   the seed sentences; RQ3 summary extended. Appendix section `sec:app_grid`: figure
+   `emotion_pipeline_grid` (twelfth thesis figure), Table `tab:app_stage1_regressors`, Holm,
+   AUC and the seed details. Methods: regressor paragraph rewritten, a row "Emotion pipeline,
+   other inputs" in `tab:pipelines`; Fundamentals: 39 % / 58 % / 55 %; Discussion: four
+   sentences; list of symbols: alpha. The all-positive floor (0.434, §29) is still left out
+   (author, 1 Nov).
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

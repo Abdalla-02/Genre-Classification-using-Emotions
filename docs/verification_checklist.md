@@ -38,6 +38,26 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ## B. Read again: text produced by the assistant
 
+- [ ] **Your comments of 21 Oct** (Overleaf `011fc8c`): the **four research questions**
+  (RQ3 = comparison, RQ4 = generalisation) and the main question as how-questions; "pipeline"
+  instead of "route" everywhere; the new precision/recall figure and the Horror paragraph in
+  Section 5.4 with the new Appendix A section; the definitions under the Blockbuster chart;
+  the abbreviations now spelled out at first use (read the affected sentences, some became
+  longer). Overleaf `4ab939c`: the new table of pipelines and models in Methods, and the
+  model names added at the first mention of each pipeline per section.
+- [ ] **The emotion pipeline across representations and regressors** (Overleaf `5a4ca23`,
+  1 Nov): the new Chapter 5 subsection "Other Representations and Emotion Regressors" with
+  its table, the new Appendix section with the figure and the Stage-1 regressor table, the
+  rewritten regressor paragraph in Methods, the sentence in Fundamentals, four sentences in
+  the Discussion and the RQ3 summary. Decide whether you agree with the reading that CLAP
+  with ridge regression (ahead of the VGGish pipeline under all five seeds, 0.502 vs 0.469)
+  is reported but not adopted because it was picked after the results were known (§30.1).
+
+- [ ] **Why wav2vec 2.0 works as the emotion input** (Overleaf `4c43946`, log §28): two new
+  paragraphs at the end of Appendix A.5 (The Waveform Representation) and one sentence in
+  Chapter 5, Stage 1, after the wav2vec R^2. Check that the explanation reads plainly and
+  that you agree with "level with VGGish" rather than "best".
+
 - [ ] **Your comments of 16 Oct** (Overleaf `352a922`, `497c6db`): check the new opening
   of the Introduction, the approach paragraph after the research questions, the rewritten
   R² ceiling, Cohen's d and significance parts of Fundamentals 2.6, and the **three
@@ -146,6 +166,12 @@ script before submission, or be ready to explain where the number comes from.
   Lady" are one film; merged in the loader, every Eerola experiment re-run. Film counts are
   42 (8 genres), 40 (5 genres, shared space) and 45 (all rated clips). Emotion vs VGGish at
   film level moved from p = 0.047 to p = 0.052.
+- [ ] **Ridge regression in Stage 1** (§30.1): Methods said ridge reaches R^2 0.39 on
+  VGGish against 0.55 for the random forest, and Fundamentals 37 % against 56 %; both came
+  from a script that only prints, with an untuned ridge (alpha = 1). With alpha chosen by
+  film-grouped cross-validation, ridge reaches 0.584, slightly above the forest (0.553).
+  The text now says so; the random forest is kept and the genre result for VGGish hardly
+  changes with the regressor. All four numbers are now in `emotion_pipeline_grid.json`.
 - [ ] **Blockbuster → Eerola significance** (§23.3): the clip-level p < 0.001 came from a
   bootstrap that resampled clips, which are not independent. Resampling films gives
   +0.077, p = 0.127 (after the 8 Oct fix +0.089, p = 0.102). The thesis now says the

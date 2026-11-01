@@ -4,14 +4,14 @@
 This chapter reports the results of the experiments described in Chapter~\ref{ch:methods}
 and concentrates on the results that answer the research questions.
 Section~\ref{sec:eval_emotion} first establishes how well emotion can be predicted from
-audio, since the pipeline depends on it. Section~\ref{sec:eval_genre} answers RQ1, whether
-a soundtrack's emotional profile predicts its film's genre, and
-Section~\ref{sec:eval_direct} answers RQ3 within one dataset: whether the detour through
-emotion beats classifying genre directly from audio. Section~\ref{sec:eval_pergenre}
+audio, since the pipeline depends on it. Section~\ref{sec:eval_genre} answers RQ1, how well
+the emotions of a soundtrack predict its film's genre, and
+Section~\ref{sec:eval_direct} answers RQ3: how the emotion pipeline compares with
+classifying genre directly from audio within one dataset. Section~\ref{sec:eval_pergenre}
 breaks this comparison down by genre. Section~\ref{sec:eval_signatures} answers RQ2,
-which emotions characterise each genre and whether these signatures replicate on the
-second dataset, and Section~\ref{sec:eval_transfer} answers RQ3 across datasets, on film
-music the model has never seen. Analyses that check these
+which emotions characterise each genre and how far these signatures replicate on the
+second dataset, and Section~\ref{sec:eval_transfer} answers RQ4, how well the pipelines
+generalise to film music the model has never seen. Analyses that check these
 results without changing them (the choice of metric, stability over seeds, the emotion
 ablation, the waveform representation, all eight genres, the reproduction of the published
 Blockbuster result and an error analysis) are reported in
@@ -34,10 +34,11 @@ therefore given with the chance floor of its own label space, either the
 \label{sec:eval_emotion}
 
 The first stage predicts the eight emotion ratings from a frozen audio embedding with a
-random forest. It is scored by $R^2$, averaged over the eight emotions, on out-of-fold
+random forest regressor of 300 trees (Section~\ref{sec:methods_stage1}). It is scored by $R^2$, averaged over the eight emotions, on out-of-fold
 predictions of five-fold cross-validation grouped by film over all 360 rated clips
 (Section~\ref{sec:evaluation_protocol}). Table~\ref{tab:waveform_stage1} ranks the six
-audio representations, and Figure~\ref{fig:stage1_r2} breaks the result down by emotion.
+audio representations, with the root-mean-square error (RMSE) of the predicted ratings
+beside $R^2$, and Figure~\ref{fig:stage1_r2} breaks the result down by emotion.
 The last column of the table expresses each score as a fraction of $R^2 = 0.897$, the
 agreement between two independent listener panels (Section~\ref{subsec:rating_reliability}).
 
@@ -74,7 +75,8 @@ The three general-purpose spectrogram embeddings, CLAP, VGGish and AST, cannot b
 ($R^2$ between 0.545 and 0.558). The music-pretrained MusiCNN follows closely
 (0.512), the 103 hand-crafted descriptors are clearly weaker (0.476), and the
 waveform model wav2vec~2.0 recovers far less of the rating variance than any other
-(0.299). The emotions also differ in difficulty. For the three strongest
+(0.299). As the input of the emotion pipeline it nevertheless gives a genre result level with
+VGGish (Section~\ref{subsec:eval_grid} and Appendix~\ref{sec:app_waveform}). The emotions also differ in difficulty. For the three strongest
 representations, tension, energy and anger are the easiest ($R^2$ 0.608 to
 0.661), valence and fear follow (0.559 to 0.603), and sadness
 (0.428 to 0.438) and happiness (0.302 to 0.321) are clearly the
@@ -93,8 +95,9 @@ eight emotions $r=0.912$, intraclass correlation for consistency ICC(C,1) $=0.89
 although on the three bipolar scales the second panel rated systematically higher, which
 lowers absolute agreement to ICC(A,1) $=0.818$. A predictor cannot agree with a noisy
 target more closely than the target agrees with an independent measurement of itself, so
-the attainable $R^2$ is about 0.897. The best representations reach 62\,\% of
-it. Rating noise is therefore not what limits the regressor; the limit lies in the audio
+the attainable $R^2$ is about 0.897. With the random forest the best representations reach
+62\,\% of it, and with a tuned ridge regression up to 68\,\% (AST,
+Appendix~\ref{sec:app_grid}). Rating noise is therefore not what limits the regressor; the limit lies in the audio
 representations and the amount of training data.
 
 % =============================================================================
@@ -106,32 +109,35 @@ grouped by film with nested tuning of $C$. Each repeat is scored once on its poo
 out-of-fold predictions, per film, and the scores are averaged over the ten repeats, with a
 95\,\% interval from a bootstrap over films.
 
-On the five-genre subset, a classifier trained on the human emotion ratings reaches a
-film-level macro-$F_1$ of 0.491 [0.411, 0.552], and the full pipeline, in which
-the emotions are predicted from the VGGish embedding, reaches 0.460 [0.385, 0.514]
+On the five-genre subset, the logistic-regression genre classifier trained on the human
+emotion ratings reaches a film-level macro-$F_1$ of 0.491 [0.411, 0.552], and the full
+emotion pipeline, in which a random forest predicts the emotions from the VGGish embedding
+and the same classifier maps them to genres, reaches 0.460 [0.385, 0.514]
 (Figure~\ref{fig:indomain_eerola5}). Both lie far above the most-frequent baseline
 (0.168) and clearly above the base-rate random guess (0.309). Scored over clips, the same
-predictions reach 0.416 and 0.405. RQ1 can therefore be answered positively: the
-emotional profile of a film's soundtrack predicts its genres well above chance, although
-far from perfectly. The same holds on all eight genres, where the pipeline reaches 0.349
+predictions reach 0.416 and 0.405. The answer to RQ1 is therefore that the
+emotions of a film's soundtrack predict its genres well above chance, although far from
+perfectly. The same holds on all eight genres, where the emotion pipeline reaches 0.349
 against a random guess of 0.226 (Appendix~\ref{sec:app_eight}).
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/indomain_eerola5.pdf}
-  \caption{Genre classification on the five-genre Eerola subset: film-level macro-$F_1$ of every route with 95\,\% intervals.}
+  \caption{Genre classification on the five-genre Eerola subset: film-level macro-$F_1$ of every pipeline with 95\,\% intervals.}
   \label{fig:indomain_eerola5}
 \end{figure}
 
 In Figure~\ref{fig:indomain_eerola5}, each filled point is the film-level macro-$F_1$,
-averaged over the ten repeats, and the whiskers are 95\,\% intervals from a bootstrap over
+averaged over the ten repeats under the master seed 42, and the whiskers are 95\,\% intervals from a bootstrap over
 films. The hollow marker in each row is the clip-level score of the same predictions.
-Green marks the classifier on the human ratings (the ceiling of the emotion route), orange
-the emotion route, blue an audio representation used directly, and grey the PCA-8
-control. The dashed line is the most-frequent baseline and the dotted line the base-rate
+Every row ends in the same logistic-regression classifier. Green marks the classifier on
+the human ratings (the ceiling of the emotion pipeline under this seed), orange the emotion pipeline, whose
+random forest predicts the emotions from the embedding named in brackets, blue an audio
+representation given to the classifier directly, and grey the PCA-8 control (VGGish compressed to eight principal
+components). The dashed line is the most-frequent baseline and the dotted line the base-rate
 random guess.
 
-For the use of the pipeline, the most important comparison is between predicted and rated
+For the use of the emotion pipeline, the most important comparison is between predicted and rated
 emotions. At film level the ratings score 0.032 higher (difference $-0.032$ [$-0.090$,
 $+0.021$]) and are ahead in all ten repeats, but the difference is not
 significant ($p=0.277$); over clips the two are level ($-0.010$, $p=0.340$). Emotions
@@ -143,10 +149,10 @@ emotion model might still gain a little.
 \section{Emotion versus Direct Audio, In-domain (RQ3)}
 \label{sec:eval_direct}
 
-Figure~\ref{fig:indomain_eerola5} also answers RQ3 within one dataset. Used directly, the
-six representations reach MusiCNN 0.396, CLAP 0.390, VGGish 0.367, the hand-crafted descriptors 0.365, AST 0.318 and wav2vec~2.0 0.261. The PCA-8 control, which compresses the VGGish
-embedding to eight principal components, reaches 0.390. The emotion route from the same
-VGGish embedding reaches 0.460 and is ahead of all of them, by 0.065 to 0.196.
+Figure~\ref{fig:indomain_eerola5} also answers RQ3 within one dataset. Given directly to the
+logistic-regression classifier, the six representations reach MusiCNN 0.396, CLAP 0.390, VGGish 0.367, the hand-crafted descriptors 0.365, AST 0.318 and wav2vec~2.0 0.261. The PCA-8 control, which compresses the VGGish
+embedding to eight principal components, reaches 0.390. The emotion pipeline, whose random forest
+predicts the emotions from the same VGGish embedding, reaches 0.460 and is ahead of all of them, by 0.065 to 0.196.
 Table~\ref{tab:power_cmp} gives the comparisons that matter most for the argument; all
 paired comparisons are listed in Appendix~\ref{sec:app_comparisons}.
 
@@ -170,13 +176,15 @@ paired comparisons are listed in Appendix~\ref{sec:app_comparisons}.
   \end{tabular}
 \end{table}
 
-In Table~\ref{tab:power_cmp}, $\Delta$ is the first route minus the second with its 95\,\%
+In Table~\ref{tab:power_cmp}, $\Delta$ is the first pipeline minus the second with its 95\,\%
 interval and $p$-value from the paired film bootstrap, and ``won'' counts the ten repeats
-in which the first route scores higher. The two right-hand columns score the same
+in which the first pipeline scores higher. The two right-hand columns score the same
 predictions over clips with the Nadeau--Bengio corrected $t$-test, which needs one score per
-test fold and therefore cannot be computed per film. Bold marks $p<0.05$.
+test fold and therefore cannot be computed per film. Bold marks $p<0.05$. ``Emotion'' is
+the emotion pipeline on VGGish; the representation it is compared with is given to the
+same classifier directly.
 
-Three results stand out. First, the emotion route is ahead of the VGGish embedding it is
+Three results stand out. First, the emotion pipeline is ahead of the VGGish embedding it is
 computed from by $+0.093$, in 9 of ten repeats, and ahead of every other direct
 representation as well. Whether these leads are significant depends on the comparison and
 on the unit of scoring. At film level the film bootstrap finds the lead significant against
@@ -187,55 +195,137 @@ whose attainable $p$-value lies above 0.05 on this dataset, only against wav2vec
 (Appendix~\ref{sec:app_comparisons}).
 Second, compression alone explains part of the film-level gain. The PCA-8 control is ahead
 of VGGish by $+0.023$ ($p=0.488$, but in 7 of ten repeats and under every seed), and
-the emotion route's lead over the control, $+0.070$, is not significant ($p=0.089$). Over
-clips the control is level with VGGish and the emotion route is ahead of it ($+0.042$,
+the emotion pipeline's lead over the control, $+0.070$, is not significant ($p=0.089$). Over
+clips the control is level with VGGish and the emotion pipeline is ahead of it ($+0.042$,
 $p=0.020$). Third, part of the advantage is an operating-point effect. With a decision
-threshold tuned per genre on the training folds, the routes converge over clips (0.420
-to 0.433; Appendix~\ref{sec:eval_robustness}). The in-domain answer to RQ3 is
-therefore that the emotion route is consistently ahead of direct audio at the default
+threshold tuned per genre on the training folds, the pipelines converge over clips (0.420
+to 0.433; Appendix~\ref{sec:eval_robustness}). The answer to RQ3 is
+therefore that the emotion pipeline is consistently ahead of direct audio at the default
 threshold, in nearly every repeat and under every seed, but that the size of its lead over
 the strongest direct representations is not established on 40 films.
 
 These numbers are stable. Re-running the entire protocol under five master seeds moves the
-ten-repeat mean of the emotion route by at most 0.019 (from 0.460 to
+ten-repeat mean of the emotion pipeline by at most 0.019 (from 0.460 to
 0.481), and its lead over VGGish stays positive under every seed ($+0.076$ to
 $+0.132$). The main source of uncertainty is which films the dataset happens to
 contain (bootstrap standard error 0.027 to 0.038), which only more films could reduce
 (Appendix~\ref{sec:eval_robustness}).
+
+\subsection{Other Representations and Emotion Regressors}
+\label{subsec:eval_grid}
+
+So far the emotion pipeline has used the VGGish embedding and a random forest, followed by
+the logistic-regression classifier. Table~\ref{tab:emotion_grid} repeats it for each of
+the six representations and three emotion regressors: the random forest, ridge regression
+with its regularisation strength chosen by film-grouped cross-validation inside the
+training films, and SVR with an RBF kernel (Section~\ref{sec:methods_stage1}). Every
+entry is the complete pipeline, with the same classifier, folds and scoring as above.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{The emotion pipeline for every representation and emotion regressor (five genres, 40 films).}
+  \label{tab:emotion_grid}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lcccc@{\hspace{10pt}}cccc}
+    \toprule
+    & \multicolumn{4}{c}{Film level} & \multicolumn{4}{c}{Clip level} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    & & \multicolumn{3}{c}{Emotion pipeline} & & \multicolumn{3}{c}{Emotion pipeline} \\
+    \cmidrule(lr){3-5} \cmidrule(lr){7-9}
+    Representation & Direct & Forest & Ridge & SVR & Direct & Forest & Ridge & SVR \\
+    \midrule
+    VGGish & 0.367\,{\scriptsize(0.039)} & 0.460\,{\scriptsize(0.038)} & 0.459\,{\scriptsize(0.027)} & \textbf{0.458}\,{\scriptsize(0.034)} & 0.366 & 0.405 & 0.413 & 0.410 \\
+    AST & 0.318\,{\scriptsize(0.045)} & \textbf{0.452}\,{\scriptsize(0.035)} & \textbf{0.465}\,{\scriptsize(0.022)} & \textbf{0.460}\,{\scriptsize(0.025)} & 0.368 & 0.414 & 0.410 & 0.408 \\
+    CLAP & 0.390\,{\scriptsize(0.044)} & 0.469\,{\scriptsize(0.040)} & 0.479\,{\scriptsize(0.030)} & 0.481\,{\scriptsize(0.019)} & 0.356 & 0.399 & 0.413 & 0.403 \\
+    MusiCNN & 0.396\,{\scriptsize(0.043)} & 0.426\,{\scriptsize(0.034)} & 0.442\,{\scriptsize(0.036)} & 0.443\,{\scriptsize(0.048)} & 0.359 & 0.388 & 0.386 & 0.383 \\
+    MIR & 0.365\,{\scriptsize(0.035)} & \textbf{0.461}\,{\scriptsize(0.022)} & 0.416\,{\scriptsize(0.036)} & \textbf{0.431}\,{\scriptsize(0.024)} & 0.362 & 0.403 & 0.394 & 0.396 \\
+    wav2vec~2.0 & 0.261\,{\scriptsize(0.026)} & \textbf{0.472}\,{\scriptsize(0.025)} & \textbf{0.426}\,{\scriptsize(0.029)} & \textbf{0.439}\,{\scriptsize(0.039)} & 0.328 & 0.415 & 0.393 & 0.396 \\
+    \midrule
+    Ratings (ceiling) & \multicolumn{4}{c}{0.491\,{\scriptsize(0.034)}} & \multicolumn{4}{c}{0.416} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:emotion_grid}, each film-level entry is the mean over the ten repeats
+with the standard deviation over the repeats in brackets, and the clip-level entries
+score the same predictions over clips. ``Direct'' is the representation given to the
+classifier without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
+descriptors. Bold marks an
+emotion pipeline that is significantly ahead of the direct use of its representation
+(paired film bootstrap, $p<0.05$). The VGGish forest entry is the emotion pipeline of the
+previous sections.
+
+Three results follow. First, the emotion pipeline is ahead of the direct use of its
+representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
+0.086 over clips. The gain is largest for AST and wav2vec~2.0, the two weakest direct
+representations, where it remains significant for every regressor after correcting for
+the 18 tests with the Holm method ($p<0.001$). It is smallest for MusiCNN, the strongest
+direct representation (0.032 to 0.049, $p\geq0.32$). Second, inside the emotion
+pipeline the representation hardly matters. With the random forest, every representation
+is within 0.034 of VGGish and none differs from it significantly ($p\geq0.15$); the 18
+emotion pipelines span 0.416 to 0.481, the six direct ones 0.261 to 0.396. Third, the
+regressor matters most for the weaker inputs. On the four spectrogram embeddings, ridge
+regression and SVR differ from the random forest by at most 0.017, never significantly.
+On the hand-crafted descriptors and on wav2vec~2.0 the random forest is best, ahead of
+ridge regression by 0.044 ($p=0.037$) and 0.046 ($p=0.002$).
+
+A more accurate emotion model does not reliably give a better genre result. Ridge
+regression predicts the emotions better than the random forest on VGGish and AST (Appendix
+Table~\ref{tab:app_stage1_regressors}) without a better genre score, on MusiCNN it
+predicts them less well and scores higher, and on wav2vec~2.0 it has the higher $R^2$
+(0.339 against 0.299) but the lower genre score. What the genre
+classifier needs from Stage~1 is evidently not the most accurate estimate per clip.
+
+The differences between emotion pipelines are small against their spread. The standard
+deviation over the repeats is 0.019 to 0.048 for the emotion pipelines and 0.026 to
+0.045 for the direct ones, and the 95\,\% film-bootstrap interval of every entry is
+about 0.13 wide. Repeating the whole comparison under four further master seeds, which change the folds
+and every model seed, moves the mean of an entry by at most 0.047. The emotion pipeline
+stays ahead of the direct use of its representation in all 90 pairs of seed and
+combination, by at least 0.007 (MusiCNN with the random forest). The seeds also show a
+pattern the table does not. On CLAP, ridge regression is ahead of the random forest under
+every seed (by 0.010 to 0.039), and CLAP with ridge regression is ahead of the VGGish
+pipeline under every seed (0.502 against 0.469 on average, Appendix~\ref{sec:app_grid}).
+This combination was singled out after the results were known and is not tested here, so
+the thesis keeps the VGGish pipeline that was fixed beforehand.
+
+The answer to RQ3 therefore does not depend on VGGish or on the random forest: the
+advantage of the emotion step is a property of the pipeline, not of one embedding.
 
 % =============================================================================
 \section{Results per Genre}
 \label{sec:eval_pergenre}
 
 Macro-$F_1$ averages five very different genres. Figure~\ref{fig:per_genre} shows the
-film-level $F_1$ of every route for each genre, and Table~\ref{tab:per_genre} adds
-precision and recall for the emotion route and for VGGish, the embedding it is computed
-from.
+film-level $F_1$ of every pipeline for each genre, and Table~\ref{tab:per_genre} adds
+precision and recall for the emotion pipeline and for VGGish used directly, the embedding
+from which its random forest predicts the emotions.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/per_genre.pdf}
-  \caption{Film-level $F_1$ per genre and route on the five-genre subset.}
+  \caption{Film-level $F_1$ per genre and pipeline on the five-genre subset.}
   \label{fig:per_genre}
 \end{figure}
 
-In Figure~\ref{fig:per_genre}, each cell is a route's $F_1$ for one genre, averaged over
+In Figure~\ref{fig:per_genre}, each cell is a pipeline's $F_1$ for one genre, averaged over
 the ten repeats; the number of films with the genre is given under its name. The box marks
-the best route for each genre among the emotion route, the PCA-8 control and the six
+the best pipeline for each genre among the emotion pipeline, the PCA-8 control and the six
 direct representations; the ratings (the ceiling) and the most-frequent baseline are shown
 for reference but not boxed.
 
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Precision, recall and $F_1$ per genre at film level: best route, emotion route and VGGish.}
+  \caption{Precision, recall and $F_1$ per genre at film level: best pipeline, emotion pipeline and VGGish.}
   \label{tab:per_genre}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lrlrrrrrr}
     \toprule
-    & & & \multicolumn{3}{c}{Emotion route} & \multicolumn{3}{c}{VGGish direct} \\
+    & & & \multicolumn{3}{c}{Emotion pipeline} & \multicolumn{3}{c}{VGGish direct} \\
     \cmidrule(lr){4-6} \cmidrule(lr){7-9}
-    Genre & Films & Best route ($F_1$) & Prec. & Rec. & $F_1$ & Prec. & Rec. & $F_1$ \\
+    Genre & Films & Best pipeline ($F_1$) & Prec. & Rec. & $F_1$ & Prec. & Rec. & $F_1$ \\
     \midrule
     Action   & 12 & Emotion (0.61) & 0.52 & 0.76 & \textbf{0.61} & 0.39 & 0.47 & 0.43 \\
     Crime    & 12 & Emotion (0.35) & 0.28 & 0.47 & \textbf{0.35} & 0.29 & 0.37 & 0.32 \\
@@ -247,24 +337,49 @@ for reference but not boxed.
 \end{table}
 
 In Table~\ref{tab:per_genre}, all values are film-level and averaged over the ten repeats;
-``Best route'' is the route with the highest $F_1$ for the genre, as boxed in
+``Best pipeline'' is the pipeline with the highest $F_1$ for the genre, as boxed in
 Figure~\ref{fig:per_genre}.
 
-The emotion route is the best route for Action, Crime and Comedy. For Drama the best route is the hand-crafted MIR features (0.82 against 0.76 for the emotion route), and for Horror it is CLAP (0.43 against 0.23). Drama, the
-genre of 29 of the 40 films, is predicted well by every route, including the
-most-frequent baseline, and so separates the routes least. The largest difference lies in
+The emotion pipeline is the best pipeline for Action, Crime and Comedy. For Drama the best pipeline is the hand-crafted MIR features used directly (0.82 against 0.76 for the emotion pipeline), and for Horror it is direct CLAP (0.43 against 0.23). Drama, the
+genre of 29 of the 40 films, is predicted well by every pipeline, including the
+most-frequent baseline, and so separates the pipelines least. The largest difference lies in
 Comedy (4 films). Its VGGish probabilities rarely average above one half over a
-film's clips, so VGGish seldom predicts it (recall 0.12), whereas the emotion route
+film's clips, so VGGish seldom predicts it (recall 0.12), whereas the emotion pipeline
 finds most Comedy films (recall 0.78) at a low precision (0.22). Horror
-(5 films) is the exception: although fear defines it, the emotion route predicts
+(5 films) is the exception: although fear defines it, the emotion pipeline predicts
 it for too many films (precision 0.15 at a recall of 0.50) and is no better
 than VGGish there (0.23 against 0.23). Averaged over the five genres, the
-emotion route has a recall of 0.64 against 0.38 for VGGish, at a precision of 0.41
+emotion pipeline has a recall of 0.64 against 0.38 for VGGish, at a precision of 0.41
 against 0.36. Its advantage is therefore mainly that it finds the rare genres, at the
 price of more false positives, which is the same recall-driven pattern as the
 operating-point effect of Section~\ref{sec:eval_direct}. With only four or five films behind the two rarest
 genres, their $F_1$ values move by about 0.2 when a single film changes, and the per-genre
 comparison should be read as a description, not as a test.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/per_genre_pr.pdf}
+  \caption{Film-level precision and recall per genre and pipeline on the five-genre subset.}
+  \label{fig:per_genre_pr}
+\end{figure}
+
+Figure~\ref{fig:per_genre_pr} shows the precision and recall behind these $F_1$ values for
+every pipeline. The left panel is precision (of the films a pipeline assigns a genre, the
+share that have it), the right panel recall (of the films that have the genre, the share
+it finds); the number of films with the genre is given in brackets, and the box marks the
+highest value per genre among the real pipelines. The emotion pipeline has the highest
+recall for Action, Crime and Comedy, while in precision a direct representation is at
+least as good in every genre.
+
+The weakness on Horror comes from Stage~1. Given the listeners' ratings instead of
+predicted emotions, the same genre classifier reaches an $F_1$ of 0.41 on Horror (precision
+0.27, recall 0.78), against 0.23 from predicted emotions. The random forest of Stage~1 pulls the
+extreme fear of the Horror clips towards the average: they are rated at 4.35 on average
+but predicted at 3.73, close to the predicted fear of the Action clips (3.46), so that the
+distance between the two genres shrinks from 0.93 to 0.27. Predicted energy also rises in
+Horror clips, and in the space of predicted emotions Horror therefore resembles a tense
+action or crime film. The classifier assigns it to too many films and still misses half of
+the Horror films (Appendix~\ref{sec:app_horror}).
 
 % =============================================================================
 \section{Emotional Signatures of Genres (RQ2)}
@@ -316,8 +431,9 @@ by valence.
 \label{subsec:signature_replication}
 
 The signatures were derived from human ratings on one dataset. Whether they describe film
-music or only that dataset can be tested on the second one. The Eerola-trained emotion
-regressor predicts the eight emotions for each of the 4664 Blockbuster cues, and the same
+music or only that dataset can be tested on the second one. The random forest trained on the
+VGGish embeddings of the Eerola clips predicts the eight emotions for each of the 4664
+Blockbuster cues, and the same
 effect sizes are recomputed there for the six shared genres. No emotion annotation of
 Blockbuster exists or is used, so any agreement comes from transfer and not from fitting.
 Figure~\ref{fig:signatures} shows the two matrices side by side.
@@ -345,7 +461,7 @@ dataset, which answers the second part of RQ2, although, since the Blockbuster e
 Eerola panel, the replication cannot show independence from that panel.
 
 % =============================================================================
-\section{Cross-Dataset Transfer (RQ3 under domain shift)}
+\section{Cross-Dataset Transfer (RQ4)}
 \label{sec:eval_transfer}
 
 The results so far are cross-validated within one dataset. They show that a representation
@@ -353,7 +469,10 @@ carries genre information, but not that this information is a property of film m
 rather than of one collection of films. The experiments in this section therefore train on
 one dataset and test on the other, in the six-genre space shared with the Blockbuster
 dataset of \citet{ma2021computational} (Section~\ref{subsec:genre_labels}). VGGish is the
-only representation available on both (Section~\ref{subsec:methods_blockbuster}). Since a
+only representation available on both (Section~\ref{subsec:methods_blockbuster}), so every
+pipeline in this section starts from VGGish; the emotion pipeline predicts the emotions
+with the random forest of Stage~1, and every pipeline ends in the logistic-regression
+classifier of Stage~2. Since a
 Blockbuster row is a film, every score in this section is a film-level score, as in the
 in-domain sections. On the 110 Blockbuster films the base-rate random guess reaches
 0.292 and the plurality baseline 0.193; on the 40 Eerola films of the shared
@@ -375,8 +494,9 @@ genres) used throughout.
 
 \subsection{Blockbuster in-domain}
 
-A transfer score needs an in-domain reference on the target. The simple pipeline of this
-thesis first reproduces the published result on Blockbuster: under the leave-one-film-out
+A transfer score needs an in-domain reference on the target. The direct pipeline of this
+thesis, the film-average VGGish embedding given to the logistic regression, first
+reproduces the published result on Blockbuster: under the leave-one-film-out
 protocol of \citet{ma2021computational} it reaches macro-$F_1$ 0.620, within the 0.61 to
 0.65 they report for their VGGish models (Appendix~\ref{sec:app_blockbuster}).
 Figure~\ref{fig:blockbuster_cv} shows the same dataset under the repeated protocol used for
@@ -389,21 +509,31 @@ Eerola ($10\times5$ cross-validation over films).
   \label{fig:blockbuster_cv}
 \end{figure}
 
-In Figure~\ref{fig:blockbuster_cv}, each bar is the mean over the 50 folds and the error
-bar the standard deviation of the ten repeat means; the dotted line is the base-rate
-random guess (0.295). The emotion route is applied per cue and its emotions averaged per
-film; ``majority vote over cues'' classifies each cue and lets the cues vote, as in the
-best model of \citet{ma2021computational}. The light blue bars are hand-crafted features
-published with the dataset (all 140 MIR descriptors, and the 78 of them from the MFCC
-family) and a random eight-dimensional projection of the VGGish embedding.
+In Figure~\ref{fig:blockbuster_cv}, each bar is the mean macro-$F_1$ over the 50 test
+folds and the error bar the standard deviation of the ten repeat means; the dotted line is
+the base-rate random guess (0.295). The four pipelines are defined as follows.
+\begin{itemize}
+  \item \emph{Emotion pipeline}: the random forest trained on the 360 rated Eerola
+    clips predicts the eight emotions of every cue of a film, the predicted emotions are
+    averaged over the film's cues, and a genre classifier trained on the Blockbuster
+    training films maps them to genres.
+  \item \emph{Direct VGGish, film average}: the VGGish embeddings of a film's cues are
+    averaged into one 128-dimensional vector, and the genre classifier is trained on these
+    vectors directly.
+  \item \emph{Direct VGGish, vote over cues}: the classifier is trained on single cues,
+    each labelled with its
+    film's genres, and a film is assigned a genre when more than half of its cues
+    predict it. This is the instance majority voting of \citet{ma2021computational}.
+  \item \emph{PCA-8 control}: the film-average embedding compressed to eight principal
+    components, fitted on the training films.
+\end{itemize}
 
-In-domain on Blockbuster, the emotion route (0.616 $\pm$ 0.022) is level with
-direct audio. It is nominally ahead of the film-average VGGish embedding (0.593;
-$+0.023$, Nadeau--Bengio $p=0.536$) and slightly behind VGGish with a majority vote
-over cues (0.621), and none of these differences is significant. The PCA-8 control
-(0.587) is a serious baseline here, well ahead of a random eight-dimensional projection
-of the same embedding (0.487). The hand-crafted MIR features (0.585) are level with
-VGGish ($+0.009$, $p=0.787$).
+In-domain on Blockbuster, the emotion pipeline (0.616 $\pm$ 0.022) is level with
+direct audio. It is nominally ahead of the film-average embedding (0.593;
+$+0.023$, Nadeau--Bengio $p=0.536$) and slightly behind the vote over cues (0.621), and
+none of these differences is significant. The PCA-8 control (0.587) is level with them as
+well. The hand-crafted features published with the dataset are compared in
+Appendix~\ref{sec:app_blockbuster}.
 
 \subsection{Zero-Shot Transfer}
 \label{sec:zero_shot}
@@ -436,7 +566,7 @@ the base-rate random guess; the $p$-values are paired bootstraps over the 110 fi
     \toprule
     Approach (trained on Eerola only) & Prec. & Rec. & $F_1$ \\
     \midrule
-    VGGish $\rightarrow$ predicted emotion (11), per cue            & 0.480 & 0.651 & \textbf{0.508} \\
+    VGGish $\rightarrow$ random forest $\rightarrow$ emotion (11), per cue & 0.480 & 0.651 & \textbf{0.508} \\
     PCA-8 (VGGish) $\rightarrow$ genre (control)                    & 0.539 & 0.459 & 0.417 \\
     VGGish-128 $\rightarrow$ genre (direct)                         & 0.705 & 0.435 & 0.403 \\
     Random guess                                                    & 0.294 & 0.293 & 0.292 \\
@@ -446,16 +576,16 @@ the base-rate random guess; the $p$-values are paired bootstraps over the 110 fi
   \end{tabular}
 \end{table}
 
-Genre information transfers between the datasets. The emotion route reaches 0.508
+Genre information transfers between the datasets. The emotion pipeline reaches 0.508
 against a random-guess floor of 0.292, about 82\,\% of the 0.620 obtained with
 in-domain training, although each training row is a clip of about 17 seconds and the
-test items are whole films. The central result for RQ3 is that the emotion route
+test items are whole films. The central result for RQ4 is that the emotion pipeline
 transfers better than the representation it is derived from: it exceeds direct VGGish
 (0.403) by $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$), and the PCA-8 control
 (0.417) by $+0.093$ [$+0.013$, $+0.171$] ($p=0.027$), whereas compressing the
 embedding to eight principal components gains only $+0.013$ over the raw features
 ($p=0.737$). Under the alternative scaling regime the lead over direct VGGish is
-$+0.118$ ($p=0.001$). The lead is partly recall-driven: the emotion route finds more of
+$+0.118$ ($p=0.001$). The lead is partly recall-driven: the emotion pipeline finds more of
 the true genres (0.651 against 0.435) at lower precision (0.480 against
 0.705). In this transfer it makes little difference whether the emotions are predicted
 per cue or once from the film-average embedding (0.508 against 0.502); in-domain on
@@ -484,25 +614,25 @@ deviation of the five repeat means for the pooled design. The left group comes f
 re-implementation in which the emotion regressor is trained on all 360 rated clips, so it
 differs slightly from Figure~\ref{fig:zero_shot}.
 
-The emotion route is ahead of direct VGGish in both transfer directions, but significantly
+The emotion pipeline is ahead of direct VGGish in both transfer directions, but significantly
 only from Eerola to Blockbuster (0.503 against 0.383, $+0.121$, $p=0.007$). From
 Blockbuster to Eerola it reaches 0.458 against 0.364 ($+0.089$ [$-0.017$, $+0.206$],
 $p=0.102$), against a random-guess floor of 0.240. Over clips, with whole films
 resampled, the reverse difference is $+0.027$ ($p=0.069$); an earlier version of this
 analysis resampled clips, which are not independent, and reported it as significant. When
 both datasets are in the
-training set the advantage disappears: per film, the emotion route (0.531) and direct
+training set the advantage disappears: per film, the emotion pipeline (0.531) and direct
 VGGish (0.543) are level ($-0.011$, Nadeau--Bengio $p=0.688$). The pooled design also
-shows where each route is strong. On the Eerola films of the pooled test folds the emotion
-route leads (0.528 against 0.410), and on the Blockbuster films direct audio does
+shows where each pipeline is strong. On the Eerola films of the pooled test folds the emotion
+pipeline leads (0.528 against 0.410), and on the Blockbuster films direct audio does
 (0.579 against 0.568).
 
 The comparison with the PCA-8 control is less robust than the one with direct audio. The
 two implementations of the Eerola-to-Blockbuster direction differ in one legitimate choice
 (the emotion regressor is trained on the 319 clips of the shared space in the zero-shot
-experiment and on all 360 rated clips in the re-implementation). The emotion route is
+experiment and on all 360 rated clips in the re-implementation). The emotion pipeline is
 stable between them (0.508 and 0.503), but the PCA-8 control moves from 0.417 to
-0.457, and the emotion route's lead over it is no longer significant ($+0.049$,
+0.457, and the emotion pipeline's lead over it is no longer significant ($+0.049$,
 $p=0.239$; reverse direction $+0.070$, $p=0.158$). Single-split scores move by a few
 hundredths with such choices, so the conclusion rests on the intervals rather than on the
 third decimal.
@@ -512,7 +642,8 @@ third decimal.
 \label{sec:eval_summary}
 
 \emph{RQ1.} The emotions expressed by a soundtrack predict its film's genres well above
-chance. On the five-genre subset the pipeline reaches a film-level macro-$F_1$ of 0.460,
+chance. On the five-genre subset the emotion pipeline (VGGish embedding, random-forest
+emotion regressor, logistic-regression genre classifier) reaches a film-level macro-$F_1$ of 0.460,
 against 0.309 for a random guess, and the human ratings reach 0.491. The emotion
 regression it rests on reaches about 62\,\% of the $R^2$ that two listener
 panels allow.
@@ -521,21 +652,25 @@ panels allow.
 strongest discriminator and valence the second axis; Adventure has no signature. The
 signatures replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
 
-\emph{RQ3 in-domain.} The emotion route is ahead of every direct audio representation
+\emph{RQ3.} The emotion pipeline is ahead of every audio representation given directly to
+the same classifier
 (by $+0.093$ over VGGish, its own input) and of the PCA-8 control in nearly every repeat and
-under every seed, and it is the best route for Action, Crime and Comedy. Its lead is significant
+under every seed, and it is the best pipeline for Action, Crime and Comedy. The lead holds
+for each of six representations and three emotion regressors, and through the emotions
+the representations end close together (0.416 to 0.481, against 0.261 to 0.396 when used
+directly). Its lead is significant
 against the weaker direct representations, but not established against the stronger ones
 or against the PCA-8 control; part of the gain comes from compression, and with per-genre
-thresholds the routes converge.
+thresholds the pipelines converge.
 
-\emph{RQ3 across datasets.} Trained on Eerola and tested on the 110 Blockbuster films,
-the emotion route beats direct VGGish clearly (0.508 against 0.403, $p=0.013$). The
+\emph{RQ4.} Trained on Eerola and tested on the 110 Blockbuster films,
+the emotion pipeline beats direct VGGish clearly (0.508 against 0.403, $p=0.013$). The
 reverse direction agrees in sign without being significant, and when both datasets are in
-training the routes are level. No film occurs in both datasets.
+training the pipelines are level. No film occurs in both datasets.
 
 The main limitation is the size of the Eerola dataset: 40 films, two of the five
 genres with four or five films each, and a film-sampling error of the same order as the
-effects being measured. The results also give two different pictures. The emotion route
+effects being measured. The results also give two different pictures. The emotion pipeline
 is well ahead where the genre classifier is trained on the small Eerola dataset
 (significantly so in the transfer to Blockbuster), and
 level where it is trained on the larger Blockbuster dataset or on both.
