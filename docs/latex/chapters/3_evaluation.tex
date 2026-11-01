@@ -128,10 +128,10 @@ against a random guess of 0.226 (Appendix~\ref{sec:app_eight}).
 \end{figure}
 
 In Figure~\ref{fig:indomain_eerola5}, each filled point is the film-level macro-$F_1$,
-averaged over the ten repeats, and the whiskers are 95\,\% intervals from a bootstrap over
+averaged over the ten repeats under the master seed 42, and the whiskers are 95\,\% intervals from a bootstrap over
 films. The hollow marker in each row is the clip-level score of the same predictions.
 Every row ends in the same logistic-regression classifier. Green marks the classifier on
-the human ratings (the ceiling of the emotion pipeline), orange the emotion pipeline, whose
+the human ratings (the ceiling of the emotion pipeline under this seed), orange the emotion pipeline, whose
 random forest predicts the emotions from the embedding named in brackets, blue an audio
 representation given to the classifier directly, and grey the PCA-8 control (VGGish compressed to eight principal
 components). The dashed line is the most-frequent baseline and the dotted line the base-rate
