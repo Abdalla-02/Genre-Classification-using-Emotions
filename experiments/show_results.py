@@ -53,6 +53,8 @@ DESCRIPTIONS = {
                   "ablation, stability over seeds (section 23)",
     "hamming_breakdown": "Hamming loss split by genre and into false positives/negatives; "
                          "genres predicted per clip per route (section 25)",
+    "emotion_pipeline_grid": "Emotion pipeline for six representations x random forest / ridge / "
+                             "SVR, film level, with the direct pipelines (section 30)",
     "per_genre_analysis": "Per-genre figure: the all-positive floor, film-level AUC per genre, "
                           "per-genre bootstrap of the emotion pipeline (section 29)",
     "w2v_diagnosis": "Why wav2vec 2.0 is the weakest direct representation but level with "

@@ -1823,6 +1823,51 @@ and folds of `film_level.json`, which every shared arm reproduces, macro and per
 
 Not yet in the thesis: how to report the all-positive floor is the author's decision.
 
+## 30. The emotion pipeline for every representation and every regressor (1 Nov 2026)
+
+The author asked for a comparison of the emotion pipeline across feature extractors and
+emotion regressors. Until now only VGGish and wav2vec 2.0 had been run through it (both with
+the random forest), and the regressor had been chosen on emotion R^2 alone, on VGGish only.
+`exp_emotion_pipeline_grid.py` → `emotion_pipeline_grid.json` (film level, the folds of
+`film_level.json`, which its shared arms reproduce; about 55 minutes). Film-level macro-F1
+(macro AUC):
+
+| representation | direct | random forest | ridge | SVR |
+|---|---|---|---|---|
+| VGGish | 0.367 (0.58) | 0.460 (0.66) | 0.459 (0.66) | 0.458 (0.68) |
+| AST | 0.318 (0.62) | 0.452 (0.66) | 0.465 (0.66) | 0.460 (0.65) |
+| CLAP | 0.390 (0.60) | 0.469 (0.66) | 0.479 (0.68) | 0.481 (0.68) |
+| MusiCNN | 0.396 (0.58) | 0.426 (0.59) | 0.442 (0.61) | 0.443 (0.62) |
+| MIR | 0.365 (0.61) | 0.461 (0.65) | 0.416 (0.61) | 0.431 (0.63) |
+| wav2vec 2.0 | 0.261 (0.51) | 0.472 (0.64) | 0.426 (0.60) | 0.439 (0.62) |
+
+Ratings (ceiling) 0.491 (0.691); every genre for every film 0.434 (0.50).
+
+1. **The emotion pipeline is ahead of direct use for every representation and every
+   regressor** (18 of 18 cells, +0.032 to +0.209); significant at film level for AST and
+   wav2vec 2.0 with every regressor, MIR with the random forest and SVR, VGGish with SVR
+   (p = 0.040); not for MusiCNN (+0.032 to +0.049, p ≥ 0.32), the strongest direct
+   representation.
+2. **The regressor hardly matters for the spectrogram embeddings.** Ridge and SVR against
+   the random forest: VGGish −0.002/−0.003, AST +0.013/+0.007, CLAP +0.010/+0.013, MusiCNN
+   +0.015/+0.017, none significant. It matters for the weaker inputs, where the random
+   forest is best: MIR ridge −0.044 (p = 0.037), wav2vec ridge −0.046 (p = 0.002), SVR
+   −0.029 and −0.033 (p = 0.10, 0.06).
+3. **The representation hardly matters either.** With the random forest, every input is
+   within 0.034 of VGGish (CLAP +0.008, MIR +0.001, AST −0.008, wav2vec +0.013, MusiCNN
+   −0.033; all p ≥ 0.15). The spread of the emotion cells (0.416 to 0.481) is half of
+   that of the direct pipelines (0.261 to 0.396). The best cell, CLAP with SVR (0.481),
+   is +0.021 above the thesis pipeline and not tested against it; it would be a choice made
+   after seeing the results.
+4. **Emotion R^2 does not predict the genre result.** Ridge has the highest R^2 for VGGish
+   (0.58), AST and CLAP (0.61, 0.60), but the same F1 as the random forest; wav2vec has the
+   lowest R^2 (0.29 to 0.36) and, with the random forest, one of the highest F1.
+5. **Correction to Methods.** The thesis says the ridge reaches R^2 0.39 on VGGish against
+   0.55 for the random forest, which justified the random forest. That ridge had alpha = 1
+   on 128 to 768 dimensions; with alpha chosen by film-grouped CV it reaches 0.58 on VGGish.
+   The random forest stays a defensible choice (best for the weak inputs, equal elsewhere),
+   but the sentence in Section 3 (regressor choice) needs correcting.
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

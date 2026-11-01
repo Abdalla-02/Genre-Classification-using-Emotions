@@ -1,0 +1,877 @@
+{
+  "design": {
+    "protocol": "the folds, seed and fitting code of exp_film_level.py (10x5 RepeatedGroupKFold by film, OOF-trained emotions, nested C)",
+    "regressors": {
+      "random forest": "300 trees",
+      "ridge": "standardised, alpha in 10^-1..10^5 by film-grouped 3-fold CV",
+      "SVR": "standardised, RBF, C=10, gamma=scale, untuned"
+    },
+    "metric": "film-level macro-F1 (clip level beside it); film-level ROC AUC mean over genres and repeats; stage-1 R^2 mean over eight emotions, first repeat's outer folds",
+    "all_positive_floor_film": 0.434
+  },
+  "representations": [
+    "VGGish",
+    "AST",
+    "CLAP",
+    "MusiCNN",
+    "MIR",
+    "wav2vec 2.0"
+  ],
+  "regressors": [
+    "random forest",
+    "ridge",
+    "SVR"
+  ],
+  "grid": {
+    "VGGish": {
+      "random forest": {
+        "film_f1": 0.4600883327155536,
+        "ci_lo": 0.3849351543205741,
+        "ci_hi": 0.5140612329201397,
+        "clip_f1": 0.40536648544911724,
+        "macro_auc": 0.6553427402099816,
+        "per_genre_f1": {
+          "Action": 0.6135427591503787,
+          "Crime": 0.35004150234267034,
+          "Drama": 0.7643519735905973,
+          "Comedy": 0.33771684112241396,
+          "Horror": 0.23478858737170763
+        },
+        "stage1_r2": 0.5548305643605251
+      },
+      "ridge": {
+        "film_f1": 0.459227890595938,
+        "ci_lo": 0.3798555866875385,
+        "ci_hi": 0.5169180451230453,
+        "clip_f1": 0.41313212469521765,
+        "macro_auc": 0.6552673209931831,
+        "per_genre_f1": {
+          "Action": 0.5801992955135336,
+          "Crime": 0.3043895598991947,
+          "Drama": 0.7552167482377566,
+          "Comedy": 0.35557189542483664,
+          "Horror": 0.3007619539043688
+        },
+        "stage1_r2": 0.5835306722573875
+      },
+      "SVR": {
+        "film_f1": 0.4580198131847955,
+        "ci_lo": 0.37803140731771356,
+        "ci_hi": 0.5134091739503226,
+        "clip_f1": 0.4101600025273881,
+        "macro_auc": 0.6778306289495946,
+        "per_genre_f1": {
+          "Action": 0.5535091901054081,
+          "Crime": 0.3403813343519226,
+          "Drama": 0.7767133574281188,
+          "Comedy": 0.33326539387684895,
+          "Horror": 0.2862297901616787
+        },
+        "stage1_r2": 0.5492860517278013
+      }
+    },
+    "AST": {
+      "random forest": {
+        "film_f1": 0.45230193169854765,
+        "ci_lo": 0.37658888714191685,
+        "ci_hi": 0.5070640652810681,
+        "clip_f1": 0.41397473135224433,
+        "macro_auc": 0.6592492461561427,
+        "per_genre_f1": {
+          "Action": 0.5704764847478974,
+          "Crime": 0.33551495676078547,
+          "Drama": 0.7384991668010535,
+          "Comedy": 0.36673718610251116,
+          "Horror": 0.2502818640804911
+        },
+        "stage1_r2": 0.5653706755161576
+      },
+      "ridge": {
+        "film_f1": 0.4653201395519363,
+        "ci_lo": 0.3886148241396677,
+        "ci_hi": 0.5220081062154056,
+        "clip_f1": 0.4096046362942662,
+        "macro_auc": 0.662495004229487,
+        "per_genre_f1": {
+          "Action": 0.5706595592023845,
+          "Crime": 0.339323903396484,
+          "Drama": 0.7594178358329302,
+          "Comedy": 0.3153280542986425,
+          "Horror": 0.34187134502923977
+        },
+        "stage1_r2": 0.6106913875365931
+      },
+      "SVR": {
+        "film_f1": 0.4595507165014294,
+        "ci_lo": 0.38891047638858367,
+        "ci_hi": 0.5119726451058434,
+        "clip_f1": 0.40789085590888563,
+        "macro_auc": 0.6468354829078967,
+        "per_genre_f1": {
+          "Action": 0.5555248335893497,
+          "Crime": 0.34553756819746806,
+          "Drama": 0.7879804332634522,
+          "Comedy": 0.28178534571723424,
+          "Horror": 0.3269254017396432
+        },
+        "stage1_r2": 0.6086640366181724
+      }
+    },
+    "CLAP": {
+      "random forest": {
+        "film_f1": 0.468759948128994,
+        "ci_lo": 0.3808130100507668,
+        "ci_hi": 0.52744382534966,
+        "clip_f1": 0.3989966856080954,
+        "macro_auc": 0.6582301910732945,
+        "per_genre_f1": {
+          "Action": 0.5614306901848615,
+          "Crime": 0.3361609838708576,
+          "Drama": 0.7497695438117191,
+          "Comedy": 0.39455882352941174,
+          "Horror": 0.30187969924812025
+        },
+        "stage1_r2": 0.5552174030990548
+      },
+      "ridge": {
+        "film_f1": 0.4786851149422941,
+        "ci_lo": 0.40378306284010046,
+        "ci_hi": 0.529665994365421,
+        "clip_f1": 0.41268311020817006,
+        "macro_auc": 0.6784886599990049,
+        "per_genre_f1": {
+          "Action": 0.52623973727422,
+          "Crime": 0.32826533784264594,
+          "Drama": 0.7997441272912971,
+          "Comedy": 0.4121381886087768,
+          "Horror": 0.32703818369453047
+        },
+        "stage1_r2": 0.603313463638065
+      },
+      "SVR": {
+        "film_f1": 0.48121000249299106,
+        "ci_lo": 0.39680386695556974,
+        "ci_hi": 0.5387039359217887,
+        "clip_f1": 0.40333180078110586,
+        "macro_auc": 0.6832626113350251,
+        "per_genre_f1": {
+          "Action": 0.5505333968960221,
+          "Crime": 0.36710395442319804,
+          "Drama": 0.7522852101653433,
+          "Comedy": 0.37033797729618156,
+          "Horror": 0.3657894736842105
+        },
+        "stage1_r2": 0.6046347265857672
+      }
+    },
+    "MusiCNN": {
+      "random forest": {
+        "film_f1": 0.42627559748221816,
+        "ci_lo": 0.35938844917561474,
+        "ci_hi": 0.47565662953123783,
+        "clip_f1": 0.3879182337444069,
+        "macro_auc": 0.5935924988804299,
+        "per_genre_f1": {
+          "Action": 0.6285440465890966,
+          "Crime": 0.3888543186513153,
+          "Drama": 0.7050400978969237,
+          "Comedy": 0.25754533392304285,
+          "Horror": 0.15139419035071205
+        },
+        "stage1_r2": 0.5284928249938321
+      },
+      "ridge": {
+        "film_f1": 0.4421986373843595,
+        "ci_lo": 0.3648270169621205,
+        "ci_hi": 0.49866924179852967,
+        "clip_f1": 0.38605635464146604,
+        "macro_auc": 0.6140249838284321,
+        "per_genre_f1": {
+          "Action": 0.5535945289004243,
+          "Crime": 0.3069557576179313,
+          "Drama": 0.7316467679153583,
+          "Comedy": 0.3032386112339672,
+          "Horror": 0.3155575212541157
+        },
+        "stage1_r2": 0.5010709088924634
+      },
+      "SVR": {
+        "film_f1": 0.44327378439928455,
+        "ci_lo": 0.37247189887974796,
+        "ci_hi": 0.49241792017976155,
+        "clip_f1": 0.38340031074917846,
+        "macro_auc": 0.6209905184853459,
+        "per_genre_f1": {
+          "Action": 0.5884217251973093,
+          "Crime": 0.34563028008328345,
+          "Drama": 0.7303283669099428,
+          "Comedy": 0.37650068799449604,
+          "Horror": 0.17548786181139123
+        },
+        "stage1_r2": 0.4668374010128884
+      }
+    },
+    "MIR": {
+      "random forest": {
+        "film_f1": 0.4606155049840117,
+        "ci_lo": 0.3897366459356776,
+        "ci_hi": 0.5154320206119755,
+        "clip_f1": 0.4025358085188274,
+        "macro_auc": 0.6480864532019704,
+        "per_genre_f1": {
+          "Action": 0.5800989736070381,
+          "Crime": 0.4309798890230579,
+          "Drama": 0.7378559423769507,
+          "Comedy": 0.29839267285861715,
+          "Horror": 0.25575004705439486
+        },
+        "stage1_r2": 0.48165899982690086
+      },
+      "ridge": {
+        "film_f1": 0.4160435161185302,
+        "ci_lo": 0.3505220753909474,
+        "ci_hi": 0.46603440753619196,
+        "clip_f1": 0.39380207077335533,
+        "macro_auc": 0.6109704557894212,
+        "per_genre_f1": {
+          "Action": 0.5780973568515281,
+          "Crime": 0.39745091023177787,
+          "Drama": 0.7598743604403981,
+          "Comedy": 0.2382264484741265,
+          "Horror": 0.10656850459482037
+        },
+        "stage1_r2": 0.4587800473357615
+      },
+      "SVR": {
+        "film_f1": 0.4307607838156541,
+        "ci_lo": 0.3660882651618553,
+        "ci_hi": 0.48276761462505335,
+        "clip_f1": 0.39562289068058154,
+        "macro_auc": 0.6255012141115589,
+        "per_genre_f1": {
+          "Action": 0.6019751744362423,
+          "Crime": 0.3452563525157257,
+          "Drama": 0.7513745296098236,
+          "Comedy": 0.24079119367045063,
+          "Horror": 0.21440666884602813
+        },
+        "stage1_r2": 0.46950851555150297
+      }
+    },
+    "wav2vec 2.0": {
+      "random forest": {
+        "film_f1": 0.47239933140514123,
+        "ci_lo": 0.3966540710062987,
+        "ci_hi": 0.5268710331770958,
+        "clip_f1": 0.4146705969398881,
+        "macro_auc": 0.644216805990944,
+        "per_genre_f1": {
+          "Action": 0.5848915461624026,
+          "Crime": 0.4905676220331392,
+          "Drama": 0.6958284236771631,
+          "Comedy": 0.3898830409356725,
+          "Horror": 0.2008260242173286
+        },
+        "stage1_r2": 0.29365151272531603
+      },
+      "ridge": {
+        "film_f1": 0.4264732443791682,
+        "ci_lo": 0.3597538167870513,
+        "ci_hi": 0.4805311232111376,
+        "clip_f1": 0.3933683112710028,
+        "macro_auc": 0.6008707692690451,
+        "per_genre_f1": {
+          "Action": 0.6031999178981938,
+          "Crime": 0.4044091870745669,
+          "Drama": 0.7355556159218757,
+          "Comedy": 0.26897390535161436,
+          "Horror": 0.12022759564959054
+        },
+        "stage1_r2": 0.3567767127010456
+      },
+      "SVR": {
+        "film_f1": 0.43882245317997254,
+        "ci_lo": 0.3733279629495135,
+        "ci_hi": 0.48900167564380037,
+        "clip_f1": 0.3958067559518585,
+        "macro_auc": 0.618047551873414,
+        "per_genre_f1": {
+          "Action": 0.6397790523834167,
+          "Crime": 0.3519731778341836,
+          "Drama": 0.7239974640396394,
+          "Comedy": 0.3098529411764706,
+          "Horror": 0.16850963046615222
+        },
+        "stage1_r2": 0.32186557837753543
+      }
+    }
+  },
+  "direct": {
+    "VGGish": {
+      "film_f1": 0.3665688796033823,
+      "ci_lo": 0.28883178205850285,
+      "ci_hi": 0.42660429756050566,
+      "clip_f1": 0.36630610746063647,
+      "macro_auc": 0.5835045305269443,
+      "per_genre_f1": {
+        "Action": 0.425040965475748,
+        "Crime": 0.3205395282156901,
+        "Drama": 0.737892164953734,
+        "Comedy": 0.11897546897546898,
+        "Horror": 0.2303962703962704
+      }
+    },
+    "AST": {
+      "film_f1": 0.31831802002129667,
+      "ci_lo": 0.259747477692891,
+      "ci_hi": 0.3671206959578712,
+      "clip_f1": 0.3682251587419187,
+      "macro_auc": 0.6224532840722496,
+      "per_genre_f1": {
+        "Action": 0.4696248196248196,
+        "Crime": 0.2579964238659891,
+        "Drama": 0.8020640947109128,
+        "Comedy": 0.03333333333333333,
+        "Horror": 0.02857142857142857
+      }
+    },
+    "CLAP": {
+      "film_f1": 0.38977998784025936,
+      "ci_lo": 0.30301948161900577,
+      "ci_hi": 0.44667949789820494,
+      "clip_f1": 0.3557722805296107,
+      "macro_auc": 0.5997547345374931,
+      "per_genre_f1": {
+        "Action": 0.416702805495909,
+        "Crime": 0.3097141198520509,
+        "Drama": 0.7517759431462661,
+        "Comedy": 0.04318181818181818,
+        "Horror": 0.42752525252525253
+      }
+    },
+    "MusiCNN": {
+      "film_f1": 0.39607104935175325,
+      "ci_lo": 0.3065531387080941,
+      "ci_hi": 0.4698432691290468,
+      "clip_f1": 0.35900835865389513,
+      "macro_auc": 0.5764119968154452,
+      "per_genre_f1": {
+        "Action": 0.4462447641757986,
+        "Crime": 0.3335240749588576,
+        "Drama": 0.7488043008420029,
+        "Comedy": 0.28882395382395376,
+        "Horror": 0.16295815295815294
+      }
+    },
+    "MIR": {
+      "film_f1": 0.3654617805613704,
+      "ci_lo": 0.29888421144606864,
+      "ci_hi": 0.4149420005362677,
+      "clip_f1": 0.3622086054306163,
+      "macro_auc": 0.6092477583718964,
+      "per_genre_f1": {
+        "Action": 0.4390461229591664,
+        "Crime": 0.3224578754578754,
+        "Drama": 0.8249246735095792,
+        "Comedy": 0.14158730158730157,
+        "Horror": 0.0992929292929293
+      }
+    },
+    "wav2vec 2.0": {
+      "film_f1": 0.2610424159566726,
+      "ci_lo": 0.20426861467433327,
+      "ci_hi": 0.30905174587227646,
+      "clip_f1": 0.32774319589275214,
+      "macro_auc": 0.5108465069413345,
+      "per_genre_f1": {
+        "Action": 0.2582951251646904,
+        "Crime": 0.21263971950336197,
+        "Drama": 0.7627620836001593,
+        "Comedy": 0.0,
+        "Horror": 0.0715151515151515
+      }
+    }
+  },
+  "ceiling": {
+    "film_f1": 0.49074647621165857,
+    "ci_lo": 0.4108348693405029,
+    "ci_hi": 0.5518415621212914,
+    "clip_f1": 0.41566702161041774,
+    "macro_auc": 0.6910150793650793,
+    "per_genre_f1": {
+      "Action": 0.6150807715643645,
+      "Crime": 0.3999445936732464,
+      "Drama": 0.7295054021608643,
+      "Comedy": 0.3032367013791163,
+      "Horror": 0.4059649122807018
+    }
+  },
+  "comparisons": [
+    {
+      "a": "VGGish -> predicted emotion(11), OOF-trained",
+      "b": "VGGish-128 (direct)",
+      "diff": 0.09318706863864162,
+      "ci_lo": -0.001008004099272819,
+      "ci_hi": 0.1908883613591703,
+      "p_two_sided": 0.05201427842937277,
+      "repeat_win_rate": 0.9,
+      "clip_level_diff": 0.03909635136938885,
+      "clip_level_p_two_sided": 0.013258541560428353,
+      "clip_level_nb_p": 0.08602629104243566,
+      "clip_level_nb_p_limit": 0.06864400812756155
+    },
+    {
+      "a": "AST -> random forest -> emotion(11)",
+      "b": "AST-768",
+      "diff": 0.13144822724472,
+      "ci_lo": 0.053321576253543224,
+      "ci_hi": 0.2106295319074739,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.045362688876084564,
+      "clip_level_p_two_sided": 0.08363080061193269,
+      "clip_level_nb_p": 0.12838669154055532,
+      "clip_level_nb_p_limit": 0.10798682463584623
+    },
+    {
+      "a": "CLAP -> random forest -> emotion(11)",
+      "b": "CLAP-512",
+      "diff": 0.0796287957286165,
+      "ci_lo": -0.019756977301741363,
+      "ci_hi": 0.18879302082915617,
+      "p_two_sided": 0.1315655277919429,
+      "repeat_win_rate": 0.9,
+      "clip_level_diff": 0.0417720319997451,
+      "clip_level_p_two_sided": 0.05405405405405406,
+      "clip_level_nb_p": 0.17988062692637763,
+      "clip_level_nb_p_limit": 0.15738272798043407
+    },
+    {
+      "a": "MusiCNN -> random forest -> emotion(11)",
+      "b": "MusiCNN-200",
+      "diff": 0.03221459857651835,
+      "ci_lo": -0.06232842061531285,
+      "ci_hi": 0.12135131840770136,
+      "p_two_sided": 0.46098929117797044,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": 0.02862295152927019,
+      "clip_level_p_two_sided": 0.1917389087200408,
+      "clip_level_nb_p": 0.2660273976407118,
+      "clip_level_nb_p_limit": 0.24230737228542187
+    },
+    {
+      "a": "MIR -> random forest -> emotion(11)",
+      "b": "MIR-103",
+      "diff": 0.0954254748660901,
+      "ci_lo": 0.0254909244115345,
+      "ci_hi": 0.1719589516572536,
+      "p_two_sided": 0.0071392146863844975,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.03948731745015729,
+      "clip_level_p_two_sided": 0.07343192248852626,
+      "clip_level_nb_p": 0.19994568178750732,
+      "clip_level_nb_p_limit": 0.17695257771045803
+    },
+    {
+      "a": "wav2vec2 -> predicted emotion(11), OOF-trained",
+      "b": "wav2vec2-768",
+      "diff": 0.20913689185491963,
+      "ci_lo": 0.13739382755483281,
+      "ci_hi": 0.276812394889068,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.0855334413257044,
+      "clip_level_p_two_sided": 0.0,
+      "clip_level_nb_p": 0.013888505887093278,
+      "clip_level_nb_p_limit": 0.008004986828627594
+    },
+    {
+      "a": "VGGish -> ridge -> emotion(11)",
+      "b": "VGGish-128 (direct)",
+      "diff": 0.09145526988725737,
+      "ci_lo": -0.0048736669865420135,
+      "ci_hi": 0.19249039626239672,
+      "p_two_sided": 0.06017338092809791,
+      "repeat_win_rate": 0.9,
+      "clip_level_diff": 0.04588592026108169,
+      "clip_level_p_two_sided": 0.005099439061703213,
+      "clip_level_nb_p": 0.056448372925105336,
+      "clip_level_nb_p_limit": 0.04231328501260471
+    },
+    {
+      "a": "AST -> ridge -> emotion(11)",
+      "b": "AST-768",
+      "diff": 0.1439960187017028,
+      "ci_lo": 0.06287553431467807,
+      "ci_hi": 0.22477730719117373,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.04098186295752983,
+      "clip_level_p_two_sided": 0.10912799592044875,
+      "clip_level_nb_p": 0.18653477566447693,
+      "clip_level_nb_p_limit": 0.16385569051758964
+    },
+    {
+      "a": "CLAP -> ridge -> emotion(11)",
+      "b": "CLAP-512",
+      "diff": 0.08997257110744403,
+      "ci_lo": -0.0017799960258541025,
+      "ci_hi": 0.18827778875190904,
+      "p_two_sided": 0.05711371749107598,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.05527485302466782,
+      "clip_level_p_two_sided": 0.0030596634370219276,
+      "clip_level_nb_p": 0.06810485436590268,
+      "clip_level_nb_p_limit": 0.05254032410265521
+    },
+    {
+      "a": "MusiCNN -> ridge -> emotion(11)",
+      "b": "MusiCNN-200",
+      "diff": 0.047181198595605725,
+      "ci_lo": -0.05038377910194253,
+      "ci_hi": 0.14451610808352083,
+      "p_two_sided": 0.3579806221315655,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": 0.02677750518740895,
+      "clip_level_p_two_sided": 0.2427332993370729,
+      "clip_level_nb_p": 0.36209506033636507,
+      "clip_level_nb_p_limit": 0.33904109378152303
+    },
+    {
+      "a": "MIR -> ridge -> emotion(11)",
+      "b": "MIR-103",
+      "diff": 0.0517087549601938,
+      "ci_lo": -0.012231100186470445,
+      "ci_hi": 0.11931610850801266,
+      "p_two_sided": 0.11524732279449261,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.03125799683009845,
+      "clip_level_p_two_sided": 0.09994900560938297,
+      "clip_level_nb_p": 0.24282108469953673,
+      "clip_level_nb_p_limit": 0.21921955684381467
+    },
+    {
+      "a": "wav2vec 2.0 -> ridge -> emotion(11)",
+      "b": "wav2vec2-768",
+      "diff": 0.16326678456706528,
+      "ci_lo": 0.09943514179330865,
+      "ci_hi": 0.22409358653810402,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.06479184144893713,
+      "clip_level_p_two_sided": 0.0010198878123406426,
+      "clip_level_nb_p": 0.035858001199434726,
+      "clip_level_nb_p_limit": 0.024920408217945143
+    },
+    {
+      "a": "VGGish -> SVR -> emotion(11)",
+      "b": "VGGish-128 (direct)",
+      "diff": 0.09002595440740659,
+      "ci_lo": 0.0038508439470674727,
+      "ci_hi": 0.17483373009001085,
+      "p_two_sided": 0.03977562468128506,
+      "repeat_win_rate": 0.9,
+      "clip_level_diff": 0.0432270924111991,
+      "clip_level_p_two_sided": 0.0071392146863844975,
+      "clip_level_nb_p": 0.08080279696628179,
+      "clip_level_nb_p_limit": 0.06390916857445077
+    },
+    {
+      "a": "AST -> SVR -> emotion(11)",
+      "b": "AST-768",
+      "diff": 0.13816600348439945,
+      "ci_lo": 0.060468838722342544,
+      "ci_hi": 0.21504709267943695,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.039641708153577065,
+      "clip_level_p_two_sided": 0.11014788373278939,
+      "clip_level_nb_p": 0.20863477845616685,
+      "clip_level_nb_p_limit": 0.1854722044961966
+    },
+    {
+      "a": "CLAP -> SVR -> emotion(11)",
+      "b": "CLAP-512",
+      "diff": 0.09241094456974876,
+      "ci_lo": -0.0031085223042859877,
+      "ci_hi": 0.19672546232634414,
+      "p_two_sided": 0.06323304436511984,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.04666753936834215,
+      "clip_level_p_two_sided": 0.009178990311065782,
+      "clip_level_nb_p": 0.06679633273097824,
+      "clip_level_nb_p_limit": 0.051381420134846104
+    },
+    {
+      "a": "MusiCNN -> SVR -> emotion(11)",
+      "b": "MusiCNN-200",
+      "diff": 0.04910879954154428,
+      "ci_lo": -0.04187787481210753,
+      "ci_hi": 0.13849093867449302,
+      "p_two_sided": 0.322284548699643,
+      "repeat_win_rate": 0.8,
+      "clip_level_diff": 0.02429599041203096,
+      "clip_level_p_two_sided": 0.24579296277409485,
+      "clip_level_nb_p": 0.32830397930386956,
+      "clip_level_nb_p_limit": 0.3048340363096558
+    },
+    {
+      "a": "MIR -> SVR -> emotion(11)",
+      "b": "MIR-103",
+      "diff": 0.0662207859070509,
+      "ci_lo": 0.0017540214953502553,
+      "ci_hi": 0.13721738800527516,
+      "p_two_sided": 0.04487506374298827,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.03305558873752616,
+      "clip_level_p_two_sided": 0.0887302396736359,
+      "clip_level_nb_p": 0.2267231237089809,
+      "clip_level_nb_p_limit": 0.20328571737216394
+    },
+    {
+      "a": "wav2vec 2.0 -> SVR -> emotion(11)",
+      "b": "wav2vec2-768",
+      "diff": 0.17564118776704638,
+      "ci_lo": 0.10942207249822528,
+      "ci_hi": 0.23722337009546604,
+      "p_two_sided": 0.0,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.06703997893291073,
+      "clip_level_p_two_sided": 0.0,
+      "clip_level_nb_p": 0.024051771359382714,
+      "clip_level_nb_p_limit": 0.015524237274852436
+    },
+    {
+      "a": "VGGish -> ridge -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": -0.0017317987513842485,
+      "ci_lo": -0.020089209983297107,
+      "ci_hi": 0.014978453391214008,
+      "p_two_sided": 0.858745537990821,
+      "repeat_win_rate": 0.6,
+      "clip_level_diff": 0.006789568891692852,
+      "clip_level_p_two_sided": 0.3620601733809281,
+      "clip_level_nb_p": 0.6039060340019198,
+      "clip_level_nb_p_limit": 0.5873687273291255
+    },
+    {
+      "a": "AST -> ridge -> emotion(11)",
+      "b": "AST -> random forest -> emotion(11)",
+      "diff": 0.012547791456982807,
+      "ci_lo": -0.02902199739171385,
+      "ci_hi": 0.05212481965552668,
+      "p_two_sided": 0.536460989291178,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": -0.004380825918554735,
+      "clip_level_p_two_sided": 0.4752677205507394,
+      "clip_level_nb_p": 0.6994137121087379,
+      "clip_level_nb_p_limit": 0.6864912300747545
+    },
+    {
+      "a": "CLAP -> ridge -> emotion(11)",
+      "b": "CLAP -> random forest -> emotion(11)",
+      "diff": 0.010343775378827516,
+      "ci_lo": -0.014980151914603002,
+      "ci_hi": 0.03712205085872872,
+      "p_two_sided": 0.4099949005609383,
+      "repeat_win_rate": 0.8,
+      "clip_level_diff": 0.013502821024922717,
+      "clip_level_p_two_sided": 0.0407955124936257,
+      "clip_level_nb_p": 0.2975230663001126,
+      "clip_level_nb_p_limit": 0.2738362576947274
+    },
+    {
+      "a": "MusiCNN -> ridge -> emotion(11)",
+      "b": "MusiCNN -> random forest -> emotion(11)",
+      "diff": 0.014966600019087381,
+      "ci_lo": -0.016157180831175788,
+      "ci_hi": 0.044376080090665904,
+      "p_two_sided": 0.3233044365119837,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": -0.001845446341861237,
+      "clip_level_p_two_sided": 0.715961244263131,
+      "clip_level_nb_p": 0.8178394726496978,
+      "clip_level_nb_p_limit": 0.8098260896951055
+    },
+    {
+      "a": "MIR -> ridge -> emotion(11)",
+      "b": "MIR -> random forest -> emotion(11)",
+      "diff": -0.04371671990589628,
+      "ci_lo": -0.08720012295919904,
+      "ci_hi": -0.0019570281838920955,
+      "p_two_sided": 0.03671596124426313,
+      "repeat_win_rate": 0.2,
+      "clip_level_diff": -0.00822932062005884,
+      "clip_level_p_two_sided": 0.38959714431412545,
+      "clip_level_nb_p": 0.5952342516907321,
+      "clip_level_nb_p_limit": 0.5783893499397281
+    },
+    {
+      "a": "wav2vec 2.0 -> ridge -> emotion(11)",
+      "b": "wav2vec2 -> predicted emotion(11), OOF-trained",
+      "diff": -0.04587010728785437,
+      "ci_lo": -0.0823106541861407,
+      "ci_hi": -0.013866165529709817,
+      "p_two_sided": 0.002039775624681285,
+      "repeat_win_rate": 0.0,
+      "clip_level_diff": -0.02074159987676726,
+      "clip_level_p_two_sided": 0.0010198878123406426,
+      "clip_level_nb_p": 0.187000563832937,
+      "clip_level_nb_p_limit": 0.16430944687236337
+    },
+    {
+      "a": "VGGish -> SVR -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": -0.003161114231235034,
+      "ci_lo": -0.03771532095668323,
+      "ci_hi": 0.03611963781408728,
+      "p_two_sided": 0.8128505864354921,
+      "repeat_win_rate": 0.4,
+      "clip_level_diff": 0.004130741041810258,
+      "clip_level_p_two_sided": 0.676185619581846,
+      "clip_level_nb_p": 0.7949549496216262,
+      "clip_level_nb_p_limit": 0.7859658775228919
+    },
+    {
+      "a": "AST -> SVR -> emotion(11)",
+      "b": "AST -> random forest -> emotion(11)",
+      "diff": 0.00671777623967943,
+      "ci_lo": -0.030845631199879986,
+      "ci_hi": 0.0412136295990308,
+      "p_two_sided": 0.7129015808261091,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": -0.005720980722507489,
+      "clip_level_p_two_sided": 0.3957164711881693,
+      "clip_level_nb_p": 0.6792387243380933,
+      "clip_level_nb_p_limit": 0.6655217338047315
+    },
+    {
+      "a": "CLAP -> SVR -> emotion(11)",
+      "b": "CLAP -> random forest -> emotion(11)",
+      "diff": 0.012782148841132254,
+      "ci_lo": -0.01047466716292933,
+      "ci_hi": 0.035670549613078806,
+      "p_two_sided": 0.26007139214686387,
+      "repeat_win_rate": 0.6,
+      "clip_level_diff": 0.0048955073685970525,
+      "clip_level_p_two_sided": 0.4824069352371239,
+      "clip_level_nb_p": 0.6535135737104563,
+      "clip_level_nb_p_limit": 0.6388058718615259
+    },
+    {
+      "a": "MusiCNN -> SVR -> emotion(11)",
+      "b": "MusiCNN -> random forest -> emotion(11)",
+      "diff": 0.016894200965025932,
+      "ci_lo": -0.022520658456761156,
+      "ci_hi": 0.06174353989856196,
+      "p_two_sided": 0.4130545639979602,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": -0.004326961117239226,
+      "clip_level_p_two_sided": 0.5456399796022438,
+      "clip_level_nb_p": 0.8347012709452608,
+      "clip_level_nb_p_limit": 0.8274132364158014
+    },
+    {
+      "a": "MIR -> SVR -> emotion(11)",
+      "b": "MIR -> random forest -> emotion(11)",
+      "diff": -0.029204688959039205,
+      "ci_lo": -0.06629203940024131,
+      "ci_hi": 0.004955421256511439,
+      "p_two_sided": 0.10300866904640489,
+      "repeat_win_rate": 0.1,
+      "clip_level_diff": -0.006431728712631129,
+      "clip_level_p_two_sided": 0.5262621111677716,
+      "clip_level_nb_p": 0.7083276469788394,
+      "clip_level_nb_p_limit": 0.6957607450000337
+    },
+    {
+      "a": "wav2vec 2.0 -> SVR -> emotion(11)",
+      "b": "wav2vec2 -> predicted emotion(11), OOF-trained",
+      "diff": -0.03349570408787327,
+      "ci_lo": -0.07352412917475792,
+      "ci_hi": 0.0015291588579449122,
+      "p_two_sided": 0.06017338092809791,
+      "repeat_win_rate": 0.1,
+      "clip_level_diff": -0.018493462392793654,
+      "clip_level_p_two_sided": 0.03773584905660377,
+      "clip_level_nb_p": 0.32584646486625013,
+      "clip_level_nb_p_limit": 0.3023531887850175
+    },
+    {
+      "a": "AST -> random forest -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": -0.0076876873663833225,
+      "ci_lo": -0.04525161344046719,
+      "ci_hi": 0.027684682355728796,
+      "p_two_sided": 0.6914839367669556,
+      "repeat_win_rate": 0.4,
+      "clip_level_diff": 0.008046155966659063,
+      "clip_level_p_two_sided": 0.3069862315145334,
+      "clip_level_nb_p": 0.4876755779866525,
+      "clip_level_nb_p_limit": 0.46739370667712543
+    },
+    {
+      "a": "CLAP -> random forest -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": 0.008168495924934814,
+      "ci_lo": -0.03399275419777725,
+      "ci_hi": 0.04570677112418309,
+      "p_two_sided": 0.6466088730239674,
+      "repeat_win_rate": 0.6,
+      "clip_level_diff": -0.006983795249372929,
+      "clip_level_p_two_sided": 0.47730749617542073,
+      "clip_level_nb_p": 0.5558676303337611,
+      "clip_level_nb_p_limit": 0.5376784299419326
+    },
+    {
+      "a": "MusiCNN -> random forest -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": -0.03281700971377728,
+      "ci_lo": -0.07102453376149909,
+      "ci_hi": 0.0120980562977131,
+      "p_two_sided": 0.1509433962264151,
+      "repeat_win_rate": 0.2,
+      "clip_level_diff": -0.017007482216721746,
+      "clip_level_p_two_sided": 0.02447730749617542,
+      "clip_level_nb_p": 0.3773509951086793,
+      "clip_level_nb_p_limit": 0.3545383797401729
+    },
+    {
+      "a": "MIR -> random forest -> emotion(11)",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": 0.00101434880379083,
+      "ci_lo": -0.030979334844430884,
+      "ci_hi": 0.033834048383901305,
+      "p_two_sided": 0.9617542070372259,
+      "repeat_win_rate": 0.4,
+      "clip_level_diff": -0.002471151844749555,
+      "clip_level_p_two_sided": 0.7832738398776135,
+      "clip_level_nb_p": 0.9543172781526994,
+      "clip_level_nb_p_limit": 0.952283873105352
+    },
+    {
+      "a": "wav2vec2 -> predicted emotion(11), OOF-trained",
+      "b": "VGGish -> predicted emotion(11), OOF-trained",
+      "diff": 0.013127545997977103,
+      "ci_lo": -0.0297876274354813,
+      "ci_hi": 0.05892997851369086,
+      "p_two_sided": 0.5374808771035187,
+      "repeat_win_rate": 0.6,
+      "clip_level_diff": 0.009484194421535324,
+      "clip_level_p_two_sided": 0.34982151963284036,
+      "clip_level_nb_p": 0.43820929873891523,
+      "clip_level_nb_p_limit": 0.41664020006783276
+    }
+  ],
+  "reproduces_film_level_json": {
+    "ground-truth emotion(11) [ceiling]": true,
+    "VGGish-128 (direct)": true,
+    "AST-768": true,
+    "CLAP-512": true,
+    "MusiCNN-200": true,
+    "MIR-103": true,
+    "wav2vec2-768": true,
+    "VGGish -> predicted emotion(11), OOF-trained": true,
+    "wav2vec2 -> predicted emotion(11), OOF-trained": true
+  }
+}
