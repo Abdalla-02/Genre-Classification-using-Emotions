@@ -1772,6 +1772,57 @@ reproduces exactly):
 6. The two emotion predictions agree only moderately per clip (r 0.54 to 0.74), so the two
    embeddings capture partly different information (combining them is untested).
 
+## 29. What lies behind the per-genre figure; the all-positive floor (1 Nov 2026)
+
+The author asked for a full analysis of the per-genre figure (film-level F1 per genre and
+pipeline, five genres). `exp_per_genre_analysis.py` → `per_genre_analysis.json` (the arms
+and folds of `film_level.json`, which every shared arm reproduces, macro and per genre):
+
+1. **A higher floor than both chance floors of the thesis.** Assigning every genre to every
+   film gives F1 = 2p/(1+p) per genre (p = share of films with the genre): Action and Crime
+   0.462, Drama 0.841, Comedy 0.182, Horror 0.222, macro **0.434** (clip 0.430; eight
+   genres 0.338 per film, against the emotion pipeline's 0.349). The most-frequent baseline
+   (0.168) and the random guess (0.309) are far below it. Paired film bootstrap against it:
+   emotion pipeline +0.022 (p = 0.518, 8 of 10 repeats), wav2vec emotion pipeline +0.035
+   (p = 0.242), ratings +0.054 (p = 0.086); every direct representation and the PCA-8
+   control are below it (VGGish −0.071, p = 0.043; MusiCNN −0.043, p = 0.269). Over clips
+   even the ratings are below it (−0.016). At the 0.5 threshold, macro-F1 on 40 films is
+   dominated by how often a pipeline says yes: the emotion pipeline assigns 2.27 genres per
+   film, the ratings 2.21, the direct representations 1.27 to 1.65, the truth is 1.55.
+   Blockbuster (six genres, 110 films): the same floor is 0.438, below the in-domain
+   results (0.59 to 0.62) and the zero-shot emotion pipeline (0.508), but above direct
+   VGGish in zero-shot transfer (0.403).
+2. **Threshold-free, the emotion pipeline ranks films well above chance.** Film-level ROC
+   AUC averaged over genres: ratings 0.691, emotion pipeline 0.655 (+0.155 over 0.5,
+   p < 0.001), wav2vec emotion 0.644, direct 0.511 (wav2vec) to 0.622 (AST), PCA-8 0.585.
+   The emotion pipeline's lead in AUC is about the size of its F1 lead but, like it, not
+   significant except against wav2vec: vs VGGish +0.071 (p = 0.093), vs MusiCNN +0.078
+   (p = 0.096), vs PCA-8 +0.071 (p = 0.087), vs ratings −0.037 (p = 0.192). So the lead is
+   not only an operating-point effect.
+3. **Per genre.**
+   - *Action*: emotion F1 0.61 (floor 0.46), AUC 0.72; ahead of VGGish (F1 +0.19, p = 0.01;
+     AUC +0.13, p = 0.02) and PCA-8 (+0.19 / +0.17, both p ≤ 0.004). AST ranks Action films
+     best (AUC 0.79) but assigns Action to a quarter of the films, so its F1 is 0.47.
+   - *Crime*: no pipeline beats assigning Crime to every film (0.46) except the wav2vec
+     emotion pipeline (0.49). The VGGish emotion pipeline ranks Crime at chance (AUC 0.47);
+     its F1 of 0.35 comes from assigning Crime to half the films (truth 30 %). The ratings
+     reach only AUC 0.58: Crime has little emotional signature.
+   - *Drama*: nothing beats always predicting Drama (0.84; best MIR 0.82). AUC: MIR 0.78,
+     emotion 0.71, ratings 0.70.
+   - *Comedy* (4 films): the clearest emotion result. F1 0.34 against a floor of 0.18
+     (p = 0.01); AUC 0.76, the highest of all arms (ratings 0.71), ahead of VGGish (+0.17,
+     p < 0.001), PCA-8 (+0.17, p = 0.02), CLAP, AST, MIR.
+   - *Horror* (5 films): emotion F1 0.23, at the floor (0.22); AUC 0.61 against ratings 0.77
+     (−0.15, p < 0.001), CLAP 0.76, PCA-8 0.76. The information is in the VGGish embedding
+     but lost in Stage 1 (see the Horror diagnosis).
+4. **Where the macro lead comes from.** Of the emotion pipeline's +0.093 over VGGish,
+   Action contributes 0.038 and Comedy 0.044 (88 %); against PCA-8 (+0.071) Horror
+   subtracts 0.033.
+5. The emotion pipeline's F1 is above the ratings' in Drama and Comedy (+0.03, p = 0.33):
+   noise, not a better model.
+
+Not yet in the thesis: how to report the all-positive floor is the author's decision.
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

@@ -240,6 +240,28 @@ use, $+0.209$ [$+0.137$, $+0.277$], holds in all ten repeats ($p<0.001$; over cl
 Nadeau--Bengio $p=0.014$). The benefit of the emotion intermediate is therefore not tied
 to one embedding, and it is largest where the underlying representation is weakest.
 
+A separate diagnosis examined why the representation that predicts the emotions worst
+gives one of the strongest emotion pipelines. Its lead over the VGGish emotion pipeline is
+not significant ($+0.013$, $p=0.537$, ahead in six of ten repeats; over clips $+0.009$,
+Nadeau--Bengio $p=0.438$) and comes from Crime alone ($F_1$ 0.49 against 0.35).
+Compression explains part of the gain over direct use: projecting wav2vec~2.0 onto eight
+principal components, the counterpart of the PCA-8 control, lifts it from 0.261 to 0.344
+($p=0.004$), but the emotion pipeline is a further 0.127 above this control ($p<0.001$, all
+ten repeats). A non-linear model alone does not help either, since a random forest that
+classifies genre from the embedding directly reaches only 0.186.
+
+The low $R^2$ of Stage~1 is measured per clip, whereas genre is scored per film. Averaged
+over each film, the predicted valence, tension, fear and anger correlate with the ratings
+at 0.80 to 0.85 (VGGish 0.87 to 0.92); only happiness, sadness and energy are clearly
+worse (0.54 to 0.57). The genre signatures computed from these predicted emotions agree
+with those of the ratings ($r=0.85$; VGGish 0.92). Used directly, wav2vec~2.0 never
+predicts Comedy and hardly ever Horror ($F_1$ 0.00 and 0.07). Its genre information is
+spread over 768 dimensions learnt from speech, which a linear classifier cannot locate from
+about 32 training films, whereas the emotion ratings tell the random forest which acoustic
+properties matter. A shortcut through film identity is ruled out: wav2vec~2.0 encodes the
+film less strongly than VGGish (a clip's five nearest neighbours come from its own film in
+9\,\% of cases, against 15\,\% for VGGish).
+
 % =============================================================================
 \section{All Eight Genres}
 \label{sec:app_eight}

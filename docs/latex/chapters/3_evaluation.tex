@@ -75,7 +75,8 @@ The three general-purpose spectrogram embeddings, CLAP, VGGish and AST, cannot b
 ($R^2$ between 0.545 and 0.558). The music-pretrained MusiCNN follows closely
 (0.512), the 103 hand-crafted descriptors are clearly weaker (0.476), and the
 waveform model wav2vec~2.0 recovers far less of the rating variance than any other
-(0.299). The emotions also differ in difficulty. For the three strongest
+(0.299). As the input of the emotion pipeline it nevertheless gives a genre result level with
+VGGish (Appendix~\ref{sec:app_waveform}). The emotions also differ in difficulty. For the three strongest
 representations, tension, energy and anger are the easiest ($R^2$ 0.608 to
 0.661), valence and fear follow (0.559 to 0.603), and sadness
 (0.428 to 0.438) and happiness (0.302 to 0.321) are clearly the

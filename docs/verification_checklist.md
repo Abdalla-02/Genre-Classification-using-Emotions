@@ -46,6 +46,11 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   longer). Overleaf `4ab939c`: the new table of pipelines and models in Methods, and the
   model names added at the first mention of each pipeline per section.
 
+- [ ] **Why wav2vec 2.0 works as the emotion input** (Overleaf `4c43946`, log §28): two new
+  paragraphs at the end of Appendix A.5 (The Waveform Representation) and one sentence in
+  Chapter 5, Stage 1, after the wav2vec R^2. Check that the explanation reads plainly and
+  that you agree with "level with VGGish" rather than "best".
+
 - [ ] **Your comments of 16 Oct** (Overleaf `352a922`, `497c6db`): check the new opening
   of the Introduction, the approach paragraph after the research questions, the rewritten
   R² ceiling, Cohen's d and significance parts of Fundamentals 2.6, and the **three
