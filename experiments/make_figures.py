@@ -360,6 +360,39 @@ def fig_stage1():
     save(fig, "stage1_r2")
 
 
+def fig_emotion_grid():
+    """The emotion pipeline for every representation and emotion regressor: film-level
+    macro-F1 (SD over the repeats) beside the direct pipeline, and the Stage-1 R^2."""
+    d = load("emotion_pipeline_grid")
+    if not d or "stage1_all_clips" not in d:
+        return
+    reps, regs = d["representations"], d["regressors"]
+    F = np.array([[d["direct"][r]["film_f1"]] + [d["grid"][r][g]["film_f1"] for g in regs]
+                  for r in reps])
+    S = np.array([[d["direct"][r]["repeat_sd"]] + [d["grid"][r][g]["repeat_sd"] for g in regs]
+                  for r in reps])
+    R2 = np.array([[d["stage1_all_clips"]["mean_r2"][r][g] for g in regs] for r in reps])
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9), gridspec_kw={"width_ratios": [4, 3]})
+    for ax, M, vmin, vmax, labels, title in (
+            (axes[0], F, 0.2, 0.55, ["direct"] + [f"emotion,\n{g}" for g in regs],
+             "genre: film-level macro-$F_1$"),
+            (axes[1], R2, 0.0, 0.7, [g.replace(" ", "\n") for g in regs],
+             "emotions: Stage-1 $R^2$")):
+        ax.imshow(M, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
+        for i in range(M.shape[0]):
+            for j in range(M.shape[1]):
+                txt = f"{M[i, j]:.3f}\n({S[i, j]:.3f})" if M is F else f"{M[i, j]:.2f}"
+                ax.text(j, i, txt, ha="center", va="center", fontsize=6.5 if M is F else 7,
+                        color="white" if (M[i, j] - vmin) / (vmax - vmin) > 0.6 else "black")
+        ax.set_xticks(range(M.shape[1]), labels, fontsize=7)
+        ax.set_yticks(range(len(reps)), [r.replace("MIR", "hand-crafted\nMIR") for r in reps])
+        ax.set_title(title)
+        ax.spines[:].set_visible(False)
+    axes[0].axvline(0.5, color="white", lw=3)
+    axes[1].tick_params(axis="y", labelleft=False, left=False)
+    save(fig, "emotion_pipeline_grid")
+
+
 def fig_ablation():
     """Leave-one-emotion-out and theory-driven subsets: difference to all eight (film level)."""
     d = load("film_level")
@@ -442,7 +475,8 @@ FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
            "cross_dataset": fig_cross_dataset, "stage1": fig_stage1,
            "ablation": fig_ablation, "signatures": fig_signatures,
            "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
-           "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr}
+           "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr,
+           "emotion_grid": fig_emotion_grid}
 
 
 def main() -> None:

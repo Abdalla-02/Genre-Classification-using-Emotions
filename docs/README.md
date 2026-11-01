@@ -1868,6 +1868,57 @@ Ratings (ceiling) 0.491 (0.691); every genre for every film 0.434 (0.50).
    The random forest stays a defensible choice (best for the weak inputs, equal elsewhere),
    but the sentence in Section 3 (regressor choice) needs correcting.
 
+### 30.1 How final the grid is, and the thesis (1 Nov 2026)
+
+The author asked for the grid in the main text and whether the numbers are final. The
+script was extended and re-run (about 4.4 h for five seeds; `--no-seeds` runs seed 42 only):
+
+1. **Spread over repeats.** Every cell now stores its repeat SD, min, max and per-repeat
+   values. Repeat SD 0.019 to 0.048 for the emotion cells, 0.026 to 0.045 for the direct
+   ones; the film-bootstrap 95 % CI of every cell is about 0.13 wide.
+2. **Holm over the 18 emotion-vs-direct tests** (`p_holm_over_18`): AST and wav2vec 2.0 stay
+   significant with every regressor (p < 0.001); MIR with the random forest becomes 0.086;
+   all others are 0.44 to 0.97.
+3. **Four further master seeds (1 to 4; change folds and model seeds).** The shared arms
+   (ceiling, VGGish emotion pipeline, direct VGGish and AST) reproduce `film_level.json`
+   per seed (asserted). Seed means move by at most 0.047 (direct VGGish), 0.042 for an
+   emotion cell (MIR SVR); SD of the five seed means 0.003 to 0.019. Emotion > direct in
+   **90 of 90** seed x cell pairs, minimum +0.007 (MusiCNN random forest, seed 4). VGGish
+   random forest 0.460 to 0.481 (mean 0.469). Patterns that seed 42 hid: on CLAP, ridge
+   beats the random forest under every seed (+0.010 to +0.039); MusiCNN ridge and SVR too
+   (+0.016 to +0.049); VGGish ridge is below the random forest under every seed (−0.001 to
+   −0.018), MIR and wav2vec ridge/SVR always below. **CLAP with ridge beats the VGGish
+   pipeline under every seed** (+0.019 to +0.044; mean 0.502 vs 0.469) and reaches the
+   ratings arm (0.498 on average). This is a post-hoc pick, not tested; the thesis says so
+   and keeps the pre-specified VGGish pipeline. It also means the ratings arm is not a
+   strict upper bound.
+4. **Stage 1 on all 360 clips, four regressors** (`stage1_all_clips`; the random-forest
+   column reproduces `waveform_vs_spectrogram.json`, asserted). Mean R^2:
+
+   | representation | random forest | ridge, alpha = 1 | ridge, tuned | SVR |
+   |---|---|---|---|---|
+   | VGGish | 0.553 | 0.385 | **0.584** | 0.535 |
+   | AST | 0.545 | 0.217 | **0.606** | 0.601 |
+   | CLAP | 0.558 | 0.041 | **0.585** | 0.585 |
+   | MusiCNN | **0.512** | −1.739 | 0.492 | 0.479 |
+   | MIR | **0.476** | 0.246 | 0.443 | 0.472 |
+   | wav2vec 2.0 | 0.299 | −0.496 | **0.339** | 0.335 |
+
+   **Correction.** The thesis numbers "ridge 0.39 / SVR 0.54 / random forest 0.55" (Methods)
+   and "37 % / 56 %" (Fundamentals) came from `exp_emotion_improve.py`, which only prints,
+   with an untuned ridge (alpha = 1). They are now reproduced from a results file (0.385 /
+   0.535 / 0.553) and the text says that tuned ridge reaches 0.584. The random forest is
+   kept (no tuning, best on MusiCNN and MIR, genre result unchanged for VGGish).
+5. **In the thesis (Overleaf `5a4ca23`).** Chapter 5, new subsection "Other Representations
+   and Emotion Regressors" (`subsec:eval_grid`) with Table `tab:emotion_grid` (film F1 with
+   repeat SD, clip F1, bold = p < 0.05 vs direct), the three results, the R^2 paragraph and
+   the seed sentences; RQ3 summary extended. Appendix section `sec:app_grid`: figure
+   `emotion_pipeline_grid` (twelfth thesis figure), Table `tab:app_stage1_regressors`, Holm,
+   AUC and the seed details. Methods: regressor paragraph rewritten, a row "Emotion pipeline,
+   other inputs" in `tab:pipelines`; Fundamentals: 39 % / 58 % / 55 %; Discussion: four
+   sentences; list of symbols: alpha. The all-positive floor (0.434, §29) is still left out
+   (author, 1 Nov).
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

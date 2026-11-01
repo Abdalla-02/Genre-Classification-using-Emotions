@@ -263,6 +263,69 @@ film less strongly than VGGish (a clip's five nearest neighbours come from its o
 9\,\% of cases, against 15\,\% for VGGish).
 
 % =============================================================================
+\section{The Emotion Pipeline across Representations and Regressors}
+\label{sec:app_grid}
+
+Figure~\ref{fig:emotion_grid} shows the comparison of Section~\ref{subsec:eval_grid} beside
+the accuracy of each regressor in Stage~1, and Table~\ref{tab:app_stage1_regressors} gives
+that accuracy for every representation and regressor.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\textwidth]{figures/emotion_pipeline_grid.pdf}
+  \caption{Genre result and Stage-1 accuracy of every representation and emotion regressor.}
+  \label{fig:emotion_grid}
+\end{figure}
+
+In Figure~\ref{fig:emotion_grid}, the left panel gives the film-level macro-$F_1$ on the
+five-genre subset with the standard deviation over the ten repeats in brackets; its first
+column is the representation given directly to the logistic-regression classifier, the
+other three the emotion pipeline with each regressor. The right panel gives the mean $R^2$
+of the same regressors in Stage~1, over all 360 rated clips with five-fold cross-validation
+grouped by film, as in Table~\ref{tab:waveform_stage1}.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Stage~1 with four regressors: mean $R^2$ over the eight emotions (360 rated clips).}
+  \label{tab:app_stage1_regressors}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Representation & Random forest & Ridge, $\alpha=1$ & Ridge, tuned $\alpha$ & SVR \\
+    \midrule
+    VGGish & 0.553 & 0.385 & \textbf{0.584} & 0.535 \\
+    AST & 0.545 & 0.217 & \textbf{0.606} & 0.601 \\
+    CLAP & 0.558 & 0.041 & \textbf{0.585} & 0.585 \\
+    MusiCNN & \textbf{0.512} & $-1.739$ & 0.492 & 0.479 \\
+    Hand-crafted MIR & \textbf{0.476} & 0.246 & 0.443 & 0.472 \\
+    wav2vec~2.0 & 0.299 & $-0.496$ & \textbf{0.339} & 0.335 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:app_stage1_regressors}, bold marks the most accurate regressor per
+representation. Ridge regression with the library default $\alpha=1$ is far less accurate
+than with $\alpha$ chosen by film-grouped cross-validation inside the training films, and
+on MusiCNN and wav2vec~2.0 it falls below zero, which is worse than predicting the mean
+rating. Tuned, it is the most accurate regressor on VGGish, AST, CLAP and wav2vec~2.0; the
+random forest is the most accurate on MusiCNN and the hand-crafted descriptors. SVR
+($C=10$, not tuned) lies close to tuned ridge regression on the spectrogram embeddings.
+
+Corrected for the 18 tests against the direct pipelines with the Holm method, the six
+combinations on AST and wav2vec~2.0 remain significant ($p<0.001$), the random forest on
+the hand-crafted descriptors falls to $p=0.086$, and all others are above 0.4. Threshold-free,
+the film-level macro ROC-AUC is 0.59 to 0.68 for the 18 emotion pipelines and 0.51 to 0.62
+for the six direct ones. Under the four further master seeds (1 to 4), the mean of an emotion pipeline moves by at
+most 0.042 (the hand-crafted descriptors with SVR) and that of a direct pipeline by at most
+0.047 (VGGish). The standard deviation of the five seed means is 0.003 to 0.019, and the
+VGGish pipeline of the thesis lies between 0.460 and 0.481. Averaged over the five seeds,
+CLAP with ridge regression reaches 0.502 and CLAP with SVR 0.493, against 0.469 for the
+VGGish pipeline and 0.498 for the ratings themselves. A pipeline that predicts the emotions
+thus reaches the level of the ratings here, perhaps because predicted emotions are less
+noisy than the ratings of a single clip; the ratings arm is better read as a reference
+point than as a strict upper bound. The lead of CLAP with ridge regression was found after
+the results were known and is left untested.
+
+% =============================================================================
 \section{All Eight Genres}
 \label{sec:app_eight}
 

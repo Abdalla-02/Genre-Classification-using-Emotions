@@ -25,10 +25,27 @@ repeat's five outer folds).
 
 Paired film bootstrap: every emotion cell against the direct use of its representation;
 ridge and SVR against the random forest on the same representation; every random-forest
-cell against the VGGish one.
+cell against the VGGish one. The 18 tests of an emotion cell against its direct pipeline
+also get a Holm-adjusted p-value, since they are read together.
 
-Run:  python experiments/emotion/exp_emotion_pipeline_grid.py [--jobs 12]
-      (about an hour; the six random-forest cells dominate)
+How final the numbers are (the author's question of 1 Nov):
+  * spread over the ten repeats of every arm (standard deviation, minimum, maximum);
+  * four further master seeds (1-4, as in exp_film_level.py), which change the folds and
+    the seeds of every model; per arm the five seed means and their standard deviation,
+    and per seed the differences the text relies on (emotion cell minus its direct
+    pipeline, ridge/SVR minus random forest, every random-forest cell minus VGGish). The
+    VGGish, AST, ceiling and VGGish random-forest arms must reproduce the seed means of
+    film_level.json;
+  * the regressor comparison of the Methods chapter redone on its own protocol (all 360
+    rated clips, five-fold CV grouped by film, as the Stage-1 table): random forest, ridge
+    with alpha = 1 (the setting of the original comparison in exp_emotion_improve.py),
+    ridge with alpha chosen by film-grouped CV, and SVR, for all six representations. The
+    random-forest column must reproduce waveform_vs_spectrogram.json.
+The results file is written after seed 42 and again after every further seed.
+
+Run:  python experiments/emotion/exp_emotion_pipeline_grid.py [--jobs 12] [--no-seeds]
+      (about an hour for seed 42, the six random-forest cells dominate; about 50 minutes
+      for each further seed)
 Writes results/emotion_pipeline_grid.json.
 """
 
@@ -44,7 +61,8 @@ from pathlib import Path
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import RidgeCV
-from sklearn.metrics import r2_score, roc_auc_score
+from sklearn.linear_model import Ridge
+from sklearn.metrics import f1_score, r2_score, roc_auc_score
 from sklearn.model_selection import GroupKFold
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.pipeline import make_pipeline
@@ -64,13 +82,18 @@ from src.utils import set_seed  # noqa: E402
 from exp_cv_corrected import AST, CEIL, CLAP, MIR, MUSICNN, PRED_OOF, VGG, W2V, W2V_OOF  # noqa: E402
 from exp_metrics_stability import proba  # noqa: E402
 import exp_film_level  # noqa: E402
-from exp_film_level import N_REPEATS, N_SPLITS, block  # noqa: E402
+from exp_film_level import N_REPEATS, N_SPLITS, Films, block, run  # noqa: E402
 
 OUT = config.RESULTS_DIR / "emotion_pipeline_grid.json"
 FILM_LEVEL = config.RESULTS_DIR / "film_level.json"
+WAVEFORM = config.RESULTS_DIR / "waveform_vs_spectrogram.json"
 REPS = ("VGGish", "AST", "CLAP", "MusiCNN", "MIR", "wav2vec 2.0")
 DIRECT = dict(zip(REPS, (VGG, AST, CLAP, MUSICNN, MIR, W2V)))
+STAGE1_NAME = dict(zip(REPS, ("VGGish-128", "AST-768", "CLAP-512", "MusiCNN-200", "MIR-103",
+                              "wav2vec2-768")))   # the keys of waveform_vs_spectrogram.json
 REGRESSORS = ("random forest", "ridge", "SVR")
+STAGE1_REGRESSORS = ("random forest", "ridge, alpha = 1", "ridge", "SVR")
+EXTRA_SEEDS = (1, 2, 3, 4)
 _fit_fold = exp_film_level.fit_fold
 
 
@@ -86,6 +109,8 @@ def cell(rep: str, reg: str) -> str:
 def fit_regressor(reg: str, X, E, groups, seed):
     if reg == "random forest":
         return RandomForestRegressor(n_estimators=300, random_state=seed, n_jobs=1).fit(X, E)
+    if reg == "ridge, alpha = 1":
+        return make_pipeline(StandardScaler(), Ridge(alpha=1.0)).fit(X, E)
     if reg == "ridge":
         cv = list(GroupKFold(n_splits=3).split(X, E, groups))
         return make_pipeline(StandardScaler(),
@@ -134,11 +159,82 @@ def stage1_r2(X, E, reg, folds, seed) -> float:
     return float(np.mean([r2_score(E[:, k], P[:, k]) for k in range(E.shape[1])]))
 
 
+def stage1_all_clips() -> dict:
+    """The regressor comparison on the protocol of the Stage-1 table: all 360 rated clips,
+    GroupKFold(5) by film, mean R^2 over the eight emotions (out of fold)."""
+    df = load_set1(clean=False)
+    E = df[config.EMOTIONS].to_numpy(float)
+    films = df["soundtrack"].to_numpy().astype(str)
+    folds = list(GroupKFold(n_splits=5).split(E, E, films))
+    dirs = dict(zip(REPS, (config.VGGISH_EMBEDDINGS_DIR, config.EMBEDDINGS_DIR,
+                           config.CLAP_EMBEDDINGS_DIR, config.MUSICNN_EMBEDDINGS_DIR,
+                           config.MIR_EMBEDDINGS_DIR, config.W2V_EMBEDDINGS_DIR)))
+    out = {}
+    for r in REPS:
+        X = assemble_from_cache(df, "set1", cache_dir=dirs[r])
+        out[r] = {}
+        for g in STAGE1_REGRESSORS:
+            P = np.zeros_like(E)
+            for tr, te in folds:
+                P[te] = fit_regressor(g, X[tr], E[tr], films[tr], config.SEED).predict(X[te])
+            out[r][g] = float(np.mean([r2_score(E[:, k], P[:, k]) for k in range(E.shape[1])]))
+    ref = json.load(open(WAVEFORM, encoding="utf-8"))["stage1"]
+    for r in REPS:
+        assert abs(out[r]["random forest"] - ref[STAGE1_NAME[r]]["mean_r2"]) < 1e-9, r
+    return {"n_clips": int(len(df)), "protocol": "GroupKFold(5) by film, all rated clips, "
+            "mean R^2 over the eight emotions (as the Stage-1 table)", "mean_r2": out}
+
+
+def holm(p) -> list:
+    p = np.asarray(p, float)
+    o = np.argsort(p)
+    adj = np.minimum(1.0, np.maximum.accumulate((len(p) - np.arange(len(p))) * p[o]))
+    out = np.empty_like(adj)
+    out[o] = adj
+    return out.tolist()
+
+
+def seed_means(arms, Y, films, seed, jobs) -> dict:
+    """Film- and clip-level macro-F1 of every arm, mean over the ten repeats of one seed."""
+    runs, _ = run(arms, Y, films, seed, jobs)
+    fl = Films(Y, films)
+    return {a: {"film": float(np.mean([f1_score(fl.Y, f, average="macro", zero_division=0)
+                                       for f in fl.decide(r["P"])])),
+                "clip": float(np.mean([f1_score(Y, h, average="macro", zero_division=0)
+                                       for h in r["hard"]]))}
+            for a, r in runs.items()}
+
+
+def stability(per_seed: dict) -> dict:
+    """Seed means per arm, and per seed the differences that the text relies on."""
+    seeds = list(per_seed)
+    arms = list(per_seed[seeds[0]])
+
+    def vec(a):
+        return np.array([per_seed[s][a]["film"] for s in seeds])
+
+    def diffs(pairs):
+        return {f"{a} - {b}": (vec(a) - vec(b)).tolist() for a, b in pairs}
+
+    return {
+        "seeds": [int(s) for s in seeds],
+        "per_arm": {a: {"seed_means": vec(a).tolist(), "sd_of_seed_means":
+                        float(vec(a).std(ddof=1)) if len(seeds) > 1 else None,
+                        "range_of_seed_means": float(np.ptp(vec(a)))} for a in arms},
+        "emotion_minus_direct": diffs([(cell(r, g), DIRECT[r]) for g in REGRESSORS for r in REPS]),
+        "regressor_minus_random_forest": diffs([(cell(r, g), cell(r, "random forest"))
+                                                for g in REGRESSORS[1:] for r in REPS]),
+        "random_forest_minus_vggish": diffs([(cell(r, "random forest"), PRED_OOF)
+                                             for r in REPS[1:]]),
+    }
+
+
 def main() -> None:
     global FILMS
     ap = argparse.ArgumentParser()
     ap.add_argument("--jobs", type=int, default=-1)
     ap.add_argument("--boot", type=int, default=2000)
+    ap.add_argument("--no-seeds", action="store_true", help="skip the four extra seeds")
     args = ap.parse_args()
     set_seed()
     t0 = time.time()
@@ -180,13 +276,22 @@ def main() -> None:
     folds = list(RepeatedGroupKFold(N_SPLITS, N_REPEATS, random_state=config.SEED)
                  .split(np.zeros(len(Y)), None, FILMS))[:N_SPLITS]
     r2 = {r: {g: stage1_r2(X[r], E, g, folds, config.SEED) for g in REGRESSORS} for r in REPS}
+    s1 = stage1_all_clips()
     print(f"  stage 1 [{time.time() - t0:.0f}s]", flush=True)
 
     def row(a):
         v = b["arms"][a]
         return {"film_f1": v["mean"], "ci_lo": v["ci_lo"], "ci_hi": v["ci_hi"],
-                "clip_f1": v["clip_level_mean"], "macro_auc": auc[a],
+                "repeat_sd": v["repeat_sd"], "repeat_min": v["repeat_min"],
+                "repeat_max": v["repeat_max"], "per_repeat_film": b["per_repeat_film"][a],
+                "clip_f1": v["clip_level_mean"], "clip_repeat_sd":
+                float(np.std(b["per_repeat_clip"][a], ddof=1)), "macro_auc": auc[a],
                 "per_genre_f1": dict(zip(genres, v["per_genre_f1"]))}
+
+    n_direct = len(REGRESSORS) * len(REPS)   # the first pairs: emotion cell vs its direct pipeline
+    for c, p in zip(b["comparisons"][:n_direct],
+                    holm([c["p_two_sided"] for c in b["comparisons"][:n_direct]])):
+        c["p_holm_over_18"] = p
 
     out = {
         "design": {"protocol": "the folds, seed and fitting code of exp_film_level.py "
@@ -197,17 +302,24 @@ def main() -> None:
                    "metric": "film-level macro-F1 (clip level beside it); film-level ROC AUC "
                              "mean over genres and repeats; stage-1 R^2 mean over eight emotions, "
                              "first repeat's outer folds",
+                   "spread": "repeat_sd = standard deviation of the ten per-repeat film-level "
+                             "macro-F1 of seed 42; 'stability' = means of five master seeds",
                    "all_positive_floor_film": 0.434},
         "representations": list(REPS), "regressors": list(REGRESSORS),
         "grid": {r: {g: row(cell(r, g)) | {"stage1_r2": r2[r][g]} for g in REGRESSORS} for r in REPS},
         "direct": {r: row(DIRECT[r]) for r in REPS},
         "ceiling": row(CEIL),
         "comparisons": b["comparisons"],
+        "stage1_all_clips": s1,
         "reproduces_film_level_json": repro,
     }
-    with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(out, f, indent=2)
-        f.write("\n")
+
+    def write():
+        with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(out, f, indent=2)
+            f.write("\n")
+
+    write()
 
     print(f"\nfilm F1 / AUC / R2\n{'representation':16}{'direct':>12}" + "".join(f"{g:>20}" for g in REGRESSORS))
     for r in REPS:
@@ -219,8 +331,31 @@ def main() -> None:
     for c in b["comparisons"]:
         s = "*" if c["p_two_sided"] < 0.05 else " "
         print(f"  {c['a'][:40]:40} vs {c['b'][:40]:40} {c['diff']:+.3f} p={c['p_two_sided']:.3f}{s} "
-              f"won {c['repeat_win_rate']:.1f}  clip {c['clip_level_diff']:+.3f} NB {c['clip_level_nb_p']:.3f}")
-    print(f"\n[{time.time() - t0:.0f}s] -> {OUT}")
+              f"won {c['repeat_win_rate']:.1f}  clip {c['clip_level_diff']:+.3f} NB {c['clip_level_nb_p']:.3f}"
+              + (f"  Holm {c['p_holm_over_18']:.3f}" if "p_holm_over_18" in c else ""))
+    print("\nStage 1 on all rated clips, mean R^2:")
+    for r in REPS:
+        print(f"  {r:14}" + "".join(f"  {g} {s1['mean_r2'][r][g]:.3f}" for g in STAGE1_REGRESSORS))
+    print(f"\n[{time.time() - t0:.0f}s] -> {OUT}", flush=True)
+
+    if args.no_seeds:
+        return
+    fl_seeds = json.load(open(FILM_LEVEL, encoding="utf-8"))["stability"]["per_seed"]
+    per_seed = {"42": {a: {"film": float(np.mean(b["per_repeat_film"][a])),
+                           "clip": float(np.mean(b["per_repeat_clip"][a]))} for a in arms}}
+    for s in EXTRA_SEEDS:
+        print(f"\nseed {s} ...", flush=True)
+        per_seed[str(s)] = seed_means(arms, Y, FILMS, s, args.jobs)
+        for a in (CEIL, PRED_OOF, VGG, AST):
+            assert abs(per_seed[str(s)][a]["film"] - fl_seeds[str(s)][a]["film"]) < 1e-9, (s, a)
+        out["stability"] = stability(per_seed) | {"per_seed": per_seed}
+        write()
+        st = out["stability"]
+        for r in REPS:
+            print(f"  {r:14}" + "".join(
+                f"  {g} {np.mean(st['per_arm'][cell(r, g)]['seed_means']):.3f}" for g in REGRESSORS)
+                + f"  direct {np.mean(st['per_arm'][DIRECT[r]]['seed_means']):.3f}")
+        print(f"  [{time.time() - t0:.0f}s]", flush=True)
 
 
 if __name__ == "__main__":

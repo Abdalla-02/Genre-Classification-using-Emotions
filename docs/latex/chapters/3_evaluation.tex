@@ -76,7 +76,7 @@ The three general-purpose spectrogram embeddings, CLAP, VGGish and AST, cannot b
 (0.512), the 103 hand-crafted descriptors are clearly weaker (0.476), and the
 waveform model wav2vec~2.0 recovers far less of the rating variance than any other
 (0.299). As the input of the emotion pipeline it nevertheless gives a genre result level with
-VGGish (Appendix~\ref{sec:app_waveform}). The emotions also differ in difficulty. For the three strongest
+VGGish (Section~\ref{subsec:eval_grid} and Appendix~\ref{sec:app_waveform}). The emotions also differ in difficulty. For the three strongest
 representations, tension, energy and anger are the easiest ($R^2$ 0.608 to
 0.661), valence and fear follow (0.559 to 0.603), and sadness
 (0.428 to 0.438) and happiness (0.302 to 0.321) are clearly the
@@ -95,8 +95,9 @@ eight emotions $r=0.912$, intraclass correlation for consistency ICC(C,1) $=0.89
 although on the three bipolar scales the second panel rated systematically higher, which
 lowers absolute agreement to ICC(A,1) $=0.818$. A predictor cannot agree with a noisy
 target more closely than the target agrees with an independent measurement of itself, so
-the attainable $R^2$ is about 0.897. The best representations reach 62\,\% of
-it. Rating noise is therefore not what limits the regressor; the limit lies in the audio
+the attainable $R^2$ is about 0.897. With the random forest the best representations reach
+62\,\% of it, and with a tuned ridge regression up to 68\,\% (AST,
+Appendix~\ref{sec:app_grid}). Rating noise is therefore not what limits the regressor; the limit lies in the audio
 representations and the amount of training data.
 
 % =============================================================================
@@ -209,6 +210,88 @@ ten-repeat mean of the emotion pipeline by at most 0.019 (from 0.460 to
 $+0.132$). The main source of uncertainty is which films the dataset happens to
 contain (bootstrap standard error 0.027 to 0.038), which only more films could reduce
 (Appendix~\ref{sec:eval_robustness}).
+
+\subsection{Other Representations and Emotion Regressors}
+\label{subsec:eval_grid}
+
+So far the emotion pipeline has used the VGGish embedding and a random forest, followed by
+the logistic-regression classifier. Table~\ref{tab:emotion_grid} repeats it for each of
+the six representations and three emotion regressors: the random forest, ridge regression
+with its regularisation strength chosen by film-grouped cross-validation inside the
+training films, and SVR with an RBF kernel (Section~\ref{sec:methods_stage1}). Every
+entry is the complete pipeline, with the same classifier, folds and scoring as above.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{The emotion pipeline for every representation and emotion regressor (five genres, 40 films).}
+  \label{tab:emotion_grid}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lcccc@{\hspace{10pt}}cccc}
+    \toprule
+    & \multicolumn{4}{c}{Film level} & \multicolumn{4}{c}{Clip level} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    & & \multicolumn{3}{c}{Emotion pipeline} & & \multicolumn{3}{c}{Emotion pipeline} \\
+    \cmidrule(lr){3-5} \cmidrule(lr){7-9}
+    Representation & Direct & Forest & Ridge & SVR & Direct & Forest & Ridge & SVR \\
+    \midrule
+    VGGish & 0.367\,{\scriptsize(0.039)} & 0.460\,{\scriptsize(0.038)} & 0.459\,{\scriptsize(0.027)} & \textbf{0.458}\,{\scriptsize(0.034)} & 0.366 & 0.405 & 0.413 & 0.410 \\
+    AST & 0.318\,{\scriptsize(0.045)} & \textbf{0.452}\,{\scriptsize(0.035)} & \textbf{0.465}\,{\scriptsize(0.022)} & \textbf{0.460}\,{\scriptsize(0.025)} & 0.368 & 0.414 & 0.410 & 0.408 \\
+    CLAP & 0.390\,{\scriptsize(0.044)} & 0.469\,{\scriptsize(0.040)} & 0.479\,{\scriptsize(0.030)} & 0.481\,{\scriptsize(0.019)} & 0.356 & 0.399 & 0.413 & 0.403 \\
+    MusiCNN & 0.396\,{\scriptsize(0.043)} & 0.426\,{\scriptsize(0.034)} & 0.442\,{\scriptsize(0.036)} & 0.443\,{\scriptsize(0.048)} & 0.359 & 0.388 & 0.386 & 0.383 \\
+    MIR & 0.365\,{\scriptsize(0.035)} & \textbf{0.461}\,{\scriptsize(0.022)} & 0.416\,{\scriptsize(0.036)} & \textbf{0.431}\,{\scriptsize(0.024)} & 0.362 & 0.403 & 0.394 & 0.396 \\
+    wav2vec~2.0 & 0.261\,{\scriptsize(0.026)} & \textbf{0.472}\,{\scriptsize(0.025)} & \textbf{0.426}\,{\scriptsize(0.029)} & \textbf{0.439}\,{\scriptsize(0.039)} & 0.328 & 0.415 & 0.393 & 0.396 \\
+    \midrule
+    Ratings (ceiling) & \multicolumn{4}{c}{0.491\,{\scriptsize(0.034)}} & \multicolumn{4}{c}{0.416} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:emotion_grid}, each film-level entry is the mean over the ten repeats
+with the standard deviation over the repeats in brackets, and the clip-level entries
+score the same predictions over clips. ``Direct'' is the representation given to the
+classifier without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
+descriptors. Bold marks an
+emotion pipeline that is significantly ahead of the direct use of its representation
+(paired film bootstrap, $p<0.05$). The VGGish forest entry is the emotion pipeline of the
+previous sections.
+
+Three results follow. First, the emotion pipeline is ahead of the direct use of its
+representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
+0.086 over clips. The gain is largest for AST and wav2vec~2.0, the two weakest direct
+representations, where it remains significant for every regressor after correcting for
+the 18 tests with the Holm method ($p<0.001$). It is smallest for MusiCNN, the strongest
+direct representation (0.032 to 0.049, $p\geq0.32$). Second, inside the emotion
+pipeline the representation hardly matters. With the random forest, every representation
+is within 0.034 of VGGish and none differs from it significantly ($p\geq0.15$); the 18
+emotion pipelines span 0.416 to 0.481, the six direct ones 0.261 to 0.396. Third, the
+regressor matters most for the weaker inputs. On the four spectrogram embeddings, ridge
+regression and SVR differ from the random forest by at most 0.017, never significantly.
+On the hand-crafted descriptors and on wav2vec~2.0 the random forest is best, ahead of
+ridge regression by 0.044 ($p=0.037$) and 0.046 ($p=0.002$).
+
+A more accurate emotion model does not reliably give a better genre result. Ridge
+regression predicts the emotions better than the random forest on VGGish and AST (Appendix
+Table~\ref{tab:app_stage1_regressors}) without a better genre score, on MusiCNN it
+predicts them less well and scores higher, and on wav2vec~2.0 it has the higher $R^2$
+(0.339 against 0.299) but the lower genre score. What the genre
+classifier needs from Stage~1 is evidently not the most accurate estimate per clip.
+
+The differences between emotion pipelines are small against their spread. The standard
+deviation over the repeats is 0.019 to 0.048 for the emotion pipelines and 0.026 to
+0.045 for the direct ones, and the 95\,\% film-bootstrap interval of every entry is
+about 0.13 wide. Repeating the whole comparison under four further master seeds, which change the folds
+and every model seed, moves the mean of an entry by at most 0.047. The emotion pipeline
+stays ahead of the direct use of its representation in all 90 pairs of seed and
+combination, by at least 0.007 (MusiCNN with the random forest). The seeds also show a
+pattern the table does not. On CLAP, ridge regression is ahead of the random forest under
+every seed (by 0.010 to 0.039), and CLAP with ridge regression is ahead of the VGGish
+pipeline under every seed (0.502 against 0.469 on average, Appendix~\ref{sec:app_grid}).
+This combination was singled out after the results were known and is not tested here, so
+the thesis keeps the VGGish pipeline that was fixed beforehand.
+
+The answer to RQ3 therefore does not depend on VGGish or on the random forest: the
+advantage of the emotion step is a property of the pipeline, not of one embedding.
 
 % =============================================================================
 \section{Results per Genre}
@@ -572,7 +655,10 @@ signatures replicate on the Blockbuster dataset from predicted emotions ($r=0.83
 \emph{RQ3.} The emotion pipeline is ahead of every audio representation given directly to
 the same classifier
 (by $+0.093$ over VGGish, its own input) and of the PCA-8 control in nearly every repeat and
-under every seed, and it is the best pipeline for Action, Crime and Comedy. Its lead is significant
+under every seed, and it is the best pipeline for Action, Crime and Comedy. The lead holds
+for each of six representations and three emotion regressors, and through the emotions
+the representations end close together (0.416 to 0.481, against 0.261 to 0.396 when used
+directly). Its lead is significant
 against the weaker direct representations, but not established against the stronger ones
 or against the PCA-8 control; part of the gain comes from compression, and with per-genre
 thresholds the pipelines converge.

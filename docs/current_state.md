@@ -223,6 +223,10 @@ No headline result changed. The thesis on Overleaf (`011fc8c`) contains all of i
 4. **wav2vec 2.0 layer**: after the fix, block 1 is nominally best (0.297 vs 0.294 for the
    block 2 the thesis keeps). Decide whether that is acceptable.
 5. **AI declaration**: only the date is missing.
+6. **Read the new subsection of Chapter 5** "Other Representations and Emotion Regressors"
+   (1 Nov, Overleaf `5a4ca23`): the emotion pipeline is ahead of direct use for all six
+   representations and all three regressors (18 of 18 cells; 90 of 90 over five seeds).
+   The all-positive floor (0.434) is still left out of the thesis, by your decision.
 
 ---
 

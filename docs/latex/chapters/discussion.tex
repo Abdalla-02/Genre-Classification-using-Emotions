@@ -54,8 +54,10 @@ This is a narrower claim than ``emotion predicts genre better than audio'', and 
 results support.
 
 \paragraph{In-domain.} On the five-genre subset the emotion pipeline is ahead of every direct
-representation and of the PCA-8 control, in nearly every repeat and under every seed. Two
-qualifications apply. First, the lead is significant only against the weaker direct
+representation and of the PCA-8 control, in nearly every repeat and under every seed. It is
+also ahead with each of the six representations as input and with each of three emotion
+regressors (Section~\ref{subsec:eval_grid}), so the advantage is not tied to VGGish or
+to the random forest. Two qualifications apply. First, the lead is significant only against the weaker direct
 representations. Against VGGish it just misses significance at film level ($p=0.052$), and
 against the strongest ones and the PCA-8 control it is not significant; the PCA-8 control
 is itself ahead of VGGish under every seed. Part of the in-domain gain therefore comes from
@@ -98,7 +100,9 @@ With about 40 training films, a linear classifier over 128 to 768 dimensions can
 directions that happen to separate the genres of the training films; the emotion stage
 adds prior knowledge from a second, independent source of supervision, the listener
 ratings. This fits the pattern of Table~\ref{tab:disc_settings}, in which direct audio
-catches up exactly where 110 training films are available. A rich embedding also encodes
+catches up exactly where 110 training films are available. It also fits the comparison over
+representations, in which the emotion step gains most where the direct representation is
+weakest (AST and wav2vec~2.0, by 0.13 to 0.21) and least over MusiCNN (0.03 to 0.05). A rich embedding also encodes
 the sound of individual films (their instrumentation, recording and mixing), which is
 useless under film-grouped evaluation, whereas an emotion rating describes what a clip
 expresses rather than how it was produced. Finally, an embedding's dimensions carry the
@@ -114,14 +118,18 @@ The ablation (Appendix~\ref{sec:app_ablation}) shows that no single emotion is n
 and that one to three emotions keep most of the genre information. The genre signal of the
 ratings lies along essentially one threat-versus-warmth axis of fear, tension and valence.
 This is one reason why richer representations cannot extract more from the music with the
-data available. All eight emotions are retained because the discrete categories make the
+data available: through the emotions, all six representations end within 0.07 of one
+another. All eight emotions are retained because the discrete categories make the
 model readable: ``Horror is fear'' is a better description of a score than ``Horror is low
 valence and high tension'', although a classifier can use either. The same axis explains
 why the imperfect emotion predictions work almost as well as the ratings: fear, tension
 and valence are among the better-predicted emotions, while the hardest ones, happiness and
 sadness, are largely redundant for genre. The ratings are ahead at film level, but not
 significantly (0.032, $p=0.277$), so a better emotion model might help a little, but by
-much less than its $R^2$ gap suggests.
+much less than its $R^2$ gap suggests. A more accurate regressor did not reliably help:
+ridge regression predicts the emotions better than the random forest on four of the six
+representations, but over five seeds its genre result is consistently higher only on CLAP,
+and lower on VGGish and wav2vec~2.0 (Section~\ref{subsec:eval_grid}).
 
 \subsection{What the bottleneck buys in readability}
 
