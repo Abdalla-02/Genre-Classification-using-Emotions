@@ -215,46 +215,32 @@ contain (bootstrap standard error 0.027 to 0.038), which only more films could r
 \label{subsec:eval_grid}
 
 So far the emotion pipeline has used the VGGish embedding and a random forest, followed by
-the logistic-regression classifier. Table~\ref{tab:emotion_grid} repeats it for each of
+the logistic-regression classifier. Figure~\ref{fig:emotion_grid} repeats it for each of
 the six representations and three emotion regressors: the random forest, ridge regression
 with its regularisation strength chosen by film-grouped cross-validation inside the
 training films, and SVR with an RBF kernel (Section~\ref{sec:methods_stage1}). Every
 entry is the complete pipeline, with the same classifier, folds and scoring as above.
 
-\begin{table}[tbp]
+\begin{figure}[tbp]
   \centering
-  \small
+  \includegraphics[width=\textwidth]{figures/emotion_pipeline_grid.pdf}
   \caption{The emotion pipeline for every representation and emotion regressor (five genres, 40 films).}
-  \label{tab:emotion_grid}
-  \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{lcccc@{\hspace{10pt}}cccc}
-    \toprule
-    & \multicolumn{4}{c}{Film level} & \multicolumn{4}{c}{Clip level} \\
-    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
-    & & \multicolumn{3}{c}{Emotion pipeline} & & \multicolumn{3}{c}{Emotion pipeline} \\
-    \cmidrule(lr){3-5} \cmidrule(lr){7-9}
-    Representation & Direct & Forest & Ridge & SVR & Direct & Forest & Ridge & SVR \\
-    \midrule
-    VGGish & 0.367\,{\scriptsize(0.039)} & 0.460\,{\scriptsize(0.038)} & 0.459\,{\scriptsize(0.027)} & \textbf{0.458}\,{\scriptsize(0.034)} & 0.366 & 0.405 & 0.413 & 0.410 \\
-    AST & 0.318\,{\scriptsize(0.045)} & \textbf{0.452}\,{\scriptsize(0.035)} & \textbf{0.465}\,{\scriptsize(0.022)} & \textbf{0.460}\,{\scriptsize(0.025)} & 0.368 & 0.414 & 0.410 & 0.408 \\
-    CLAP & 0.390\,{\scriptsize(0.044)} & 0.469\,{\scriptsize(0.040)} & 0.479\,{\scriptsize(0.030)} & 0.481\,{\scriptsize(0.019)} & 0.356 & 0.399 & 0.413 & 0.403 \\
-    MusiCNN & 0.396\,{\scriptsize(0.043)} & 0.426\,{\scriptsize(0.034)} & 0.442\,{\scriptsize(0.036)} & 0.443\,{\scriptsize(0.048)} & 0.359 & 0.388 & 0.386 & 0.383 \\
-    MIR & 0.365\,{\scriptsize(0.035)} & \textbf{0.461}\,{\scriptsize(0.022)} & 0.416\,{\scriptsize(0.036)} & \textbf{0.431}\,{\scriptsize(0.024)} & 0.362 & 0.403 & 0.394 & 0.396 \\
-    wav2vec~2.0 & 0.261\,{\scriptsize(0.026)} & \textbf{0.472}\,{\scriptsize(0.025)} & \textbf{0.426}\,{\scriptsize(0.029)} & \textbf{0.439}\,{\scriptsize(0.039)} & 0.328 & 0.415 & 0.393 & 0.396 \\
-    \midrule
-    Ratings (ceiling) & \multicolumn{4}{c}{0.491\,{\scriptsize(0.034)}} & \multicolumn{4}{c}{0.416} \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+  \label{fig:emotion_grid}
+\end{figure}
 
-In Table~\ref{tab:emotion_grid}, each film-level entry is the mean over the ten repeats
-with the standard deviation over the repeats in brackets, and the clip-level entries
-score the same predictions over clips. ``Direct'' is the representation given to the
-classifier without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
-descriptors. Bold marks an
-emotion pipeline that is significantly ahead of the direct use of its representation
-(paired film bootstrap, $p<0.05$). The VGGish forest entry is the emotion pipeline of the
-previous sections.
+In Figure~\ref{fig:emotion_grid}, each row of the left panel is one representation. Its
+first column is the representation given directly to the logistic-regression classifier,
+the other three are the emotion pipeline with each regressor. Each cell gives the
+film-level macro-$F_1$, the mean over the ten repeats $\pm$ the standard deviation over the
+repeats, and below it the clip-level score of the same predictions; the darker the cell,
+the higher the film-level score. An asterisk marks an emotion pipeline that is
+significantly ahead of the direct use of its representation (paired film bootstrap,
+$p<0.05$), and the line below the panel gives the classifier on the human ratings (the
+ceiling under this seed). The VGGish random-forest cell is the emotion pipeline of the
+previous sections. The right panel gives the mean $R^2$ of the same regressors in Stage~1
+over all 360 rated clips, with five-fold cross-validation grouped by film as in
+Section~\ref{sec:eval_emotion}. Appendix Table~\ref{tab:emotion_grid} lists the same
+numbers.
 
 Three results follow. First, the emotion pipeline is ahead of the direct use of its
 representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
@@ -271,8 +257,8 @@ On the hand-crafted descriptors and on wav2vec~2.0 the random forest is best, ah
 ridge regression by 0.044 ($p=0.037$) and 0.046 ($p=0.002$).
 
 A more accurate emotion model does not reliably give a better genre result. Ridge
-regression predicts the emotions better than the random forest on VGGish and AST (Appendix
-Table~\ref{tab:app_stage1_regressors}) without a better genre score, on MusiCNN it
+regression predicts the emotions better than the random forest on VGGish and AST (right
+panel of Figure~\ref{fig:emotion_grid}) without a better genre score, on MusiCNN it
 predicts them less well and scores higher, and on wav2vec~2.0 it has the higher $R^2$
 (0.339 against 0.299) but the lower genre score. What the genre
 classifier needs from Stage~1 is evidently not the most accurate estimate per clip.
@@ -284,7 +270,7 @@ about 0.13 wide. Repeating the whole comparison under four further master seeds,
 and every model seed, moves the mean of an entry by at most 0.047. The emotion pipeline
 stays ahead of the direct use of its representation in all 90 pairs of seed and
 combination, by at least 0.007 (MusiCNN with the random forest). The seeds also show a
-pattern the table does not. On CLAP, ridge regression is ahead of the random forest under
+pattern the figure does not. On CLAP, ridge regression is ahead of the random forest under
 every seed (by 0.010 to 0.039), and CLAP with ridge regression is ahead of the VGGish
 pipeline under every seed (0.502 against 0.469 on average, Appendix~\ref{sec:app_grid}).
 This combination was singled out after the results were known and is not tested here, so

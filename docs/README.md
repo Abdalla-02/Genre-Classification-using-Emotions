@@ -1919,6 +1919,51 @@ script was extended and re-run (about 4.4 h for five seeds; `--no-seeds` runs se
    sentences; list of symbols: alpha. The all-positive floor (0.434, §29) is still left out
    (author, 1 Nov).
 
+## 31. Zero-shot with thresholds tuned on the source dataset (2 Nov 2026)
+
+The open check of the Discussion (and of §22.1): the zero-shot lead of the emotion pipeline
+(Eerola → Blockbuster, strict regime: 0.508 vs 0.403 for direct VGGish, p = 0.013; vs
+PCA-8 +0.093, p = 0.027) is partly recall-driven, so it might be an operating-point effect.
+`exp_zero_shot_threshold.py` → `zero_shot_threshold.json` (a few minutes). Every arm of the
+strict regime is rebuilt with the functions of `exp_zero_shot.py`, and its default score,
+C and the first bootstrap are asserted to equal `zero_shot.json`. Per genre, the threshold
+(0.10 to 0.90, step 0.025) that maximises F1 on out-of-fold Eerola probabilities (10 x
+5-fold by film) is applied to Blockbuster. No Blockbuster label is used, so the test stays
+zero-shot. Primary tuning unit fixed before the run: the 319 clips; check: the 40 films.
+
+| arm (110 Blockbuster films) | default 0.5 | clip-tuned | film-tuned | macro AUC |
+|---|---|---|---|---|
+| emotion pipeline (per-cue) | 0.508 (2.45 labels/film) | 0.496 (2.85) | 0.452 (3.60) | 0.763 |
+| emotion pipeline (film-level) | 0.502 | 0.496 | 0.445 | 0.746 |
+| ratings arm | 0.479 | 0.466 | 0.452 | 0.770 |
+| PCA-8 control | 0.417 | 0.450 (4.73) | 0.462 | 0.693 |
+| VGGish direct | 0.403 (1.99) | 0.455 (3.72) | 0.496 (4.10) | 0.720 |
+
+True labels per film: 1.78. Paired film bootstrap, emotion pipeline (per-cue) against:
+
+| | default | clip-tuned (primary) | film-tuned | macro AUC |
+|---|---|---|---|---|
+| VGGish direct | +0.106, p = 0.013 | +0.041, p = 0.159 | −0.044, p = 0.246 | +0.042, p = 0.097 |
+| PCA-8 control | +0.093, p = 0.027 | +0.045, p = 0.173 | −0.009, p = 0.865 | +0.070, p = 0.010 |
+
+1. **The zero-shot F1 lead is mostly an operating-point effect.** With thresholds tuned on
+   the source it shrinks from +0.106 to +0.041 over direct VGGish and is no longer
+   significant; with film-level tuning direct VGGish is nominally ahead. The emotion
+   pipeline itself hardly moves (0.508 → 0.496); the direct arms gain, because their
+   default threshold is far too strict for the shifted target (direct VGGish 1.99 labels
+   per film at 0.5, its tuned Drama threshold is 0.125).
+2. **Tuned, every arm over-predicts** (2.85 to 4.73 labels per film against 1.78), so the
+   tuned scores converge at 0.45 to 0.50, as in-domain (§22.1).
+3. **Threshold-free, the emotion pipeline still ranks Blockbuster films best**: macro AUC
+   0.763 against 0.720 for direct VGGish (+0.042, p = 0.097) and 0.693 for PCA-8 (+0.070,
+   p = 0.010). So the emotion features transfer a better ordering of films, but most of the
+   default-threshold F1 lead comes from where the cut-off falls.
+4. **Thesis consequence (not yet applied; the author's decision).** The Discussion says the
+   test "was not tested" and points to Future Work; the claim "the emotion pipeline beats
+   direct audio across datasets" needs the same qualification the in-domain result already
+   carries (ahead at the default threshold; under tuned thresholds the pipelines converge;
+   threshold-free the lead over PCA-8 is significant, over VGGish not).
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and

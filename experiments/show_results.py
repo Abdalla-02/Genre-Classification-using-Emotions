@@ -63,6 +63,8 @@ DESCRIPTIONS = {
                         "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
+    "zero_shot_threshold": "Zero-shot with per-genre thresholds tuned on the source dataset "
+                           "(section 31)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "
                  "in-domain reproduction of Ma et al. (section 15)",
     "cross_dataset_cv": "Cross-validation in every direction: Eerola->Blockbuster, the "

@@ -362,34 +362,52 @@ def fig_stage1():
 
 def fig_emotion_grid():
     """The emotion pipeline for every representation and emotion regressor: film-level
-    macro-F1 (SD over the repeats) beside the direct pipeline, and the Stage-1 R^2."""
+    macro-F1 +- SD over the repeats with the clip-level F1 below it, beside the direct
+    pipeline; * marks a significant lead over the direct pipeline (film bootstrap,
+    p < 0.05). Right: the Stage-1 R^2 of the same regressors."""
     d = load("emotion_pipeline_grid")
     if not d or "stage1_all_clips" not in d:
         return
     reps, regs = d["representations"], d["regressors"]
-    F = np.array([[d["direct"][r]["film_f1"]] + [d["grid"][r][g]["film_f1"] for g in regs]
-                  for r in reps])
-    S = np.array([[d["direct"][r]["repeat_sd"]] + [d["grid"][r][g]["repeat_sd"] for g in regs]
-                  for r in reps])
+    direct_name = {"VGGish": "VGGish-128 (direct)", "AST": "AST-768", "CLAP": "CLAP-512",
+                   "MusiCNN": "MusiCNN-200", "MIR": "MIR-103", "wav2vec 2.0": "wav2vec2-768"}
+    oof_name = {"VGGish": "VGGish -> predicted emotion(11), OOF-trained",
+                "wav2vec 2.0": "wav2vec2 -> predicted emotion(11), OOF-trained"}
+    p_vs_direct = {(c["a"], c["b"]): c["p_two_sided"] for c in d["comparisons"]}
+
+    def sig(r, g):
+        a = oof_name[r] if g == "random forest" and r in oof_name else f"{r} -> {g} -> emotion(11)"
+        return p_vs_direct[(a, direct_name[r])] < 0.05
+
+    cells = [[d["direct"][r]] + [d["grid"][r][g] for g in regs] for r in reps]
+    F = np.array([[c["film_f1"] for c in row] for row in cells])
     R2 = np.array([[d["stage1_all_clips"]["mean_r2"][r][g] for g in regs] for r in reps])
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9), gridspec_kw={"width_ratios": [4, 3]})
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 3.6), gridspec_kw={"width_ratios": [5, 2.4]})
     for ax, M, vmin, vmax, labels, title in (
             (axes[0], F, 0.2, 0.55, ["direct"] + [f"emotion,\n{g}" for g in regs],
-             "genre: film-level macro-$F_1$"),
+             "genre: macro-$F_1$ at film level $\\pm$ standard deviation,\nclip level below"),
             (axes[1], R2, 0.0, 0.7, [g.replace(" ", "\n") for g in regs],
              "emotions: Stage-1 $R^2$")):
         ax.imshow(M, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
-                txt = f"{M[i, j]:.3f}\n({S[i, j]:.3f})" if M is F else f"{M[i, j]:.2f}"
-                ax.text(j, i, txt, ha="center", va="center", fontsize=6.5 if M is F else 7,
+                if M is F:
+                    c = cells[i][j]
+                    star = "*" if j > 0 and sig(reps[i], regs[j - 1]) else ""
+                    txt = f"{c['film_f1']:.3f}{star} $\\pm$ {c['repeat_sd']:.3f}\nclip {c['clip_f1']:.3f}"
+                else:
+                    txt = f"{M[i, j]:.2f}"
+                ax.text(j, i, txt, ha="center", va="center", fontsize=6 if M is F else 7,
                         color="white" if (M[i, j] - vmin) / (vmax - vmin) > 0.6 else "black")
         ax.set_xticks(range(M.shape[1]), labels, fontsize=7)
         ax.set_yticks(range(len(reps)), [r.replace("MIR", "hand-crafted\nMIR") for r in reps])
-        ax.set_title(title)
+        ax.set_title(title, fontsize=8)
         ax.spines[:].set_visible(False)
     axes[0].axvline(0.5, color="white", lw=3)
     axes[1].tick_params(axis="y", labelleft=False, left=False)
+    c = d["ceiling"]
+    axes[0].set_xlabel(f"ratings (ceiling): {c['film_f1']:.3f} $\\pm$ {c['repeat_sd']:.3f}, "
+                       f"clip {c['clip_f1']:.3f};   * ahead of direct, $p<0.05$", fontsize=7)
     save(fig, "emotion_pipeline_grid")
 
 

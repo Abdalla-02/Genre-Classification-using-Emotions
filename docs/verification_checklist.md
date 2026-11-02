@@ -20,8 +20,13 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 - [ ] **CLAP with ridge regression** beats the VGGish pipeline under all five seeds (0.502
   vs 0.469). The thesis reports it but keeps VGGish because the pairing was picked after
   the results. Agree, or ask for a test (§30.1; section B).
-- [ ] **Zero-shot with a threshold tuned on the source dataset:** run it (about 30 minutes)
-  or name it in Chapter 7 as future work; the Discussion points to it.
+- [ ] **Zero-shot with a threshold tuned on the source dataset: run on 2 Nov (§31).** The
+  lead over direct VGGish falls from +0.106 (p = 0.013) to +0.041 (p = 0.159), over PCA-8
+  from +0.093 to +0.045 (p = 0.173); threshold-free (ROC AUC) the emotion pipeline is still
+  first (vs VGGish +0.042, p = 0.097; vs PCA-8 +0.070, p = 0.010). The Discussion still
+  says it was not tested and Chapter 7 is meant to name it as future work: decide how the
+  thesis reports it (it qualifies the transfer claim the way the in-domain claim is
+  already qualified).
 - [ ] **wav2vec 2.0 layer:** block 1 is nominally best after the fix, the thesis keeps
   block 2 (section B).
 
@@ -178,7 +183,8 @@ at in particular:
   tuned per film. The thesis says so.
 - [ ] The **zero-shot** result (0.508 vs 0.403, p = 0.013) is one split, one
   representation (VGGish), and partly recall-driven (recall 0.651 vs 0.435, precision
-  0.480 vs 0.705 for direct audio). A source-tuned threshold was not tested.
+  0.480 vs 0.705 for direct audio). With thresholds tuned on the source it is +0.041,
+  p = 0.159 (§31); threshold-free the emotion pipeline still ranks films best.
 - [ ] The win over the **PCA-8 control** across datasets is significant only in the
   original zero-shot run (p = 0.027), not in the re-implementation (+0.049, p = 0.239).
 - [ ] The **5-genre subset** was chosen partly by emotional signature, which can favour

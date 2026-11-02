@@ -266,23 +266,43 @@ film less strongly than VGGish (a clip's five nearest neighbours come from its o
 \section{The Emotion Pipeline across Representations and Regressors}
 \label{sec:app_grid}
 
-Figure~\ref{fig:emotion_grid} shows the comparison of Section~\ref{subsec:eval_grid} beside
-the accuracy of each regressor in Stage~1, and Table~\ref{tab:app_stage1_regressors} gives
-that accuracy for every representation and regressor.
+Table~\ref{tab:emotion_grid} lists the genre results of Figure~\ref{fig:emotion_grid}
+(Section~\ref{subsec:eval_grid}), and Table~\ref{tab:app_stage1_regressors} gives the
+accuracy of each regressor in Stage~1, including ridge regression with its default
+regularisation strength.
 
-\begin{figure}[tbp]
+\begin{table}[tbp]
   \centering
-  \includegraphics[width=\textwidth]{figures/emotion_pipeline_grid.pdf}
-  \caption{Genre result and Stage-1 accuracy of every representation and emotion regressor.}
-  \label{fig:emotion_grid}
-\end{figure}
+  \small
+  \caption{Film- and clip-level macro-$F_1$ of every representation and emotion regressor (five genres, 40 films).}
+  \label{tab:emotion_grid}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lcccc@{\hspace{10pt}}cccc}
+    \toprule
+    & \multicolumn{4}{c}{Film level} & \multicolumn{4}{c}{Clip level} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    & & \multicolumn{3}{c}{Emotion pipeline} & & \multicolumn{3}{c}{Emotion pipeline} \\
+    \cmidrule(lr){3-5} \cmidrule(lr){7-9}
+    Representation & Direct & Forest & Ridge & SVR & Direct & Forest & Ridge & SVR \\
+    \midrule
+    VGGish & 0.367\,{\scriptsize(0.039)} & 0.460\,{\scriptsize(0.038)} & 0.459\,{\scriptsize(0.027)} & \textbf{0.458}\,{\scriptsize(0.034)} & 0.366 & 0.405 & 0.413 & 0.410 \\
+    AST & 0.318\,{\scriptsize(0.045)} & \textbf{0.452}\,{\scriptsize(0.035)} & \textbf{0.465}\,{\scriptsize(0.022)} & \textbf{0.460}\,{\scriptsize(0.025)} & 0.368 & 0.414 & 0.410 & 0.408 \\
+    CLAP & 0.390\,{\scriptsize(0.044)} & 0.469\,{\scriptsize(0.040)} & 0.479\,{\scriptsize(0.030)} & 0.481\,{\scriptsize(0.019)} & 0.356 & 0.399 & 0.413 & 0.403 \\
+    MusiCNN & 0.396\,{\scriptsize(0.043)} & 0.426\,{\scriptsize(0.034)} & 0.442\,{\scriptsize(0.036)} & 0.443\,{\scriptsize(0.048)} & 0.359 & 0.388 & 0.386 & 0.383 \\
+    MIR & 0.365\,{\scriptsize(0.035)} & \textbf{0.461}\,{\scriptsize(0.022)} & 0.416\,{\scriptsize(0.036)} & \textbf{0.431}\,{\scriptsize(0.024)} & 0.362 & 0.403 & 0.394 & 0.396 \\
+    wav2vec~2.0 & 0.261\,{\scriptsize(0.026)} & \textbf{0.472}\,{\scriptsize(0.025)} & \textbf{0.426}\,{\scriptsize(0.029)} & \textbf{0.439}\,{\scriptsize(0.039)} & 0.328 & 0.415 & 0.393 & 0.396 \\
+    \midrule
+    Ratings (ceiling) & \multicolumn{4}{c}{0.491\,{\scriptsize(0.034)}} & \multicolumn{4}{c}{0.416} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-In Figure~\ref{fig:emotion_grid}, the left panel gives the film-level macro-$F_1$ on the
-five-genre subset with the standard deviation over the ten repeats in brackets; its first
-column is the representation given directly to the logistic-regression classifier, the
-other three the emotion pipeline with each regressor. The right panel gives the mean $R^2$
-of the same regressors in Stage~1, over all 360 rated clips with five-fold cross-validation
-grouped by film, as in Table~\ref{tab:waveform_stage1}.
+In Table~\ref{tab:emotion_grid}, each film-level entry is the mean over the ten repeats
+with the standard deviation over the repeats in brackets, and the clip-level entries
+score the same predictions over clips. ``Direct'' is the representation given to the
+classifier without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
+descriptors. Bold marks an emotion pipeline that is significantly ahead of the direct use
+of its representation (paired film bootstrap, $p<0.05$).
 
 \begin{table}[tbp]
   \centering

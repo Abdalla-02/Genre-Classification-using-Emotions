@@ -258,8 +258,13 @@ The thesis on Overleaf (`240b538`, compiled with 0 errors) contains items 1, 2 a
    use section 7 above.
 2. **Read Chapters 5, 6 and Appendix A in full.** They were rebuilt on 8 Oct; the
    Discussion's interpretation must become your own.
-3. **Zero-shot with a threshold tuned on the source dataset** — still not run (about 30
-   minutes); otherwise name it in Chapter 7 as future work.
+3. **Zero-shot with a threshold tuned on the source dataset: run on 2 Nov (log section
+   31), not yet in the thesis.** With per-genre thresholds tuned on Eerola only, the
+   emotion pipeline's lead over direct VGGish shrinks from +0.106 (p = 0.013) to +0.041
+   (p = 0.159), and over PCA-8 from +0.093 to +0.045 (p = 0.173). Threshold-free it still
+   ranks the Blockbuster films best (ROC AUC 0.763 vs 0.720 for VGGish, p = 0.097; vs 0.693
+   for PCA-8, p = 0.010). Decide how the Discussion reports it; it now says the test was
+   not done.
 4. **wav2vec 2.0 layer**: after the fix, block 1 is nominally best (0.297 vs 0.294 for the
    block 2 the thesis keeps). Decide whether that is acceptable.
 5. **AI declaration**: only the date is missing.

@@ -95,6 +95,7 @@ python experiments/audit_consistency.py
 |---|---|---|
 | `exp_blockbuster.py` | VGGish vs MFCC on Ma et al. (2021) | §3 |
 | `exp_blockbuster_emotion.py` | Cross-dataset emotion bridge + PCA-8 control | §10 |
+| `exp_zero_shot_threshold.py` | Zero-shot transfer with per-genre thresholds tuned on Eerola only (clip- and film-level tuning) and the target ROC AUC; does the zero-shot lead survive? | §31 |
 | `exp_zero_shot.py` | Shared 6-genre space; train on Eerola, test on Blockbuster without training on it; replicates Ma et al. in-domain | §15 |
 | `exp_blockbuster_deep.py` | Blockbuster under the primary protocol: repeated CV, tuned C, cue-level (MIL) arms, full 140-feature MIR | §17 |
 | `exp_signature_replication.py` | Do the Eerola emotion-genre signatures reappear on Blockbuster? (RQ3 external validity) | §17.5 |
@@ -117,7 +118,7 @@ test quoted beside it. `exp_statistical_power.py` is kept as the record of the p
 protocol, and the corrected run reproduces it exactly under the old metric. Every
 film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Nineteen scripts write machine-readable output to `results/`; `results/README.md` lists
+Twenty scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.
