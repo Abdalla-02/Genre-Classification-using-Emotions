@@ -1,29 +1,75 @@
 # Thesis verification checklist
 
 Everything you should read again, decide, or check yourself before submission, collected
-from the whole project (state: 7 October 2026, Overleaf commit `739943d`). Tick items off as
-you go. Sections A and B are the ones that need you; C to E are the record of what was
-found wrong and corrected, so you can confirm you agree with each correction.
+from the whole project (state: 2 November 2026, Overleaf commit `240b538`; first written
+7 October). Tick items off as you go. **Start with section 0**, the short list in order of
+priority; sections A and B hold the details, C to E are the record of what was found wrong
+and corrected, so you can confirm you agree with each correction.
 
 Where a location is given as "§N" it refers to the technical log (`docs/README.md`).
 
 ---
 
+## 0. Start here: what to do next (2 November 2026)
+
+**Decide** (the assistant cannot do these for you)
+- [ ] **The 0.434 floor.** Assigning every genre to every film scores 0.434 on five genres,
+  above both chance floors the thesis quotes; the emotion pipeline is only +0.022 above it
+  (p = 0.52). It is left out "for now". Decide whether and how the thesis reports it (an
+  examiner may compute it), §29.
+- [ ] **CLAP with ridge regression** beats the VGGish pipeline under all five seeds (0.502
+  vs 0.469). The thesis reports it but keeps VGGish because the pairing was picked after
+  the results. Agree, or ask for a test (§30.1; section B).
+- [ ] **Zero-shot with a threshold tuned on the source dataset:** run it (about 30 minutes)
+  or name it in Chapter 7 as future work; the Discussion points to it.
+- [ ] **wav2vec 2.0 layer:** block 1 is nominally best after the fix, the thesis keeps
+  block 2 (section B).
+
+**Write** (section A)
+- [ ] **Abstract, Chapter 7 and the contributions list.** The drafts in
+  `docs/latex/held_back/` quote numbers from before the film-level switch and the fix, and
+  know nothing of the work since 27 October (wav2vec diagnosis, the comparison over
+  representations and regressors). Take the numbers from `docs/current_state.md`,
+  sections 7 to 7c.
+- [ ] **AI-usage declaration:** the date next to the signature, and the period of use
+  ("July 2026 to October 2026"), which must now include November (the thesis was edited on
+  1 November). Check the rest of it once more.
+- [ ] **Title page:** examiners, submission date, title.
+
+**Read** (section B, newest first)
+- [ ] Chapter 5, "Other Representations and Emotion Regressors", its Appendix section and
+  the changed sentences in Methods, Fundamentals and Discussion (1 Nov).
+- [ ] Appendix A.5, the wav2vec 2.0 paragraphs (28 Oct).
+- [ ] The table of pipelines and models in Methods (27 Oct) and your comments of 21 Oct.
+- [ ] Chapters 5, 6 and Appendix A in full, then every other chapter once (section B).
+
+**Look at the PDF** (section F)
+- [ ] The new 9-column table in Chapter 5 (fits the page?), the new figure and table in
+  the Appendix, then the rest of section F.
+
+**Before submission**
+- [ ] Section C: know your answer to each likely challenge.
+- [ ] Sections D and E: confirm each correction; re-run the print-only scripts of D.
+- [ ] Merge the last version branch into `main` and keep the branches `feat/version-1.2`
+  and `feat/version-1.3` (they hold the individual commits).
+
 ## A. Only you can do these
 
 - [ ] **AI-usage declaration** (last page). Written by the assistant from the repository
   and Overleaf history. Check every line, then fill the remaining red notes:
-  - [ ] any other tool you used (translation, grammar checker, other chatbots), or delete
-        the note;
-  - [ ] how you read, revised and adapted the drafted chapters (Introduction, Methods,
-        Evaluation, Discussion);
+  - [x] any other tool you used (translation, grammar checker, other chatbots): the red
+        note is gone (Overleaf `4a77de0`);
+  - [x] how you read, revised and adapted the drafted chapters: the red note is gone
+        (Overleaf `4a77de0`);
+  - [ ] the period of use: the text says "July 2026 to October 2026", but the assistant
+        edited the thesis on 1 November 2026; extend it to the real end date;
   - [x] the level for Chapter 7, the abstract and the list of contributions: filled in on
         Overleaf ("edited", 6 Oct);
   - [ ] the date next to the signature (its red box is also the cause of the one
         remaining "overfull box" warning; it disappears when you type the date).
   - Facts it states that you should confirm: models **Claude Opus 5** (9-22 Sep 2026) and
     **Claude Opus 5.5** (from 23 Sep 2026), both from the repository's commit trailers;
-    period **July to October 2026**; the Claude.ai Overleaf connector was used from
+    period **July to November 2026** (so far); the Claude.ai Overleaf connector was used from
     27 July; Fundamentals 2.1-2.3 and the Related Work text first came in through that
     connector. If you used another model in the Claude.ai chat before September, add it.
 - [ ] **Write the held-back parts.** Drafts are in `docs/latex/held_back/` (not compiled):
@@ -243,8 +289,11 @@ script before submission, or be ready to explain where the number comes from.
 
 - [ ] The two TikZ diagrams: the circumplex model (Fundamentals) and the pipeline
   (Methods). They compile, but nobody has looked at them rendered.
-- [ ] The eight result figures in Chapter 5: labels readable at print size, legends not
-  covering data.
+- [ ] The result figures in Chapter 5 and the new figure of the comparison over
+  representations and regressors in the Appendix (1 Nov): labels readable at print size,
+  legends not covering data.
+- [ ] The 9-column table "The emotion pipeline for every representation and emotion
+  regressor" in Chapter 5 (1 Nov): does it fit the text width, is the small font readable?
 - [ ] The metric table in Section 5.4 is scaled to the text width; check that its font is
   still readable.
 - [ ] The table in the AI declaration breaks across pages; check that it looks right.
