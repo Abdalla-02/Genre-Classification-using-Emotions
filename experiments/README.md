@@ -45,8 +45,9 @@ python experiments/audit_consistency.py
 `make_figures.py` draws thirteen figures into `figures/` (PDF + PNG) from
 `results/*.json` (twelve are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
 `docs/current_state.md` into `.docx` and `.pdf` (needs LibreOffice).
-`make_circumplex.py` draws Figure 2.1, the circumplex of affect redrawn after Russell
-(1980): his eight affect concepts and the five Eerola emotions; conceptual, not from results.
+`make_circumplex.py` draws Figure 2.1, adapted from Figure 1 of Eerola and Vuoskoski
+(2011): valence, arousal, energy and tension, with the five discrete emotions; conceptual,
+not from results.
 
 ## features — dataset and features
 | Script | Purpose | Log |
