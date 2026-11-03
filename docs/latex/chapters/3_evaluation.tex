@@ -276,9 +276,30 @@ seed and combination, by at least 0.007 (MusiCNN with the random forest). The se
 show a pattern the figure does not. On CLAP, ridge regression is ahead of the random
 forest under every seed (by 0.010 to 0.039). CLAP with ridge regression is also ahead of
 the VGGish pipeline under every seed (0.502 against 0.469 on average,
-Appendix~\ref{sec:app_grid}). This combination was picked out after the results were
-known and is not tested here. The thesis therefore keeps the VGGish pipeline that was
-fixed beforehand.
+Appendix~\ref{sec:app_grid}).
+
+\paragraph{Why the thesis keeps VGGish and the random forest.} The VGGish pipeline is not
+the highest entry in Figure~\ref{fig:emotion_grid}, so the choice needs a reason. There
+are four. First, VGGish is the only representation available on both datasets
+(Section~\ref{subsec:methods_blockbuster}). The replication of the signatures
+(Section~\ref{subsec:signature_replication}) and every transfer experiment
+(Section~\ref{sec:eval_transfer}) can only use it. With VGGish, one and the same
+pipeline answers all four research questions. A pipeline on CLAP could answer only RQ1
+and RQ3. Second, the pipeline was fixed before the comparison was run. Picking the best
+of 18 entries afterwards would favour whichever entry happened to do well on these 40
+films. The gaps are small for such a choice. CLAP with ridge regression is 0.019 ahead of
+VGGish with the random forest under seed 42. The 95\,\% interval of each entry, in
+contrast, is about 0.13 wide. Seed 42 is also the least favourable of the five seeds for
+the VGGish pipeline (0.460, against up to 0.481). Third, on VGGish the regressor makes no
+difference. Ridge regression and SVR score 0.002 and 0.003 below the random forest
+($p=0.859$ and $p=0.813$), and ridge regression stays below it under all five seeds.
+Fourth, the random forest needs no tuning of its own, and it is the safest choice across
+inputs. It is clearly best on the hand-crafted descriptors and on wav2vec~2.0, where
+ridge regression falls 0.044 and 0.046 behind. Tuned ridge regression does predict the
+emotions more accurately (0.584 against 0.553 on VGGish), but, as shown above, better
+emotion predictions do not carry over to genre. CLAP with ridge regression is thus the
+most promising alternative where only in-domain prediction is needed. Because it was
+found after the results were known, it is not tested here.
 
 The answer to RQ3 therefore does not depend on VGGish or on the random forest. The
 advantage of the emotion step belongs to the pipeline, not to one embedding.
