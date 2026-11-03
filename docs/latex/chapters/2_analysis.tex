@@ -13,11 +13,11 @@ The method of this thesis maps a clip of film music to eight predicted emotion r
     \node[box, text width=2.3cm] (emb) at (2.75,0)
       {Frozen pretrained embedding model\\[3pt]\scriptsize AST, VGGish, CLAP, MusiCNN, wav2vec~2.0, hand-crafted MIR};
     % the three pipelines
-    \node[box, text width=2.9cm] (direct) at (6.45,2.0)
+    \node[box, text width=2.9cm] (direct) at (6.45,2.7)
       {\textbf{Direct}\\full embedding\\(103--768 dimensions)};
     \node[box, text width=2.9cm, fill=gray!15] (emo) at (6.45,0)
-      {\textbf{Emotion pipeline}\\Stage~1: random forest regressor\\$\rightarrow$ 8 emotions + 3 derived\\$=$ 11 features};
-    \node[box, text width=2.9cm] (pca) at (6.45,-2.0)
+      {\textbf{Emotion pipeline}\\Stage~1: random forest\\regressor $\rightarrow$ 8 emotions\\+ 3 derived $=$ 11 features};
+    \node[box, text width=2.9cm] (pca) at (6.45,-2.7)
       {\textbf{PCA-8 control}\\embedding compressed to 8 principal components};
     % one shared classifier and the output
     \node[box, text width=2.2cm] (clf) at (10.0,0)
