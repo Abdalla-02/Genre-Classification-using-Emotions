@@ -110,9 +110,9 @@ Second, a rich embedding also encodes the sound of single films: their instrumen
 recording and mixing. This is useless when the evaluation is grouped by film. An emotion
 rating, in contrast, describes what a clip expresses, not how it was produced. Third, an
 embedding's dimensions carry the statistics of the recordings they were computed on.
-Emotion values are given on a rating scale that means the same in any dataset. Once both
-datasets are in the training data, the direct classifier can learn both sets of
-statistics, and its disadvantage disappears.
+Emotion values are given on a rating scale that means the same in any dataset. With both
+datasets in the training data, the direct classifier sees both sets of statistics, and
+its handicap is gone.
 
 \subsection{A low-dimensional genre signal}
 \label{subsec:disc_ablation}
@@ -201,10 +201,10 @@ reproduced on their published features, reaches 0.620 in-domain, inside their re
 range. Under repeated cross-validation the learned embedding does not beat their full set
 of hand-crafted features. This agrees with their own careful wording. It also agrees with
 the result on Eerola, where direct representations of very different design score close
-to one another. \citet{eerola2011genrespecific} found that models of musical emotion lose
-much of their accuracy when carried from one musical genre to another. This thesis sees
-the same loss for genre models carried from one film dataset to another. It adds that the
-loss is smaller for a model built on emotions. This suggests that the dependence on the
+to one another. \citet{eerola2011genrespecific} showed that an emotion model trained on one
+musical genre works much worse on another. Here the same happens to genre models moved
+from one film dataset to the next. What is new is that a model built on emotions loses
+less. This suggests that the dependence on the
 repertoire lies more in the mapping from audio to its representation than in the link
 between emotion and genre. \citet{austin2010characterization} found intense genres easier
 to separate by their scores than story-driven genres, and the signatures found here
@@ -214,6 +214,6 @@ of this thesis is therefore not a higher number. It is a model whose predictions
 explained and which loses less when the data change. This answers the concern of
 \citet{kang2025there} that accurate emotion-recognition systems reveal little about how
 they work: used as a step in between, the emotion model becomes the explanation. Finally,
-the metric analysis supports the decision not to follow \citet{behrouzi2023multimodal} in
-using Hamming loss as a headline metric. On these data, a classifier that always predicts
+the metric analysis explains why Hamming loss, the headline metric of
+\citet{behrouzi2023multimodal}, is not used here. On these data, a classifier that always predicts
 the most frequent genres wins on it outright.

@@ -147,7 +147,7 @@ equally. A needless positive therefore costs as much as a missed genre. For a ra
 the lowest loss comes from never predicting it, which costs only the genre's base rate
 (0.085 for Horror). Split by genre, the emotion pipeline makes fewer errors than VGGish on
 Action (0.371 against 0.411) and Drama (0.356 against 0.396), and about as many on Crime.
-The whole difference comes from Comedy (0.438 against 0.286) and Horror (0.403 against
+All of the difference is in Comedy (0.438 against 0.286) and Horror (0.403 against
 0.235). It predicts these two genres for 148 and 135 of the 329 clips, although only 40 and
 28 carry them. This is the operating point driven by recall, described below, seen from the
 other side. Macro-$F_1$ rewards finding a rare genre; Hamming loss punishes every attempt.
@@ -198,8 +198,8 @@ seeds, the ten-repeat mean moves by 0.005 to 0.019. The emotion pipeline stays b
 $+0.132$), AST ($+0.142$ to $+0.155$) and the PCA-8 control ($+0.051$ to $+0.071$). The
 PCA-8 control is itself ahead of VGGish under every seed ($+0.019$ to $+0.068$). Under
 seed 42 the re-run reproduces the per-repeat scores of the main analysis exactly. The
-numbers are therefore stable against everything the code controls. The remaining
-uncertainty comes from the small number of films.
+numbers are therefore stable against everything the code controls. What uncertainty is
+left is due to the small number of films.
 
 % =============================================================================
 \section{Which Emotions Are Needed?}
@@ -227,9 +227,9 @@ produces. The Nadeau--Bengio test on the clip-level scores does not support it
 ($p=0.516$), and its direction is the opposite of what a necessary emotion would show.
 Smaller subsets lose a little, but not significantly. Fear alone reaches 0.475
 ($p=0.345$), valence with energy 0.487 and the three dimensional scales 0.479. One to three
-emotions thus keep 96 to 99\,\% of the score of all eight. The eight ratings are closely
-correlated with each other: fear rises with tension and falls with valence. The genre
-signal lies along essentially one axis, from threat to warmth. Fear is the most telling
+emotions thus keep 96 to 99\,\% of the score of all eight. The eight ratings move
+together: when tension goes up, fear tends to go up and valence down. In effect the genre
+signal runs along a single line, from threat to warmth. Fear is the most telling
 emotion, but no emotion is necessary, and all eight are kept because they make the model
 easier to read.
 
