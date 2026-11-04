@@ -10,26 +10,14 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ---
 
-## 0. Start here: what to do next (4 November 2026)
+## 0. Start here: what to do next (4 November 2026, evening)
 
 **Decide** (the assistant cannot do these for you)
-- [ ] **The 0.434 floor.** Assigning every genre to every film scores 0.434 on five genres,
-  above both chance floors the thesis quotes; the emotion pipeline is only +0.022 above it
-  (p = 0.52). It is left out "for now". Decide whether and how the thesis reports it (an
-  examiner may compute it), §29.
-- [ ] **CLAP with ridge regression** beats the VGGish pipeline under all five seeds (0.502
-  vs 0.469). Chapter 5 now gives four reasons for keeping VGGish with the random forest
-  (paragraph "Why the thesis keeps VGGish and the random forest"). Agree, or ask for a
-  post-hoc test for the appendix (§30.1; section B).
-- [ ] **Zero-shot with a threshold tuned on the source dataset: run on 2 Nov (§31).** The
-  lead over direct VGGish falls from +0.106 (p = 0.013) to +0.041 (p = 0.159), over PCA-8
-  from +0.093 to +0.045 (p = 0.173); threshold-free (ROC AUC) the emotion pipeline is still
-  first (vs VGGish +0.042, p = 0.097; vs PCA-8 +0.070, p = 0.010). The Discussion still
-  says it was not tested and Chapter 7 is meant to name it as future work: decide how the
-  thesis reports it (it qualifies the transfer claim the way the in-domain claim is
-  already qualified).
 - [ ] **wav2vec 2.0 layer:** block 1 is nominally best after the fix, the thesis keeps
-  block 2 (section B).
+  block 2 (section B). Recommended: keep it, as the thesis says.
+- Done on 4 November: the 0.434 floor and the zero-shot threshold test are in the thesis
+  (Chapter 5, Discussion, new Appendix sections), and CLAP with ridge regression was
+  tested post hoc (+0.032, p = 0.112; log section 32). Read how they are worded.
 
 **Write** (section A)
 - [ ] **Abstract, Chapter 7 and the contributions list.** The drafts in

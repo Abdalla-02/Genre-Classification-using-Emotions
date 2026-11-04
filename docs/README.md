@@ -1821,7 +1821,10 @@ and folds of `film_level.json`, which every shared arm reproduces, macro and per
 5. The emotion pipeline's F1 is above the ratings' in Drama and Comedy (+0.03, p = 0.33):
    noise, not a better model.
 
-Not yet in the thesis: how to report the all-positive floor is the author's decision.
+In the thesis since 4 Nov (author's decision): Methods (chance floors), Chapter 5 (RQ1,
+paragraph "A harder reference", and summary), Limitations, and Appendix section
+`sec:app_floor`. The floor on Blockbuster (0.438) follows from the label counts of Table
+`tab:label_spaces` with 2p/(1+p).
 
 ## 30. The emotion pipeline for every representation and every regressor (1 Nov 2026)
 
@@ -1958,7 +1961,7 @@ True labels per film: 1.78. Paired film bootstrap, emotion pipeline (per-cue) ag
    0.763 against 0.720 for direct VGGish (+0.042, p = 0.097) and 0.693 for PCA-8 (+0.070,
    p = 0.010). So the emotion features transfer a better ordering of films, but most of the
    default-threshold F1 lead comes from where the cut-off falls.
-4. **Thesis consequence (not yet applied; the author's decision).** The Discussion says the
+4. **Thesis consequence (applied on 4 Nov, section 32).** The Discussion said the
    test "was not tested" and points to Future Work; the claim "the emotion pipeline beats
    direct audio across datasets" needs the same qualification the in-domain result already
    carries (ahead at the default threshold; under tuned thresholds the pipelines converge;
@@ -2040,3 +2043,31 @@ True labels per film: 1.78. Paired film bootstrap, emotion pipeline (per-cue) ag
   `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
   `box_office.json`, `cv_corrected.json`, `hamming_breakdown.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.
+
+## 32. Post-hoc test of CLAP with ridge regression; floor and thresholds into the thesis (4 Nov 2026)
+
+The author asked for the test of the pairing that §30.1 left open.
+`exp_clap_ridge_posthoc.py` → `clap_ridge_posthoc.json` (15 minutes): the emotion pipeline on
+CLAP with ridge regression against the thesis pipeline (VGGish, random forest), both with the
+code of the grid on the 10 x 5 folds of the five master seeds. The script asserts that all ten
+seed means reproduce `emotion_pipeline_grid.json`.
+
+| seed | CLAP + ridge | VGGish + forest | film diff | p | repeats won | clip diff | NB p |
+|---|---|---|---|---|---|---|---|
+| 42 | 0.479 | 0.460 | +0.019 | 0.389 | 7 | +0.007 | 0.722 |
+| 1 | 0.506 | 0.463 | +0.043 | 0.041 | 9 | +0.015 | 0.526 |
+| 2 | 0.509 | 0.472 | +0.036 | 0.116 | 10 | +0.015 | 0.506 |
+| 3 | 0.495 | 0.469 | +0.026 | 0.254 | 8 | +0.013 | 0.514 |
+| 4 | 0.520 | 0.481 | +0.038 | 0.082 | 8 | +0.009 | 0.653 |
+
+Pooled over the 50 repeats (the bootstrap draws do not depend on the master seed): film level
+0.502 vs 0.469, +0.032 [−0.007, +0.075], p = 0.112; clip level +0.012, p = 0.269. Bonferroni
+over the 17 other cells gives 1.0 for both. The seeds share the same 40 films, so agreement
+between seeds is no evidence by itself. The lead is not established, and the thesis keeps
+VGGish with the random forest (four reasons in Chapter 5, `subsec:eval_grid`; the test in
+Appendix `sec:app_grid`).
+
+The same update puts the all-positive floor (§29) and the tuned zero-shot test (§31) into the
+thesis: Chapter 5 RQ1 and RQ4 and the summary, Discussion, Limitations, and the new Appendix
+sections `sec:app_floor` and `sec:app_zs_threshold`. The RQ4 claim now says "at the default
+threshold".

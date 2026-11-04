@@ -118,6 +118,18 @@ predict its genres well above chance, though far from perfectly. The same holds 
 eight genres, where the emotion pipeline reaches 0.349 against a random guess of 0.226
 (Appendix~\ref{sec:app_eight}).
 
+\paragraph{A harder reference.} A classifier that assigns every genre to every film has
+learned nothing. It still reaches 0.434 on this subset, because macro-$F_1$ rewards recall
+and most films are Drama. That is above both chance floors. The emotion pipeline is only
+0.022 ahead of it ($p=0.518$), and the ratings 0.054 ($p=0.086$). Over clips both lie below
+it (0.405 and 0.416 against 0.430). Every direct representation and the PCA-8 control lie
+below it at both levels. Macro-$F_1$ at the default threshold therefore says little about
+skill on its own. A measure without a threshold is clearer. The film-level macro ROC-AUC
+is 0.655 for the emotion pipeline and 0.691 for the ratings, where such a classifier
+scores 0.50. This lead of 0.155 is significant ($p<0.001$). The emotions do carry genre
+information, but less than the distance to the chance floors suggests
+(Appendix~\ref{sec:app_floor}).
+
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/indomain_eerola5.pdf}
@@ -298,8 +310,9 @@ inputs. It is clearly best on the hand-crafted descriptors and on wav2vec~2.0, w
 ridge regression falls 0.044 and 0.046 behind. Tuned ridge regression does predict the
 emotions more accurately (0.584 against 0.553 on VGGish), but, as shown above, better
 emotion predictions do not carry over to genre. CLAP with ridge regression is thus the
-most promising alternative where only in-domain prediction is needed. Because it was
-found after the results were known, it is not tested here.
+most promising alternative where only in-domain prediction is needed. A post-hoc test does
+not show it to be better, however. Over all five seeds its lead of 0.032 is not significant
+($p=0.112$; Appendix~\ref{sec:app_grid}).
 
 The answer to RQ3 therefore does not depend on VGGish or on the random forest. The
 advantage of the emotion step belongs to the pipeline, not to one embedding.
@@ -591,8 +604,8 @@ line the base-rate random guess. The $p$-values are paired bootstraps over the 1
 Genre information transfers between the datasets. The emotion pipeline reaches 0.508
 against a random-guess floor of 0.292. That is about 82\,\% of the 0.620 reached with
 in-domain training, although each training row is a clip of about 17 seconds and the test
-items are whole films. The central result for RQ4 is that the emotion pipeline transfers
-better than the representation it is derived from. It beats direct VGGish (0.403) by
+items are whole films. The central result for RQ4 is that, at the default threshold, the
+emotion pipeline transfers better than the representation it is derived from. It beats direct VGGish (0.403) by
 $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$) and the PCA-8 control (0.417) by $+0.093$
 [$+0.013$, $+0.171$] ($p=0.027$). Compressing the embedding to eight principal components,
 in contrast, gains only $+0.013$ over the raw features ($p=0.737$). Under the other
@@ -602,6 +615,19 @@ driven by recall. The emotion pipeline finds more of the true genres (0.651 agai
 difference whether the emotions are predicted per cue or once from the film-average
 embedding (0.508 against 0.502). In-domain on Blockbuster the prediction per cue is
 clearly better (Appendix~\ref{sec:app_blockbuster}).
+
+\paragraph{Thresholds tuned on the source.} The lead is partly driven by recall, so it may
+depend on where the decision threshold lies. This was tested. For each genre, a threshold
+was tuned on out-of-fold probabilities of the Eerola clips and then applied to Blockbuster,
+so no Blockbuster label is used. The lead over direct VGGish shrinks from $+0.106$ to
+$+0.041$ ($p=0.159$), and the lead over the PCA-8 control from $+0.093$ to $+0.045$
+($p=0.173$). The emotion pipeline hardly moves (0.508 to 0.496), while direct VGGish rises
+from 0.403 to 0.455. Tuned on the Eerola films instead of the clips, direct VGGish is even
+nominally ahead ($-0.044$, $p=0.246$). Most of the lead in $F_1$ therefore comes from the
+operating point. A measure without a threshold gives a milder picture. The emotion
+pipeline still ranks the Blockbuster films best, with a macro ROC-AUC of 0.763 against
+0.720 for direct VGGish ($+0.042$, $p=0.097$) and 0.693 for the PCA-8 control ($+0.070$,
+$p=0.010$). Appendix~\ref{sec:app_zs_threshold} gives the details.
 
 \subsection{Transfer in Every Direction}
 
@@ -657,6 +683,8 @@ chance. On the five-genre subset the emotion pipeline (VGGish embedding, random-
 emotion regressor, logistic-regression genre classifier) reaches a film-level macro-$F_1$
 of 0.460, against 0.309 for a random guess. The human ratings reach 0.491. The emotion
 regression it rests on reaches about 62\,\% of the $R^2$ that two listener panels allow.
+A classifier that assigns every genre to every film already reaches 0.434, however. The
+clearer evidence is the macro ROC-AUC of 0.655, against 0.50 for such a classifier.
 
 \emph{RQ2.} Most genres carry an emotional signature that can be read. Fear is the
 strongest discriminator and valence the second axis. Adventure has no signature. The
@@ -673,13 +701,16 @@ is not established. Part of the gain comes from compression, and with per-genre
 thresholds the pipelines come together.
 
 \emph{RQ4.} Trained on Eerola and tested on the 110 Blockbuster films, the emotion pipeline
-clearly beats direct VGGish (0.508 against 0.403, $p=0.013$). The reverse direction agrees
-in sign but is not significant. When both datasets are in training, the pipelines are
+clearly beats direct VGGish at the default threshold (0.508 against 0.403, $p=0.013$). With
+thresholds tuned on the source the lead shrinks to $+0.041$ ($p=0.159$), although the
+emotion pipeline still ranks the films best. The reverse direction agrees in sign but is
+not significant. When both datasets are in training, the pipelines are
 level. No film occurs in both datasets.
 
 The main limitation is the size of the Eerola dataset. It has 40 films, two of the five
 genres have only four or five films each, and the error from sampling films is of the same
 order as the effects being measured. The results also give two different pictures. The
 emotion pipeline is well ahead where the genre classifier is trained on the small Eerola
-dataset (significantly so in the transfer to Blockbuster). It is level where the
+dataset (significantly so at the default threshold in the transfer to Blockbuster). It is
+level where the
 classifier is trained on the larger Blockbuster dataset or on both.

@@ -88,6 +88,7 @@ not from results.
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 | `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
 | `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_clap_ridge_posthoc.py` | Post-hoc paired test of CLAP with ridge regression against the VGGish pipeline, per master seed and pooled over the five seeds | §32 |
 | `exp_emotion_pipeline_grid.py` | The emotion pipeline for six representations x three emotion regressors (random forest, ridge, SVR), film level, paired against the direct pipelines and against each other | §30 |
 | `exp_per_genre_analysis.py` | What lies behind the per-genre figure: the all-positive floor (every genre for every film) as an arm on the same folds, film-level AUC per genre, per-genre paired film bootstrap, how often each genre is assigned | §29 |
 | `exp_w2v_diagnosis.py` | Why wav2vec 2.0 is weak directly but strong as the emotion input: paired test of the two emotion pipelines, PCA-8 and random-forest controls, Stage-1 profile per clip and per film, film identity | §28 |
@@ -121,7 +122,7 @@ test quoted beside it. `exp_statistical_power.py` is kept as the record of the p
 protocol, and the corrected run reproduces it exactly under the old metric. Every
 film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Twenty scripts write machine-readable output to `results/`; `results/README.md` lists
+Twenty-one scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.

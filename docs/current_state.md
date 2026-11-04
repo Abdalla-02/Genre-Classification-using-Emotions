@@ -226,13 +226,13 @@ The thesis on Overleaf (`240b538`, compiled with 0 errors) contains items 1, 2 a
    that carry genre (valence, tension, fear, anger). The direct failure is not a film
    shortcut: the genre information is spread over 768 speech-oriented dimensions that a
    linear classifier cannot find from 32 training films.
-3. **What lies behind the per-genre figure** (log section 29; **not in the thesis**). Assigning
+3. **What lies behind the per-genre figure** (log section 29; in the thesis since 4 Nov). Assigning
    every genre to every film scores 0.434 on five genres, above both chance floors the
    thesis quotes (0.168 and 0.309); the emotion pipeline is +0.022 above it (p = 0.52).
    Threshold-free, the emotion pipeline ranks films well above chance (film-level ROC AUC
    0.655, p < 0.001). The clearest emotion result is Comedy (AUC 0.76, the highest of all
-   pipelines); Crime has almost no emotional signature. How to report the 0.434 floor is
-   your decision; for now it is left out.
+   pipelines); Crime has almost no emotional signature. The 0.434 floor is now reported in
+   Chapter 5 (RQ1), Methods, Limitations and the Appendix.
 4. **The emotion pipeline for every representation and every emotion regressor** (log sections 30
    and 30.1; Chapter 5, new subsection "Other Representations and Emotion Regressors", and a
    new Appendix section with a figure). Six representations × random forest, ridge
@@ -259,19 +259,21 @@ The thesis on Overleaf (`240b538`, compiled with 0 errors) contains items 1, 2 a
 2. **Read Chapters 5, 6 and Appendix A in full.** They were rebuilt on 8 Oct; the
    Discussion's interpretation must become your own.
 3. **Zero-shot with a threshold tuned on the source dataset: run on 2 Nov (log section
-   31), not yet in the thesis.** With per-genre thresholds tuned on Eerola only, the
+   31), in the thesis since 4 Nov.** With per-genre thresholds tuned on Eerola only, the
    emotion pipeline's lead over direct VGGish shrinks from +0.106 (p = 0.013) to +0.041
    (p = 0.159), and over PCA-8 from +0.093 to +0.045 (p = 0.173). Threshold-free it still
    ranks the Blockbuster films best (ROC AUC 0.763 vs 0.720 for VGGish, p = 0.097; vs 0.693
-   for PCA-8, p = 0.010). Decide how the Discussion reports it; it now says the test was
-   not done.
+   for PCA-8, p = 0.010). Chapter 5 (RQ4), the Discussion, Limitations and the Appendix
+   report it, and the RQ4 claim now says "at the default threshold". CLAP with ridge
+   regression was also tested post hoc on 4 Nov (+0.032, p = 0.112; log section 32): the
+   lead is not established and the thesis keeps VGGish with the random forest.
 4. **wav2vec 2.0 layer**: after the fix, block 1 is nominally best (0.297 vs 0.294 for the
    block 2 the thesis keeps). Decide whether that is acceptable.
-5. **AI declaration**: only the date is missing.
+5. **AI declaration**: three red notes are open (other tools, how you revised the drafts,
+   the date).
 6. **Read the new subsection of Chapter 5** "Other Representations and Emotion Regressors"
    (1 Nov, Overleaf `5a4ca23`): the emotion pipeline is ahead of direct use for all six
    representations and all three regressors (18 of 18 cells; 90 of 90 over five seeds).
-   The all-positive floor (0.434) is still left out of the thesis, by your decision.
 
 ---
 

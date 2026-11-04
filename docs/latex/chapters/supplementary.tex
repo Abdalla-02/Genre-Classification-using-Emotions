@@ -168,7 +168,8 @@ against 0.423 for VGGish, at precision 0.363 against 0.341). The fixed threshold
 unfair, since the same rule applies to every pipeline. Tuning per genre
 \citep{lipton2014optimal} would, however, narrow the gap. Film-level scoring uses the same
 cut on averaged probabilities and shares this caveat; thresholds were not tuned per film.
-All transfer experiments use the default threshold as well.
+The main transfer experiments use the default threshold as well.
+Appendix~\ref{sec:app_zs_threshold} repeats the zero-shot transfer with tuned thresholds.
 
 \subsection{Stability and Reproducibility}
 
@@ -350,7 +351,13 @@ pipeline and 0.498 for the ratings themselves. A pipeline that predicts the emot
 reaches the level of the ratings here. One reason may be that predicted emotions are less
 noisy than the ratings of a single clip. The ratings arm is better read as a reference
 point than as a strict upper bound. The lead of CLAP with ridge regression was found after
-the results were known, and it is left untested.
+the results were known, so any test of it is post hoc. Pooled over the 50 repeats of the
+five seeds, the paired film bootstrap gives a difference of $+0.032$ [$-0.007$, $+0.075$]
+($p=0.112$), and over clips $+0.012$ ($p=0.269$). Under single seeds the film-level $p$ lies
+between 0.041 and 0.389, and the Nadeau--Bengio test on the clips between 0.506 and 0.722.
+The seeds share the same 40 films, so they are not independent samples. This pairing was
+also the first of 18 entries, and allowing for the 17 other comparisons would raise these
+$p$-values further. Its lead is therefore not established.
 
 % =============================================================================
 \section{All Eight Genres}
@@ -485,3 +492,104 @@ film matters. Under an ungrouped split the AST baseline reaches 0.44 instead of 
 (clip-level macro-$F_1$, eight genres, single untuned five-fold run), because it can
 recognise the film rather than the genre. The emotion features gain much less from the
 same leakage.
+
+% =============================================================================
+\section{The All-Positive Reference}
+\label{sec:app_floor}
+
+A classifier that assigns every genre to every film has a recall of 1, and its precision is
+the share $p$ of films with the genre. Its $F_1$ is therefore $2p/(1+p)$. On the five-genre
+subset its macro-$F_1$ is 0.434 over films and 0.430 over clips.
+Table~\ref{tab:app_floor} compares it with the emotion pipeline for each genre.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{The all-positive reference and the emotion pipeline per genre (film level, five genres).}
+  \label{tab:app_floor}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    Genre & Films & All-positive $F_1$ & Emotion $F_1$ & $\Delta$ & $p$ & Emotion AUC \\
+    \midrule
+    Action & 12 & 0.46 & 0.61 & $+0.147$ & 0.101 & 0.72 \\
+    Crime  & 12 & 0.46 & 0.35 & $-0.115$ & 0.103 & 0.47 \\
+    Drama  & 29 & 0.84 & 0.76 & $-0.077$ & 0.252 & 0.71 \\
+    Comedy & 4  & 0.18 & 0.34 & $+0.146$ & \textbf{0.012} & 0.76 \\
+    Horror & 5  & 0.22 & 0.23 & $+0.009$ & 0.916 & 0.61 \\
+    \midrule
+    Macro  &    & 0.434 & 0.460 & $+0.022$ & 0.518 & 0.655 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:app_floor}, $\Delta$ is the emotion pipeline minus the all-positive
+classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$. AUC is the
+film-level area under the receiver operating characteristic curve, for which the all-positive
+classifier scores 0.50.
+
+The emotion pipeline beats this reference significantly only on Comedy. It is level on Horror
+and behind on Crime and Drama, though not significantly. On Crime it ranks the films at
+chance (AUC 0.47). Its $F_1$ there comes from assigning Crime to about half of the films,
+while 30\,\% carry the genre. Nothing beats always predicting Drama at film level. The
+ratings are ahead of the reference by 0.054 ($p=0.086$). Every direct representation is below
+it, for example VGGish by 0.071 ($p=0.043$) and MusiCNN by 0.043 ($p=0.269$). Over clips the
+emotion pipeline is also below it ($-0.027$, $p=0.218$).
+
+The reason is how often each pipeline says yes. The films carry 1.55 genres on average. The
+emotion pipeline assigns 2.27 per film and the ratings 2.21, while the direct representations
+assign 1.27 to 1.65. On 40 films, macro-$F_1$ at the default threshold depends heavily on this
+rate. A measure without a threshold avoids the problem. The film-level macro ROC-AUC of the
+emotion pipeline is 0.655, which is $+0.155$ above the reference ($p<0.001$). Its lead over
+direct VGGish on this measure is $+0.071$ ($p=0.093$), over MusiCNN $+0.078$ ($p=0.096$) and
+over the PCA-8 control $+0.071$ ($p=0.087$). These leads are about as large as the leads in
+$F_1$, so they are not only an effect of the threshold, but they are not significant.
+
+The same reference gives 0.338 on all eight genres (film level), against 0.349 for the emotion
+pipeline. On the 110 Blockbuster films it gives 0.438. That is below the in-domain results and
+below the zero-shot emotion pipeline (0.508), but above direct VGGish in zero-shot transfer
+(0.403).
+
+% =============================================================================
+\section{Zero-Shot Transfer with Tuned Thresholds}
+\label{sec:app_zs_threshold}
+
+This test repeats the zero-shot transfer of Section~\ref{sec:zero_shot} (strict regime) with a
+separate decision threshold per genre. Each threshold lies between 0.10 and 0.90 in steps of
+0.025 and maximises $F_1$ on the out-of-fold Eerola probabilities ($10\times5$ folds grouped
+by film). It is then applied to the Blockbuster films, so no Blockbuster label is used. Tuning
+on the 319 clips was fixed as the main variant before the run, and tuning on the 40 films is
+the check. Table~\ref{tab:app_zs_threshold} gives the result.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Zero-shot transfer to the 110 Blockbuster films with default and tuned thresholds.}
+  \label{tab:app_zs_threshold}
+  \begin{tabular}{lrrrr}
+    \toprule
+    & \multicolumn{3}{c}{Macro-$F_1$} & \\
+    \cmidrule(lr){2-4}
+    Pipeline & Default & Tuned on clips & Tuned on films & Macro ROC-AUC \\
+    \midrule
+    Emotion pipeline & 0.508 & 0.496 & 0.452 & 0.763 \\
+    PCA-8 control    & 0.417 & 0.450 & 0.462 & 0.693 \\
+    Direct VGGish    & 0.403 & 0.455 & 0.496 & 0.720 \\
+    \midrule
+    Emotion $-$ direct & $+0.106$ (\textbf{0.013}) & $+0.041$ (0.159) & $-0.044$ (0.246) & $+0.042$ (0.097) \\
+    Emotion $-$ PCA-8  & $+0.093$ (\textbf{0.027}) & $+0.045$ (0.173) & $-0.009$ (0.865) & $+0.070$ (\textbf{0.010}) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:app_zs_threshold}, the last two rows give the difference with the $p$-value
+of the paired film bootstrap in brackets. Bold marks $p<0.05$.
+
+The emotion pipeline hardly changes with tuning on clips, but the two other pipelines gain,
+because the default threshold suits them badly on the new dataset. The tuned thresholds
+also predict too many genres. The Blockbuster films carry 1.78 genres on average. At the
+default threshold the emotion pipeline assigns 2.45 and direct VGGish 1.99. Tuned on clips,
+they assign 2.85 and 3.72, and the PCA-8 control 4.73. The tuned scores therefore end close
+together, as in-domain (Appendix~\ref{sec:eval_robustness}). Without a threshold the emotion
+pipeline ranks the films best, and its lead over the PCA-8 control is significant. Most of
+the lead in $F_1$ at the default threshold thus comes from where the cut falls, and a smaller
+advantage in the ordering of films remains.
