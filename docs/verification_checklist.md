@@ -10,7 +10,7 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 
 ---
 
-## 0. Start here: what to do next (2 November 2026)
+## 0. Start here: what to do next (4 November 2026)
 
 **Decide** (the assistant cannot do these for you)
 - [ ] **The 0.434 floor.** Assigning every genre to every film scores 0.434 on five genres,
@@ -18,8 +18,9 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   (p = 0.52). It is left out "for now". Decide whether and how the thesis reports it (an
   examiner may compute it), §29.
 - [ ] **CLAP with ridge regression** beats the VGGish pipeline under all five seeds (0.502
-  vs 0.469). The thesis reports it but keeps VGGish because the pairing was picked after
-  the results. Agree, or ask for a test (§30.1; section B).
+  vs 0.469). Chapter 5 now gives four reasons for keeping VGGish with the random forest
+  (paragraph "Why the thesis keeps VGGish and the random forest"). Agree, or ask for a
+  post-hoc test for the appendix (§30.1; section B).
 - [ ] **Zero-shot with a threshold tuned on the source dataset: run on 2 Nov (§31).** The
   lead over direct VGGish falls from +0.106 (p = 0.013) to +0.041 (p = 0.159), over PCA-8
   from +0.093 to +0.045 (p = 0.173); threshold-free (ROC AUC) the emotion pipeline is still
@@ -36,21 +37,25 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   know nothing of the work since 27 October (wav2vec diagnosis, the comparison over
   representations and regressors). Take the numbers from `docs/current_state.md`,
   sections 7 to 7c.
-- [ ] **AI-usage declaration:** the date next to the signature, and the period of use
-  ("July 2026 to October 2026"), which must now include November (the thesis was edited on
-  1 November). Check the rest of it once more.
-- [ ] **Title page:** examiners, submission date, title.
+- [ ] **AI-usage declaration:** three red notes are still open: any other tools you used
+  (or delete the note), how you read, revised and adapted the drafts, and the date next
+  to the signature. The period of use (to November 2026), the wording row and the Figure
+  2.1 row were updated on 3 November: check them. The row on Chapter 7, the abstract and
+  the contributions says you wrote them and used AI only for minor edits, so it must stay
+  true.
+- [ ] **Title page:** already filled in. Check the title, both advisers and the
+  submission date (04 December 2026).
 
-**Read** (section B, newest first)
-- [ ] Chapter 5, "Other Representations and Emotion Regressors", its Appendix section and
-  the changed sentences in Methods, Fundamentals and Discussion (1 Nov).
-- [ ] Appendix A.5, the wav2vec 2.0 paragraphs (28 Oct).
-- [ ] The table of pipelines and models in Methods (27 Oct) and your comments of 21 Oct.
-- [ ] Chapters 5, 6 and Appendix A in full, then every other chapter once (section B).
+**Read** (section B)
+- [ ] The whole thesis once in full: every chapter and the appendix were reworded on
+  3 and 4 November. Numbers and references were checked by script; the meaning of each
+  sentence was not. Make sure it still says what you mean and sounds like you.
+- [ ] New since 2 November: Figure 2.1 and its text, the Thayer (1989) reference (check it
+  against the book), Figure 4.1, and the paragraph on VGGish and the random forest.
 
 **Look at the PDF** (section F)
-- [ ] The new 9-column table in Chapter 5 (fits the page?), the new figure and table in
-  the Appendix, then the rest of section F.
+- [ ] Figure 2.1, Figure 4.1 (no overlapping boxes), the grid figure in Chapter 5, the
+  9-column table in the Appendix, then the rest of section F.
 
 **Before submission**
 - [ ] Section C: know your answer to each likely challenge.
