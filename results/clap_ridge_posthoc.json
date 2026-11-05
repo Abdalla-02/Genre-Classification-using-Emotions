@@ -1,0 +1,95 @@
+{
+  "design": {
+    "question": "CLAP with ridge regression against VGGish with the random forest, both emotion pipelines, five genres, 40 films",
+    "status": "post hoc: the pairing was picked after the results, as the first of 18 cells",
+    "bonferroni": "p times the 17 other cells",
+    "pooled": "film bootstrap over the 50 repeats of the five master seeds; the seeds share the same 40 films"
+  },
+  "per_seed": {
+    "42": {
+      "clap_ridge": 0.4786851149422941,
+      "vggish_forest": 0.4600883327155536,
+      "diff": 0.018512271303762328,
+      "ci_lo": -0.023332578078760657,
+      "ci_hi": 0.061650654863195764,
+      "p_two_sided": 0.3885772565017848,
+      "repeat_win_rate": 0.7,
+      "clip_level_diff": 0.006519025775549788,
+      "clip_level_p_two_sided": 0.5925548189699134,
+      "clip_level_nb_p": 0.7221275526213621,
+      "clip_level_nb_p_limit": 0.710116290090599
+    },
+    "1": {
+      "clap_ridge": 0.5062278150093282,
+      "vggish_forest": 0.46267842353189514,
+      "diff": 0.04347724256048993,
+      "ci_lo": 0.002081289571082501,
+      "ci_hi": 0.08962854947649884,
+      "p_two_sided": 0.0407955124936257,
+      "repeat_win_rate": 0.9,
+      "clip_level_diff": 0.014973873348727707,
+      "clip_level_p_two_sided": 0.14686384497705252,
+      "clip_level_nb_p": 0.526415761735859,
+      "clip_level_nb_p_limit": 0.5072826543194167
+    },
+    "2": {
+      "clap_ridge": 0.508657914995896,
+      "vggish_forest": 0.47247604346856586,
+      "diff": 0.0359056773631055,
+      "ci_lo": -0.007214199327164328,
+      "ci_hi": 0.08061505509642475,
+      "p_two_sided": 0.11626721060683325,
+      "repeat_win_rate": 1.0,
+      "clip_level_diff": 0.01521177443140995,
+      "clip_level_p_two_sided": 0.15502294747577766,
+      "clip_level_nb_p": 0.5059855738661929,
+      "clip_level_nb_p_limit": 0.48623262304494586
+    },
+    "3": {
+      "clap_ridge": 0.49546526943955316,
+      "vggish_forest": 0.4694276703021659,
+      "diff": 0.026079270292979403,
+      "ci_lo": -0.01458294194030546,
+      "ci_hi": 0.07202984107459515,
+      "p_two_sided": 0.25395206527282,
+      "repeat_win_rate": 0.8,
+      "clip_level_diff": 0.013414172317353432,
+      "clip_level_p_two_sided": 0.2610912799592045,
+      "clip_level_nb_p": 0.5141056491674834,
+      "clip_level_nb_p_limit": 0.49459544061871086
+    },
+    "4": {
+      "clap_ridge": 0.5199233952932388,
+      "vggish_forest": 0.48114996962616086,
+      "diff": 0.03845547054186914,
+      "ci_lo": -0.004991853173720973,
+      "ci_hi": 0.08070304935685069,
+      "p_two_sided": 0.0815910249872514,
+      "repeat_win_rate": 0.8,
+      "clip_level_diff": 0.009436468221566872,
+      "clip_level_p_two_sided": 0.42835288118306986,
+      "clip_level_nb_p": 0.6528852614563974,
+      "clip_level_nb_p_limit": 0.6381536969789827
+    }
+  },
+  "pooled": {
+    "film": {
+      "clap_ridge": 0.501791901936062,
+      "vggish_forest": 0.46916408792886827,
+      "diff": 0.03248598641244126,
+      "ci_lo": -0.006915020018180784,
+      "ci_hi": 0.07477477757617218,
+      "p_two_sided": 0.11218765935747067,
+      "p_bonferroni_17": 1.0
+    },
+    "clip": {
+      "clap_ridge": 0.42289365957004565,
+      "vggish_forest": 0.4102876285717217,
+      "diff": 0.01191106281892155,
+      "ci_lo": -0.009377167997691838,
+      "ci_hi": 0.03421067381294762,
+      "p_two_sided": 0.26925038245792965,
+      "p_bonferroni_17": 1.0
+    }
+  }
+}
