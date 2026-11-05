@@ -488,7 +488,42 @@ def fig_box_office():
     save(fig, "box_office_blockbuster")
 
 
+def fig_rating_structure():
+    d = load("rating_structure")
+    if d is None:
+        return
+    fig, ax = plt.subplots(figsize=(WIDTH * 0.62, WIDTH * 0.56))
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.add_patch(plt.Circle((0, 0), 1.0, fill=False, color="black", lw=0.9))
+    ax.plot([-1.08, 1.08], [0, 0], color="0.6", lw=0.7, zorder=0)
+    ax.plot([0, 0], [-1.08, 1.08], color="0.6", lw=0.7, zorder=0)
+    share = d["explained_variance"]
+    ax.text(1.12, 0, f"first\ncomponent\n({share[0]:.1%})", ha="left", va="center", fontsize=8)
+    ax.text(0, 1.1, f"second component ({share[1]:.1%})", ha="center", va="bottom", fontsize=8)
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
+    # label offset in points, by hand: tension, anger and fear lie close together
+    offset = {"valence": (5, 6), "energy": (-5, 6), "tension": (-5, 7), "anger": (9, 8),
+              "fear": (-6, -8), "happy": (8, 3), "sad": (8, -3), "tender": (-7, -9)}
+    for s, (x, y) in d["loadings"].items():
+        dx, dy = offset[s]
+        if s in ("valence", "energy", "tension"):
+            ax.annotate("", (x, y), (0, 0), arrowprops=dict(
+                arrowstyle="-|>", color="black", lw=0.9, ls="--", mutation_scale=8))
+            style = dict(fontweight="bold")
+        else:
+            ax.plot(x, y, "s", ms=7, mfc="0.6", mec="black", mew=0.8, zorder=4)
+            style = dict(style="italic")
+        ax.annotate(names.get(s, s), (x, y), xytext=(dx, dy), textcoords="offset points",
+                    ha="left" if dx > 0 else "right", va="center", fontsize=8.5, zorder=5,
+                    **style)
+    ax.set_xlim(-1.3, 1.5)
+    ax.set_ylim(-1.15, 1.25)
+    save(fig, "rating_structure")
+
+
 FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
+           "rating_structure": fig_rating_structure,
            "metrics": fig_metric_family, "zero_shot": fig_zero_shot,
            "cross_dataset": fig_cross_dataset, "stage1": fig_stage1,
            "ablation": fig_ablation, "signatures": fig_signatures,

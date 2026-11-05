@@ -593,3 +593,41 @@ together, as in-domain (Appendix~\ref{sec:eval_robustness}). Without a threshold
 pipeline ranks the films best, and its lead over the PCA-8 control is significant. Most of
 the lead in $F_1$ at the default threshold thus comes from where the cut falls, and a smaller
 advantage in the ordering of films remains.
+
+% =============================================================================
+\section{How the Ratings Relate to Each Other}
+\label{sec:app_ratings}
+
+Figure~\ref{fig:circumplex} is a schematic. This section shows how the eight rating scales of
+the dataset actually relate to each other, over all 360 rated clips. A principal component
+analysis of their correlations needs only two components for most of the structure. The first
+holds 59.8\,\% of the variance and the second 22.6\,\%, together 82.4\,\%.
+Figure~\ref{fig:rating_structure} draws the scales in the plane of these two components.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.62\textwidth]{figures/rating_structure.pdf}
+  \caption{The eight rating scales in the plane of the first two principal components (360 rated clips).}
+  \label{fig:rating_structure}
+\end{figure}
+
+In Figure~\ref{fig:rating_structure}, each scale is placed by its correlation with the two
+components, so a scale close to the circle is described well by this plane. Scales that point
+the same way correlate positively, and scales that point in opposite directions correlate
+negatively. The arrows are the three dimensional scales, and the grey squares are the five
+discrete emotions.
+
+The real picture differs from the schematic in three ways. First, valence and tension are
+almost opposite ($r=-0.91$), where the schematic draws them at an angle of 135 degrees. Second,
+energy does not lie on the pleasant side. It correlates negatively with valence ($r=-0.40$) and
+positively with tension ($r=0.58$), although the schematic draws energy and tension at right
+angles. Third, sadness lies on the pleasant side, because it correlates slightly positively with
+valence ($r=0.32$). Sad film music in this dataset is thus not rated as unpleasant.
+
+The first component runs from tension, fear and anger to valence and tenderness. This is the
+axis from threat to warmth that also carries most of the genre signal
+(Appendix~\ref{sec:app_ablation}). Fear and tension are especially close ($r=0.83$), which fits
+the finding that one to three emotions keep most of that signal. The second component runs from
+sadness to happiness, and energy lies on its upper side. Figure~\ref{fig:circumplex} stays a
+schematic of the models from the literature. This section shows what these models look like in
+the ratings used here.

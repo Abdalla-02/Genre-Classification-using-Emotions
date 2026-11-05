@@ -2071,3 +2071,24 @@ The same update puts the all-positive floor (§29) and the tuned zero-shot test 
 thesis: Chapter 5 RQ1 and RQ4 and the summary, Discussion, Limitations, and the new Appendix
 sections `sec:app_floor` and `sec:app_zs_threshold`. The RQ4 claim now says "at the default
 threshold".
+
+## 33. How the rating scales relate to each other; the author's comments of 4 Nov (5 Nov 2026)
+
+The author asked whether the correlations of the emotions in the dataset are known, because
+Figure 2.1 is only a schematic. `exp_rating_structure.py` → `rating_structure.json`, figure
+`rating_structure`: correlation matrix of the eight scales and a principal component analysis
+of it, all 360 rated clips. The first two components hold 59.8 % and 22.6 % of the variance
+(82.4 %), and every scale lies at 0.82 or more from the centre of the plane.
+
+The ratings differ from the schematic: valence and tension are almost opposite (r = −0.91),
+energy correlates negatively with valence (−0.40) and positively with tension (0.58), and
+sadness correlates slightly positively with valence (0.32). The first component is the axis
+from threat to warmth found in the ablation. Figure 2.1 stays a schematic of the models in the
+literature; the data are in Appendix `sec:app_ratings`, and Fundamentals quotes two of the
+correlations.
+
+The other comments of `Commented_Thesis_04.11.pdf`: RQ2 stays as it is and the introduction now
+says how it differs from RQ4; "stirring" became "activated"; the sentence on right angles was
+rebuilt; the random-guess baseline is explained with the five-genre example. It is not run
+through the cross-validation: nothing is trained, and its score is the mean over simulated
+guesses on the same labels.

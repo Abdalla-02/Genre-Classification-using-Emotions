@@ -15,6 +15,9 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 **Decide** (the assistant cannot do these for you)
 - [ ] **wav2vec 2.0 layer:** block 1 is nominally best after the fix, the thesis keeps
   block 2 (section B). Recommended: keep it, as the thesis says.
+- Done on 5 November: your comments of 4 November (log section 33). Read the new Appendix
+  section on how the ratings relate to each other: sadness correlates slightly positively
+  with valence, and Figure 2.1 stays a schematic.
 - Done on 4 November: the 0.434 floor and the zero-shot threshold test are in the thesis
   (Chapter 5, Discussion, new Appendix sections), and CLAP with ridge regression was
   tested post hoc (+0.032, p = 0.112; log section 32). Read how they are worded.
