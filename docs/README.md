@@ -2114,3 +2114,30 @@ number in `zero_shot.json` is unchanged (checked). Strict regime: emotion pipeli
 
 Answered without an edit: the GitHub link (kept), Hamming loss alongside F1, why the
 duplicate film is mentioned, why the tuned-threshold table is in the Appendix.
+
+## 35. The all-positive classifier under every metric; why F1 and ROC-AUC go together (9 Nov 2026)
+
+The author asked why the thesis pairs macro-F1 with ROC-AUC rather than with Hamming loss,
+since Hamming loss does expose the classifier that assigns every genre to every clip.
+`exp_all_positive_metrics.py` → `all_positive_metrics.json` scores that classifier with the
+metric functions of `exp_metrics_stability.py` (five genres, 329 clips; it asserts the film-
+and clip-level macro-F1 of `per_genre_analysis.json`).
+
+| metric | all yes | most frequent ("Drama") | best audio pipeline |
+|---|---|---|---|
+| macro-F1, films / clips | 0.434 / 0.430 | 0.168 / 0.168 | 0.460 / 0.405 |
+| weighted F1 | **0.607** | 0.396 | 0.546 |
+| Hamming loss | 0.691 | **0.218** | 0.311 |
+| exact match | 0.000 | **0.283** | 0.168 |
+| macro ROC-AUC (clips) | 0.500 | 0.500 | 0.592 |
+
+Each threshold metric is fooled by one of the two trivial classifiers: macro-F1 and weighted
+F1 by saying yes to everything, Hamming loss and exact match by saying only "Drama". ROC-AUC
+gives both exactly 0.5, because neither can rank one clip above another. The thesis keeps
+macro-F1 as the headline (it scores the decisions) and reads ROC-AUC beside it as the check.
+
+Thesis (Overleaf `4c58980`): new column "All yes" in Table A.2 with a paragraph; Methods 4.6.3
+paragraph "Why macro-F1 and ROC-AUC are read together"; Chapter 5: a third convention, a
+sentence in RQ1 ("A harder reference"), and the film-level ROC-AUC lead over VGGish in RQ3
+(+0.071, p = 0.093, `per_genre_analysis.json`). The GitHub link was removed from Methods 4.7
+on the same day (Overleaf `aeb0795`, the author's decision).

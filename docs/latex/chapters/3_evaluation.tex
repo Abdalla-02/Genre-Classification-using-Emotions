@@ -16,7 +16,7 @@ stability over seeds, the emotion ablation, the waveform representation, all eig
 the reproduction of the published Blockbuster result and an error analysis, and they are
 reported in Appendix~\ref{app:supplementary}.
 
-Two conventions apply throughout. First, every genre score is macro-$F_1$ over films
+Three conventions apply throughout. First, every genre score is macro-$F_1$ over films
 (Section~\ref{sec:evaluation_protocol}). The predicted probabilities of a film's clips are
 averaged, and the film is scored once. Where it matters for the argument, the clip-level
 score of the same predictions is given beside it. Second, the results come from three
@@ -25,7 +25,11 @@ clips, 42 films), the five-genre subset (329 clips, 40 films), on which the in-d
 comparisons are made, and the six genres shared with the Blockbuster dataset (319 Eerola
 clips from 40 films, and 110 Blockbuster films). Every score is therefore given with the
 chance floor of its own label space. This is either the \emph{most-frequent} baseline or
-the higher \emph{base-rate random guess} (Section~\ref{sec:fund_evaluation}).
+the higher \emph{base-rate random guess} (Section~\ref{sec:fund_evaluation}). Third,
+macro-$F_1$ can be pushed up by saying yes more often. A classifier that assigns every genre
+to every film reaches a high macro-$F_1$ but a ROC-AUC of exactly 0.5. Where a lead could
+come from this, the threshold-free ROC-AUC is given beside macro-$F_1$, to show whether a
+pipeline ranks the films better (Section~\ref{sec:evaluation_protocol}).
 
 % =============================================================================
 \section{Stage 1: Emotion Regression}
@@ -129,7 +133,7 @@ chance that a film with a genre is ranked above a film without it
 (Section~\ref{sec:fund_evaluation}). At film level it is 0.655 for the emotion pipeline and 0.691 for the ratings, where such a classifier
 scores 0.50. This lead of 0.155 is significant ($p<0.001$). The emotions do carry genre
 information, but less than the distance to the chance floors suggests
-(Appendix~\ref{sec:app_floor}).
+(Appendix~\ref{sec:app_floor}). This is why macro-$F_1$ is read together with ROC-AUC.
 
 \begin{figure}[t]
   \centering
@@ -217,7 +221,10 @@ The emotion pipeline's lead over the control, $+0.070$, is not significant ($p=0
 Over clips the control is level with VGGish, and the emotion pipeline is ahead of it
 ($+0.042$, $p=0.020$). Third, part of the advantage comes from the operating point. With a
 decision threshold tuned per genre on the training folds, the pipelines come together over
-clips (0.420 to 0.433; Appendix~\ref{sec:eval_robustness}). The answer to RQ3 is
+clips (0.420 to 0.433; Appendix~\ref{sec:eval_robustness}). Without a threshold, the
+emotion pipeline's lead in film-level ROC-AUC over VGGish is $+0.071$ ($p=0.093$). That is
+about as large as its lead in $F_1$, so the lead is not only a matter of saying yes more
+often, but it is not significant either. The answer to RQ3 is
 therefore twofold. At the default threshold the emotion pipeline is consistently ahead of
 direct audio, in nearly every repeat and under every seed. How large its lead is over the
 strongest direct representations, however, cannot be settled on 40 films.

@@ -83,36 +83,36 @@ Apart from the first row, all metrics are computed over clips, from the same pre
   \label{tab:metric_family}
   \setlength{\tabcolsep}{3.5pt}
   \resizebox{\textwidth}{!}{%
-  \begin{tabular}{lrrrrrrr}
+  \begin{tabular}{lrrrrrrrr}
     \toprule
-    Metric & Emotion & VGGish & AST & PCA-8 & Most freq. & Random & $\Delta$ ($p$) \\
+    Metric & Emotion & VGGish & AST & PCA-8 & Most freq. & All yes & Random & $\Delta$ ($p$) \\
     \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, decision at 0.5}} \\
-    Macro-$F_1$ over films            & \textbf{0.460} & 0.367 & 0.318 & 0.390 & 0.168 & 0.309 & $+0.093$ (0.063) \\
-    Macro-$F_1$ over clips            & \textbf{0.405} & 0.366 & 0.368 & 0.364 & 0.168 & 0.307 & $+0.039$ (0.014) \\
-    Macro precision                   & \textbf{0.363} & 0.341 & 0.356 & 0.334 & 0.145 & 0.308 & -- \\
-    Macro recall                      & \textbf{0.566} & 0.423 & 0.388 & 0.460 & 0.200 & 0.308 & -- \\
+    \multicolumn{9}{l}{\emph{Genres weighted equally, decision at 0.5}} \\
+    Macro-$F_1$ over films            & \textbf{0.460} & 0.367 & 0.318 & 0.390 & 0.168 & 0.434 & 0.309 & $+0.093$ (0.063) \\
+    Macro-$F_1$ over clips            & \textbf{0.405} & 0.366 & 0.368 & 0.364 & 0.168 & 0.430 & 0.307 & $+0.039$ (0.014) \\
+    Macro precision                   & \textbf{0.363} & 0.341 & 0.356 & 0.334 & 0.145 & 0.309 & 0.308 & -- \\
+    Macro recall                      & \textbf{0.566} & 0.423 & 0.388 & 0.460 & 0.200 & 1.000 & 0.308 & -- \\
     \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, per-genre threshold tuned on the training fold}} \\
-    Macro-$F_1$, tuned threshold      & 0.420 & 0.423 & 0.430 & \textbf{0.433} & 0.168 & 0.307 & $-0.004$ (0.813) \\
+    \multicolumn{9}{l}{\emph{Genres weighted equally, per-genre threshold tuned on the training fold}} \\
+    Macro-$F_1$, tuned threshold      & 0.420 & 0.423 & 0.430 & \textbf{0.433} & 0.168 & 0.430 & 0.307 & $-0.004$ (0.813) \\
     \midrule
-    \multicolumn{8}{l}{\emph{Genres weighted equally, threshold-free}} \\
-    Macro average precision           & \textbf{0.370} & 0.357 & 0.357 & 0.350 & 0.309 & 0.320 & $+0.014$ (0.352) \\
-    Macro ROC-AUC                     & \textbf{0.592} & 0.542 & 0.563 & 0.545 & 0.500 & 0.500 & $+0.049$ (0.063) \\
+    \multicolumn{9}{l}{\emph{Genres weighted equally, threshold-free}} \\
+    Macro average precision           & \textbf{0.370} & 0.357 & 0.357 & 0.350 & 0.309 & 0.309 & 0.320 & $+0.014$ (0.352) \\
+    Macro ROC-AUC                     & \textbf{0.592} & 0.542 & 0.563 & 0.545 & 0.500 & 0.500 & 0.500 & $+0.049$ (0.063) \\
     \midrule
-    \multicolumn{8}{l}{\emph{Dominated by the frequent genres}} \\
-    Weighted $F_1$                    & \textbf{0.546} & 0.505 & 0.534 & 0.494 & 0.396 & 0.476 & $+0.042$ (0.008) \\
-    Micro-$F_1$                       & 0.476 & 0.473 & \textbf{0.517} & 0.446 & 0.571 & 0.477 & $+0.004$ (0.864) \\
-    Samples-$F_1$                     & 0.479 & 0.453 & \textbf{0.497} & 0.430 & 0.574 & 0.437 & $+0.026$ (0.157) \\
-    Jaccard (samples)                 & 0.360 & 0.356 & \textbf{0.408} & 0.331 & 0.500 & 0.354 & -- \\
-    Exact match                       & 0.072 & 0.102 & \textbf{0.168} & 0.081 & 0.283 & 0.130 & -- \\
-    Hamming loss                      & 0.406 & 0.358 & \textbf{0.311} & 0.396 & 0.218 & 0.323 & -- \\
+    \multicolumn{9}{l}{\emph{Dominated by the frequent genres}} \\
+    Weighted $F_1$                    & \textbf{0.546} & 0.505 & 0.534 & 0.494 & 0.396 & 0.607 & 0.476 & $+0.042$ (0.008) \\
+    Micro-$F_1$                       & 0.476 & 0.473 & \textbf{0.517} & 0.446 & 0.571 & 0.472 & 0.477 & $+0.004$ (0.864) \\
+    Samples-$F_1$                     & 0.479 & 0.453 & \textbf{0.497} & 0.430 & 0.574 & 0.461 & 0.437 & $+0.026$ (0.157) \\
+    Jaccard (samples)                 & 0.360 & 0.356 & \textbf{0.408} & 0.331 & 0.500 & 0.309 & 0.354 & -- \\
+    Exact match                       & 0.072 & 0.102 & \textbf{0.168} & 0.081 & 0.283 & 0.000 & 0.130 & -- \\
+    Hamming loss                      & 0.406 & 0.358 & \textbf{0.311} & 0.396 & 0.218 & 0.691 & 0.323 & -- \\
     \bottomrule
   \end{tabular}}
 \end{table}
 
 In Table~\ref{tab:metric_family}, ``Random'' is the base-rate random guess and ``Most
-freq.'' the most-frequent baseline. $\Delta$ is the emotion pipeline minus direct VGGish,
+freq.'' the most-frequent baseline. ``All yes'' assigns every genre to every clip. $\Delta$ is the emotion pipeline minus direct VGGish,
 with the paired film-bootstrap $p$-value. This bootstrap uses 1000 draws, so the two
 macro-$F_1$ rows can differ from Table~\ref{tab:power_cmp} in the third decimal. A dash
 means that it was not computed. For Hamming loss lower is better. Bold marks the best of
@@ -138,6 +138,15 @@ which a model that has learned nothing ranks first is not a good headline for a 
 about genres such as Horror and Comedy. This is why macro-$F_1$ is used. Among the metrics
 that weight genres equally, the emotion pipeline ranks first under both macro-$F_1$ scores
 and both threshold-free metrics.
+
+The all-positive classifier fails in the opposite way. Saying yes to every genre gives it a
+recall of 1. It reaches 0.430 macro-$F_1$ over clips and 0.434 over films. That puts it
+above every audio pipeline at clip level and above every direct one at film level. Its
+weighted $F_1$ (0.607) is even the highest in the table. Hamming loss and exact match expose it
+(0.691 and 0.000), and so do the threshold-free metrics. Its macro ROC-AUC is exactly
+0.500, and its average precision equals the share of clips with each genre. No metric that
+needs a threshold catches both trivial classifiers. ROC-AUC catches both, because neither
+of them can rank one clip above another.
 
 Hamming loss deserves a closer look. Under it the emotion pipeline is the weakest of the
 four audio pipelines (0.406), and it even falls behind the random guess (0.323). The reason

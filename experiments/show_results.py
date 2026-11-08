@@ -63,6 +63,8 @@ DESCRIPTIONS = {
                         "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
+    "all_positive_metrics": "The classifier that assigns every genre to every clip, under "
+                            "every metric of the metric table (section 35)",
     "rating_structure": "Correlations of the eight rating scales and their first two "
                         "principal components (section 33)",
     "clap_ridge_posthoc": "Post-hoc test of CLAP with ridge regression against the VGGish "
