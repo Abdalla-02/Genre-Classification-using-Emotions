@@ -124,8 +124,9 @@ and most films are Drama. That is above both chance floors. The emotion pipeline
 0.022 ahead of it ($p=0.518$), and the ratings 0.054 ($p=0.086$). Over clips both lie below
 it (0.405 and 0.416 against 0.430). Every direct representation and the PCA-8 control lie
 below it at both levels. Macro-$F_1$ at the default threshold therefore says little about
-skill on its own. A measure without a threshold is clearer. The film-level macro ROC-AUC
-is 0.655 for the emotion pipeline and 0.691 for the ratings, where such a classifier
+skill on its own. A measure without a threshold is clearer. The macro ROC-AUC gives the
+chance that a film with a genre is ranked above a film without it
+(Section~\ref{sec:fund_evaluation}). At film level it is 0.655 for the emotion pipeline and 0.691 for the ratings, where such a classifier
 scores 0.50. This lead of 0.155 is significant ($p<0.001$). The emotions do carry genre
 information, but less than the distance to the chance floors suggests
 (Appendix~\ref{sec:app_floor}).
@@ -192,8 +193,10 @@ argument. Appendix~\ref{sec:app_comparisons} lists all paired comparisons.
 In Table~\ref{tab:power_cmp}, $\Delta$ is the first pipeline minus the second, with its
 95\,\% interval and $p$-value from the paired film bootstrap. ``Won'' counts the ten
 repeats in which the first pipeline scores higher. The two columns on the right score the
-same predictions over clips with the Nadeau--Bengio corrected $t$-test. That test needs
-one score per test fold and therefore cannot be computed per film. Bold marks $p<0.05$.
+same predictions over clips with the Nadeau--Bengio corrected $t$-test. Unlike an ordinary
+$t$-test, it allows for the folds sharing most of their training films
+(Section~\ref{sec:fund_evaluation}). It needs one score per test fold and therefore cannot be
+computed per film. Bold marks $p<0.05$.
 ``Emotion'' is the emotion pipeline on VGGish. The representation it is compared with is
 given to the same classifier directly.
 
@@ -261,7 +264,7 @@ Three results follow. First, the emotion pipeline is ahead of the direct use of 
 representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
 0.086 over clips. The gain is largest for AST and wav2vec~2.0, the two weakest direct
 representations. There it stays significant for every regressor after correcting for the
-18 tests with the Holm method ($p<0.001$). It is smallest for MusiCNN, the strongest
+18 tests with the Holm method ($p<0.001$; Section~\ref{sec:fund_evaluation}). It is smallest for MusiCNN, the strongest
 direct representation (0.032 to 0.049, $p\geq0.32$). Second, inside the emotion pipeline
 the representation hardly matters. With the random forest, every representation is within
 0.034 of VGGish, and none differs from it significantly ($p\geq0.15$). The 18 emotion
@@ -458,7 +461,8 @@ the most discriminating emotion overall, followed by valence.
 The signatures were derived from human ratings on one dataset. The second dataset can
 test whether they describe film music in general or only that dataset. The random forest
 trained on the VGGish embeddings of the Eerola clips predicts the eight emotions for each
-of the 4664 Blockbuster cues. The same effect sizes are then computed there for the six
+of the 4664 Blockbuster cues. A cue is one continuous piece of score music as it is used in
+the film (Section~\ref{subsec:methods_blockbuster}). The same effect sizes are then computed there for the six
 shared genres. No emotion labels for Blockbuster exist or are used, so any agreement comes
 from transfer and not from fitting. Figure~\ref{fig:signatures} shows the two matrices
 side by side.
@@ -509,8 +513,8 @@ same film were in the training and the test data. This was checked against the I
 identifiers of all films. None of the 42 Eerola films occurs among the 110 Blockbuster
 films, and no titles match. The Eerola films all came out before 2011, and the
 Blockbuster films between 2014 and 2019. Some composers, however, appear in both datasets.
-For example, Danny Elfman scored \emph{Batman} in Eerola and \emph{Justice League} in
-Blockbuster, which quotes his Batman theme. Some stylistic similarity across the split is
+For example, Hans Zimmer wrote the music for \emph{The Last Samurai} in Eerola and for
+\emph{Interstellar} and \emph{Dunkirk} in Blockbuster. Some stylistic similarity across the split is
 therefore possible, but it is not a shared film. A related problem was found inside the
 Eerola dataset and corrected before the results reported here. One film appeared under
 two spellings of its title. Grouping by film therefore treated it as two films and could
@@ -549,6 +553,9 @@ line marks the base-rate random guess (0.295). The four pipelines are defined as
   \item \emph{Direct VGGish, vote over cues}: the classifier is trained on single cues,
     each labelled with its film's genres. A film gets a genre when more than half of its
     cues predict it. This is the instance majority voting of \citet{ma2021computational}.
+    For example, a film with 40 cues gets Action if at least 21 of them are classified as
+    Action. The classifier thus learns from many short pieces of each film, and the vote
+    turns their answers into one decision per film.
   \item \emph{PCA-8 control}: the film-average embedding compressed to eight principal
     components, fitted on the training films.
 \end{itemize}
@@ -581,7 +588,8 @@ and recall.
 \end{figure}
 
 In Figure~\ref{fig:zero_shot}, the dashed line is the plurality baseline and the dotted
-line the base-rate random guess. The $p$-values are paired bootstraps over the 110 films.
+line the base-rate random guess. The error bars are the bootstrap standard deviation over the
+110 films, and the $p$-values come from the paired bootstrap over the same films.
 
 \begin{table}[tbp]
   \centering
@@ -611,7 +619,10 @@ $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$) and the PCA-8 control (0.417) by $+0.0
 in contrast, gains only $+0.013$ over the raw features ($p=0.737$). Under the other
 scaling regime the lead over direct VGGish is $+0.118$ ($p=0.001$). The lead is partly
 driven by recall. The emotion pipeline finds more of the true genres (0.651 against
-0.435), at lower precision (0.480 against 0.705). In this transfer it makes little
+0.435), at lower precision (0.480 against 0.705). Macro-$F_1$ is the mean of the $F_1$ values
+of the genres, not the $F_1$ of the mean precision and recall. Direct VGGish is precise
+overall, but its $F_1$ on Romance and Horror is only 0.14 and 0.17. The emotion
+pipeline reaches 0.42 and 0.24 on them, and 0.61 instead of 0.38 on Sci-Fi. In this transfer it makes little
 difference whether the emotions are predicted per cue or once from the film-average
 embedding (0.508 against 0.502). In-domain on Blockbuster the prediction per cue is
 clearly better (Appendix~\ref{sec:app_blockbuster}).
@@ -637,7 +648,7 @@ Eerola films. The emotion regressor is fitted on the Eerola training folds, and 
 held-out Eerola films touch neither fit. In the pooled design both datasets are in the
 training set, and cross-validation runs over both.
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/cross_dataset.pdf}
   \caption{Film-level macro-$F_1$ for the three cross-dataset designs (six shared genres, VGGish).}
@@ -648,9 +659,17 @@ In Figure~\ref{fig:cross_dataset}, the left group is trained on Eerola and teste
 Blockbuster. The middle group is trained on Blockbuster and tested on Eerola. The right
 group is cross-validated with both datasets in training. For the two transfer directions,
 the error bars are the bootstrap standard deviation over the test films. For the pooled
-design they are the standard deviation of the five repeat means. The left group comes
-from a re-implementation in which the emotion regressor is trained on all 360 rated clips,
-so it differs slightly from Figure~\ref{fig:zero_shot}.
+design they are the standard deviation of the five repeat means.
+
+The left group is a second implementation of the zero-shot direction. It was written to run
+all three designs with the same code, and it differs from the zero-shot experiment in two
+details. Its emotion regressor is trained on all 360 rated clips, because the regressor needs
+only ratings, not genre labels. Its film vectors give every cue the same weight, whereas the
+zero-shot experiment averages over all frames of a film. The scores therefore differ slightly
+from Figure~\ref{fig:zero_shot}: 0.503 against 0.508 for the emotion pipeline and 0.383
+against 0.403 for direct VGGish. The zero-shot experiment stays the main result. It was fixed
+first, and it carries the further checks: both scaling regimes, the ratings arm and the tuned
+thresholds.
 
 The emotion pipeline is ahead of direct VGGish in both transfer directions, but
 significantly only from Eerola to Blockbuster (0.503 against 0.383, $+0.121$, $p=0.007$).

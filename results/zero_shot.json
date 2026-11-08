@@ -117,7 +117,8 @@
           0.16666666666666666
         ],
         "labels_per_item_pred": 1.990909090909091,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.03931779528639521
       },
       "VGGish -> predicted emotion(11), per-cue": {
         "macro_precision": 0.4802421912402051,
@@ -133,7 +134,8 @@
           0.23684210526315788
         ],
         "labels_per_item_pred": 2.4545454545454546,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.030696249239990234
       },
       "VGGish -> predicted emotion(11), film-level": {
         "macro_precision": 0.4688836301739528,
@@ -149,7 +151,8 @@
           0.21686746987951808
         ],
         "labels_per_item_pred": 2.590909090909091,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.02823062917310914
       },
       "emotion(11), genre stage on ratings": {
         "macro_precision": 0.461278081453737,
@@ -165,7 +168,8 @@
           0.25925925925925924
         ],
         "labels_per_item_pred": 2.1545454545454548,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.02883221694970359
       },
       "PCA-8(VGGish) [control]": {
         "macro_precision": 0.539473947800445,
@@ -181,7 +185,8 @@
           0.3076923076923077
         ],
         "labels_per_item_pred": 2.1272727272727274,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.039920617954313495
       }
     },
     "target-standardised": {
@@ -199,7 +204,8 @@
           0.27906976744186046
         ],
         "labels_per_item_pred": 1.8727272727272728,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.03136156837545572
       },
       "VGGish -> predicted emotion(11), per-cue": {
         "macro_precision": 0.4802421912402051,
@@ -215,7 +221,8 @@
           0.23684210526315788
         ],
         "labels_per_item_pred": 2.4545454545454546,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.030696249239990234
       },
       "VGGish -> predicted emotion(11), film-level": {
         "macro_precision": 0.4688836301739528,
@@ -231,7 +238,8 @@
           0.21686746987951808
         ],
         "labels_per_item_pred": 2.590909090909091,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.02823062917310914
       },
       "emotion(11), genre stage on ratings": {
         "macro_precision": 0.461278081453737,
@@ -247,7 +255,8 @@
           0.25925925925925924
         ],
         "labels_per_item_pred": 2.1545454545454548,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.02883221694970359
       },
       "PCA-8(VGGish) [control]": {
         "macro_precision": 0.3787771837523081,
@@ -263,7 +272,8 @@
           0.3783783783783784
         ],
         "labels_per_item_pred": 2.2454545454545456,
-        "labels_per_item_true": 1.7818181818181817
+        "labels_per_item_true": 1.7818181818181817,
+        "boot_sd": 0.03031410283216224
       }
     }
   },

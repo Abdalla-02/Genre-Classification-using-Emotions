@@ -407,7 +407,14 @@ is leave-one-film-out over the 110 films, with macro-averaged precision, recall 
 \end{table}
 
 In Table~\ref{tab:blockbuster_reference}, the published values are quoted from
-\citet{ma2021computational}, Table~4. This direct pipeline is within the range of their
+\citet{ma2021computational}, Table~4. Their models all treat a film as a set of cues.
+VGGish and MIR name the features of each cue. \emph{Average pooling} averages the cue
+vectors of a film into one vector before classifying it. \emph{Single attention} lets a
+small network learn a weight for each cue, so that the more informative cues count more in
+that average. \emph{Simple-MI} (simple multiple-instance learning) also summarises each film
+by its cues and then classifies it with $k$-nearest neighbours ($k$NN) or a support vector
+machine (SVM). The random guess predicts each genre at its base rate, and the plurality label
+set gives every film the most common combination of genres. This direct pipeline is within the range of their
 VGGish models, and both of their baselines reproduce to within 0.03. The classifier is
 thus checked against an outside result before it is used for transfer. Under the repeated
 protocol of Figure~\ref{fig:blockbuster_cv}, the learned embedding (0.593) does not beat

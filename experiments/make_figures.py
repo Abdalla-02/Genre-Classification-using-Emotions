@@ -196,8 +196,10 @@ def fig_zero_shot():
     fig, ax = plt.subplots(figsize=(WIDTH, 1.9))
     for i, (k, lab) in enumerate(rows[::-1]):
         v = z[k]
-        ax.barh(i, v["macro_f1"], color=route_colour(lab), height=0.6)
-        ax.text(v["macro_f1"] + 0.005, i, f"{v['macro_f1']:.3f}", va="center", fontsize=8)
+        ax.barh(i, v["macro_f1"], color=route_colour(lab), height=0.6,
+                xerr=v["boot_sd"], error_kw=dict(ecolor="black", lw=0.8, capsize=3))
+        ax.text(v["macro_f1"] + v["boot_sd"] + 0.008, i,
+                f"{v['macro_f1']:.3f} $\\pm$ {v['boot_sd']:.3f}", va="center", fontsize=8)
     ax.set_yticks(range(len(rows)), [r[1] for r in rows[::-1]])
     floor_line(ax, d["blockbuster_baselines"]["plurality"]["macro_f1"], "most-frequent baseline")
     floor_line(ax, d["blockbuster_baselines"]["random_guess"]["macro_f1"],
@@ -211,7 +213,7 @@ def fig_zero_shot():
             f"vs PCA-8 p = {p2:.3f}", transform=ax.transAxes, ha="right", fontsize=7)
     ax.set_xlabel("film-level macro-F1 on the 110 Blockbuster films (6 shared genres),\n"
                   "trained on Eerola only")
-    ax.set_xlim(0, 0.6)
+    ax.set_xlim(0, 0.65)
     save(fig, "zero_shot")
 
 

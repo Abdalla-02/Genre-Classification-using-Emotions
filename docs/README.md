@@ -2092,3 +2092,25 @@ says how it differs from RQ4; "stirring" became "activated"; the sentence on rig
 rebuilt; the random-guess baseline is explained with the five-genre example. It is not run
 through the cross-validation: nothing is trained, and its score is the mean over simulated
 guesses on the same labels.
+
+## 34. The author's comments in `_Thesis_05.11.pdf` (8 Nov 2026)
+
+Eighteen comments, read from the PDF on the author's Drive. Edits on Overleaf: an example of
+the film bootstrap (+0.093, CI [−0.001, +0.191], 2.6 % of draws ≤ 0, p = 0.052), ridge
+regression and SVR with an RBF kernel, ROC-AUC and the Holm method (Holm 1979, added to the
+bibliography) explained in Fundamentals; short glosses for AUC, the Nadeau–Bengio test, Holm
+and "cue" in Chapter 5; the shared-composer example is now Hans Zimmer (*The Last Samurai* in
+Eerola, *Interstellar* and *Dunkirk* in Blockbuster); the vote over cues with an example;
+macro-F1 is the mean of per-genre F1, not the F1 of mean precision and recall (direct VGGish
+Romance 0.14 and Horror 0.17, emotion 0.42 and 0.24, Sci-Fi 0.38 vs 0.61); Figure 5.9 placed
+`[!htb]` so it stays in 5.6.3; the two zero-shot implementations explained (regressor on 360
+vs 319 clips; film vectors weight every cue equally vs average all frames: 0.503 vs 0.508,
+direct 0.383 vs 0.403); the rows of Table A.5 explained.
+
+Figure 5.8 now has error bars. `exp_zero_shot.py` stores `boot_sd` per arm (standard deviation
+of the arm's macro-F1 over the same 2000 film resamples as its paired bootstrap); every other
+number in `zero_shot.json` is unchanged (checked). Strict regime: emotion pipeline 0.508 ±
+0.031, PCA-8 0.417 ± 0.040, direct VGGish 0.403 ± 0.039.
+
+Answered without an edit: the GitHub link (kept), Hamming loss alongside F1, why the
+duplicate film is mentioned, why the tuned-threshold table is in the Appendix.
