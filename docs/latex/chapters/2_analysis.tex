@@ -75,7 +75,7 @@ In Table~\ref{tab:label_spaces}, each entry is the number of clips carrying a ge
 \paragraph{(c) The six-genre space shared with Blockbuster.}
 A model can only move between two datasets if it predicts the same classes in both. The two lists of genres differ, though. Crime, Adventure, Biography and Documentary do not exist in the Blockbuster labels, and Sci-Fi and Romance are not among the eight Eerola genres. Both datasets are therefore relabelled into one shared space of six genres: Action, Drama, Comedy, Sci-Fi, Romance and Horror. These six were taken from \citet{ma2021computational}, not chosen here. The rule they used to reduce the IMDb genres to them was recovered from their published list of films and genres, not assumed. It is the identity rule: a film carries the reduced genre $g$ if and only if $g$ occurs in its raw IMDb genre list. This holds for all 110 of their films without exception. It is the same any-present rule already applied to the Eerola labels. Both datasets thus enter the shared space under one rule, without any special handling for either. On Eerola it keeps 319 clips from 40 films.
 
-\begin{table}[t]
+\begin{table}[!htb]
   \centering
   \small
   \caption{The three genre label spaces.}

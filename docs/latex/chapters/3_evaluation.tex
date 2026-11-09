@@ -45,7 +45,7 @@ ratings beside $R^2$. Figure~\ref{fig:stage1_r2} breaks the result down by emoti
 The last column of the table gives each score as a share of $R^2 = 0.897$, the agreement
 between two independent listener panels (Section~\ref{subsec:rating_reliability}).
 
-\begin{table}[tbp]
+\begin{table}[!htb]
   \centering
   \caption{Emotion regression by audio representation: mean $R^2$ over the eight emotions.}
   \label{tab:waveform_stage1}
@@ -63,7 +63,7 @@ between two independent listener panels (Section~\ref{subsec:rating_reliability}
   \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/stage1_r2.pdf}
   \caption{Stage~1: $R^2$ per emotion and audio representation (film-grouped cross-validation, 360 rated clips).}
@@ -176,7 +176,7 @@ the emotions from the same VGGish embedding, reaches 0.460. It is ahead of all o
 0.065 to 0.196. Table~\ref{tab:power_cmp} gives the comparisons that matter most for the
 argument. Appendix~\ref{sec:app_comparisons} lists all paired comparisons.
 
-\begin{table}[tbp]
+\begin{table}[!htb]
   \centering
   \small
   \caption{The main paired comparisons on the five-genre subset (40 films).}
@@ -338,7 +338,7 @@ film-level $F_1$ of every pipeline for each genre. Table~\ref{tab:per_genre} add
 precision and recall for the emotion pipeline and for VGGish used directly, the embedding
 from which its random forest predicts the emotions.
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/per_genre.pdf}
   \caption{Film-level $F_1$ per genre and pipeline on the five-genre subset.}
@@ -351,7 +351,7 @@ marks the best pipeline for each genre among the emotion pipeline, the PCA-8 con
 the six direct representations. The ratings (the ceiling) and the most-frequent baseline
 are shown for reference but not boxed.
 
-\begin{table}[tbp]
+\begin{table}[!htb]
   \centering
   \small
   \caption{Precision, recall and $F_1$ per genre at film level: best pipeline, emotion pipeline and VGGish.}
@@ -428,7 +428,7 @@ between the clips of a genre and all other clips.
 Table~\ref{tab:emotion_genre_signatures} sums up the strongest signature of each of the
 eight Eerola genres. A positive $d$ means that the emotion is raised in the genre.
 
-\begin{table}[tbp]
+\begin{table}[!htb]
   \centering
   \caption{Dominant emotional signature (Cohen's $d$) of each of the eight Eerola genres.}
   \label{tab:emotion_genre_signatures}
@@ -476,7 +476,7 @@ shared genres. No emotion labels for Blockbuster exist or are used, so any agree
 from transfer and not from fitting. Figure~\ref{fig:signatures} shows the two matrices
 side by side.
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/signatures.pdf}
   \caption{Emotional signatures (Cohen's $d$) of the six shared genres on Eerola (left) and Blockbuster (right).}
@@ -576,6 +576,7 @@ differences is significant. The PCA-8 control (0.587) is level with them as well
 Appendix~\ref{sec:app_blockbuster} compares the hand-crafted features published with the
 dataset.
 
+\FloatBarrier
 \subsection{Zero-Shot Transfer}
 \label{sec:zero_shot}
 
@@ -589,7 +590,7 @@ conservative choice, because the direct baseline scores higher under it.
 Figure~\ref{fig:zero_shot} shows the result, and Table~\ref{tab:zero_shot} gives precision
 and recall.
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/zero_shot.pdf}
   \caption{Zero-shot transfer from Eerola to the 110 Blockbuster films (six shared genres, strict regime).}
