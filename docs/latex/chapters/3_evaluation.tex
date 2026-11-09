@@ -130,8 +130,10 @@ it (0.405 and 0.416 against 0.430). Every direct representation and the PCA-8 co
 below it at both levels. Macro-$F_1$ at the default threshold therefore says little about
 skill on its own. A measure without a threshold is clearer. The macro ROC-AUC gives the
 chance that a film with a genre is ranked above a film without it
-(Section~\ref{sec:fund_evaluation}). At film level it is 0.655 for the emotion pipeline and 0.691 for the ratings, where such a classifier
-scores 0.50. This lead of 0.155 is significant ($p<0.001$). The emotions do carry genre
+(Section~\ref{sec:fund_evaluation}). At film level it is 0.655 for the emotion pipeline, so
+it orders about two of every three such pairs correctly. It is 0.691 for the ratings. The
+classifier that assigns every genre to every film scores exactly 0.50, and the emotion
+pipeline's lead of 0.155 over it is significant ($p<0.001$). The emotions do carry genre
 information, but less than the distance to the chance floors suggests
 (Appendix~\ref{sec:app_floor}). This is why macro-$F_1$ is read together with ROC-AUC.
 
