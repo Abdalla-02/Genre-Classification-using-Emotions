@@ -88,6 +88,7 @@ not from results.
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 | `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
 | `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_threshold_sweep.py` | Film-level precision, recall and F1 for one global threshold from 0.20 to 0.80 | §36 |
 | `exp_all_positive_metrics.py` | The all-positive classifier under every metric of the metric table (Appendix A.2) | §35 |
 | `exp_rating_structure.py` | Correlations of the eight rating scales and a principal component analysis of them, all 360 rated clips | §33 |
 | `exp_clap_ridge_posthoc.py` | Post-hoc paired test of CLAP with ridge regression against the VGGish pipeline, per master seed and pooled over the five seeds | §32 |
@@ -124,7 +125,7 @@ test quoted beside it. `exp_statistical_power.py` is kept as the record of the p
 protocol, and the corrected run reproduces it exactly under the old metric. Every
 film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Twenty-three scripts write machine-readable output to `results/`; `results/README.md` lists
+Twenty-four scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.

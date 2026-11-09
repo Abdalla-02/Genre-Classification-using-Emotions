@@ -10,6 +10,9 @@ number that was in the 5 November version is still the same.
 
 | Where | Paragraph | What it adds |
 |---|---|---|
+| 4.2 | The whole section (rewritten) | Clearer: what a representation is, then three short paragraphs (from a clip to one vector, the hand-crafted baseline, how much of each clip is used) and what a hidden state is. No number changed |
+| 4.1.3 | End of "(c) The six-genre space" | Where Sci-Fi and Romance come from on Eerola: the raw IMDb lists (Romance in 7 films, Sci-Fi in 2) |
+| A.2 | After the tuned-threshold paragraph | A global threshold sweep: no cut buys precision, and the emotion pipeline is very sensitive to the cut (F1 0.460 at 0.50, 0.292 at 0.55) |
 | 2.5.3 | "Two alternatives for the emotion regressor" | How ridge regression and SVR with an RBF kernel work |
 | 2.6.2 | "Without a threshold: ROC-AUC" (three short paragraphs) | ROC-AUC as a ranking test, a five-film example (Table 2.1), why a classifier that gives every film the same answer scores exactly 0.5, and where the name comes from |
 | 2.6.4 | "Paired bootstrap over films" (extended) | A worked example: +0.093, 95 % interval [−0.001, +0.191], p = 0.052 |

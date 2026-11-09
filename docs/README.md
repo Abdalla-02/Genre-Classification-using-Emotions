@@ -2141,3 +2141,31 @@ paragraph "Why macro-F1 and ROC-AUC are read together"; Chapter 5: a third conve
 sentence in RQ1 ("A harder reference"), and the film-level ROC-AUC lead over VGGish in RQ3
 (+0.071, p = 0.093, `per_genre_analysis.json`). The GitHub link was removed from Methods 4.7
 on the same day (Overleaf `aeb0795`, the author's decision).
+
+## 36. A global threshold sweep; the author's comments in `_Thesis_09.11.pdf` (9 Nov 2026)
+
+The author asked whether another cut than 0.5 gives better precision with a high F1.
+`exp_threshold_sweep.py` → `threshold_sweep.json`: the arms of `film_level.json` (ratings,
+emotion pipeline, VGGish, MusiCNN, PCA-8) on the same folds, seed 42, scored at film level for
+one global threshold from 0.20 to 0.80 (every arm reproduces `film_level.json` at 0.5).
+
+| threshold | emotion P / R / F1 / genres per film | VGGish direct P / R / F1 |
+|---|---|---|
+| 0.30 | 0.312 / 0.980 / 0.435 / 4.85 | 0.324 / 0.845 / 0.445 |
+| 0.45 | 0.352 / 0.896 / 0.462 / 3.70 | 0.341 / 0.512 / 0.399 |
+| 0.50 | 0.407 / 0.638 / 0.460 / 2.27 | 0.360 / 0.382 / 0.367 |
+| 0.55 | 0.369 / 0.272 / 0.292 / 0.95 | 0.407 / 0.253 / 0.304 |
+
+No cut buys precision: the emotion pipeline's macro precision is highest at 0.5, and no arm
+exceeds 0.43 at any cut. Below about 0.35 every arm becomes the all-positive classifier
+(0.43 to 0.45). The emotion pipeline's probabilities lie very close to 0.5 (strong
+regularisation and balanced class weights), so its F1 falls from 0.460 to 0.292 between 0.50
+and 0.55: the default cut is not a neutral choice for it. Paragraph in Appendix A.2.
+
+Other comments (Overleaf `6ddd2e0`): Section 4.2 rewritten for clarity (what a representation is;
+three paragraphs: from a clip to one vector, the hand-crafted baseline, how much of each clip is
+used; what a hidden state is), no number changed; 4.1.3 explains that Sci-Fi and Romance come
+from the raw IMDb lists of Eerola films (Romance 7 films, Sci-Fi 2: *The Alien Trilogy*, *The
+Fifth Element*) and points to Table 4.1; Table 4.1 moved next to its introduction. Answered
+without an edit: what C does (Methods 4.4 already says the default C = 1 was the worst value
+for every feature set).

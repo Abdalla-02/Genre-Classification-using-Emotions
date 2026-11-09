@@ -180,6 +180,17 @@ cut on averaged probabilities and shares this caveat; thresholds were not tuned 
 The main transfer experiments use the default threshold as well.
 Appendix~\ref{sec:app_zs_threshold} repeats the zero-shot transfer with tuned thresholds.
 
+A single threshold for all genres was also moved from 0.20 to 0.80, at film level under seed
+42. Moving it does not buy precision. The macro precision of the emotion pipeline is highest at
+the default cut (0.407), and no pipeline exceeds 0.43 at any cut, while recall and
+$F_1$ fall quickly above 0.5. At 0.30 and below, every pipeline assigns most genres to most
+films and scores 0.435 to 0.445, like the classifier that says yes to everything. The emotion
+pipeline is also very sensitive to the cut. At 0.45 it assigns 3.70 genres per film, at 0.55 only
+0.95, and its macro-$F_1$ falls from 0.460 to 0.292. Its probabilities lie close to one half. Strong
+regularisation pulls the probabilities of a logistic regression towards one half, and the balanced
+class weights centre them there. The default threshold is therefore not a neutral choice for the
+emotion pipeline, which is one more reason to read macro-$F_1$ together with ROC-AUC.
+
 \subsection{Stability and Reproducibility}
 
 Figure~\ref{fig:stability_repeats} shows how the film-level scores vary over the ten
