@@ -11,7 +11,7 @@ number that was in the 5 November version is still the same.
 | Where | Paragraph | What it adds |
 |---|---|---|
 | 2.5.3 | "Two alternatives for the emotion regressor" | How ridge regression and SVR with an RBF kernel work |
-| 2.6.2 | "Without a threshold: ROC-AUC" | What ROC-AUC measures and how to read it |
+| 2.6.2 | "Without a threshold: ROC-AUC" (three short paragraphs) | ROC-AUC as a ranking test, a five-film example (Table 2.1), why a classifier that gives every film the same answer scores exactly 0.5, and where the name comes from |
 | 2.6.4 | "Paired bootstrap over films" (extended) | A worked example: +0.093, 95 % interval [−0.001, +0.191], p = 0.052 |
 | 2.6.4 | "Many tests at once" | The Holm correction, with an example (Holm 1979 added to the bibliography) |
 | 4.6.3 | "Why macro-F1 and ROC-AUC are read together" | Each yes/no metric is fooled by a trivial classifier (macro-F1 by "all yes", Hamming loss by "only Drama"); ROC-AUC gives both 0.5 |
@@ -21,7 +21,7 @@ number that was in the 5 November version is still the same.
 ### Short additions (one or two sentences)
 
 - **Chapter 5, first section:** a third convention. Where a lead could come from saying yes more often, ROC-AUC is given beside macro-F1.
-- **5.2, "A harder reference":** ends with "This is why macro-F1 is read together with ROC-AUC."
+- **5.2, "A harder reference":** reads the ROC-AUC of 0.655 in plain words (about two of every three pairs ordered correctly) and ends with "This is why macro-F1 is read together with ROC-AUC."
 - **5.3:** the threshold-free check. The emotion pipeline's lead over VGGish in film-level ROC-AUC is +0.071 (p = 0.093), about as large as its F1 lead, but not significant.
 - **5.3 and 5.3.1:** what the Nadeau–Bengio test and the Holm method do, with pointers to Chapter 2.
 - **4.3:** a pointer to 2.5.3 for ridge regression and SVR.
@@ -33,6 +33,7 @@ number that was in the 5 November version is still the same.
 
 ### Figures and tables
 
+- **Table 2.1 (new):** a five-film example of ROC-AUC for the genre Horror. Five of the six pairs are ordered correctly, so the ROC-AUC is 0.83.
 - **Figure 5.8:** now has error bars (bootstrap standard deviation over the 110 films): emotion pipeline 0.508 ± 0.031, PCA-8 control 0.417 ± 0.040, direct VGGish 0.403 ± 0.039.
 - **Figure 5.9:** now placed inside 5.6.3, not in the middle of 5.6.2.
 - **Table A.2:** a new column "All yes" (the classifier that assigns every genre to every clip). It has the best weighted F1 in the table (0.607) and a macro-F1 of 0.430 over clips. It also has the worst Hamming loss (0.691) and a ROC-AUC of exactly 0.500.
