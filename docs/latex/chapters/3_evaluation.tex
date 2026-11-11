@@ -13,7 +13,7 @@ the two. Section~\ref{sec:eval_summary} sums up the results. Chapter~\ref{ch:dis
 interprets them and answers the research questions. Further checks that do not change
 these results are in Appendix~\ref{app:supplementary}.
 
-Three conventions apply throughout. First, every genre score is macro-$F_1$ over films
+Four conventions apply throughout. First, every genre score is macro-$F_1$ over films
 (Section~\ref{sec:evaluation_protocol}). The predicted probabilities of a film's clips are
 averaged, and the film is scored once. Where it matters, the clip-level score of the same
 predictions is given beside it. Second, the results come from three label spaces that are
@@ -23,7 +23,10 @@ the chance floor of its own label space: the \emph{most-frequent} baseline or th
 pushed up by saying yes more often. A classifier that assigns every genre to every film
 reaches a high macro-$F_1$ but a ROC-AUC of exactly 0.5. Where a lead could come from this,
 the threshold-free ROC-AUC is given beside macro-$F_1$
-(Section~\ref{subsec:protocol_metrics}).
+(Section~\ref{subsec:protocol_metrics}). Fourth, every $p$-value compares two pipelines and is
+two-sided. Unless stated otherwise, it comes from the paired bootstrap over films. The test films
+are drawn with replacement 2000 times, both pipelines are scored on each draw, and $p$ is twice the share of draws in which the difference is zero or
+points the other way (Section~\ref{sec:fund_evaluation}).
 
 % =============================================================================
 \section{Stage 1: Emotion from Audio}
@@ -533,7 +536,10 @@ embedding (0.508 against 0.502).
 the zero-shot transfer was repeated with a separate threshold per genre. Each threshold was
 tuned on out-of-fold probabilities of the Eerola clips, as in-domain
 (Section~\ref{subsec:protocol_altmetrics}), and then applied unchanged to Blockbuster. The
-$p$-values are again those of the paired bootstrap over the 110 films. The lead over direct
+$p$-values come from the same paired bootstrap as above: the 110 Blockbuster films are drawn
+with replacement 2000 times, the tuned predictions of both pipelines are scored on each
+draw, and $p$ is twice the share of draws in which the difference is zero or reversed
+(Section~\ref{subsec:protocol_transfer}). The lead over direct
 VGGish shrinks from $+0.106$ to $+0.041$ ($p=0.159$), and the lead over the PCA-8 control
 from $+0.093$ to $+0.045$ ($p=0.173$). The emotion pipeline hardly moves (0.508 to 0.496),
 while direct VGGish rises from 0.403 to 0.455. Tuned on the Eerola films instead of the
@@ -585,10 +591,13 @@ second implementation the PCA-8 control moves from 0.417 to 0.457, and the emoti
 pipeline's lead over it is no longer significant ($+0.049$, $p=0.239$; reverse direction
 $+0.070$, $p=0.158$). Scores from a single split move by a few hundredths with such choices.
 
-\subsection{All Settings at a Glance}
+% =============================================================================
+\section{Summary of Findings}
+\label{sec:eval_summary}
 
 Table~\ref{tab:disc_settings} collects the emotion pipeline, the PCA-8 control and direct
-VGGish for every setting in which all three were run.
+VGGish for every setting in which all three were run. The paragraphs after it sum up the
+results along the pipeline.
 
 \begin{table}[!htb]
   \centering
@@ -613,12 +622,7 @@ In Table~\ref{tab:disc_settings}, $\Delta$ is the emotion pipeline minus direct 
 $p$-value is the paired film bootstrap unless marked $^{\dagger}$. That mark means the
 Nadeau--Bengio corrected $t$-test over repeated folds; for the Eerola in-domain row it is
 computed on the clip-level scores of the same predictions. The zero-shot row is the strict
-regime. The emotion pipeline is clearly ahead where the genre classifier is trained on the
-40 Eerola films, and level where it is trained on the 110 Blockbuster films or on both.
-
-% =============================================================================
-\section{Summary of Findings}
-\label{sec:eval_summary}
+regime.
 
 \emph{Stage~1.} From the best audio representations the random forest recovers about
 62\,\% of the $R^2$ that two listener panels allow. Arousal-like scales are predicted best,
@@ -626,10 +630,9 @@ happiness and sadness worst.
 
 \emph{Stage~2.} On the five-genre subset the emotion pipeline (VGGish embedding,
 random-forest emotion regressor, logistic-regression genre classifier) reaches a film-level
-macro-$F_1$ of 0.460, against 0.309 for a random guess. The human ratings reach 0.491. A
-classifier that assigns every genre to every film already reaches 0.434, however. The
-threshold-free macro ROC-AUC of 0.655, against 0.50 for that classifier, shows the genre
-information more clearly.
+macro-$F_1$ of 0.460, against 0.309 for a random guess. The human ratings reach 0.491.
+Assigning every genre to every film already reaches 0.434, but its ROC-AUC is 0.50,
+against 0.655 for the emotion pipeline.
 
 \emph{Against direct audio.} The emotion pipeline is ahead of every audio representation
 given directly to the same classifier (by $+0.093$ over VGGish, its own input) and of the
@@ -645,9 +648,7 @@ mainly through higher recall. It is weakest on Horror.
 discriminator and valence the second axis. Adventure has no signature. The signatures
 replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
 
-\emph{Transfer.} Trained on Eerola and tested on the 110 Blockbuster films, the emotion
-pipeline clearly beats direct VGGish at the default threshold (0.508 against 0.403,
-$p=0.013$). With thresholds tuned on the source the lead shrinks to $+0.041$ ($p=0.159$),
-although the emotion pipeline still ranks the films best. The reverse direction agrees in
-sign but is not significant. When both datasets are in training, the pipelines are level.
-No film occurs in both datasets.
+\emph{Transfer.} From Eerola to the 110 Blockbuster films, the emotion pipeline beats
+direct VGGish at the default threshold (0.508 against 0.403, $p=0.013$). With thresholds tuned on the source the lead shrinks to $+0.041$ ($p=0.159$),
+although the emotion pipeline still ranks the films best. In the reverse direction it is
+ahead but not significantly, and with both datasets in training the pipelines are level.
