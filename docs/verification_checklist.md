@@ -298,7 +298,8 @@ script before submission, or be ready to explain where the number comes from.
   regressor" in Chapter 5 (1 Nov): does it fit the text width, is the small font readable?
 - [ ] The metric table in Section 5.4 is scaled to the text width; check that its font is
   still readable.
-- [ ] The table in the AI declaration breaks across pages; check that it looks right.
+- [ ] The AI declaration is now two paragraphs (12 Nov); check that its wording matches how you
+  worked, and fill in its three red notes.
 - [ ] List of figures and tables, table of contents, page numbering.
 
 ## G. Repository
