@@ -2169,3 +2169,24 @@ from the raw IMDb lists of Eerola films (Romance 7 films, Sci-Fi 2: *The Alien T
 Fifth Element*) and points to Table 4.1; Table 4.1 moved next to its introduction. Answered
 without an edit: what C does (Methods 4.4 already says the default C = 1 was the worst value
 for every feature set).
+
+## 37. Chapters 5 and 6 restructured after the supervisor's comments (11 Nov 2026)
+
+The supervisor commented on `_Thesis_09.11.pdf` (10 Nov, 18 comments, in German). Main points:
+order the Results by the pipeline or by experiment, not by research question; no RQs in
+section titles; do not re-explain what a figure or table shows, point out what stands out;
+interpretations and limitations belong in the Discussion; Table 6.1 belongs in the Results;
+the Discussion should bring insights and problems, not explain a table; the reasons for
+VGGish belong in the Methods; references to the Methods for the tests, the tuned threshold
+and the strict regime were missing. The author chose the order of the pipeline.
+
+Overleaf `b4fead8` (compiled, 0 errors, 109 pages, every float in its section, no undefined
+reference): Chapter 5 now runs Stage 1 → Stage 2 → the emotion pipeline against direct audio
+(with the grid) → per genre → signatures → transfer (with the former Table 6.1 as 5.6.4) →
+a summary by result, not by RQ. Chapter 6 opens with "Answers to the Research Questions"
+(`sec:disc_rq`) and takes the interpretations from Chapter 5 (ceiling, no labels at use,
+twofold RQ3 answer, wav2vec, Horror mechanism, film-scoring conventions, panel caveat,
+valence problem). Methods 4.3 has the paragraph "Why VGGish and the random forest"; 4.6.2,
+4.6.3 and 4.6.4 have labels (`subsec:protocol_transfer`, `_metrics`, `_altmetrics`) that
+Chapter 5 cites. Every label kept; a script confirmed that no number or citation value
+disappeared from the four chapters. No result changed.

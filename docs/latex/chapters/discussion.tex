@@ -2,92 +2,107 @@
 \label{ch:discussion}
 
 Chapter~\ref{ch:evaluation} reported the results. This chapter interprets them.
-Section~\ref{sec:disc_main} puts the main comparison of all settings side by side.
-Section~\ref{sec:disc_bottleneck} discusses why the emotion bottleneck helps where it does.
-Section~\ref{sec:disc_limitations} states the limitations, and
+Section~\ref{sec:disc_rq} answers the four research questions.
+Section~\ref{sec:disc_main} asks why the emotion step helps in some settings and not in
+others, and Section~\ref{sec:disc_bottleneck} looks at what the emotions add beyond making
+the input small. Section~\ref{sec:disc_limitations} states the limitations, and
 Section~\ref{sec:disc_relatedwork} relates the findings to the literature.
 
-\section{Interpreting the Main Result}
+\section{Answers to the Research Questions}
+\label{sec:disc_rq}
+
+\paragraph{RQ1: How well do the emotions expressed by a soundtrack predict its film's genre?}
+Well above chance, but far from perfectly. With the human ratings, the logistic regression
+reaches a film-level macro-$F_1$ of 0.491 on five genres, and the full emotion pipeline
+(VGGish, random forest, logistic regression) 0.460, against 0.309 for a random guess
+(Section~\ref{sec:eval_genre}). The distance to the chance floors overstates the skill,
+however. A classifier that assigns every genre to every film already reaches 0.434. The
+clearer evidence is the ranking: the emotion pipeline orders about two of every three pairs
+of films correctly (ROC-AUC 0.655), where that classifier cannot order any. Emotions
+predicted from audio carry most of the genre information in the ratings they were trained
+on. The pipeline therefore needs no emotion labels once it is in use, although a better
+emotion model might still gain a little. Stage~1 itself reaches 62\,\% of the $R^2$ that the
+agreement between two listener panels allows. Noise in the ratings is therefore not what
+limits the regressor. The limit lies in the audio representations and the amount of
+training data.
+
+\paragraph{RQ2: Which emotions characterise each genre, and how far do these signatures
+hold?} Most genres have an emotional fingerprint that agrees with the conventions of film
+scoring (Section~\ref{sec:eval_signatures}). Horror is defined by fear, Comedy by the
+absence of fear together with positive valence, Drama by raised valence, and Action by high
+tension without happiness. Fear is the most discriminating emotion overall, followed by
+valence. Adventure has no signature, because it occurs together with several other genres
+and shares their emotional range. The signatures hold on the Blockbuster films
+($r=0.836$), so the structure of the link between emotion and genre goes beyond the dataset
+it was found on. One caveat remains. The Blockbuster emotions are predicted by a model
+trained on the Eerola panel, so the replication cannot show independence from that panel.
+
+\paragraph{RQ3: How does the emotion pipeline compare with classifying genre directly from
+audio within one dataset?} The answer is twofold. At the default threshold the emotion
+pipeline is consistently ahead of direct audio, in nearly every repeat and under every seed
+(Section~\ref{sec:eval_direct}). How large its lead is over the strongest direct
+representations, however, cannot be settled on 40 films. The advantage does not depend on
+VGGish or on the random forest. It belongs to the emotion step, since it appears with each
+of six representations and three regressors (Section~\ref{subsec:eval_grid}). Even
+wav2vec~2.0, whose emotions are the least accurate, gives a genre result level with VGGish
+once its output passes through the emotions. What the genre classifier needs from Stage~1
+is therefore not the most accurate estimate per clip.
+
+\paragraph{RQ4: How well do the pipelines generalise to another dataset?} Genre information
+transfers: trained on Eerola alone, the emotion pipeline reaches 0.508 on the 110
+Blockbuster films, about 82\,\% of what in-domain training reaches
+(Section~\ref{sec:zero_shot}). At the default threshold it transfers better than direct
+VGGish ($+0.106$, $p=0.013$). Most of that lead in $F_1$ comes from where the threshold
+lies, though. With thresholds tuned on the source it shrinks to $+0.041$ ($p=0.159$). What
+survives is the ranking of films, where the emotion pipeline stays first. The reverse
+direction agrees in sign but is not significant, and with both datasets in training the
+pipelines are level.
+
+\section{Genre Prediction with Little Data and across Datasets}
 \label{sec:disc_main}
 
-Table~\ref{tab:disc_settings} lists the emotion pipeline, the PCA-8 control and direct
-audio for every setting in which all three were run. All three start from VGGish and end
-in the same logistic-regression classifier. In between, the emotion pipeline predicts the
-eight emotions with a random forest, and the control compresses the embedding to eight
-principal components. Direct audio has no step in between. Every score is film-level
-macro-$F_1$, and each row is compared only with the chance floor of its own label space.
+The emotion pipeline is not better everywhere. Table~\ref{tab:disc_settings} shows a clear
+pattern. All three pipelines in it start from VGGish and end in the same genre classifier, a
+logistic regression per genre (Section~\ref{sec:methods_stage2}). The emotion pipeline is
+well ahead of direct audio where this classifier was trained on the 40 Eerola films. It is
+level with direct audio where the classifier was trained on the 110 Blockbuster films, or
+on both datasets together. The pooled design shows both sides at once. On the Eerola films
+of its test folds the emotion pipeline leads, and on the Blockbuster films direct audio
+does. The advantage of the emotion pipeline is therefore an advantage when training data
+are scarce and when the dataset changes. This is a narrower claim than ``emotion predicts
+genre better than audio'', and it is the one the results support.
 
-\begin{table}[t]
-  \centering
-  \small
-  \caption{The three pipelines in every setting in which all of them were run (film-level macro-$F_1$).}
-  \label{tab:disc_settings}
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{lcrrrrrl}
-    \toprule
-    Setting & Genres & Floor & Emotion & PCA-8 & Direct & $\Delta$ & $p$ \\
-    \midrule
-    Eerola, in-domain                        & 5 & 0.309 & 0.460 & 0.390 & 0.367 & $+0.093$ & $0.052$ / $0.086^{\dagger}$ \\
-    Blockbuster, in-domain                   & 6 & 0.295 & 0.616 & 0.587 & 0.593 & $+0.023$ & $0.536^{\dagger}$ \\
-    Eerola $\rightarrow$ Blockbuster         & 6 & 0.292 & 0.508 & 0.417 & 0.403 & $+0.106$ & $0.013$ \\
-    Blockbuster $\rightarrow$ Eerola         & 6 & 0.240 & 0.458 & 0.381 & 0.364 & $+0.089$ & $0.102$ \\
-    Both datasets in training                & 6 & --    & 0.531 & 0.531 & 0.543 & $-0.011$ & $0.688^{\dagger}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+Three explanations support each other. First, with about 40 training films, a linear
+classifier over 128 to 768 dimensions can fit many directions that happen to separate the
+genres of the training films. The emotion stage adds prior knowledge from a second,
+independent source of supervision: the listener ratings. This fits the pattern above, where
+direct audio catches up exactly where 110 training films are available. It also fits the
+comparison over representations. There the emotion step gains most where the direct
+representation is weakest (AST and wav2vec~2.0, by 0.13 to 0.21) and least over MusiCNN
+(0.03 to 0.05). Second, a rich embedding also encodes the sound of single films: their
+instruments, recording and mixing. This is useless when the evaluation is grouped by film.
+An emotion rating, in contrast, describes what a clip expresses, not how it was produced.
+Third, an embedding's dimensions carry the statistics of the recordings they were computed
+on. Emotion values are given on a rating scale that means the same in any dataset. With
+both datasets in the training data, the direct classifier sees both sets of statistics, and
+its handicap is gone.
 
-In Table~\ref{tab:disc_settings}, $\Delta$ is the emotion pipeline minus direct audio. The
-$p$-value is the paired film bootstrap unless marked $^{\dagger}$. That mark means the
-Nadeau--Bengio corrected $t$-test over repeated folds; for the Eerola in-domain row it is
-computed on the clip-level scores of the same predictions. The zero-shot row is the strict
-(source-scaler) regime.
+\paragraph{The decision threshold.} Much of the advantage depends on the threshold of 0.5.
+The emotion pipeline wins mainly by recall on the rare genres
+(Section~\ref{sec:eval_pergenre}). It finds them, at the price of more false positives.
+With a threshold per genre tuned on the training folds the pipelines come together
+in-domain, and the zero-shot lead shrinks and is no longer significant. The probabilities of
+the emotion pipeline also lie close to one half, so a small shift of the threshold changes
+its decisions a lot (Appendix~\ref{sec:eval_robustness}). A model that works at the default
+threshold does have a practical advantage. Tuning per genre needs labelled data, and it
+becomes unreliable for genres with only a handful of films. On a new dataset, too, the
+emotion pipeline barely changes when the threshold is tuned, while direct audio needs the
+tuning to catch up. Still, this advantage is smaller and more specific than a better
+ranking of films. In the reverse direction the emotion pipeline is ahead in both precision
+(0.407 against 0.362) and recall (0.631 against 0.490). A shift of the threshold alone
+cannot do that, but the difference is not significant over 40 test films.
 
-The table shows one pattern. The emotion pipeline is well ahead of direct audio where the
-genre classifier was trained on the 40 Eerola films. On the 110 Blockbuster films the lead
-is significant, and on unseen Eerola films it just misses significance ($p=0.052$). Where
-the classifier was trained on the Blockbuster films, in-domain there or with both datasets
-in training, the emotion pipeline is level with direct audio. When a classifier trained on
-Blockbuster is tested on Eerola, it is ahead but not significantly. The pooled design shows
-both sides at once. On the Eerola films of its test folds the emotion pipeline leads (0.528
-against 0.410), and on the Blockbuster films direct audio does (0.579 against 0.568). The
-advantage of the emotion pipeline is therefore an advantage when training data are scarce
-and when the dataset changes. This is a narrower claim than ``emotion predicts genre better
-than audio'', and it is the one the results support. It also holds at the default
-threshold, as the next two paragraphs explain.
-
-\paragraph{In-domain.} On the five-genre subset the emotion pipeline is ahead of every
-direct representation and of the PCA-8 control, in nearly every repeat and under every
-seed. It is also ahead with each of the six representations as input and with each of
-three emotion regressors (Section~\ref{subsec:eval_grid}). The advantage is thus not tied
-to VGGish or to the random forest. Two caveats apply. First, the lead is significant only
-against the weaker direct representations. Against VGGish it just misses significance at
-film level ($p=0.052$). Against the strongest ones and the PCA-8 control it is not
-significant, and the PCA-8 control is itself ahead of VGGish under every seed. Part of the
-in-domain gain therefore comes from compressing the embedding, not from what the eight
-numbers mean. Second, part of it comes from the operating point. The emotion pipeline wins
-mainly by recall on the rare genres (Section~\ref{sec:eval_pergenre}). With a threshold
-per genre tuned on the training folds, the pipelines come together
-(Appendix~\ref{sec:eval_robustness}). A model that works at the default threshold does
-have a practical advantage. Tuning per genre needs labelled data, and it becomes unreliable
-for genres with only a handful of films. Still, this advantage is smaller and more specific
-than a better ranking of films.
-
-\paragraph{Across datasets.} Trained on Eerola and applied without further fitting to the
-Blockbuster films, the emotion pipeline beats direct audio by $+0.106$ ($p=0.013$) and the
-PCA-8 control by $+0.093$ ($p=0.027$). Its lead is again partly driven by recall. In the
-reverse direction it is ahead in both precision (0.407 against 0.362) and recall (0.631
-against 0.490). A shift of the decision threshold alone cannot do that. The difference in
-$F_1$ is not significant over 40 test films, though. Most of the zero-shot lead does not
-survive a threshold tuned on the source dataset. It shrinks to $+0.041$ over direct audio
-($p=0.159$), because direct audio gains from the new cut while the emotion pipeline stays
-about where it was. What survives is the ranking of films. Without a threshold the emotion
-pipeline is still first, significantly so against the PCA-8 control ($p=0.010$) but not
-against direct audio ($p=0.097$). Transfer thus repeats the in-domain picture. The emotions
-give a model that works on a new dataset without tuning its threshold, and a somewhat
-better ordering of films. They do not give a large gain in $F_1$ once the threshold is
-tuned.
-
-\section{Why the Bottleneck Helps Where It Does}
+\section{What the Emotions Add}
 \label{sec:disc_bottleneck}
 
 \paragraph{Meaning or compression?} A sceptic might say that eleven numbers simply overfit
@@ -99,27 +114,9 @@ embedding to eight principal components gains $+0.013$ ($p=0.737$), and compress
 eight emotions gains $+0.106$. In a second implementation of the same direction, the lead
 over the control is not significant. The strongest evidence that the emotions mean more
 than their number is the replication of the signatures. The genre profiles derived from
-human ratings on Eerola reappear on Blockbuster from predicted emotions ($r=0.836$), and
-Horror is defined by fear in both. A principal component has no meaning that could
-replicate in this way.
-
-\paragraph{Scarce data, film identity and domain shift.} The direct embeddings contain
-strictly more information than the eight emotions predicted from them. Yet they do worse
-on the small Eerola dataset and across datasets. Three explanations support each other.
-First, with about 40 training films, a linear classifier over 128 to 768 dimensions can fit
-many directions that happen to separate the genres of the training films. The emotion stage
-adds prior knowledge from a second, independent source of supervision: the listener
-ratings. This fits the pattern of Table~\ref{tab:disc_settings}, where direct audio catches
-up exactly where 110 training films are available. It also fits the comparison over
-representations. There the emotion step gains most where the direct representation is
-weakest (AST and wav2vec~2.0, by 0.13 to 0.21) and least over MusiCNN (0.03 to 0.05).
-Second, a rich embedding also encodes the sound of single films: their instruments,
-recording and mixing. This is useless when the evaluation is grouped by film. An emotion
-rating, in contrast, describes what a clip expresses, not how it was produced. Third, an
-embedding's dimensions carry the statistics of the recordings they were computed on.
-Emotion values are given on a rating scale that means the same in any dataset. With both
-datasets in the training data, the direct classifier sees both sets of statistics, and
-its handicap is gone.
+human ratings on Eerola reappear on Blockbuster from predicted emotions, and Horror is
+defined by fear in both. A principal component has no meaning that could replicate in this
+way.
 
 \subsection{A low-dimensional genre signal}
 \label{subsec:disc_ablation}
@@ -146,12 +143,20 @@ VGGish and wav2vec~2.0 (Section~\ref{subsec:eval_grid}).
 Apart from accuracy, the emotion pipeline gives what it was designed for. Each genre the
 model predicts well has an emotional signature that can be read. The results per genre
 show where this helps and where it does not. The emotion pipeline gains most on Comedy,
-whose signature is the absence of fear, and on Action. On Horror, the genre with the
-strongest signature, it finds half of the films but predicts the genre for too many
-others. The reason is that the random forest of Stage~1 underestimates the fear of Horror
-clips. Adventure, the one genre without a signature, is predicted poorly for how often it
-occurs. Both the successes and the errors of the pipeline come with an explanation that can
-be checked against how film music is written.
+whose signature is the absence of fear, and on Action. Drama, the genre of most films, is
+predicted well by every pipeline and separates them least. Adventure, the one genre without
+a signature, is predicted poorly for how often it occurs.
+
+Horror shows how an error can be traced. Its signature is the strongest, yet the emotion
+pipeline finds only half of the Horror films and predicts the genre for too many others.
+The weakness comes from Stage~1, not from the genre classifier, which reaches 0.41 on Horror
+from the ratings. The random forest pulls the extreme fear of the Horror clips towards the
+average. They are rated at 4.35 on average but predicted at 3.73, close to the predicted
+fear of the Action clips (3.46). The distance between the two genres thus shrinks from 0.93
+to 0.27. Predicted energy also rises in Horror clips. In the space of predicted emotions,
+Horror therefore looks like a tense action or crime film (Appendix~\ref{sec:app_horror}).
+Both the successes and the errors of the pipeline come with an explanation that can be
+checked against how film music is written.
 
 \section{Limitations}
 \label{sec:disc_limitations}
@@ -159,10 +164,11 @@ be checked against how film music is written.
 \paragraph{Dataset size.} The Eerola dataset contains 360 rated clips from 45 films. Of
 these, 42 films have a modelled genre (40 in the five-genre subset). Comedy and Horror have
 only 4 and 5 films. Their film-level $F_1$ therefore moves a lot when a single film
-changes, and the bootstrap error is of the same order as the effects being measured. For
-the borderline clip-level comparisons, the Nadeau--Bengio test could not become
-significant with any number of repeats. Only more films could settle them. The learning
-curves were still rising at the full dataset size.
+changes, and the bootstrap error is of the same order as the effects being measured. The
+results per genre are therefore a description, not a test. For the borderline clip-level
+comparisons, the Nadeau--Bengio test could not become significant with any number of
+repeats. Only more films could settle them. The learning curves were still rising at the
+full dataset size.
 
 \paragraph{Unit of evaluation.} Scoring per film was adopted after the clip-level analysis
 had been done. At that point the analysis of alternative metrics showed that it fits the
@@ -179,12 +185,10 @@ direction of transfer is not significant under either, once films are resampled.
 computed. Over clips, the stricter Nadeau--Bengio test finds the in-domain advantage
 borderline. Both are reported because they measure different sources of uncertainty. The
 main results are obtained at the default decision threshold, where the advantage is
-clearest. With thresholds per genre the pipelines come together in-domain, and the
-zero-shot lead shrinks and is no longer significant. At the default threshold, a classifier
-that assigns every genre to every film is also hard to beat. It reaches 0.434 on the
-five-genre subset, only 0.022 below the emotion pipeline. On 40 films, macro-$F_1$ depends
-heavily on how often a pipeline says yes, so the threshold-free results should be read
-beside it.
+clearest. At that threshold, a classifier that assigns every genre to every film is also
+hard to beat. It reaches 0.434 on the five-genre subset, only 0.022 below the emotion
+pipeline. On 40 films, macro-$F_1$ depends heavily on how often a pipeline says yes, so the
+threshold-free results should be read beside it.
 
 \paragraph{Choice of the five-genre subset.} The five headline genres were chosen partly
 because they carry an emotional signature in the same data. This can favour the emotion
@@ -212,19 +216,23 @@ reproduced on their published features, reaches 0.620 in-domain, inside their re
 range. Under repeated cross-validation the learned embedding does not beat their full set
 of hand-crafted features. This agrees with their own careful wording. It also agrees with
 the result on Eerola, where direct representations of very different design score close
-to one another. \citet{eerola2011genrespecific} showed that an emotion model trained on one
-musical genre works much worse on another. Here the same happens to genre models moved
-from one film dataset to the next. What is new is that a model built on emotions loses
-less. This suggests that the dependence on the
-repertoire lies more in the mapping from audio to its representation than in the link
-between emotion and genre. \citet{austin2010characterization} found intense genres easier
-to separate by their scores than story-driven genres, and the signatures found here
-explain why. \citet{mangolin2020multimodal} found audio to be the weakest of five kinds of
-input for genre, and the modest absolute scores reported here confirm it. The contribution
-of this thesis is therefore not a higher number. It is a model whose predictions can be
-explained and which loses less when the data change. This answers the concern of
-\citet{kang2025there} that accurate emotion-recognition systems reveal little about how
-they work: used as a step in between, the emotion model becomes the explanation. Finally,
-the metric analysis explains why Hamming loss, the headline metric of
-\citet{behrouzi2023multimodal}, is not used here. On these data, a classifier that always predicts
-the most frequent genres wins on it outright.
+to one another. In Stage~1, arousal-like scales are predicted best and happiness and
+sadness worst. This mirrors the ``valence problem'' of music emotion recognition: audio
+reveals arousal more reliably than whether an emotion is positive or negative
+\citep{kim2010music,kang2025there}. \citet{eerola2011genrespecific} showed that an emotion
+model trained on one musical genre works much worse on another. Here the same happens to
+genre models moved from one film dataset to the next. What is new is that a model built on
+emotions loses less. This suggests that the dependence on the repertoire lies more in the
+mapping from audio to its representation than in the link between emotion and genre.
+\citet{austin2010characterization} found intense genres easier to separate by their scores
+than story-driven genres, and the signatures found here explain why. Genres with a
+conventional emotional identity can be recovered from the music, while genres defined by
+story or setting cannot. \citet{mangolin2020multimodal} found audio to be the weakest of
+five kinds of input for genre, and the modest absolute scores reported here confirm it. The
+contribution of this thesis is therefore not a higher number. It is a model whose
+predictions can be explained and which loses less when the data change. This answers the
+concern of \citet{kang2025there} that accurate emotion-recognition systems reveal little
+about how they work: used as a step in between, the emotion model becomes the explanation.
+Finally, the metric analysis explains why Hamming loss, the headline metric of
+\citet{behrouzi2023multimodal}, is not used here. On these data, a classifier that always
+predicts the most frequent genres wins on it outright.
