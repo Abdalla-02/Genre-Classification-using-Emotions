@@ -10,7 +10,7 @@ the PCA-8 control, and Section~\ref{sec:eval_pergenre} breaks this comparison do
 genre. Section~\ref{sec:eval_signatures} examines which emotions are associated with which genres.
 Section~\ref{sec:eval_transfer} turns to the second dataset and tests transfer between
 the two. Section~\ref{sec:eval_summary} summarises the results. Chapter~\ref{ch:discussion}
-interprets them and answers the research questions. Further checks that do not change
+interprets them and answers the research questions. Further checks of
 these results are in Appendix~\ref{app:supplementary}.
 
 Four conventions apply throughout. First, every genre score is macro-$F_1$ over films
@@ -72,11 +72,11 @@ $R^2=0$ means always predicting the mean rating.
 
 Two results stand out. The three general-purpose spectrogram embeddings, CLAP, VGGish and
 AST, do not differ substantially ($R^2$ between 0.545 and 0.558). MusiCNN, pretrained on music,
-follows closely (0.512). The 103 hand-crafted descriptors are clearly weaker (0.476), and
+follows closely (0.512). The 103 hand-crafted descriptors are weaker (0.476), and
 the waveform model wav2vec~2.0 recovers far less than any other (0.299). The emotions also
 differ in difficulty. For the three strongest representations, tension, energy and anger
 are the easiest ($R^2$ 0.608 to 0.661). Valence and fear follow (0.559 to 0.603). Sadness
-(0.428 to 0.438) and happiness (0.302 to 0.321) are clearly the hardest.
+(0.428 to 0.438) and happiness (0.302 to 0.321) are the hardest.
 
 \subsection{Reliability of the Ratings and the Attainable Ceiling}
 \label{subsec:rating_reliability}
@@ -119,7 +119,7 @@ line is the most-frequent baseline and the dotted line the base-rate random gues
 
 With the human ratings as input, the classifier reaches a film-level macro-$F_1$ of 0.491 [0.411,
 0.552]. The full emotion pipeline reaches 0.460 [0.385, 0.514]. Both lie far above the
-most-frequent baseline (0.168) and clearly above the base-rate random guess (0.309). Scored
+most-frequent baseline (0.168) and above the base-rate random guess (0.309). Scored
 over clips, the same predictions reach 0.416 and 0.405. On all eight genres the emotion
 pipeline reaches 0.349 against a random guess of 0.226 (Appendix~\ref{sec:app_eight}).
 
@@ -133,7 +133,7 @@ learned nothing. It still reaches 0.434 on this subset, because macro-$F_1$ rewa
 and most films are Drama. That is above both chance floors. The emotion pipeline is only
 0.022 ahead of it ($p=0.518$), and the ratings 0.054 ($p=0.086$). Over clips both lie below
 it (0.405 and 0.416 against 0.430). Every direct representation and the PCA-8 control lie
-below it at both levels. The threshold-free macro ROC-AUC separates them clearly. At film
+below it at both levels. The threshold-free macro ROC-AUC separates them. At film
 level it is 0.655 for the emotion pipeline, so it orders about two of every three pairs of
 a film with and a film without a genre correctly (Section~\ref{sec:fund_evaluation}). It
 is 0.691 for the ratings. The classifier that assigns every genre to every film scores
@@ -197,7 +197,7 @@ hand-crafted descriptors and wav2vec~2.0, but not against AST ($p=0.106$). The s
 Nadeau--Bengio test, whose attainable $p$-value lies above 0.05 on this dataset, finds it
 only against wav2vec~2.0 (Appendix~\ref{sec:app_comparisons}).
 
-Second, compression alone accounts for part of the gain at film level. The PCA-8 control is ahead
+Second, compression alone may account for part of the gain at film level. The PCA-8 control is ahead
 of VGGish by $+0.023$ ($p=0.488$, but in 7 of ten repeats and under every seed). The
 emotion pipeline's lead over the control, $+0.070$, is not significant ($p=0.089$). Over
 clips the control is on par with VGGish, and the emotion pipeline is ahead of it
@@ -209,7 +209,7 @@ converge over clips (0.420 to 0.433; Appendix~\ref{sec:eval_robustness}). Withou
 threshold, the emotion pipeline's lead over VGGish in film-level ROC-AUC is $+0.071$
 ($p=0.093$). This is about as large as its lead in $F_1$, but it is not significant either.
 
-These values are stable. Re-running the whole protocol under five master seeds changes the
+These values change little across seeds. Re-running the whole protocol under five master seeds changes the
 ten-repeat mean of the emotion pipeline by at most 0.019 (from 0.460 to 0.481). Its lead
 over VGGish stays positive under every seed ($+0.076$ to $+0.132$). The main source of
 uncertainty is which films the dataset happens to contain (bootstrap standard error 0.027
@@ -253,7 +253,8 @@ by at most 0.017, never significantly. On the hand-crafted descriptors and on wa
 the random forest is best, ahead of ridge regression by 0.044 ($p=0.037$) and 0.046
 ($p=0.002$).
 
-A more accurate emotion model does not reliably yield a better genre result. Ridge
+In these experiments, a more accurate emotion model did not reliably yield a better genre
+result. Ridge
 regression predicts the emotions better than the random forest on VGGish and AST (right
 panel of Figure~\ref{fig:emotion_grid}), without a better genre score. On MusiCNN it
 predicts them less accurately and scores higher. On wav2vec~2.0 it has the higher $R^2$ (0.339
@@ -267,7 +268,7 @@ the emotion pipeline stays ahead of the direct use of its representation in all 
 seed and combination, by at least 0.007 (MusiCNN with the random forest). On CLAP, ridge
 regression is ahead of the random forest under every seed (by 0.010 to 0.039). CLAP with
 ridge regression is also ahead of the VGGish pipeline under every seed (0.502 against 0.469
-on average). A post-hoc test, however, does not confirm this lead: over all five
+on average). A post-hoc test, however, does not find this lead significant: over all five
 seeds it is 0.032 and not significant ($p=0.112$; Appendix~\ref{sec:app_grid}). The thesis
 therefore keeps VGGish with the random forest, for the reasons given in
 Section~\ref{sec:methods_stage1}.
@@ -288,7 +289,7 @@ precision and recall for the emotion pipeline and for VGGish used directly.
 \end{figure}
 
 In Figure~\ref{fig:per_genre}, the number of films with each genre is given under its name.
-The box marks the best pipeline per genre; the ratings and the most-frequent baseline are
+The box marks the highest-scoring pipeline per genre; the ratings and the most-frequent baseline are
 shown for reference and not boxed.
 
 \begin{table}[!htb]
@@ -312,8 +313,8 @@ shown for reference and not boxed.
   \end{tabular}
 \end{table}
 
-The emotion pipeline is the best pipeline for Action, Crime and Comedy. For Drama the best
-is the hand-crafted MIR features used directly (0.82 against 0.76 for the emotion
+The emotion pipeline scores highest for Action, Crime and Comedy. For Drama the highest score
+comes from the hand-crafted MIR features used directly (0.82 against 0.76 for the emotion
 pipeline), and for Horror it is direct CLAP (0.43 against 0.23). Drama, the genre of 29 of
 the 40 films, is predicted well by every pipeline, even by the most-frequent baseline. The
 largest difference lies in Comedy (4 films). VGGish used directly rarely predicts it
@@ -367,7 +368,7 @@ the emotion is raised in the genre.
   \end{tabular}
 \end{table}
 
-Fear is the strongest single discriminator. It separates the genres built on threat
+In these data, fear is the strongest single discriminator. It separates the genres built on threat
 (Horror, $d=+0.75$, the strongest link between a genre and an emotion in the dataset;
 Crime, $+0.40$) from the light-hearted ones (Comedy, $-0.61$). Valence forms a second
 axis. It separates the genres with a positive tone (Drama, $+0.57$; Comedy) from those
@@ -375,10 +376,10 @@ with a negative one (Horror, $-0.63$; Action). The signatures of Biography and D
 are also strong, but they rest on very few films. Adventure has no signature: no emotion
 exceeds $|d|=0.25$.
 
-\subsection{Do the Signatures Replicate?}
+\subsection{Replication of the Signatures}
 \label{subsec:signature_replication}
 
-The second dataset makes it possible to test whether the signatures describe film music in general or only
+The second dataset makes it possible to test whether the signatures extend beyond
 the Eerola films. The random forest trained on the VGGish embeddings of the Eerola clips
 predicts the eight emotions for each of the 4664 Blockbuster cues. A cue is one continuous
 piece of score music as it is used in the film (Section~\ref{subsec:methods_blockbuster}).
@@ -396,9 +397,9 @@ In Figure~\ref{fig:signatures}, red marks an emotion raised in the genre and blu
 one. The Eerola matrix comes from the human ratings, the Blockbuster matrix from the
 predicted emotions.
 
-The signatures replicate. Across all 48 cells of genre and emotion, the Eerola effect
+The signatures largely replicate. Across all 48 cells of genre and emotion, the Eerola effect
 sizes and the film-level Blockbuster ones correlate at $r=0.836$, and 92\,\% of the signs
-agree. Horror is defined by fear in both datasets. The replication is closest for Romance,
+agree. Horror is characterised by fear in both datasets. The replication is closest for Romance,
 Sci-Fi, Action and Horror. It is weakest for Comedy, whose strongest emotion changes from
 fear to happiness. The absolute effect sizes do not transfer. Averaging about 39 cues per
 film inflates $d$, and measured per cue the values are of the same order as on Eerola.
@@ -515,7 +516,7 @@ line the base-rate random guess. The error bars are the bootstrap standard devia
   \end{tabular}
 \end{table}
 
-Genre information transfers between the datasets. The emotion pipeline reaches 0.508
+Much of the genre information transfers between the datasets. The emotion pipeline reaches 0.508
 against a random-guess floor of 0.292. That is about 82\,\% of the 0.620 reached with
 in-domain training, although each training row is a clip of about 17 seconds and the test
 items are whole films. At the default threshold, the emotion pipeline transfers better
@@ -544,13 +545,13 @@ VGGish shrinks from $+0.106$ to $+0.041$ ($p=0.159$), and the lead over the PCA-
 from $+0.093$ to $+0.045$ ($p=0.173$). The emotion pipeline changes little (0.508 to 0.496),
 while direct VGGish rises from 0.403 to 0.455. Tuned on the Eerola films instead of the
 clips, direct VGGish is even nominally ahead ($-0.044$, $p=0.246$). Without a threshold,
-the emotion pipeline still ranks the Blockbuster films best, with a macro ROC-AUC of 0.763
+the emotion pipeline still has the highest macro ROC-AUC on the Blockbuster films, 0.763
 against 0.720 for direct VGGish ($+0.042$, $p=0.097$) and 0.693 for the PCA-8 control
 ($+0.070$, $p=0.010$). Appendix~\ref{sec:app_zs_threshold} gives the details.
 
-\subsection{Transfer in Every Direction}
+\subsection{Reverse and Pooled Transfer}
 
-Two further designs complete the analysis (Figure~\ref{fig:cross_dataset}). In the reverse
+Two further designs extend the analysis (Figure~\ref{fig:cross_dataset}). In the reverse
 direction, the genre classifier is trained on all Blockbuster films and tested on the
 Eerola films. The emotion regressor is fitted on the Eerola training folds, and the
 held-out Eerola films enter neither fit. In the pooled design both datasets are in the
@@ -592,7 +593,7 @@ pipeline's lead over it is no longer significant ($+0.049$, $p=0.239$; reverse d
 $+0.070$, $p=0.158$). Scores from a single split change by a few hundredths with such choices.
 
 % =============================================================================
-\section{Summary of Findings}
+\section{Summary of Results}
 \label{sec:eval_summary}
 
 Table~\ref{tab:disc_settings} collects the emotion pipeline, the PCA-8 control and direct
@@ -641,14 +642,14 @@ representations and three emotion regressors. It is significant against the weak
 representations, but not against the stronger ones or the PCA-8 control. With per-genre
 thresholds the pipelines converge.
 
-\emph{Per genre.} The emotion pipeline is the best pipeline for Action, Crime and Comedy,
+\emph{Per genre.} The emotion pipeline scores highest for Action, Crime and Comedy,
 mainly through higher recall. It is weakest on Horror.
 
 \emph{Signatures.} Most genres carry an emotional signature. Fear is the strongest
 discriminator and valence the second axis. Adventure has no signature. The signatures
-replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
+largely replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
 
 \emph{Transfer.} From Eerola to the 110 Blockbuster films, the emotion pipeline outperforms
 direct VGGish at the default threshold (0.508 against 0.403, $p=0.013$). With thresholds tuned on the source the lead shrinks to $+0.041$ ($p=0.159$),
-although the emotion pipeline still ranks the films best. In the reverse direction it is
+although the emotion pipeline still has the higher ROC-AUC, not significantly. In the reverse direction it is
 ahead but not significantly, and with both datasets in training the pipelines are on par.

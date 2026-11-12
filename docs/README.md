@@ -2217,3 +2217,20 @@ pp. 19071-19096; year kept at 2020, the online date, so the citation matches the
 heading). Gabrielsson is dated 2001 by the publisher (issue labelled 2001-2002); kept at 2002.
 The free PDFs (17, some preprints) are in `Related Work/References/` outside the repository.
 Overleaf `8730c7b`, compiled in Chrome: 0 errors, 109 pages.
+
+## 39. Strong claims softened (12 Nov 2026)
+
+The supervisor asked that the thesis avoid strong claims and words such as "find out" or
+"determine" that present an interpretation as a discovery or as certain. All chapters and
+Appendix A were revised (130 phrases). Measured results are still stated plainly; what changed
+are interpretations, causal explanations and generalisations ("suggests", "appears", "may", "is
+consistent with", "in these data"), and words such as "clearly", "the best", "defined by",
+"confirms", "explains why" and "is ruled out" where they claimed more than a test supports.
+Examples: "It is a property of the emotion step" became "which points to the emotion step rather
+than to one particular model"; "the signatures found here explain why" became "offer a possible
+explanation"; "Three explanations are mutually consistent" became "Three possible explanations
+are compatible with this pattern, and the experiments do not separate them". Three headings
+changed in Chapter 5 ("Replication of the Signatures", "Reverse and Pooled Transfer",
+"Summary of Results"); labels unchanged. A script confirmed for each file that every number,
+citation, reference and label is unchanged. Every pair is in `docs/claim_review.md`. Overleaf
+`7e72aad`, compiled in Chrome: 0 errors, 109 pages.

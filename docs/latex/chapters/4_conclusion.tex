@@ -19,18 +19,18 @@ questions of Section~\ref{sec:aim} can be answered as follows.
 but far from perfectly. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460,
 and the human ratings reach 0.491, against 0.309 for the base-rate random guess
 (Section~\ref{sec:eval_genre}). This margin overstates the predictive ability, because a
-classifier that assigns every genre to every film already reaches 0.434. The more reliable
-evidence is the ranking of films. The emotion pipeline reaches a macro ROC-AUC of 0.655,
+classifier that assigns every genre to every film already reaches 0.434. The ranking of films
+is more informative. The emotion pipeline reaches a macro ROC-AUC of 0.655,
 whereas the all-positive classifier cannot rank the films at all (0.50). Predicted
-emotions perform only slightly worse than the ratings ($-0.032$, $p=0.277$), so the
-pipeline needs no emotion labels once it has been trained.
+emotions perform only slightly worse than the ratings ($-0.032$, $p=0.277$), so little
+appears to be lost by predicting the emotions instead of having listeners rate them.
 
 \paragraph{RQ2: emotional signatures of genres.} Most genres have an emotional signature
 that is consistent with the conventions of film scoring (Section~\ref{sec:eval_signatures}).
 Horror is marked by fear ($d=+0.75$), Comedy by the absence of fear ($d=-0.61$) and Drama
-by raised valence ($d=+0.57$). Adventure has no signature. Fear is the most
-discriminating single emotion, and valence forms a second axis. The signatures replicate
-on the Blockbuster films from predicted emotions ($r=0.836$, with 92\,\% of the signs in
+by raised valence ($d=+0.57$). Adventure has no signature. In these data, fear is
+the most discriminating single emotion, and valence forms a second axis. The signatures largely
+replicate on the Blockbuster films from predicted emotions ($r=0.836$, with 92\,\% of the signs in
 agreement). Because these emotions are predicted by a model trained on the Eerola ratings,
 the replication cannot show that the signatures are independent of that listener panel.
 
@@ -39,44 +39,45 @@ threshold, the emotion pipeline is ahead of every audio representation used dire
 of the PCA-8 control (Section~\ref{sec:eval_direct}). Its lead over VGGish, its own input,
 is $+0.093$ at film level ($p=0.052$; over clips $p=0.086$ in the Nadeau--Bengio test). The
 lead appears with all six representations and all three emotion regressors
-(Section~\ref{subsec:eval_grid}), so it is a property of the emotion step and not of one
-model. It is significant, however, only against the weaker direct representations.
-Compression alone accounts for part of the gain, and with thresholds tuned per genre the
+(Section~\ref{subsec:eval_grid}), which suggests that it stems from the emotion step rather than
+from one particular model. It is significant, however, only against the weaker direct representations.
+Compression alone appears to account for part of the gain, and with thresholds tuned per genre the
 pipelines converge. On 40 films, the size of the advantage over the strongest direct
-representations cannot be determined reliably.
+representations cannot be estimated reliably.
 
-\paragraph{RQ4: generalisation to another dataset.} Genre information transfers between
-the datasets. Trained on Eerola alone, the emotion pipeline reaches 0.508 on the 110
+\paragraph{RQ4: generalisation to another dataset.} Much of the genre information transfers
+between the datasets. Trained on Eerola alone, the emotion pipeline reaches 0.508 on the 110
 Blockbuster films, about 82\,\% of the in-domain result, and outperforms direct VGGish at
 the default threshold (0.403; $+0.106$, $p=0.013$; Section~\ref{sec:zero_shot}). Most of
 this lead depends on the threshold. With thresholds tuned on the source it shrinks to
-$+0.041$ ($p=0.159$). The emotion pipeline still ranks the films best (ROC-AUC 0.763
-against 0.720), although this difference is not significant either ($p=0.097$). The reverse
+$+0.041$ ($p=0.159$). The emotion pipeline still ranks the films slightly better (ROC-AUC
+0.763 against 0.720), although this difference is not significant either ($p=0.097$). The reverse
 direction agrees in sign but is not significant ($p=0.102$), and with both datasets in
 training the pipelines are on par.
 
-\paragraph{Overall conclusion.} The emotion step does not make genre prediction from film
-music more accurate in general. Its advantage is specific to settings with little training
-data and to transfer between datasets, and much of it depends on the decision threshold.
-Its main contribution is interpretability. Each prediction can be traced to emotions that
-listeners can name, and errors can be traced as well. The weakness on Horror, for example,
-comes from Stage~1, which shifts the extreme fear ratings of Horror clips towards the
+\paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
+genre prediction from film music more accurate in general. Its advantage appears to be limited
+to settings with little training data and to transfer between datasets, and much of it depends on the decision threshold.
+Its main contribution lies in interpretability. Each prediction can be related to emotions
+that listeners can name, and some errors can be traced as well. The weakness on Horror, for
+example, can be traced mainly to Stage~1, which shifts the extreme fear ratings of Horror clips towards the
 average (rated 4.35, predicted 3.73; Section~\ref{sec:app_horror}). Such an explanation can
-be checked against the practice of film scoring, which a direct audio model does not allow.
+be checked against the practice of film scoring, which is not possible in the same way for a
+direct audio model.
 
 \section{Future Work}
 \label{sec:futurework}
 
 The limitations in Section~\ref{sec:disc_limitations} indicate where further research could
-improve on this thesis. The following directions follow directly from them.
+improve on this thesis. The following directions follow from them.
 
-\paragraph{More films with emotion ratings.} The main limitation is the number of films.
+\paragraph{More films with emotion ratings.} The most important limitation is probably the number of films.
 Comedy and Horror rest on four and five films, and for the borderline clip-level
 comparisons the Nadeau--Bengio test could not become significant with any number of
 repeats (Appendix~\ref{subsec:statistical_power}). The learning curves were still rising at
 the full dataset size. A larger collection of film-music clips with both emotion ratings
-and genre labels is therefore the most important requirement. It would allow the advantage
-over the strongest direct representations to be measured with useful precision.
+and genre labels would therefore be the most useful addition. It would allow the advantage
+over the strongest direct representations to be estimated with useful precision.
 
 \paragraph{A second dataset with audio and ratings.} The Blockbuster dataset provides
 neither audio nor emotion ratings. The transfer therefore had to use VGGish, and the
@@ -88,13 +89,13 @@ be used across datasets.
 
 \paragraph{A confirmatory test of other pipeline components.} CLAP with ridge regression
 was the best entry of the comparison over representations and regressors, but its lead over
-the VGGish pipeline was found after the results were known and is not significant
+the VGGish pipeline was identified after the results were known and is not significant
 ($+0.032$, $p=0.112$; Appendix~\ref{sec:app_grid}). It should be tested on films that were
 not used in this thesis, with the comparison fixed before the data are analysed.
 
 \paragraph{A better emotion model for extreme ratings.} Stage~1 reaches about 62\,\% of the
-attainable $R^2$ and underestimates the strongest emotions, which causes the weakness on
-Horror. Future work could test regressors that are less prone to regression towards the
+attainable $R^2$ and underestimates the strongest emotions, which appears to cause much of the
+weakness on Horror. Future work could test regressors that are less prone to regression towards the
 mean, more training clips with extreme ratings, or audio models fine-tuned on emotion
 ratings instead of frozen embeddings. Such work should report genre results as well,
 because a more accurate emotion model did not reliably yield a better genre result in this
@@ -109,19 +110,19 @@ ROC-AUC should be reported beside macro-$F_1$ from the start.
 
 \paragraph{Labels and listeners.} The genre labels come from IMDb and describe the film,
 not the clip, and the ratings come from a single listener panel. Genre judgements for
-single clips, and emotion ratings from listeners of other musical cultures, would show how
+single clips, and emotion ratings from listeners of other musical cultures, could show how
 much of the remaining error comes from the labels and how general the signatures are.
 
 \paragraph{Emotion as one component of a multimodal model.} Audio alone is a weak source of
 genre information compared with images and text \citep{mangolin2020multimodal}. A
 multimodal model could include the emotion step as an interpretable audio component beside
-trailer images or the plot synopsis \citep{behrouzi2023multimodal}. Such a study would show
+trailer images or the plot synopsis \citep{behrouzi2023multimodal}. Such a study could show
 whether the emotions remain useful when stronger sources of information are available.
 
 \paragraph{Methodological lessons.} Some decisions of this thesis were made after the first
 results were known. Film-level scoring was adopted after the clip-level analysis, and the
 five-genre subset was chosen partly because its genres carry an emotional signature in the
-same data. Both are reported transparently, but further studies could avoid them. The unit
+same data. Both are reported in this thesis, but further studies could avoid them. The unit
 of evaluation, the genre set, the threshold policy and the main comparisons should be fixed
 before the experiments. Cross-validation should be grouped by film from the start, and every
 score should be reported beside both chance floors, the all-positive reference and a
