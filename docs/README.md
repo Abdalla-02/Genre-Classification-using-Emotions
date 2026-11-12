@@ -2234,3 +2234,23 @@ changed in Chapter 5 ("Replication of the Signatures", "Reverse and Pooled Trans
 "Summary of Results"); labels unchanged. A script confirmed for each file that every number,
 citation, reference and label is unchanged. Every pair is in `docs/claim_review.md`. Overleaf
 `7e72aad`, compiled in Chrome: 0 errors, 109 pages.
+
+## 40. Fundamentals and Methods without repetition (12 Nov 2026)
+
+At the meeting of 12 Nov the supervisor said that the usual length is 40 to 60 pages but that
+the thesis may stay longer as long as nothing is explained twice. The author's rule for the two
+chapters that overlapped: general knowledge only in Fundamentals, project-specific choices and
+numbers only in Methods. Moved to Methods (removed from Fundamentals): the measured leakage of an
+ungrouped split (AST 0.44 vs 0.23), the too-weak default C, the ridge and random-forest R^2
+values, the ten repeats and pooled scoring per repeat, film-level scoring and why it was chosen,
+the values of the chance floors (0.309; 0.23 and 0.10 on eight genres), the numbers of the
+trivial "Drama" classifier, why each representation was chosen, and why all eight emotions are
+kept (now the paragraph `par:methods_eight` in Section 4.3; Fundamentals 2.2.3 keeps only the
+psychology and is titled "How the Two Models Relate"). Kept in Fundamentals and only referred to
+from Methods: what nested and repeated cross-validation are, the rating-reliability ceiling as a
+concept, Hamming loss and exact match (now defined there), the all-positive classifier and its
+F1 = 2p/(1+p), why macro-F1 and ROC-AUC are read together, how the two tests work and why the
+corrected test has a lower limit on p, and what a hidden state is. Fundamentals fell from 5800 to
+4759 words, Methods rose from 6954 to 7135; Chapters 1 to 7 hold about 24,000 words. No number,
+citation or label was lost (checked over the whole thesis), every pair is in
+`docs/dedup_review.md`. Overleaf `94aa46e`, compiled in Chrome: 0 errors.
