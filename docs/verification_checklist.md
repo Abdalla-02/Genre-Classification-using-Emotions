@@ -23,7 +23,12 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   tested post hoc (+0.032, p = 0.112; log section 32). Read how they are worded.
 
 **Write** (section A)
-- [ ] **Abstract, Chapter 7 and the contributions list.** The drafts in
+- [ ] **12 Nov (Overleaf `8730c7b`): check the rewritten phrases** in
+  `docs/register_review.md` (315 before/after pairs; say which to undo), the CARS version of
+  Section 1.1, the **draft of Chapter 7** and the bibliography fixes (log section 38).
+  Gabrielsson: keep 2002 or follow the publisher's 2001? Mangolin: 2020 (online) or 2022
+  (issue)?
+- [ ] **Abstract and the contributions list** (Chapter 7 is now drafted on Overleaf). The drafts in
   `docs/latex/held_back/` quote numbers from before the film-level switch and the fix, and
   know nothing of the work since 27 October (wav2vec diagnosis, the comparison over
   representations and regressors). Take the numbers from `docs/current_state.md`,
@@ -31,9 +36,8 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
 - [ ] **AI-usage declaration:** three red notes are still open: any other tools you used
   (or delete the note), how you read, revised and adapted the drafts, and the date next
   to the signature. The period of use (to November 2026), the wording row and the Figure
-  2.1 row were updated on 3 November: check them. The row on Chapter 7, the abstract and
-  the contributions says you wrote them and used AI only for minor edits, so it must stay
-  true.
+  2.1 row were updated on 3 November: check them. Since 12 Nov the declaration says Chapters 1 to 7 were first drafted by the
+  assistant and the abstract and the contributions are yours, so it must stay true.
 - [ ] **Title page:** already filled in. Check the title, both advisers and the
   submission date (04 December 2026).
 

@@ -2190,3 +2190,30 @@ valence problem). Methods 4.3 has the paragraph "Why VGGish and the random fores
 4.6.3 and 4.6.4 have labels (`subsec:protocol_transfer`, `_metrics`, `_altmetrics`) that
 Chapter 5 cites. Every label kept; a script confirmed that no number or citation value
 disappeared from the four chapters. No result changed.
+
+## 38. Academic register, a CARS introduction, Chapter 7 drafted, references checked (12 Nov 2026)
+
+After the supervisor meeting of 12 Nov the author asked for five things. (1) Some sentences
+read as colloquial: 315 phrases in Chapters 1 to 6 and Appendix A were rewritten in an
+academic register (no rhetorical questions, no "beats", "gets", "says yes", "squashed",
+"is gone"; "level" became "on par"), keeping sentences short. A script confirmed for each
+chapter that every number, citation, reference and label is unchanged. Every pair is listed
+in `docs/register_review.md` for the author to accept or undo. Two headings changed:
+Fundamentals 2.6 is now "Measuring Model Performance" and Discussion 6.3.2 "Interpretability
+of the bottleneck"; labels unchanged. (2) Section 1.1 Motivation was rewritten in the CARS
+structure (territory, niche, occupying the niche; marked by comments in the source), with a
+source or a stated reason for every claim. (3) Chapter 7 (Conclusions and Future Work) was
+drafted: one paragraph per RQ with the deciding number and its caveat, consistent with
+Section 6.1, an overall conclusion, and eight directions for future work derived from the
+limitations, including methodological lessons (fix the unit, genre set and threshold policy
+before the experiments). The AI declaration now names Chapters 1 to 7 as first drafted by
+the assistant; the abstract and the contributions list remain the author's. (4) Consistency:
+no undefined reference, no citation without a bibliography entry, no "route". (5) All 32
+cited works were checked against Crossref, publisher pages and proceedings: all exist and
+match. Fields added or fixed in `bib/library.bib`: DOIs (Austin, Kang, CLAP), pages
+(Kang 2545-2559, VGGish 131-135, CLAP 1-5, librosa 18-24 instead of 18-25), issues
+(Behrouzi 4, Gabrielsson 1_suppl) and the issue version of Mangolin (vol. 81, no. 14,
+pp. 19071-19096; year kept at 2020, the online date, so the citation matches the Related Work
+heading). Gabrielsson is dated 2001 by the publisher (issue labelled 2001-2002); kept at 2002.
+The free PDFs (17, some preprints) are in `Related Work/References/` outside the repository.
+Overleaf `8730c7b`, compiled in Chrome: 0 errors, 109 pages.

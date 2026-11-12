@@ -4,55 +4,18 @@
 \section{Motivation}
 \label{sec:motivation}
 
-A few seconds of a soundtrack are often enough to guess what kind of film it comes from.
-Harsh string chords over a slow, low pulse point to horror. Loud brass over fast, heavy
-drums points to action. A solo piano over soft strings sounds like drama or romance.
-Listeners make this guess without seeing a single frame, and they are often sure of it.
-This thesis starts from the idea that the guess is not really about genre at all. The
-listener first hears an emotion, such as threat, excitement, tenderness or sadness, and
-then works out the genre from it.
+% Move 1 (CARS): establishing the research territory
+Music is one of the main means by which a film shapes the emotional response of its audience. \citet{gorbman1987unheard} describes film music as a signifier of emotion that works through a system of learned codes. Minor keys and dissonant harmony, for example, have come to signal threat or suspense, while other choices of harmony, rhythm and instrumentation are associated with romance, comedy or heroism. \citet{juslin2013everyday} place such codes within a broader account of how music conveys emotion, in which learned associations allow music to evoke emotional meanings that are shared within a culture. \citet{austin2010characterization} make a related observation from the side of film genre. Films are designed to evoke emotion, and the scores of high-intensity genres such as Action and Horror differ measurably from those of genres with a more restrained emotional expression, such as Drama and Romance. Section~\ref{sec:fund_motivation_theory} discusses these accounts in more detail.
 
-This works because film composers write music to set the emotional tone of a scene and
-of a whole film. \citet{gorbman1987unheard} describes film music as a system of learned
-codes. Minor keys and dissonant harmony have come to signal threat or suspense. Other
-choices of harmony, rhythm and instruments are tied to romance, comedy or heroism.
-\citet{juslin2013everyday} fits such codes into a wider account of how music carries
-emotion: learned associations let music call up emotional meanings that a culture
-shares. In film scoring, these meanings are closely bound to genre.
-Section~\ref{sec:fund_motivation_theory} looks at both accounts more closely. For this
-thesis the point is simple. Composers put the link between soundtrack and genre into the
-emotion of the music, so that is where a model should look for it.
+Two lines of computational research build on these observations. Music emotion recognition (MER) predicts the emotion that listeners perceive in a piece of music from its audio \citep{yang2012machine,kim2010music,kang2025there}. Film genre classification predicts the genres of a film from its audio, its images or its text \citep{austin2010characterization,ma2021computational,mangolin2020multimodal,behrouzi2023multimodal}. The second task has practical value. Streaming providers have a growing interest in deriving the genres of films automatically, and genre labels support the retrieval and recommendation of films \citep{mangolin2020multimodal,behrouzi2023multimodal}.
 
-Predicting genre from film audio is an established task, and a useful one. Genre labels
-organise film archives and streaming libraries, feed recommendation systems and help
-people find music that suits a scene. Existing work treats it as pure pattern
-recognition, though. \citet{austin2010characterization} classify film genre from
-low-level features of the score, and \citet{ma2021computational} from learned audio
-embeddings of the music cues in a film. \citet{mangolin2020multimodal} and
-\citet{behrouzi2023multimodal} combine trailer audio with images and text.
-Chapter~\ref{ch:relatedwork} reviews these studies. All of them predict genre
-\emph{directly} from an audio representation. Such a model may be accurate, but it cannot
-say why a soundtrack sounds like Horror. It works with a vector of several hundred numbers
-that have no fixed meaning. Nothing in it matches the emotional mechanism that composers
-and film-music scholars describe.
+% Move 2 (CARS): establishing a niche
+So far, the two lines of research have remained separate. The film genre studies reviewed in Chapter~\ref{ch:relatedwork} predict genre directly from an audio representation: from low-level features of the score \citep{austin2010characterization}, from learned embeddings of the music cues of a film \citep{ma2021computational}, or from trailer audio combined with images and text \citep{mangolin2020multimodal,behrouzi2023multimodal}. None of them includes an explicit emotional step. Such models may predict genre accurately, but they cannot explain why a soundtrack is assigned a particular genre. Their input is a vector of several hundred values without a fixed meaning, which does not correspond to the emotional mechanism described in film-music research. At the same time, music research shows that emotion and genre are closely related \citep{hu2007exploring,laurier2009mood,eerola2011genrespecific}. To the author's knowledge, it has not yet been tested whether emotion can serve as an intermediate step between film audio and film genre.
 
-So there is a gap between what we know about film music and how it is modelled. If
-emotion is what links a soundtrack to its genre, modelling the emotion explicitly should
-cost little accuracy. The result should also be far easier to understand. A model that
-predicts Horror because the music is fearful and tense can be checked against what
-composers actually do, and a person can question and correct it. That is impossible when
-the reason is that dimension 87 of an embedding is large. There is a second, less obvious
-reason why emotions might help. An emotion rating means the same thing in every dataset:
-a fearful cue is fearful whichever film collection it comes from. The dimensions of a
-learned audio embedding, on the other hand, carry the statistics of the data they were
-computed on. A model built on emotions might therefore cope better with a new dataset
-than a model built on raw embeddings.
+Such a step could offer two advantages. First, a prediction that rests on emotions can be explained and checked. A model that predicts Horror because the music is rated as fearful and tense can be compared with established practice in film scoring \citep{gorbman1987unheard}. Second, emotion ratings are given on fixed scales that are defined independently of any particular dataset, whereas the dimensions of a learned audio embedding reflect the data on which the embedding was computed. A model built on emotions may therefore transfer better to a new collection of films. Neither advantage is certain. Reducing a clip to a small number of emotions discards information, and the emotions must first be predicted from the audio, which remains difficult, in particular for valence \citep{kim2010music,kang2025there}. Whether an explicit emotional step improves genre prediction, leaves it unchanged or impairs it is therefore an empirical question.
 
-Neither hope is guaranteed. Reducing a clip to a handful of emotions throws a lot away,
-and that only pays off if what is kept matters more than what is lost. The emotions also
-have to be predicted from the audio first, and emotion prediction from audio is far from
-perfect. Whether an explicit emotional step helps, costs nothing or simply loses
-information is therefore a question for experiment. This thesis asks: \emph{how well can
+% Move 3 (CARS): occupying the niche (continued in Sections 1.2 and 1.3)
+This thesis addresses it with the following question: \emph{how well can
 the emotional features of a film soundtrack predict the genre of the film, and how does
 modelling emotion as an interpretable intermediate step compare with classifying genre
 directly from audio?}
@@ -60,7 +23,7 @@ directly from audio?}
 \section{Aim of this thesis}
 \label{sec:aim}
 
-The aim is to find out how well soundtrack emotion works as an interpretable step between
+The aim is to determine how well soundtrack emotion serves as an interpretable step between
 film audio and film genre. Four research questions (RQ1 to RQ4) structure the work.
 Chapter~\ref{ch:discussion} answers each of them (Section~\ref{sec:disc_rq}).
 
@@ -76,13 +39,13 @@ Chapter~\ref{ch:discussion} answers each of them (Section~\ref{sec:disc_rq}).
 \end{description}
 
 RQ1 asks how strong the signal is. It is answered first with emotions rated by human
-listeners and then with emotions predicted from audio. RQ2 is about the shape of the
-signal: which emotions set each genre apart, and whether the same emotional signatures
-turn up in a second collection of films. This checks whether the emotional step can be
-read the way the motivation above suggests. RQ3 is the central comparison of the thesis,
-made within one dataset. RQ4 asks how the two pipelines do when a model trained on one
-collection of films is applied to another without seeing any of its labels. RQ2 and RQ4
-both use the second dataset, but they ask different things. RQ2 asks whether the link
+listeners and then with emotions predicted from audio. RQ2 concerns the form of the
+signal: which emotions distinguish each genre, and whether the same emotional signatures
+appear in a second collection of films. This tests whether the emotional step can be
+interpreted in the way the motivation above suggests. RQ3 is the central comparison of the thesis,
+made within one dataset. RQ4 asks how the two pipelines perform when a model trained on one
+collection of films is applied to another without access to any of its labels. RQ2 and RQ4
+both use the second dataset, but they address different questions. RQ2 asks whether the link
 between emotions and genres stays the same there. RQ4 asks whether a genre classifier
 still works there.
 
@@ -95,8 +58,8 @@ method has two steps. A random forest predicts the eight emotions from a pre-tra
 audio representation (VGGish in the main experiments). A logistic regression for each
 genre then predicts the genres from these emotions. This emotion pipeline is compared with
 classifying genre from the same audio representation directly. It is also compared with
-a control that squeezes the representation into as many numbers as there are emotions,
-without giving those numbers any emotional meaning. Only the music is used, with no
+a control that compresses the representation into as many values as there are emotions,
+without giving those values any emotional meaning. Only the music is used, with no
 images, dialogue or plot, and the pre-trained audio models are used as they are, without
 fine-tuning.
 
@@ -106,13 +69,13 @@ fine-tuning.
 \label{sec:structure}
 
 Chapter~\ref{ch:fundamentals} is written for readers new to the field. It explains the
-models of emotion, the audio representations, the two learning methods and the ways the
-results are measured. Chapter~\ref{ch:relatedwork} reviews the surveys of music emotion
+models of emotion, the audio representations, the two learning methods and the evaluation
+methods. Chapter~\ref{ch:relatedwork} reviews the surveys of music emotion
 recognition, the evidence that emotion and genre are linked in music, and the four
 film-genre studies this work is compared with. Chapter~\ref{ch:methods} describes the two
-datasets, the genre labels, the two-stage pipeline, the baselines and controls, and how
-the evaluation is done. Chapter~\ref{ch:evaluation} reports the experiments in the order
+datasets, the genre labels, the two-stage pipeline, the baselines and controls, and the
+evaluation protocol. Chapter~\ref{ch:evaluation} reports the experiments in the order
 of the pipeline. Chapter~\ref{ch:discussion} answers the research questions, interprets the
-results and discusses the limits of the work. Chapter~\ref{ch:conclusions} sums up the
-answers and names the next steps. Appendix~\ref{app:supplementary} reports the checks of the main results,
+results and discusses the limits of the work. Chapter~\ref{ch:conclusions} summarises the
+answers and outlines directions for future work. Appendix~\ref{app:supplementary} reports the checks of the main results,
 none of which changes them.

@@ -129,45 +129,45 @@ In Figure~\ref{fig:metric_family}, each bar is a pipeline's mean score over the 
 repeats minus the random guess of that metric. The whiskers are the standard deviation
 over the repeats.
 
-The metrics in the last block reward predicting the frequent genres and hardly care about
+The metrics in the last block reward predicting the frequent genres and give little weight to
 the rare ones. Weighted $F_1$ still scores each genre separately. Under every other metric
-of this block, the most-frequent baseline, which predicts Drama for every clip, beats every
-model. It reaches 0.571 micro-$F_1$ against at most 0.517, an exact-match rate of 0.283
+of this block, the most-frequent baseline, which predicts Drama for every clip, outperforms every
+trained model. It reaches 0.571 micro-$F_1$ against at most 0.517, an exact-match rate of 0.283
 against at most 0.168, and a Hamming loss of 0.218 against at least 0.311. A metric under
-which a model that has learned nothing ranks first is not a good headline for a question
+which a model that has learned nothing ranks first is not a suitable primary measure for a question
 about genres such as Horror and Comedy. This is why macro-$F_1$ is used. Among the metrics
 that weight genres equally, the emotion pipeline ranks first under both macro-$F_1$ scores
 and both threshold-free metrics.
 
-The all-positive classifier fails in the opposite way. Saying yes to every genre gives it a
+The all-positive classifier fails in the opposite way. Assigning every genre gives it a
 recall of 1. It reaches 0.430 macro-$F_1$ over clips and 0.434 over films. That puts it
 above every audio pipeline at clip level and above every direct one at film level. Its
-weighted $F_1$ (0.607) is even the highest in the table. Hamming loss and exact match expose it
+weighted $F_1$ (0.607) is even the highest in the table. Hamming loss and exact match reveal its weakness
 (0.691 and 0.000), and so do the threshold-free metrics. Its macro ROC-AUC is exactly
 0.500, and its average precision equals the share of clips with each genre. No metric that
-needs a threshold catches both trivial classifiers. ROC-AUC catches both, because neither
+requires a threshold identifies both trivial classifiers. ROC-AUC identifies both, because neither
 of them can rank one clip above another.
 
-Hamming loss deserves a closer look. Under it the emotion pipeline is the weakest of the
-four audio pipelines (0.406), and it even falls behind the random guess (0.323). The reason
+Hamming loss requires closer examination. Under it the emotion pipeline is the weakest of the
+four audio pipelines (0.406), and it is even worse than the random guess (0.323). The reason
 is the number of genres it predicts: 2.35 per clip on average, against 1.54 true genres,
 1.85 for VGGish and 1.68 for AST. Hamming loss counts each of the five decisions per clip
-equally. A needless positive therefore costs as much as a missed genre. For a rare genre,
+equally. An unnecessary positive prediction therefore costs as much as a missed genre. For a rare genre,
 the lowest loss comes from never predicting it, which costs only the genre's base rate
 (0.085 for Horror). Split by genre, the emotion pipeline makes fewer errors than VGGish on
 Action (0.371 against 0.411) and Drama (0.356 against 0.396), and about as many on Crime.
-All of the difference is in Comedy (0.438 against 0.286) and Horror (0.403 against
+The entire difference lies in Comedy (0.438 against 0.286) and Horror (0.403 against
 0.235). It predicts these two genres for 148 and 135 of the 329 clips, although only 40 and
-28 carry them. This is the operating point driven by recall, described below, seen from the
-other side. Macro-$F_1$ rewards finding a rare genre; Hamming loss punishes every attempt.
+28 carry them. This is the recall-driven operating point described below, viewed from the
+other side. Macro-$F_1$ rewards identifying a rare genre; Hamming loss penalises every attempt.
 The human ratings predict even more genres per clip (2.47) and have the highest Hamming
-loss of all (0.427). The effect therefore belongs to the emotion features themselves, in
+loss of all (0.427). The effect is therefore a property of the emotion features themselves, in
 which a tense crime clip resembles a horror clip. It does not come from errors of the
 emotion regression.
 
-The decision threshold matters more. When each genre's threshold is chosen to maximise
+The decision threshold has a larger effect. When each genre's threshold is chosen to maximise
 $F_1$ on the training fold, every pipeline improves. Over clips, the four pipelines then
-come together at between 0.420 and 0.433, with the emotion pipeline lowest. It is then no
+converge at between 0.420 and 0.433, with the emotion pipeline lowest. It is then no
 longer ahead of VGGish ($-0.004$, $p=0.813$) or of the PCA-8 control ($-0.013$,
 $p=0.422$). The two threshold-free metrics put it first, but not significantly (macro
 average precision $+0.014$, $p=0.352$; macro ROC-AUC $+0.049$, $p=0.063$). Part of the
@@ -181,13 +181,13 @@ The main transfer experiments use the default threshold as well.
 Appendix~\ref{sec:app_zs_threshold} repeats the zero-shot transfer with tuned thresholds.
 
 A single threshold for all genres was also moved from 0.20 to 0.80, at film level under seed
-42. Moving it does not buy precision. The macro precision of the emotion pipeline is highest at
+42. Moving it does not increase precision. The macro precision of the emotion pipeline is highest at
 the default cut (0.407), and no pipeline exceeds 0.43 at any cut, while recall and
 $F_1$ fall quickly above 0.5. At 0.30 and below, every pipeline assigns most genres to most
-films and scores 0.435 to 0.445, like the classifier that says yes to everything. The emotion
+films and scores 0.435 to 0.445, like the all-positive classifier. The emotion
 pipeline is also very sensitive to the cut. At 0.45 it assigns 3.70 genres per film, at 0.55 only
 0.95, and its macro-$F_1$ falls from 0.460 to 0.292. Its probabilities lie close to one half. Strong
-regularisation pulls the probabilities of a logistic regression towards one half, and the balanced
+regularisation shifts the probabilities of a logistic regression towards one half, and the balanced
 class weights centre them there. The default threshold is therefore not a neutral choice for the
 emotion pipeline, which is one more reason to read macro-$F_1$ together with ROC-AUC.
 
@@ -214,13 +214,13 @@ macro-$F_1$ is between 0.034 and 0.045. That is 2.0 to 2.5 times the clip-level 
 equally (the emotion pipeline 0.038, VGGish 0.039, AST 0.045). The second is the sample of
 films, where the bootstrap standard error is between 0.027 and 0.038. The third is the
 master seed, which changes both the folds and the random forest of Stage~1. Over the
-seeds, the ten-repeat mean moves by 0.005 to 0.019. The emotion pipeline stays between
+seeds, the ten-repeat mean changes by 0.005 to 0.019. The emotion pipeline stays between
 0.460 and 0.481. Its lead is positive under every seed against VGGish ($+0.076$ to
 $+0.132$), AST ($+0.142$ to $+0.155$) and the PCA-8 control ($+0.051$ to $+0.071$). The
 PCA-8 control is itself ahead of VGGish under every seed ($+0.019$ to $+0.068$). Under
 seed 42 the re-run reproduces the per-repeat scores of the main analysis exactly. The
-numbers are therefore stable against everything the code controls. What uncertainty is
-left is due to the small number of films.
+numbers are therefore stable against everything the code controls. The remaining uncertainty
+is due to the small number of films.
 
 % =============================================================================
 \section{Which Emotions Are Needed?}
@@ -246,13 +246,13 @@ the eight changes reaches $p<0.05$: removing tension raises the score by 0.012
 ($p=0.041$). With eight tests at the 5\,\% level, one such result is roughly what chance
 produces. The Nadeau--Bengio test on the clip-level scores does not support it
 ($p=0.516$), and its direction is the opposite of what a necessary emotion would show.
-Smaller subsets lose a little, but not significantly. Fear alone reaches 0.475
+Smaller subsets perform slightly worse, but not significantly. Fear alone reaches 0.475
 ($p=0.345$), valence with energy 0.487 and the three dimensional scales 0.479. One to three
-emotions thus keep 96 to 99\,\% of the score of all eight. The eight ratings move
-together: when tension goes up, fear tends to go up and valence down. In effect the genre
-signal runs along a single line, from threat to warmth. Fear is the most telling
+emotions thus keep 96 to 99\,\% of the score of all eight. The eight ratings are
+correlated: when tension increases, fear tends to increase and valence to decrease. In effect, the genre
+signal lies along a single axis, from threat to warmth. Fear is the most informative
 emotion, but no emotion is necessary, and all eight are kept because they make the model
-easier to read.
+easier to interpret.
 
 % =============================================================================
 \section{The Waveform Representation}
@@ -261,7 +261,7 @@ easier to read.
 Used directly, wav2vec~2.0 is the weakest representation for genre (0.261 at film level).
 It is behind each of the other five by 0.057 to 0.131. As the input of the emotion
 pipeline, with the same random forest and classifier, the same representation reaches
-0.472. That is level with the VGGish pipeline and not significantly below the ground-truth
+0.472. This is on par with the VGGish pipeline and not significantly below the ground-truth
 ceiling ($-0.018$, $p=0.546$). The gain over its direct use, $+0.209$ [$+0.137$,
 $+0.277$], holds in all ten repeats ($p<0.001$; over clips $+0.086$, Nadeau--Bengio
 $p=0.014$). The benefit of the emotion step is therefore not tied to one embedding, and it
@@ -274,7 +274,7 @@ Nadeau--Bengio $p=0.438$). It comes from Crime alone ($F_1$ 0.49 against 0.35).
 Compression explains part of the gain over direct use. Projecting wav2vec~2.0 onto eight
 principal components, the counterpart of the PCA-8 control, lifts it from 0.261 to 0.344
 ($p=0.004$). The emotion pipeline is a further 0.127 above this control ($p<0.001$, all ten
-repeats). A non-linear model alone does not help either: a random forest that classifies
+repeats). A non-linear model alone does not improve the result either: a random forest that classifies
 genre from the embedding directly reaches only 0.186.
 
 The low $R^2$ of Stage~1 is measured per clip, whereas genre is scored per film. Averaged
@@ -282,10 +282,10 @@ over each film, the predicted valence, tension, fear and anger correlate with th
 at 0.80 to 0.85 (VGGish 0.87 to 0.92). Only happiness, sadness and energy are clearly
 worse (0.54 to 0.57). The genre signatures computed from these predicted emotions agree
 with those of the ratings ($r=0.85$; VGGish 0.92). Used directly, wav2vec~2.0 never
-predicts Comedy and hardly ever Horror ($F_1$ 0.00 and 0.07). Its genre information is
-spread over 768 dimensions learnt from speech. A linear classifier cannot find it from
-about 32 training films. The emotion ratings, in contrast, tell the random forest which
-acoustic properties matter. A shortcut through film identity is ruled out. wav2vec~2.0
+predicts Comedy and rarely Horror ($F_1$ 0.00 and 0.07). Its genre information is
+spread over 768 dimensions learnt from speech. A linear classifier cannot extract it from
+about 32 training films. The emotion ratings, in contrast, indicate to the random forest which
+acoustic properties are relevant. A shortcut through film identity is ruled out. wav2vec~2.0
 encodes the film less strongly than VGGish: a clip's five nearest neighbours come from its
 own film in 9\,\% of cases, against 15\,\% for VGGish.
 
@@ -362,8 +362,8 @@ the six combinations on AST and wav2vec~2.0 remain significant ($p<0.001$). The 
 forest on the hand-crafted descriptors falls to $p=0.086$, and all others are above 0.4.
 Without a threshold, the film-level macro ROC-AUC is 0.59 to 0.68 for the 18 emotion
 pipelines and 0.51 to 0.62 for the six direct ones. Under the four further master seeds (1
-to 4), the mean of an emotion pipeline moves by at most 0.042 (the hand-crafted
-descriptors with SVR). That of a direct pipeline moves by at most 0.047 (VGGish). The
+to 4), the mean of an emotion pipeline changes by at most 0.042 (the hand-crafted
+descriptors with SVR). That of a direct pipeline changes by at most 0.047 (VGGish). The
 standard deviation of the five seed means is 0.003 to 0.019, and the VGGish pipeline of
 the thesis lies between 0.460 and 0.481. Averaged over the five seeds, CLAP with ridge
 regression reaches 0.502 and CLAP with SVR 0.493. This compares with 0.469 for the VGGish
@@ -389,10 +389,10 @@ a random guess 0.226 (over clips: 0.317 and 0.328). The emotion pipeline is ahea
 (0.242) by $+0.107$ ($p<0.001$) and of the VGGish embedding it starts from (0.257) by
 $+0.093$ ($p=0.001$), in all ten repeats. Over clips the Nadeau--Bengio test gives
 $p=0.022$ against VGGish and $p=0.136$ against AST. The rarest genres are almost never
-caught. Documentary, with two films, is never predicted correctly by any pipeline.
+identified. Documentary, with two films, is never predicted correctly by any pipeline.
 Biography (three films) reaches an $F_1$ of 0.11 in the emotion pipeline. Adventure, with
-ten films, is predicted poorly for how often it occurs (0.38 against 0.39 for Comedy with
-four films). This fits its missing emotional signature (Section~\ref{sec:eval_signatures}).
+ten films, is predicted poorly relative to its frequency (0.38 against 0.39 for Comedy with
+four films). This is consistent with its missing emotional signature (Section~\ref{sec:eval_signatures}).
 
 % =============================================================================
 \section{Blockbuster: Reproduction and Cue-Level Prediction}
@@ -437,7 +437,7 @@ machine (SVM). The random guess predicts each genre at its base rate, and the pl
 set gives every film the most common combination of genres. This direct pipeline is within the range of their
 VGGish models, and both of their baselines reproduce to within 0.03. The classifier is
 thus checked against an outside result before it is used for transfer. Under the repeated
-protocol of Figure~\ref{fig:blockbuster_cv}, the learned embedding (0.593) does not beat
+protocol of Figure~\ref{fig:blockbuster_cv}, the learned embedding (0.593) does not outperform
 the full set of 140 hand-crafted MIR features (0.585; $+0.009$, $p=0.787$). An earlier,
 larger gap came from comparing it with the 78 MFCC-family features only (0.516; $+0.077$,
 $p=0.062$). The PCA-8 control (0.587) is a serious baseline on this dataset. A random
@@ -446,7 +446,7 @@ eight directions matters.
 
 A Blockbuster film consists of single scored cues (4664 in total, a median of 39 per film,
 with a median length of 19\,s), and a cue is the same kind of object as an Eerola clip.
-Predicting the emotions of each cue and averaging them afterwards beats predicting them
+Predicting the emotions of each cue and averaging them afterwards outperforms predicting them
 once from the film-average embedding. In-domain it reaches 0.616 against 0.557 ($+0.059$,
 Nadeau--Bengio $p=0.020$, in 92\,\% of the folds). In the zero-shot setting it is only
 slightly ahead (0.508 against 0.502). Applying the emotion model to the same unit it was
@@ -491,23 +491,23 @@ overlap. The ratings place Horror clearly above all other genres in fear. The pr
 do not. The predicted fear of the Horror clips (3.73) is only 0.27 above that of the Action
 clips, against 0.93 in the ratings. Within the Horror clips, predicted fear explains only
 37\,\% of the variance of the rated fear ($R^2=0.37$, against 0.59 over all clips). The
-predictions rise by only 0.45 points per point of rated fear. This is regression to the
+predictions rise by only 0.45 points per point of rated fear. This is a regression towards the
 mean. Only 28 of the 329 clips are Horror, and a random forest predicts averages of training
 ratings, so it cannot reach the extreme values of a small group. The rest of the Horror
 profile shifts as well. Expressed as Cohen's $d$ against all other clips, fear falls from
 $+0.73$ in the ratings to $+0.59$ in the predictions. Energy changes sign, from $-0.15$ to
-$+0.38$, so that predicted Horror looks like a tense, energetic action or crime film. The
+$+0.38$, so that predicted Horror resembles a tense, energetic action or crime film. The
 genre classifier therefore cannot separate Horror from these genres. It predicts Horror
 for too many films (precision 0.15) and still misses half of them (recall 0.50). A better
 emotion model, or more Horror films to train it on, would be the remedy. The ratings show
-that the emotional signal itself is there.
+that the emotional signal itself is present.
 
 % =============================================================================
 \section{Error Analysis}
 \label{sec:app_errors}
 
-The genre classifier uses balanced class weights so that rare genres are not ignored. This
-leads it to predict too many genres. On the eight-genre task, under the earlier
+The genre classifier uses balanced class weights so that rare genres are not ignored. As a consequence,
+it predicts too many genres. On the eight-genre task, under the earlier
 single-run protocol, it assigned 3.55 genres per clip on average against 1.87 true ones.
 Raising a single decision threshold above 0.5 makes macro-$F_1$ worse, not better, because
 it first removes the positive predictions of the rare, distinctive genres. A threshold
@@ -515,7 +515,7 @@ tuned per genre is a different matter (Section~\ref{sec:eval_robustness}). A lea
 curve trained the models on growing shares of the films. It was still rising at the full
 dataset size, both for the emotion features and for the AST embedding. Performance is
 therefore limited by the amount of data as well as by the signal. Finally, grouping by
-film matters. Under an ungrouped split the AST baseline reaches 0.44 instead of 0.23
+film is essential. Under an ungrouped split the AST baseline reaches 0.44 instead of 0.23
 (clip-level macro-$F_1$, eight genres, single untuned five-fold run), because it can
 recognise the film rather than the genre. The emotion features gain much less from the
 same leakage.
@@ -554,15 +554,15 @@ classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$
 film-level area under the receiver operating characteristic curve, for which the all-positive
 classifier scores 0.50.
 
-The emotion pipeline beats this reference significantly only on Comedy. It is level on Horror
+The emotion pipeline outperforms this reference significantly only on Comedy. It is on par on Horror
 and behind on Crime and Drama, though not significantly. On Crime it ranks the films at
 chance (AUC 0.47). Its $F_1$ there comes from assigning Crime to about half of the films,
-while 30\,\% carry the genre. Nothing beats always predicting Drama at film level. The
+while 30\,\% carry the genre. No pipeline outperforms always predicting Drama at film level. The
 ratings are ahead of the reference by 0.054 ($p=0.086$). Every direct representation is below
 it, for example VGGish by 0.071 ($p=0.043$) and MusiCNN by 0.043 ($p=0.269$). Over clips the
 emotion pipeline is also below it ($-0.027$, $p=0.218$).
 
-The reason is how often each pipeline says yes. The films carry 1.55 genres on average. The
+The reason is how often each pipeline assigns a genre. The films carry 1.55 genres on average. The
 emotion pipeline assigns 2.27 per film and the ratings 2.21, while the direct representations
 assign 1.27 to 1.65. On 40 films, macro-$F_1$ at the default threshold depends heavily on this
 rate. A measure without a threshold avoids the problem. The film-level macro ROC-AUC of the
@@ -611,14 +611,14 @@ the check. Table~\ref{tab:app_zs_threshold} gives the result.
 In Table~\ref{tab:app_zs_threshold}, the last two rows give the difference with the $p$-value
 of the paired film bootstrap in brackets. Bold marks $p<0.05$.
 
-The emotion pipeline hardly changes with tuning on clips, but the two other pipelines gain,
-because the default threshold suits them badly on the new dataset. The tuned thresholds
+The emotion pipeline changes little with tuning on clips, but the two other pipelines gain,
+because the default threshold is poorly suited to them on the new dataset. The tuned thresholds
 also predict too many genres. The Blockbuster films carry 1.78 genres on average. At the
 default threshold the emotion pipeline assigns 2.45 and direct VGGish 1.99. Tuned on clips,
 they assign 2.85 and 3.72, and the PCA-8 control 4.73. The tuned scores therefore end close
-together, as in-domain (Appendix~\ref{sec:eval_robustness}). Without a threshold the emotion
+to each other, as in-domain (Appendix~\ref{sec:eval_robustness}). Without a threshold the emotion
 pipeline ranks the films best, and its lead over the PCA-8 control is significant. Most of
-the lead in $F_1$ at the default threshold thus comes from where the cut falls, and a smaller
+the lead in $F_1$ at the default threshold thus depends on the position of the cut, and a smaller
 advantage in the ordering of films remains.
 
 % =============================================================================
@@ -644,7 +644,7 @@ the same way correlate positively, and scales that point in opposite directions 
 negatively. The arrows are the three dimensional scales, and the grey squares are the five
 discrete emotions.
 
-The real picture differs from the schematic in three ways. First, valence and tension are
+The empirical structure differs from the schematic in three ways. First, valence and tension are
 almost opposite ($r=-0.91$), where the schematic draws them at an angle of 135 degrees. Second,
 energy does not lie on the pleasant side. It correlates negatively with valence ($r=-0.40$) and
 positively with tension ($r=0.58$), although the schematic draws energy and tension at right
@@ -653,8 +653,8 @@ valence ($r=0.32$). Sad film music in this dataset is thus not rated as unpleasa
 
 The first component runs from tension, fear and anger to valence and tenderness. This is the
 axis from threat to warmth that also carries most of the genre signal
-(Appendix~\ref{sec:app_ablation}). Fear and tension are especially close ($r=0.83$), which fits
-the finding that one to three emotions keep most of that signal. The second component runs from
+(Appendix~\ref{sec:app_ablation}). Fear and tension are especially close ($r=0.83$), which is consistent with
+the finding that one to three emotions retain most of that signal. The second component runs from
 sadness to happiness, and energy lies on its upper side. Figure~\ref{fig:circumplex} stays a
 schematic of the models from the literature. This section shows what these models look like in
 the ratings used here.
