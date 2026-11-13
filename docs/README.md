@@ -2254,3 +2254,34 @@ corrected test has a lower limit on p, and what a hidden state is. Fundamentals 
 4759 words, Methods rose from 6954 to 7135; Chapters 1 to 7 hold about 24,000 words. No number,
 citation or label was lost (checked over the whole thesis), every pair is in
 `docs/dedup_review.md`. Overleaf `94aa46e`, compiled in Chrome: 0 errors.
+
+## 41. Comments on `_Thesis_12.11.pdf` and the first person (14 Nov 2026)
+
+The author's annotated PDF of 12 Nov (`_Thesis_12.11.pdf`, Drive) holds 15 comments, one of
+them the supervisor's rule for all tables and figures: numbers the reader can see in a table
+or figure are not repeated in the text; only the important ones are named. All were worked
+through (`docs/review_2026-11-12.md` lists each comment and the change). In short:
+research questions written as prose with marked numbers, RQ3 simplified ("how predicting
+genre from emotions compares with predicting it directly from the same audio
+representation"); the Blockbuster features named in the introduction (VGGish, MIR);
+Fundamentals defines TP/FP/FN/TN with a new confusion figure and gives every formula as a
+numbered display equation with a "where" list (R^2, precision/recall/F1, macro-F1, random
+guess, ROC-AUC, all-positive F1), explains ICC(C,1) and ICC(A,1), and says where the corrected
+t-test is used; four new figures (log-mel spectrogram of clip 304, Hellraiser, from
+`experiments/make_spectrogram.py`; grouped cross-validation and confusion matrix as TikZ;
+`data_overview` from `make_figures.py`); Figure 5.1 shows the mean in its own panel;
+Figure 5.2 sits directly under the heading of Section 5.2; the numbers that Figures 5.1 to
+5.9 and Tables 5.1 to 5.5 already show were removed from the text of Chapter 5; "on par"
+replaced throughout. Figure 5.6 (signatures) shows only the Eerola genres, by the author's
+decision: the Blockbuster panel (predicted emotions) is gone and the replication stays as
+numbers in the text (r = 0.836, 92 % of signs). The heatmap now covers all eight Eerola
+genres from the human ratings and replaces the table of dominant signatures; its values come
+from the new `experiments/genre/exp_signatures_eerola.py` -> `results/signatures_eerola.json`,
+which reproduces the table it replaces (Horror fear +0.75, Biography happiness +0.67,
+Comedy fear -0.61, Drama valence +0.57, Documentary anger -0.51, Action happiness -0.50,
+Crime fear +0.40; Adventure's strongest effect is fear, |d| = 0.252, so the text now says
+"reaches only |d| = 0.25" instead of "no emotion exceeds 0.25"). Calibration stays future
+work (author's choice). At the author's request the thesis now uses the first person where
+the author acts or decides ("I chose", "I group every split by film", "To my knowledge");
+"this thesis" stays where the document is meant. Overleaf `4419a6d`, compiled in Chrome:
+0 errors, 113 pages.

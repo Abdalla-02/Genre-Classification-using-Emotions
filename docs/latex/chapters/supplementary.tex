@@ -261,7 +261,7 @@ easier to interpret.
 Used directly, wav2vec~2.0 is the weakest representation for genre (0.261 at film level).
 It is behind each of the other five by 0.057 to 0.131. As the input of the emotion
 pipeline, with the same random forest and classifier, the same representation reaches
-0.472. This is on par with the VGGish pipeline and not significantly below the ground-truth
+0.472. This is comparable to the VGGish pipeline and not significantly below the ground-truth
 ceiling ($-0.018$, $p=0.546$). The gain over its direct use, $+0.209$ [$+0.137$,
 $+0.277$], holds in all ten repeats ($p<0.001$; over clips $+0.086$, Nadeau--Bengio
 $p=0.014$). The benefit of the emotion step therefore does not appear to be tied to one embedding,
@@ -555,7 +555,7 @@ classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$
 film-level area under the receiver operating characteristic curve, for which the all-positive
 classifier scores 0.50.
 
-The emotion pipeline outperforms this reference significantly only on Comedy. It is on par on Horror
+The emotion pipeline outperforms this reference significantly only on Comedy. It is close to it on Horror
 and behind on Crime and Drama, though not significantly. On Crime it ranks the films at
 chance (AUC 0.47). Its $F_1$ there comes from assigning Crime to about half of the films,
 while 30\,\% carry the genre. No pipeline outperforms always predicting Drama at film level. The
@@ -584,8 +584,7 @@ below the zero-shot emotion pipeline (0.508), but above direct VGGish in zero-sh
 This test repeats the zero-shot transfer of Section~\ref{sec:zero_shot} (strict regime) with a
 separate decision threshold per genre. Each threshold lies between 0.10 and 0.90 in steps of
 0.025 and maximises $F_1$ on the out-of-fold Eerola probabilities ($10\times5$ folds grouped
-by film). It is then applied to the Blockbuster films, so no Blockbuster label is used. Tuning
-on the 319 clips was fixed as the main variant before the run, and tuning on the 40 films is
+by film). It is then applied to the Blockbuster films, so no Blockbuster label is used. I fixed tuning on the 319 clips as the main variant before the run, and tuning on the 40 films is
 the check. Table~\ref{tab:app_zs_threshold} gives the result.
 
 \begin{table}[!htb]

@@ -23,6 +23,9 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   tested post hoc (+0.032, p = 0.112; log section 32). Read how they are worded.
 
 **Write** (section A)
+- [ ] **14 Nov (Overleaf `4419a6d`): check the work on the 15 comments of `_Thesis_12.11.pdf`**
+  (`docs/review_2026-11-12.md`, log section 41): the four new figures, the formulas, the
+  research questions as prose, the Eerola-only signature heatmap, and the first person.
 - [ ] **12 Nov (Overleaf `7e72aad`): check the softened claims** in `docs/claim_review.md`
   (130 before/after pairs after the supervisor's comment on strong claims; log section 39).
   Keep this register in new text: state measured results plainly, hedge interpretations.

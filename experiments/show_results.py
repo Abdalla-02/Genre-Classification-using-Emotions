@@ -80,6 +80,8 @@ DESCRIPTIONS = {
     "waveform_vs_spectrogram": "wav2vec 2.0 (raw waveform) against the five other "
                                "representations; its genre part is superseded by cv_corrected (section 16)",
     "w2v_layer_sweep": "Which wav2vec 2.0 layer to pool -- the control behind section 16",
+    "signatures_eerola": "Cohen's d of every emotion for each of the eight Eerola genres, "
+                         "from the human ratings (the signatures heatmap; section 41)",
     "signature_replication": "Do the Eerola emotion-genre signatures reappear on "
                              "Blockbuster? (section 17.5)",
     "emotion_ablation": "Which emotions carry the genre signal? Leave-one-out and "

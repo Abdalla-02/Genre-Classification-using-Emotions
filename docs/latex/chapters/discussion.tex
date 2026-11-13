@@ -44,7 +44,7 @@ pipeline is consistently ahead of direct audio, in nearly every repeat and under
 representations, however, cannot be estimated reliably on 40 films. The advantage does not appear to depend on
 VGGish or on the random forest. It appears with each of six representations and three
 regressors, which points to the emotion step rather than to one particular model (Section~\ref{subsec:eval_grid}). Even
-wav2vec~2.0, whose emotions are the least accurate, gives a genre result on par with VGGish
+wav2vec~2.0, whose emotions are the least accurate, gives a genre result comparable to that of VGGish
 once its output passes through the emotions. This suggests that the genre classifier does not
 depend mainly on the most accurate estimate per clip from Stage~1.
 
@@ -56,8 +56,7 @@ VGGish ($+0.106$, $p=0.013$). Most of that lead in $F_1$, however, depends on th
 of the threshold. With thresholds tuned on the source it shrinks to $+0.041$ ($p=0.159$). What
 remains is the ranking of films, where the emotion pipeline stays ahead, although not
 significantly. The reverse
-direction agrees in sign but is not significant, and with both datasets in training the
-pipelines are on par.
+direction agrees in sign but is not significant, and with both datasets in training the pipelines reach similar scores.
 
 \section{Genre Prediction with Little Data and across Datasets}
 \label{sec:disc_main}
@@ -65,8 +64,7 @@ pipelines are on par.
 The emotion pipeline is not better everywhere. Table~\ref{tab:disc_settings} shows a consistent
 pattern. All three pipelines in it start from VGGish and end in the same genre classifier, a
 logistic regression per genre (Section~\ref{sec:methods_stage2}). The emotion pipeline is
-well ahead of direct audio where this classifier was trained on the 40 Eerola films. It is
-on par with direct audio where the classifier was trained on the 110 Blockbuster films, or
+well ahead of direct audio where this classifier was trained on the 40 Eerola films. It performs about as well as direct audio where the classifier was trained on the 110 Blockbuster films, or
 on both datasets together. The pooled design shows both effects at once. On the Eerola films
 of its test folds the emotion pipeline leads, and on the Blockbuster films direct audio
 does. The advantage of the emotion pipeline therefore appears to be an advantage when training
@@ -173,8 +171,7 @@ comparisons, the Nadeau--Bengio test could not become significant with any numbe
 repeats. Only more films could resolve them. The learning curves were still rising at the
 full dataset size.
 
-\paragraph{Unit of evaluation.} Scoring per film was adopted after the clip-level analysis
-had been done. At that point the analysis of alternative metrics suggested that it fits the
+\paragraph{Unit of evaluation.} I adopted scoring per film after the clip-level analysis had been done. At that point the analysis of alternative metrics suggested that it fits the
 structure of the labels. A metric chosen after the results are known can favour the method
 it is chosen for. The clip-level score of the same predictions is therefore reported next
 to it. The direction of every main conclusion is the same under both. Which comparisons
@@ -193,8 +190,7 @@ difficult to outperform. It reaches 0.434 on the five-genre subset, only 0.022 b
 pipeline. On 40 films, macro-$F_1$ depends heavily on how often a pipeline assigns a genre, so the
 threshold-free results should be read beside it.
 
-\paragraph{Choice of the five-genre subset.} The five headline genres were chosen partly
-because they carry an emotional signature in the same data. This can favour the emotion
+\paragraph{Choice of the five-genre subset.} I chose the five headline genres partly because they carry an emotional signature in the same data. This can favour the emotion
 pipeline. The eight-genre results reduce this risk but do not remove it. There the
 advantage over VGGish and AST is of similar size and significant at film level.
 

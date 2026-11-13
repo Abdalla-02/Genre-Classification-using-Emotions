@@ -10,12 +10,12 @@ Music is one of the main means by which a film shapes the emotional response of 
 Two lines of computational research build on these observations. Music emotion recognition (MER) predicts the emotion that listeners perceive in a piece of music from its audio \citep{yang2012machine,kim2010music,kang2025there}. Film genre classification predicts the genres of a film from its audio, its images or its text \citep{austin2010characterization,ma2021computational,mangolin2020multimodal,behrouzi2023multimodal}. The second task has practical value. Streaming providers have a growing interest in deriving the genres of films automatically, and genre labels support the retrieval and recommendation of films \citep{mangolin2020multimodal,behrouzi2023multimodal}.
 
 % Move 2 (CARS): establishing a niche
-So far, the two lines of research have remained separate. The film genre studies reviewed in Chapter~\ref{ch:relatedwork} predict genre directly from an audio representation: from low-level features of the score \citep{austin2010characterization}, from learned embeddings of the music cues of a film \citep{ma2021computational}, or from trailer audio combined with images and text \citep{mangolin2020multimodal,behrouzi2023multimodal}. None of them includes an explicit emotional step. Such models may predict genre accurately, but they offer no direct explanation of why a soundtrack is assigned a particular genre. Their input is a vector of several hundred values without a fixed meaning, which does not correspond to the emotional mechanism described in film-music research. At the same time, music research reports that emotion and genre are closely related \citep{hu2007exploring,laurier2009mood,eerola2011genrespecific}. To the author's knowledge, it has not yet been tested whether emotion can serve as an intermediate step between film audio and film genre.
+So far, the two lines of research have remained separate. The film genre studies reviewed in Chapter~\ref{ch:relatedwork} predict genre directly from an audio representation: from low-level features of the score \citep{austin2010characterization}, from learned embeddings of the music cues of a film \citep{ma2021computational}, or from trailer audio combined with images and text \citep{mangolin2020multimodal,behrouzi2023multimodal}. None of them includes an explicit emotional step. Such models may predict genre accurately, but they offer no direct explanation of why a soundtrack is assigned a particular genre. Their input is a vector of several hundred values without a fixed meaning, which does not correspond to the emotional mechanism described in film-music research. At the same time, music research reports that emotion and genre are closely related \citep{hu2007exploring,laurier2009mood,eerola2011genrespecific}. To my knowledge, it has not yet been tested whether emotion can serve as an intermediate step between film audio and film genre.
 
 Such a step could offer two advantages. First, a prediction that rests on emotions can, in principle, be explained and checked. A model that predicts Horror because the music is rated as fearful and tense can be compared with established practice in film scoring \citep{gorbman1987unheard}. Second, emotion ratings are given on fixed scales that are defined independently of any particular dataset, whereas the dimensions of a learned audio embedding reflect the data on which the embedding was computed. A model built on emotions may therefore transfer better to a new collection of films. Neither advantage is certain. Reducing a clip to a small number of emotions discards information, and the emotions must first be predicted from the audio, which remains difficult, in particular for valence \citep{kim2010music,kang2025there}. Whether an explicit emotional step improves genre prediction, leaves it unchanged or impairs it is therefore an empirical question.
 
 % Move 3 (CARS): occupying the niche (continued in Sections 1.2 and 1.3)
-This thesis addresses it with the following question: \emph{how well can
+I address it with the following question: \emph{how well can
 the emotional features of a film soundtrack predict the genre of the film, and how does
 modelling emotion as an interpretable intermediate step compare with classifying genre
 directly from audio?}
@@ -24,36 +24,27 @@ directly from audio?}
 \label{sec:aim}
 
 The aim is to examine how well soundtrack emotion serves as an interpretable step between
-film audio and film genre. Four research questions (RQ1 to RQ4) structure the work.
-Chapter~\ref{ch:discussion} answers each of them (Section~\ref{sec:disc_rq}).
+film audio and film genre. Four research questions structure the work, and Chapter~\ref{ch:discussion} answers each of
+them (Section~\ref{sec:disc_rq}).
 
-\begin{description}
-  \item[RQ1] How well do the emotions expressed by a soundtrack predict its film's genre?
-  \item[RQ2] Which emotions characterise each genre, and how far do these emotional
-    signatures hold on a second, independent dataset?
-  \item[RQ3] How does a pipeline that predicts genre from emotions compare with
-    classifying genre directly from the audio representation the emotions are computed
-    from?
-  \item[RQ4] How well do the two pipelines generalise when a model trained on one dataset
-    is applied to another?
-\end{description}
-
-RQ1 asks how strong the signal is. It is answered first with emotions rated by human
-listeners and then with emotions predicted from audio. RQ2 concerns the form of the
-signal: which emotions distinguish each genre, and whether the same emotional signatures
-appear in a second collection of films. This examines whether the emotional step can be
-interpreted in the way the motivation above suggests. RQ3 is the central comparison of the thesis,
-made within one dataset. RQ4 asks how the two pipelines perform when a model trained on one
-collection of films is applied to another without access to any of its labels. RQ2 and RQ4
-both use the second dataset, but they address different questions. RQ2 asks whether the link
-between emotions and genres stays the same there. RQ4 asks whether a genre classifier
-still works there.
+The first research question (\textbf{RQ1}) asks \emph{how well the emotions expressed by a
+soundtrack predict its film's genre}. It concerns the strength of the signal and is answered
+twice: first with emotions rated by human listeners, then with emotions predicted from audio.
+The second (\textbf{RQ2}) asks \emph{which emotions characterise each genre, and how far
+these emotional signatures hold on a second, independent dataset}. It concerns the form of
+the signal and examines whether the emotional step can be interpreted in the way the
+motivation above suggests. The third (\textbf{RQ3}) asks \emph{how predicting genre from
+emotions compares with predicting it directly from the same audio representation}. It is the
+central comparison of the thesis and is made within one dataset. The fourth (\textbf{RQ4})
+asks \emph{how well the two pipelines generalise when a model trained on one dataset is
+applied to another} without access to any of its labels. RQ2 and RQ4 both use the second
+dataset, but for different purposes. RQ2 asks whether the link between emotions and genres
+stays the same there, and RQ4 whether a genre classifier still works there.
 
 Two datasets are used. The first, by \citet{eerola2011comparison}, contains 360
 film-music clips from 45 films. Listeners rated each clip on eight emotion scales, and
 the genres of the films come from the Internet Movie Database (IMDb). The second, by
-\citet{ma2021computational}, contains 110 recent films. Each film is described by audio
-features of the music cues it uses, but there are no emotion ratings and no audio. The
+\citet{ma2021computational}, contains 110 recent films. Each film is described by features of the music cues it uses, published by the authors: VGGish embeddings, a learned audio representation, and hand-crafted music information retrieval (MIR) descriptors. The dataset contains no emotion ratings and no audio. The
 method has two steps. A random forest predicts the eight emotions from a pre-trained
 audio representation (VGGish in the main experiments). A logistic regression for each
 genre then predicts the genres from these emotions. This emotion pipeline is compared with

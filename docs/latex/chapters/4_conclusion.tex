@@ -7,7 +7,7 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-This thesis examined how well the emotional features of a film soundtrack predict the
+In this thesis I examined how well the emotional features of a film soundtrack predict the
 genre of the film, and how an interpretable emotion step compares with classifying genre
 directly from audio. The emotion pipeline predicts eight emotion ratings from a VGGish
 embedding with a random forest and then predicts genre from these ratings with one
@@ -52,8 +52,7 @@ the default threshold (0.403; $+0.106$, $p=0.013$; Section~\ref{sec:zero_shot}).
 this lead depends on the threshold. With thresholds tuned on the source it shrinks to
 $+0.041$ ($p=0.159$). The emotion pipeline still ranks the films slightly better (ROC-AUC
 0.763 against 0.720), although this difference is not significant either ($p=0.097$). The reverse
-direction agrees in sign but is not significant ($p=0.102$), and with both datasets in
-training the pipelines are on par.
+direction agrees in sign but is not significant ($p=0.102$), and with both datasets in training the two pipelines perform similarly.
 
 \paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
 genre prediction from film music more accurate in general. Its advantage appears to be limited
@@ -119,9 +118,7 @@ multimodal model could include the emotion step as an interpretable audio compon
 trailer images or the plot synopsis \citep{behrouzi2023multimodal}. Such a study could show
 whether the emotions remain useful when stronger sources of information are available.
 
-\paragraph{Methodological lessons.} Some decisions of this thesis were made after the first
-results were known. Film-level scoring was adopted after the clip-level analysis, and the
-five-genre subset was chosen partly because its genres carry an emotional signature in the
+\paragraph{Methodological lessons.} I made some decisions after the first results were known. I adopted film-level scoring after the clip-level analysis, and I chose the five-genre subset partly because its genres carry an emotional signature in the
 same data. Both are reported in this thesis, but further studies could avoid them. The unit
 of evaluation, the genre set, the threshold policy and the main comparisons should be fixed
 before the experiments. Cross-validation should be grouped by film from the start, and every
