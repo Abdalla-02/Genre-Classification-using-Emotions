@@ -223,12 +223,13 @@ classifier, folds and scoring as above.
   \label{fig:emotion_grid}
 \end{figure}
 
-In Figure~\ref{fig:emotion_grid}, the first column of the left panel is the representation
-used directly, and the other three are the emotion pipeline with each regressor. Each cell
+Figure~\ref{fig:emotion_grid} has two panels with different measures and colour scales.
+In panel (a), in blue, the first column is the representation used directly, and the other
+three are the emotion pipeline with each regressor. Each cell
 gives the film-level macro-$F_1$ $\pm$ its standard deviation over the ten repeats, with the
 clip-level score below. An asterisk marks a significant lead over the direct use of the same
-representation (paired film bootstrap, $p<0.05$). The right panel gives the Stage-1 $R^2$ of
-each regressor. Appendix Table~\ref{tab:emotion_grid} lists the same numbers.
+representation (paired film bootstrap, $p<0.05$). Panel (b), in purple, gives the Stage-1 $R^2$ of
+each regressor, that is, how accurately it predicts the emotions. Appendix Table~\ref{tab:emotion_grid} lists the same numbers.
 
 Three results stand out. First, the emotion pipeline is ahead of the direct use of its
 representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
@@ -247,8 +248,8 @@ the random forest is best, ahead of ridge regression by 0.044 ($p=0.037$) and 0.
 
 In these experiments, a more accurate emotion model did not reliably yield a better genre
 result. Ridge
-regression predicts the emotions better than the random forest on VGGish and AST (right
-panel of Figure~\ref{fig:emotion_grid}), without a better genre score. On MusiCNN it
+regression predicts the emotions better than the random forest on VGGish and AST (panel (b) of
+Figure~\ref{fig:emotion_grid}), without a better genre score. On MusiCNN it
 predicts them less accurately and scores higher. On wav2vec~2.0 it has the higher $R^2$ but the
 lower genre score.
 

@@ -2326,3 +2326,9 @@ Figure 2.3 (14 Nov, author's request): its rows are now labelled as rounds, a co
 an ungrouped split (test clips scattered inside training films), and the key names test fold,
 training films, one clip and test clip. Fundamentals 2.6.1 now defines a fold and a round.
 Overleaf `3bb166b`, compiled in Chrome: 0 errors, 103 pages.
+
+Figures 4.2 and 5.3 (15 Nov, author's comments): in Figure 4.2 the genre labels of the right panel
+ran into the left panel; the gap between the panels is wider now (Overleaf `69bdb98`). Figure 5.3
+used one blue scale for two different measures; panel (a), genre macro-F1, stays blue, panel (b),
+the Stage-1 R^2 of the emotion regressors, is purple, each has its own colour bar, and the
+legend text names the panels (Overleaf `20f5674`). Compiled in Chrome: 0 errors, 103 pages.

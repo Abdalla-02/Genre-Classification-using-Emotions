@@ -388,13 +388,20 @@ def fig_emotion_grid():
     cells = [[d["direct"][r]] + [d["grid"][r][g] for g in regs] for r in reps]
     F = np.array([[c["film_f1"] for c in row] for row in cells])
     R2 = np.array([[d["stage1_all_clips"]["mean_r2"][r][g] for g in regs] for r in reps])
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 3.6), gridspec_kw={"width_ratios": [5, 2.4]})
-    for ax, M, vmin, vmax, labels, title in (
+    # Two different measures, so two different palettes and colour bars (author, 15 Nov):
+    # (a) genre macro-F1 in blue, (b) Stage-1 emotion R^2 in purple, set well apart.
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 4.1),
+                             gridspec_kw={"width_ratios": [5, 2.4], "wspace": 0.22})
+    for ax, M, vmin, vmax, labels, title, cmap, clabel in (
             (axes[0], F, 0.2, 0.55, ["direct"] + [f"emotion,\n{g}" for g in regs],
-             "genre: macro-$F_1$ at film level $\\pm$ standard deviation,\nclip level below"),
+             "(a) Genre: macro-$F_1$ at film level $\\pm$ standard deviation,\nclip level below",
+             "Blues", "genre macro-$F_1$ (film level)"),
             (axes[1], R2, 0.0, 0.7, [g.replace(" ", "\n") for g in regs],
-             "emotions: Stage-1 $R^2$")):
-        ax.imshow(M, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
+             "(b) Emotions: Stage-1 $R^2$\nof the emotion regressor", "Purples", "emotion $R^2$")):
+        im = ax.imshow(M, cmap=cmap, vmin=vmin, vmax=vmax, aspect="auto")
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.05, pad=0.17, aspect=25)
+        cb.set_label(clabel, fontsize=7)
+        cb.ax.tick_params(labelsize=6.5)
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
                 if M is F:
@@ -412,8 +419,8 @@ def fig_emotion_grid():
     axes[0].axvline(0.5, color="white", lw=3)
     axes[1].tick_params(axis="y", labelleft=False, left=False)
     c = d["ceiling"]
-    axes[0].set_xlabel(f"ratings (ceiling): {c['film_f1']:.3f} $\\pm$ {c['repeat_sd']:.3f}, "
-                       f"clip {c['clip_f1']:.3f};   * ahead of direct, $p<0.05$", fontsize=7)
+    fig.text(0.02, -0.02, f"ratings (ceiling): {c['film_f1']:.3f} $\\pm$ {c['repeat_sd']:.3f}, "
+             f"clip {c['clip_f1']:.3f};   * ahead of direct, $p<0.05$", fontsize=7, ha="left")
     save(fig, "emotion_pipeline_grid")
 
 
@@ -486,7 +493,7 @@ def fig_data_overview():
     clips = [int(Y[:, j].sum()) for j in range(len(genres))]
     order = np.argsort(films)[::-1]
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(WIDTH, 2.4),
-                                 gridspec_kw={"width_ratios": [1, 1.35], "wspace": 0.35})
+                                 gridspec_kw={"width_ratios": [1, 1.1], "wspace": 0.75})
     vals, counts = np.unique(per_film.to_numpy(), return_counts=True)
     a1.bar(vals, counts, width=0.8, color=COL["direct"])
     a1.set_xlabel("clips per film")
