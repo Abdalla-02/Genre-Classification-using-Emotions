@@ -2321,3 +2321,8 @@ rephrased with the same facts and numbers (shorter sentences, the results split 
 threshold caveat in its own sentence), 249 words. Overleaf `797ca21`, 0 errors, 103 pages; the
 held-back mirror is updated. Detector scores are not a reliable test of authorship; the AI
 declaration already names the abstract as drafted by the assistant.
+
+Figure 2.3 (14 Nov, author's request): its rows are now labelled as rounds, a contrast row shows
+an ungrouped split (test clips scattered inside training films), and the key names test fold,
+training films, one clip and test clip. Fundamentals 2.6.1 now defines a fold and a round.
+Overleaf `3bb166b`, compiled in Chrome: 0 errors, 103 pages.
