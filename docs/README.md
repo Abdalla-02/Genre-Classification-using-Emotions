@@ -2285,3 +2285,11 @@ work (author's choice). At the author's request the thesis now uses the first pe
 the author acts or decides ("I chose", "I group every split by film", "To my knowledge");
 "this thesis" stays where the document is meant. Overleaf `4419a6d`, compiled in Chrome:
 0 errors, 113 pages.
+
+Afterwards (author, 14 Nov): the per-genre table (former Table 5.3) was removed, since Figures 5.4
+and 5.5 show the same values, and the two figures now share one float, so they appear on the
+same page. Overleaf `b330c1c`, compiled in Chrome: 0 errors, 111 pages. The author then asked
+for no empty pages between chapters: `thesis.tex` uses the book class with `openany`, every
+`\cleardoublepage` became `\clearpage`, and `\cleardoublepage` is set to `\clearpage` after the
+preamble, because `\mainmatter` calls it even under `openany`. Overleaf `b5941f2`: 0 errors,
+103 pages, no blank page.

@@ -269,62 +269,39 @@ Section~\ref{sec:methods_stage1}.
 \label{sec:eval_pergenre}
 
 Macro-$F_1$ averages five very different genres. Figure~\ref{fig:per_genre} shows the
-film-level $F_1$ of every pipeline for each genre, and Table~\ref{tab:per_genre} adds
-precision and recall for the emotion pipeline and for VGGish used directly.
+film-level $F_1$ of every pipeline for each genre, and Figure~\ref{fig:per_genre_pr} the
+precision and recall behind these values.
 
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=\textwidth]{figures/per_genre.pdf}
   \caption{Film-level $F_1$ per genre and pipeline on the five-genre subset.}
   \label{fig:per_genre}
-\end{figure}
 
-In Figure~\ref{fig:per_genre}, the number of films with each genre is given under its name.
-The box marks the highest-scoring pipeline per genre; the ratings and the most-frequent baseline are
-shown for reference and not boxed.
-
-\begin{table}[!htb]
-  \centering
-  \small
-  \caption{Precision, recall and $F_1$ per genre at film level: best pipeline, emotion pipeline and VGGish.}
-  \label{tab:per_genre}
-  \setlength{\tabcolsep}{4pt}
-  \begin{tabular}{lrlrrrrrr}
-    \toprule
-    & & & \multicolumn{3}{c}{Emotion pipeline} & \multicolumn{3}{c}{VGGish direct} \\
-    \cmidrule(lr){4-6} \cmidrule(lr){7-9}
-    Genre & Films & Best pipeline ($F_1$) & Prec. & Rec. & $F_1$ & Prec. & Rec. & $F_1$ \\
-    \midrule
-    Action   & 12 & Emotion (0.61) & 0.52 & 0.76 & \textbf{0.61} & 0.39 & 0.47 & 0.43 \\
-    Crime    & 12 & Emotion (0.35) & 0.28 & 0.47 & \textbf{0.35} & 0.29 & 0.37 & 0.32 \\
-    Drama    & 29 & MIR (0.82) & 0.87 & 0.68 & \textbf{0.76} & 0.79 & 0.69 & 0.74 \\
-    Comedy   & 4 & Emotion (0.34) & 0.22 & 0.78 & \textbf{0.34} & 0.12 & 0.12 & 0.12 \\
-    Horror   & 5 & CLAP (0.43) & 0.15 & 0.50 & \textbf{0.23} & 0.21 & 0.26 & 0.23 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-The emotion pipeline scores highest for Action, Crime and Comedy. For Drama the highest score
-comes from the hand-crafted MIR features used directly, and for Horror from direct CLAP. Drama, the genre of 29 of
-the 40 films, is predicted well by every pipeline, even by the most-frequent baseline. The
-largest difference lies in Comedy (4 films). VGGish used directly rarely predicts it,
-whereas the emotion pipeline identifies most Comedy films, at a low precision. Horror (5 films) is the exception. There the emotion pipeline predicts
-the genre for too many films and performs no better than VGGish. Given the listeners' ratings instead, the same classifier
-reaches 0.41 on Horror (precision 0.27, recall 0.78; Appendix~\ref{sec:app_horror}).
-Averaged over the five genres, the emotion pipeline has a recall of 0.64 against 0.38 for
-VGGish, at a precision of 0.41 against 0.36. The two rarest genres rest on only four or five
-films, and their $F_1$ values change by about 0.2 when a single film changes.
-
-\begin{figure}[t]
-  \centering
+  \vspace{1.5em}
   \includegraphics[width=\textwidth]{figures/per_genre_pr.pdf}
   \caption{Film-level precision and recall per genre and pipeline on the five-genre subset.}
   \label{fig:per_genre_pr}
 \end{figure}
 
-Figure~\ref{fig:per_genre_pr} shows the precision and recall behind these values for every
-pipeline. The emotion pipeline has the highest recall for Action, Crime and Comedy. In
-precision, a direct representation is at least as good in every genre.
+In Figure~\ref{fig:per_genre}, the number of films with each genre is given under its name.
+The box marks the highest-scoring pipeline per genre; the ratings and the most-frequent
+baseline are shown for reference and not boxed. Figure~\ref{fig:per_genre_pr} gives the
+precision and recall of the same pipelines.
+
+The emotion pipeline scores highest for Action, Crime and Comedy, and it has the highest
+recall for these three genres. In precision, a direct representation is at least as good in
+every genre. For Drama the highest score comes from the hand-crafted MIR features used
+directly, and for Horror from direct CLAP. Drama, the most frequent genre, is predicted well
+by every pipeline, even by the most-frequent baseline. The largest difference lies in Comedy.
+VGGish used directly rarely predicts it, whereas the emotion pipeline identifies most Comedy
+films, at a low precision. Horror is the exception. There the emotion pipeline predicts the
+genre for too many films and performs no better than VGGish. Given the listeners' ratings
+instead, the same classifier reaches 0.41 on Horror (precision 0.27, recall 0.78;
+Appendix~\ref{sec:app_horror}). Averaged over the five genres, the emotion pipeline has a
+recall of 0.64 against 0.38 for VGGish, at a precision of 0.41 against 0.36. The two rarest
+genres rest on only four or five films, and their $F_1$ values change by about 0.2 when a
+single film changes.
 
 % =============================================================================
 \section{Emotional Signatures of Genres}
