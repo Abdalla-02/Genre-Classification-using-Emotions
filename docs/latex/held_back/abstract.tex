@@ -1,28 +1,22 @@
-% NOTE (7 Oct 2026): the numbers in this draft are CLIP-LEVEL. The thesis now reports
-% film-level macro-F1 as the headline (results/film_level.json; docs/current_state.md,
-% section 10). Use the film-level numbers when writing the final version.
-% =============================================================================
-% HELD BACK from the thesis on 6 Oct 2026 (to be rewritten by the author).
-% Not part of the Overleaf build. Was the abstract on the title page.
-% =============================================================================
+% Since 14 Nov 2026 this abstract is on Overleaf (chapter/titlepage.tex), drafted by the
+% assistant at the author's request for the author to check and revise. The older draft
+% (clip-level numbers from before the film-level switch) is in the git history of this file.
 
-Film genre can be predicted from a soundtrack, but existing methods classify genre
-directly from audio and offer no account of why the music should reveal it. This thesis
-tests whether emotion, which film composers deliberately encode in their scores, can serve
-as an interpretable intermediate step: audio is mapped to eight perceived emotions, such as
-fear, tension and tenderness, and genre is predicted from these alone. The pipeline is
-compared with genre classifiers built directly on six audio representations (five
-pretrained embeddings and a hand-crafted feature set), and with a
-control that compresses the same audio embedding to eight meaningless principal
-components. The data are 346 clips from 43 films, rated by listeners for emotion, and an
-independent dataset of 110 films. Within the first dataset, on five genres, the pipeline
-reaches a macro-averaged F1 score of 0.417 against 0.377 for the best direct
-representation, where random guessing scores 0.308. It is ahead in every repeat of the
-cross-validation, but the margin is significant under only one of two tests and disappears
-when each genre's decision threshold is tuned. Trained on the first dataset and applied
-unchanged to the second, on six shared genres, the pipeline reaches 0.511 against 0.407
-for direct audio (random guessing: 0.292; $p=0.018$), and the reverse direction agrees.
-Each predictable genre also has a readable emotional signature, with fear the strongest single discriminator, which
-reappears on the second dataset. The advantage of the emotion intermediate is therefore
-above all one of generalisation across datasets, combined with predictions explained by
-named emotions.
+Film music is written to evoke emotions that suit a film's genre. Computational studies,
+however, classify film genre directly from audio features without a fixed meaning and offer
+no direct explanation of why a soundtrack points to a genre. This thesis examines how well
+soundtrack emotions predict film genre, and how an interpretable emotion step compares with
+classifying genre directly from audio. I used 360 film-music clips from 45 films, rated by
+listeners on eight emotion scales, and an independent dataset of 110 films. A random forest
+predicts the eight emotions from a pretrained VGGish audio embedding, and a logistic
+regression per genre predicts genre from them. On five genres, this emotion pipeline reached
+a film-level macro-averaged $F_1$ score of 0.460, against 0.491 with the human ratings and
+0.309 for a random guess. It led the same embedding used directly in nearly every repeat,
+and the emotion step helped with all six audio representations tested. On 40 films,
+however, this lead was not significant. Trained on the rated films and applied to the 110
+new ones, the emotion pipeline transferred better than direct audio (0.508 against 0.403),
+although most of this lead depended on the decision threshold. The genres showed emotional
+signatures that fit film-scoring conventions, such as fear in Horror, and these largely
+replicated on the second dataset. The results suggest that emotion does not make genre
+prediction more accurate in general. Its value lies in an interpretable representation that
+helps most when training data are scarce or the data change.

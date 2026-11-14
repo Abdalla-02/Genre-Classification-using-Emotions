@@ -2293,3 +2293,18 @@ for no empty pages between chapters: `thesis.tex` uses the book class with `open
 `\cleardoublepage` became `\clearpage`, and `\cleardoublepage` is set to `\clearpage` after the
 preamble, because `\mainmatter` calls it even under `openany`. Overleaf `b5941f2`: 0 errors,
 103 pages, no blank page.
+
+## 42. Abstract drafted (14 Nov 2026)
+
+At the author's request the abstract was drafted from the finished chapters, after looking at
+abstract guidelines (context, gap, aim, method, results, conclusion; past tense for what was
+done, present for what follows; no citations; one paragraph) and at abstracts of related work
+(Ma et al. 2021; a bachelor thesis on emotion recognition in instrumental music). It has 248
+words, within the template's 150 to 250, and quotes only numbers reported in Chapters 5 and 6:
+film-level macro-F1 0.460 against 0.491 with the ratings and 0.309 for a random guess; the
+in-domain lead over VGGish named but called not significant; zero-shot 0.508 against 0.403
+with the caveat that most of the lead depends on the threshold; the replication of the
+signatures described in words. It is on Overleaf (title page file, `d8bc882`; the page
+header now reads "Abstract", `dcd51d2`) and mirrored in `docs/latex/held_back/abstract.tex`.
+The AI declaration now says that the abstract was first drafted by the assistant; the list of
+contributions remains the author's. Compiled in Chrome: 0 errors, 103 pages.

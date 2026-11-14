@@ -34,7 +34,9 @@ Where a location is given as "§N" it refers to the technical log (`docs/README.
   Section 1.1, the **draft of Chapter 7** and the bibliography fixes (log section 38).
   Gabrielsson: keep 2002 or follow the publisher's 2001? Mangolin: 2020 (online) or 2022
   (issue)?
-- [ ] **Abstract and the contributions list** (Chapter 7 is now drafted on Overleaf). The drafts in
+- [ ] **Check the abstract draft** (14 Nov, on Overleaf, 248 words; log section 42) and decide
+  whether the faculty also wants a German Kurzfassung.
+- [ ] **The contributions list** (Chapter 7 and the abstract are now drafted on Overleaf). The drafts in
   `docs/latex/held_back/` quote numbers from before the film-level switch and the fix, and
   know nothing of the work since 27 October (wav2vec diagnosis, the comparison over
   representations and regressors). Take the numbers from `docs/current_state.md`,
