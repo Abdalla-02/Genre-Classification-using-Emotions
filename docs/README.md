@@ -2345,3 +2345,9 @@ Two further comments in `_thesis_14.11.pdf`: the dagger that marked Nadeau-Bengi
 summary table is now "NB" (the abbreviation the tables use), and Section 6.3 is titled "The Role of
 the Emotion Step" (was "What the Emotions Add"). The table caption is on one line; its legend now
 says that the scores are film-level macro-F1. Overleaf `fcd5f18`: 0 errors, 103 pages.
+
+Abbreviations (15 Nov, author's request): every abbreviation in the thesis was checked by a script
+against the list in Appendix B and for a spelled-out first use in reading order. Added to the list:
+AUC-PR and TP/FP/FN/TN; the kNN entry covers kNN (Appendix table of Ma et al.) and ML-kNN; the
+unused "NN" was removed. RMSE is now spelled out in Methods and PMEmo explained in Related Work.
+NB was already listed. Overleaf `d975498`: 0 errors, 103 pages.
