@@ -543,25 +543,25 @@ results along the pipeline.
 \begin{table}[!htb]
   \centering
   \small
-  \caption{The three pipelines in every setting in which all of them were run (film-level macro-$F_1$).}
+  \caption{The three pipelines in every setting in which all of them were run.}
   \label{tab:disc_settings}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lcrrrrrl}
     \toprule
     Setting & Genres & Floor & Emotion & PCA-8 & Direct & $\Delta$ & $p$ \\
     \midrule
-    Eerola, in-domain                        & 5 & 0.309 & 0.460 & 0.390 & 0.367 & $+0.093$ & $0.052$ / $0.086^{\dagger}$ \\
-    Blockbuster, in-domain                   & 6 & 0.295 & 0.616 & 0.587 & 0.593 & $+0.023$ & $0.536^{\dagger}$ \\
+    Eerola, in-domain                        & 5 & 0.309 & 0.460 & 0.390 & 0.367 & $+0.093$ & $0.052$ / $0.086^{\mathrm{NB}}$ \\
+    Blockbuster, in-domain                   & 6 & 0.295 & 0.616 & 0.587 & 0.593 & $+0.023$ & $0.536^{\mathrm{NB}}$ \\
     Eerola $\rightarrow$ Blockbuster         & 6 & 0.292 & 0.508 & 0.417 & 0.403 & $+0.106$ & $0.013$ \\
     Blockbuster $\rightarrow$ Eerola         & 6 & 0.240 & 0.458 & 0.381 & 0.364 & $+0.089$ & $0.102$ \\
-    Both datasets in training                & 6 & --    & 0.531 & 0.531 & 0.543 & $-0.011$ & $0.688^{\dagger}$ \\
+    Both datasets in training                & 6 & --    & 0.531 & 0.531 & 0.543 & $-0.011$ & $0.688^{\mathrm{NB}}$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-In Table~\ref{tab:disc_settings}, $\Delta$ is the emotion pipeline minus direct audio. The
-$p$-value is the paired film bootstrap unless marked $^{\dagger}$. That mark means the
-Nadeau--Bengio corrected $t$-test over repeated folds; for the Eerola in-domain row it is
+In Table~\ref{tab:disc_settings}, every score is film-level macro-$F_1$, and $\Delta$ is the emotion pipeline minus direct audio. The
+$p$-value is the paired film bootstrap unless marked $^{\mathrm{NB}}$. That mark means the
+Nadeau--Bengio (NB) corrected $t$-test over repeated folds; for the Eerola in-domain row it is
 computed on the clip-level scores of the same predictions. The zero-shot row is the strict
 regime.
 

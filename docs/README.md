@@ -2340,3 +2340,8 @@ used in Section 3.3.3, where LSTM and ML-SMOTE are used as well (the author aske
 occur). Three comments ask to remove parts of the AI declaration; they are open with the author,
 because Faculty Council decision 019/25 requires the AI-drafted parts to be named. Overleaf
 `51eb72c`, `7ba16db`, compiled in Chrome: 0 errors, 103 pages.
+
+Two further comments in `_thesis_14.11.pdf`: the dagger that marked Nadeau-Bengio p-values in the
+summary table is now "NB" (the abbreviation the tables use), and Section 6.3 is titled "The Role of
+the Emotion Step" (was "What the Emotions Add"). The table caption is on one line; its legend now
+says that the scores are film-level macro-F1. Overleaf `fcd5f18`: 0 errors, 103 pages.
