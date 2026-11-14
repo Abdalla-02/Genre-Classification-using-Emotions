@@ -2308,3 +2308,10 @@ signatures described in words. It is on Overleaf (title page file, `d8bc882`; th
 header now reads "Abstract", `dcd51d2`) and mirrored in `docs/latex/held_back/abstract.tex`.
 The AI declaration now says that the abstract was first drafted by the assistant; the list of
 contributions remains the author's. Compiled in Chrome: 0 errors, 103 pages.
+
+Bibliography (14 Nov, after a review the author passed on): the bibliography style
+`bibstyle/noon.bst` on Overleaf joined author names with the German "und", in the reference list
+and in every in-text citation (e.g. "Hu und Downie, 2007"), although the thesis is in English;
+it now writes "and". The third author of Lipton et al. (2014) is now spelled Narayanaswamy; the
+publisher's metadata misspells him as "Naryanaswamy", which the bibliography had kept. Overleaf
+`ef4673b`, compiled in Chrome: 0 errors, 103 pages, no "und" left in the PDF.
