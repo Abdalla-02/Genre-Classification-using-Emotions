@@ -170,7 +170,9 @@ for k, v in fl_['full8']['arms'].items():
 tex_checks = {
     'chapters/3_evaluation.tex': [
         'fl5:VGGish -> predicted emotion(11), OOF-trained', 'fl5:ground-truth emotion(11) [ceiling]',
-        'fl5:VGGish-128 (direct)', 'fl5:PCA-8(VGGish) [control]', 'fl5:MusiCNN-200', 'fl5:AST-768',
+        # MusiCNN and AST are no longer quoted in the text since 14 Nov: Figure 5.2 shows them
+        # (supervisor's rule: no number in the text that a figure already shows; log 41)
+        'fl5:VGGish-128 (direct)', 'fl5:PCA-8(VGGish) [control]',
         'fl8:VGGish -> predicted emotion(11), OOF-trained',
         'zs:VGGish -> predicted emotion(11), per-cue', 'zs:VGGish-128 direct', 'zs:PCA-8(VGGish) [control]',
         'zs:loo', 'r2:CLAP-512', 'r2:VGGish-128', 'r2:AST-768', 'r2:MIR-103', 'r2:wav2vec2-768'],

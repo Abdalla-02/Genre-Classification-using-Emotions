@@ -1821,7 +1821,10 @@ and folds of `film_level.json`, which every shared arm reproduces, macro and per
 5. The emotion pipeline's F1 is above the ratings' in Drama and Comedy (+0.03, p = 0.33):
    noise, not a better model.
 
-Not yet in the thesis: how to report the all-positive floor is the author's decision.
+In the thesis since 4 Nov (author's decision): Methods (chance floors), Chapter 5 (RQ1,
+paragraph "A harder reference", and summary), Limitations, and Appendix section
+`sec:app_floor`. The floor on Blockbuster (0.438) follows from the label counts of Table
+`tab:label_spaces` with 2p/(1+p).
 
 ## 30. The emotion pipeline for every representation and every regressor (1 Nov 2026)
 
@@ -1919,6 +1922,51 @@ script was extended and re-run (about 4.4 h for five seeds; `--no-seeds` runs se
    sentences; list of symbols: alpha. The all-positive floor (0.434, §29) is still left out
    (author, 1 Nov).
 
+## 31. Zero-shot with thresholds tuned on the source dataset (2 Nov 2026)
+
+The open check of the Discussion (and of §22.1): the zero-shot lead of the emotion pipeline
+(Eerola → Blockbuster, strict regime: 0.508 vs 0.403 for direct VGGish, p = 0.013; vs
+PCA-8 +0.093, p = 0.027) is partly recall-driven, so it might be an operating-point effect.
+`exp_zero_shot_threshold.py` → `zero_shot_threshold.json` (a few minutes). Every arm of the
+strict regime is rebuilt with the functions of `exp_zero_shot.py`, and its default score,
+C and the first bootstrap are asserted to equal `zero_shot.json`. Per genre, the threshold
+(0.10 to 0.90, step 0.025) that maximises F1 on out-of-fold Eerola probabilities (10 x
+5-fold by film) is applied to Blockbuster. No Blockbuster label is used, so the test stays
+zero-shot. Primary tuning unit fixed before the run: the 319 clips; check: the 40 films.
+
+| arm (110 Blockbuster films) | default 0.5 | clip-tuned | film-tuned | macro AUC |
+|---|---|---|---|---|
+| emotion pipeline (per-cue) | 0.508 (2.45 labels/film) | 0.496 (2.85) | 0.452 (3.60) | 0.763 |
+| emotion pipeline (film-level) | 0.502 | 0.496 | 0.445 | 0.746 |
+| ratings arm | 0.479 | 0.466 | 0.452 | 0.770 |
+| PCA-8 control | 0.417 | 0.450 (4.73) | 0.462 | 0.693 |
+| VGGish direct | 0.403 (1.99) | 0.455 (3.72) | 0.496 (4.10) | 0.720 |
+
+True labels per film: 1.78. Paired film bootstrap, emotion pipeline (per-cue) against:
+
+| | default | clip-tuned (primary) | film-tuned | macro AUC |
+|---|---|---|---|---|
+| VGGish direct | +0.106, p = 0.013 | +0.041, p = 0.159 | −0.044, p = 0.246 | +0.042, p = 0.097 |
+| PCA-8 control | +0.093, p = 0.027 | +0.045, p = 0.173 | −0.009, p = 0.865 | +0.070, p = 0.010 |
+
+1. **The zero-shot F1 lead is mostly an operating-point effect.** With thresholds tuned on
+   the source it shrinks from +0.106 to +0.041 over direct VGGish and is no longer
+   significant; with film-level tuning direct VGGish is nominally ahead. The emotion
+   pipeline itself hardly moves (0.508 → 0.496); the direct arms gain, because their
+   default threshold is far too strict for the shifted target (direct VGGish 1.99 labels
+   per film at 0.5, its tuned Drama threshold is 0.125).
+2. **Tuned, every arm over-predicts** (2.85 to 4.73 labels per film against 1.78), so the
+   tuned scores converge at 0.45 to 0.50, as in-domain (§22.1).
+3. **Threshold-free, the emotion pipeline still ranks Blockbuster films best**: macro AUC
+   0.763 against 0.720 for direct VGGish (+0.042, p = 0.097) and 0.693 for PCA-8 (+0.070,
+   p = 0.010). So the emotion features transfer a better ordering of films, but most of the
+   default-threshold F1 lead comes from where the cut-off falls.
+4. **Thesis consequence (applied on 4 Nov, section 32).** The Discussion said the
+   test "was not tested" and points to Future Work; the claim "the emotion pipeline beats
+   direct audio across datasets" needs the same qualification the in-domain result already
+   carries (ahead at the default threshold; under tuned thresholds the pipelines converge;
+   threshold-free the lead over PCA-8 is significant, over VGGish not).
+
 ## Next steps
 
 - ~~**Content chapters**~~ — **done.** Chapters 1–6 and Appendix A are on Overleaf and
@@ -1995,3 +2043,286 @@ script was extended and re-run (about 4.4 h for five seeds; `--no-seeds` runs se
   `signature_replication.json`, `emotion_ablation.json`, `cross_dataset_cv.json`,
   `box_office.json`, `cv_corrected.json`, `hamming_breakdown.json`. Render any of them as Markdown tables with
   `python experiments/show_results.py <name>`; see `results/README.md`.
+
+## 32. Post-hoc test of CLAP with ridge regression; floor and thresholds into the thesis (4 Nov 2026)
+
+The author asked for the test of the pairing that §30.1 left open.
+`exp_clap_ridge_posthoc.py` → `clap_ridge_posthoc.json` (15 minutes): the emotion pipeline on
+CLAP with ridge regression against the thesis pipeline (VGGish, random forest), both with the
+code of the grid on the 10 x 5 folds of the five master seeds. The script asserts that all ten
+seed means reproduce `emotion_pipeline_grid.json`.
+
+| seed | CLAP + ridge | VGGish + forest | film diff | p | repeats won | clip diff | NB p |
+|---|---|---|---|---|---|---|---|
+| 42 | 0.479 | 0.460 | +0.019 | 0.389 | 7 | +0.007 | 0.722 |
+| 1 | 0.506 | 0.463 | +0.043 | 0.041 | 9 | +0.015 | 0.526 |
+| 2 | 0.509 | 0.472 | +0.036 | 0.116 | 10 | +0.015 | 0.506 |
+| 3 | 0.495 | 0.469 | +0.026 | 0.254 | 8 | +0.013 | 0.514 |
+| 4 | 0.520 | 0.481 | +0.038 | 0.082 | 8 | +0.009 | 0.653 |
+
+Pooled over the 50 repeats (the bootstrap draws do not depend on the master seed): film level
+0.502 vs 0.469, +0.032 [−0.007, +0.075], p = 0.112; clip level +0.012, p = 0.269. Bonferroni
+over the 17 other cells gives 1.0 for both. The seeds share the same 40 films, so agreement
+between seeds is no evidence by itself. The lead is not established, and the thesis keeps
+VGGish with the random forest (four reasons in Chapter 5, `subsec:eval_grid`; the test in
+Appendix `sec:app_grid`).
+
+The same update puts the all-positive floor (§29) and the tuned zero-shot test (§31) into the
+thesis: Chapter 5 RQ1 and RQ4 and the summary, Discussion, Limitations, and the new Appendix
+sections `sec:app_floor` and `sec:app_zs_threshold`. The RQ4 claim now says "at the default
+threshold".
+
+## 33. How the rating scales relate to each other; the author's comments of 4 Nov (5 Nov 2026)
+
+The author asked whether the correlations of the emotions in the dataset are known, because
+Figure 2.1 is only a schematic. `exp_rating_structure.py` → `rating_structure.json`, figure
+`rating_structure`: correlation matrix of the eight scales and a principal component analysis
+of it, all 360 rated clips. The first two components hold 59.8 % and 22.6 % of the variance
+(82.4 %), and every scale lies at 0.82 or more from the centre of the plane.
+
+The ratings differ from the schematic: valence and tension are almost opposite (r = −0.91),
+energy correlates negatively with valence (−0.40) and positively with tension (0.58), and
+sadness correlates slightly positively with valence (0.32). The first component is the axis
+from threat to warmth found in the ablation. Figure 2.1 stays a schematic of the models in the
+literature; the data are in Appendix `sec:app_ratings`, and Fundamentals quotes two of the
+correlations.
+
+The other comments of `Commented_Thesis_04.11.pdf`: RQ2 stays as it is and the introduction now
+says how it differs from RQ4; "stirring" became "activated"; the sentence on right angles was
+rebuilt; the random-guess baseline is explained with the five-genre example. It is not run
+through the cross-validation: nothing is trained, and its score is the mean over simulated
+guesses on the same labels.
+
+## 34. The author's comments in `_Thesis_05.11.pdf` (8 Nov 2026)
+
+Eighteen comments, read from the PDF on the author's Drive. Edits on Overleaf: an example of
+the film bootstrap (+0.093, CI [−0.001, +0.191], 2.6 % of draws ≤ 0, p = 0.052), ridge
+regression and SVR with an RBF kernel, ROC-AUC and the Holm method (Holm 1979, added to the
+bibliography) explained in Fundamentals; short glosses for AUC, the Nadeau–Bengio test, Holm
+and "cue" in Chapter 5; the shared-composer example is now Hans Zimmer (*The Last Samurai* in
+Eerola, *Interstellar* and *Dunkirk* in Blockbuster); the vote over cues with an example;
+macro-F1 is the mean of per-genre F1, not the F1 of mean precision and recall (direct VGGish
+Romance 0.14 and Horror 0.17, emotion 0.42 and 0.24, Sci-Fi 0.38 vs 0.61); Figure 5.9 placed
+`[!htb]` so it stays in 5.6.3; the two zero-shot implementations explained (regressor on 360
+vs 319 clips; film vectors weight every cue equally vs average all frames: 0.503 vs 0.508,
+direct 0.383 vs 0.403); the rows of Table A.5 explained.
+
+Figure 5.8 now has error bars. `exp_zero_shot.py` stores `boot_sd` per arm (standard deviation
+of the arm's macro-F1 over the same 2000 film resamples as its paired bootstrap); every other
+number in `zero_shot.json` is unchanged (checked). Strict regime: emotion pipeline 0.508 ±
+0.031, PCA-8 0.417 ± 0.040, direct VGGish 0.403 ± 0.039.
+
+Answered without an edit: the GitHub link (kept), Hamming loss alongside F1, why the
+duplicate film is mentioned, why the tuned-threshold table is in the Appendix.
+
+## 35. The all-positive classifier under every metric; why F1 and ROC-AUC go together (9 Nov 2026)
+
+The author asked why the thesis pairs macro-F1 with ROC-AUC rather than with Hamming loss,
+since Hamming loss does expose the classifier that assigns every genre to every clip.
+`exp_all_positive_metrics.py` → `all_positive_metrics.json` scores that classifier with the
+metric functions of `exp_metrics_stability.py` (five genres, 329 clips; it asserts the film-
+and clip-level macro-F1 of `per_genre_analysis.json`).
+
+| metric | all yes | most frequent ("Drama") | best audio pipeline |
+|---|---|---|---|
+| macro-F1, films / clips | 0.434 / 0.430 | 0.168 / 0.168 | 0.460 / 0.405 |
+| weighted F1 | **0.607** | 0.396 | 0.546 |
+| Hamming loss | 0.691 | **0.218** | 0.311 |
+| exact match | 0.000 | **0.283** | 0.168 |
+| macro ROC-AUC (clips) | 0.500 | 0.500 | 0.592 |
+
+Each threshold metric is fooled by one of the two trivial classifiers: macro-F1 and weighted
+F1 by saying yes to everything, Hamming loss and exact match by saying only "Drama". ROC-AUC
+gives both exactly 0.5, because neither can rank one clip above another. The thesis keeps
+macro-F1 as the headline (it scores the decisions) and reads ROC-AUC beside it as the check.
+
+Thesis (Overleaf `4c58980`): new column "All yes" in Table A.2 with a paragraph; Methods 4.6.3
+paragraph "Why macro-F1 and ROC-AUC are read together"; Chapter 5: a third convention, a
+sentence in RQ1 ("A harder reference"), and the film-level ROC-AUC lead over VGGish in RQ3
+(+0.071, p = 0.093, `per_genre_analysis.json`). The GitHub link was removed from Methods 4.7
+on the same day (Overleaf `aeb0795`, the author's decision).
+
+## 36. A global threshold sweep; the author's comments in `_Thesis_09.11.pdf` (9 Nov 2026)
+
+The author asked whether another cut than 0.5 gives better precision with a high F1.
+`exp_threshold_sweep.py` → `threshold_sweep.json`: the arms of `film_level.json` (ratings,
+emotion pipeline, VGGish, MusiCNN, PCA-8) on the same folds, seed 42, scored at film level for
+one global threshold from 0.20 to 0.80 (every arm reproduces `film_level.json` at 0.5).
+
+| threshold | emotion P / R / F1 / genres per film | VGGish direct P / R / F1 |
+|---|---|---|
+| 0.30 | 0.312 / 0.980 / 0.435 / 4.85 | 0.324 / 0.845 / 0.445 |
+| 0.45 | 0.352 / 0.896 / 0.462 / 3.70 | 0.341 / 0.512 / 0.399 |
+| 0.50 | 0.407 / 0.638 / 0.460 / 2.27 | 0.360 / 0.382 / 0.367 |
+| 0.55 | 0.369 / 0.272 / 0.292 / 0.95 | 0.407 / 0.253 / 0.304 |
+
+No cut buys precision: the emotion pipeline's macro precision is highest at 0.5, and no arm
+exceeds 0.43 at any cut. Below about 0.35 every arm becomes the all-positive classifier
+(0.43 to 0.45). The emotion pipeline's probabilities lie very close to 0.5 (strong
+regularisation and balanced class weights), so its F1 falls from 0.460 to 0.292 between 0.50
+and 0.55: the default cut is not a neutral choice for it. Paragraph in Appendix A.2.
+
+Other comments (Overleaf `6ddd2e0`): Section 4.2 rewritten for clarity (what a representation is;
+three paragraphs: from a clip to one vector, the hand-crafted baseline, how much of each clip is
+used; what a hidden state is), no number changed; 4.1.3 explains that Sci-Fi and Romance come
+from the raw IMDb lists of Eerola films (Romance 7 films, Sci-Fi 2: *The Alien Trilogy*, *The
+Fifth Element*) and points to Table 4.1; Table 4.1 moved next to its introduction. Answered
+without an edit: what C does (Methods 4.4 already says the default C = 1 was the worst value
+for every feature set).
+
+## 37. Chapters 5 and 6 restructured after the supervisor's comments (11 Nov 2026)
+
+The supervisor commented on `_Thesis_09.11.pdf` (10 Nov, 18 comments, in German). Main points:
+order the Results by the pipeline or by experiment, not by research question; no RQs in
+section titles; do not re-explain what a figure or table shows, point out what stands out;
+interpretations and limitations belong in the Discussion; Table 6.1 belongs in the Results;
+the Discussion should bring insights and problems, not explain a table; the reasons for
+VGGish belong in the Methods; references to the Methods for the tests, the tuned threshold
+and the strict regime were missing. The author chose the order of the pipeline.
+
+Overleaf `b4fead8` (compiled, 0 errors, 109 pages, every float in its section, no undefined
+reference): Chapter 5 now runs Stage 1 → Stage 2 → the emotion pipeline against direct audio
+(with the grid) → per genre → signatures → transfer (with the former Table 6.1 as 5.6.4) →
+a summary by result, not by RQ. Chapter 6 opens with "Answers to the Research Questions"
+(`sec:disc_rq`) and takes the interpretations from Chapter 5 (ceiling, no labels at use,
+twofold RQ3 answer, wav2vec, Horror mechanism, film-scoring conventions, panel caveat,
+valence problem). Methods 4.3 has the paragraph "Why VGGish and the random forest"; 4.6.2,
+4.6.3 and 4.6.4 have labels (`subsec:protocol_transfer`, `_metrics`, `_altmetrics`) that
+Chapter 5 cites. Every label kept; a script confirmed that no number or citation value
+disappeared from the four chapters. No result changed.
+
+## 38. Academic register, a CARS introduction, Chapter 7 drafted, references checked (12 Nov 2026)
+
+After the supervisor meeting of 12 Nov the author asked for five things. (1) Some sentences
+read as colloquial: 315 phrases in Chapters 1 to 6 and Appendix A were rewritten in an
+academic register (no rhetorical questions, no "beats", "gets", "says yes", "squashed",
+"is gone"; "level" became "on par"), keeping sentences short. A script confirmed for each
+chapter that every number, citation, reference and label is unchanged. Every pair is listed
+in `docs/register_review.md` for the author to accept or undo. Two headings changed:
+Fundamentals 2.6 is now "Measuring Model Performance" and Discussion 6.3.2 "Interpretability
+of the bottleneck"; labels unchanged. (2) Section 1.1 Motivation was rewritten in the CARS
+structure (territory, niche, occupying the niche; marked by comments in the source), with a
+source or a stated reason for every claim. (3) Chapter 7 (Conclusions and Future Work) was
+drafted: one paragraph per RQ with the deciding number and its caveat, consistent with
+Section 6.1, an overall conclusion, and eight directions for future work derived from the
+limitations, including methodological lessons (fix the unit, genre set and threshold policy
+before the experiments). The AI declaration now names Chapters 1 to 7 as first drafted by
+the assistant; the abstract and the contributions list remain the author's. (4) Consistency:
+no undefined reference, no citation without a bibliography entry, no "route". (5) All 32
+cited works were checked against Crossref, publisher pages and proceedings: all exist and
+match. Fields added or fixed in `bib/library.bib`: DOIs (Austin, Kang, CLAP), pages
+(Kang 2545-2559, VGGish 131-135, CLAP 1-5, librosa 18-24 instead of 18-25), issues
+(Behrouzi 4, Gabrielsson 1_suppl) and the issue version of Mangolin (vol. 81, no. 14,
+pp. 19071-19096; year kept at 2020, the online date, so the citation matches the Related Work
+heading). Gabrielsson is dated 2001 by the publisher (issue labelled 2001-2002); kept at 2002.
+The free PDFs (17, some preprints) are in `Related Work/References/` outside the repository.
+Overleaf `8730c7b`, compiled in Chrome: 0 errors, 109 pages.
+
+## 39. Strong claims softened (12 Nov 2026)
+
+The supervisor asked that the thesis avoid strong claims and words such as "find out" or
+"determine" that present an interpretation as a discovery or as certain. All chapters and
+Appendix A were revised (130 phrases). Measured results are still stated plainly; what changed
+are interpretations, causal explanations and generalisations ("suggests", "appears", "may", "is
+consistent with", "in these data"), and words such as "clearly", "the best", "defined by",
+"confirms", "explains why" and "is ruled out" where they claimed more than a test supports.
+Examples: "It is a property of the emotion step" became "which points to the emotion step rather
+than to one particular model"; "the signatures found here explain why" became "offer a possible
+explanation"; "Three explanations are mutually consistent" became "Three possible explanations
+are compatible with this pattern, and the experiments do not separate them". Three headings
+changed in Chapter 5 ("Replication of the Signatures", "Reverse and Pooled Transfer",
+"Summary of Results"); labels unchanged. A script confirmed for each file that every number,
+citation, reference and label is unchanged. Every pair is in `docs/claim_review.md`. Overleaf
+`7e72aad`, compiled in Chrome: 0 errors, 109 pages.
+
+## 40. Fundamentals and Methods without repetition (12 Nov 2026)
+
+At the meeting of 12 Nov the supervisor said that the usual length is 40 to 60 pages but that
+the thesis may stay longer as long as nothing is explained twice. The author's rule for the two
+chapters that overlapped: general knowledge only in Fundamentals, project-specific choices and
+numbers only in Methods. Moved to Methods (removed from Fundamentals): the measured leakage of an
+ungrouped split (AST 0.44 vs 0.23), the too-weak default C, the ridge and random-forest R^2
+values, the ten repeats and pooled scoring per repeat, film-level scoring and why it was chosen,
+the values of the chance floors (0.309; 0.23 and 0.10 on eight genres), the numbers of the
+trivial "Drama" classifier, why each representation was chosen, and why all eight emotions are
+kept (now the paragraph `par:methods_eight` in Section 4.3; Fundamentals 2.2.3 keeps only the
+psychology and is titled "How the Two Models Relate"). Kept in Fundamentals and only referred to
+from Methods: what nested and repeated cross-validation are, the rating-reliability ceiling as a
+concept, Hamming loss and exact match (now defined there), the all-positive classifier and its
+F1 = 2p/(1+p), why macro-F1 and ROC-AUC are read together, how the two tests work and why the
+corrected test has a lower limit on p, and what a hidden state is. Fundamentals fell from 5800 to
+4759 words, Methods rose from 6954 to 7135; Chapters 1 to 7 hold about 24,000 words. No number,
+citation or label was lost (checked over the whole thesis), every pair is in
+`docs/dedup_review.md`. Overleaf `94aa46e`, compiled in Chrome: 0 errors.
+
+## 41. Comments on `_Thesis_12.11.pdf` and the first person (14 Nov 2026)
+
+The author's annotated PDF of 12 Nov (`_Thesis_12.11.pdf`, Drive) holds 15 comments, one of
+them the supervisor's rule for all tables and figures: numbers the reader can see in a table
+or figure are not repeated in the text; only the important ones are named. All were worked
+through (`docs/review_2026-11-12.md` lists each comment and the change). In short:
+research questions written as prose with marked numbers, RQ3 simplified ("how predicting
+genre from emotions compares with predicting it directly from the same audio
+representation"); the Blockbuster features named in the introduction (VGGish, MIR);
+Fundamentals defines TP/FP/FN/TN with a new confusion figure and gives every formula as a
+numbered display equation with a "where" list (R^2, precision/recall/F1, macro-F1, random
+guess, ROC-AUC, all-positive F1), explains ICC(C,1) and ICC(A,1), and says where the corrected
+t-test is used; four new figures (log-mel spectrogram of clip 304, Hellraiser, from
+`experiments/make_spectrogram.py`; grouped cross-validation and confusion matrix as TikZ;
+`data_overview` from `make_figures.py`); Figure 5.1 shows the mean in its own panel;
+Figure 5.2 sits directly under the heading of Section 5.2; the numbers that Figures 5.1 to
+5.9 and Tables 5.1 to 5.5 already show were removed from the text of Chapter 5; "on par"
+replaced throughout. Figure 5.6 (signatures) shows only the Eerola genres, by the author's
+decision: the Blockbuster panel (predicted emotions) is gone and the replication stays as
+numbers in the text (r = 0.836, 92 % of signs). The heatmap now covers all eight Eerola
+genres from the human ratings and replaces the table of dominant signatures; its values come
+from the new `experiments/genre/exp_signatures_eerola.py` -> `results/signatures_eerola.json`,
+which reproduces the table it replaces (Horror fear +0.75, Biography happiness +0.67,
+Comedy fear -0.61, Drama valence +0.57, Documentary anger -0.51, Action happiness -0.50,
+Crime fear +0.40; Adventure's strongest effect is fear, |d| = 0.252, so the text now says
+"reaches only |d| = 0.25" instead of "no emotion exceeds 0.25"). Calibration stays future
+work (author's choice). At the author's request the thesis now uses the first person where
+the author acts or decides ("I chose", "I group every split by film", "To my knowledge");
+"this thesis" stays where the document is meant. Overleaf `4419a6d`, compiled in Chrome:
+0 errors, 113 pages.
+
+Afterwards (author, 14 Nov): the per-genre table (former Table 5.3) was removed, since Figures 5.4
+and 5.5 show the same values, and the two figures now share one float, so they appear on the
+same page. Overleaf `b330c1c`, compiled in Chrome: 0 errors, 111 pages. The author then asked
+for no empty pages between chapters: `thesis.tex` uses the book class with `openany`, every
+`\cleardoublepage` became `\clearpage`, and `\cleardoublepage` is set to `\clearpage` after the
+preamble, because `\mainmatter` calls it even under `openany`. Overleaf `b5941f2`: 0 errors,
+103 pages, no blank page.
+
+## 42. Abstract drafted (14 Nov 2026)
+
+At the author's request the abstract was drafted from the finished chapters, after looking at
+abstract guidelines (context, gap, aim, method, results, conclusion; past tense for what was
+done, present for what follows; no citations; one paragraph) and at abstracts of related work
+(Ma et al. 2021; a bachelor thesis on emotion recognition in instrumental music). It has 248
+words, within the template's 150 to 250, and quotes only numbers reported in Chapters 5 and 6:
+film-level macro-F1 0.460 against 0.491 with the ratings and 0.309 for a random guess; the
+in-domain lead over VGGish named but called not significant; zero-shot 0.508 against 0.403
+with the caveat that most of the lead depends on the threshold; the replication of the
+signatures described in words. It is on Overleaf (title page file, `d8bc882`; the page
+header now reads "Abstract", `dcd51d2`) and mirrored in `docs/latex/held_back/abstract.tex`.
+The AI declaration now says that the abstract was first drafted by the assistant; the list of
+contributions remains the author's. Compiled in Chrome: 0 errors, 103 pages.
+
+Bibliography (14 Nov, after a review the author passed on): the bibliography style
+`bibstyle/noon.bst` on Overleaf joined author names with the German "und", in the reference list
+and in every in-text citation (e.g. "Hu und Downie, 2007"), although the thesis is in English;
+it now writes "and". The third author of Lipton et al. (2014) is now spelled Narayanaswamy; the
+publisher's metadata misspells him as "Naryanaswamy", which the bibliography had kept. Overleaf
+`ef4673b`, compiled in Chrome: 0 errors, 103 pages, no "und" left in the PDF.
+
+Abstract, second version (14 Nov): an AI checker the author ran flagged six sentences; they were
+rephrased with the same facts and numbers (shorter sentences, the results split up, the
+threshold caveat in its own sentence), 249 words. Overleaf `797ca21`, 0 errors, 103 pages; the
+held-back mirror is updated. Detector scores are not a reliable test of authorship; the AI
+declaration already names the abstract as drafted by the assistant.
+
+Figure 2.3 (14 Nov, author's request): its rows are now labelled as rounds, a contrast row shows
+an ungrouped split (test clips scattered inside training films), and the key names test fold,
+training films, one clip and test clip. Fundamentals 2.6.1 now defines a fold and a round.
+Overleaf `3bb166b`, compiled in Chrome: 0 errors, 103 pages.

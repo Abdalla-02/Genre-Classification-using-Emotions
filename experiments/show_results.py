@@ -63,6 +63,16 @@ DESCRIPTIONS = {
                         "the weakest genre of the emotion pipeline (section 27)",
     "blockbuster_deep": "Blockbuster under the primary protocol: repeated CV, cue-level "
                         "arms, full 140-feature MIR (section 17)",
+    "threshold_sweep": "Film-level precision, recall and F1 for one global threshold from "
+                       "0.20 to 0.80 (section 36)",
+    "all_positive_metrics": "The classifier that assigns every genre to every clip, under "
+                            "every metric of the metric table (section 35)",
+    "rating_structure": "Correlations of the eight rating scales and their first two "
+                        "principal components (section 33)",
+    "clap_ridge_posthoc": "Post-hoc test of CLAP with ridge regression against the VGGish "
+                          "pipeline, per seed and pooled (section 32)",
+    "zero_shot_threshold": "Zero-shot with per-genre thresholds tuned on the source dataset "
+                           "(section 31)",
     "zero_shot": "Train on Eerola, test on Blockbuster without training on it; plus the "
                  "in-domain reproduction of Ma et al. (section 15)",
     "cross_dataset_cv": "Cross-validation in every direction: Eerola->Blockbuster, the "
@@ -70,6 +80,8 @@ DESCRIPTIONS = {
     "waveform_vs_spectrogram": "wav2vec 2.0 (raw waveform) against the five other "
                                "representations; its genre part is superseded by cv_corrected (section 16)",
     "w2v_layer_sweep": "Which wav2vec 2.0 layer to pool -- the control behind section 16",
+    "signatures_eerola": "Cohen's d of every emotion for each of the eight Eerola genres, "
+                         "from the human ratings (the signatures heatmap; section 41)",
     "signature_replication": "Do the Eerola emotion-genre signatures reappear on "
                              "Blockbuster? (section 17.5)",
     "emotion_ablation": "Which emotions carry the genre signal? Leave-one-out and "

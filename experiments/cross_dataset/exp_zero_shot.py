@@ -135,6 +135,20 @@ def bootstrap_diff(Yte, pred_a, pred_b, n_boot: int = 2000) -> dict:
             "n_boot": int(len(diffs))}
 
 
+def bootstrap_sd(Yte, pred, n_boot: int = 2000) -> float:
+    """Standard deviation of one arm's macro-F1 over the resamples of ``bootstrap_diff``
+    (same seed, same draws, same rule for dropping a draw): the error bar of the figure."""
+    rng = np.random.default_rng(config.SEED)
+    n = len(Yte)
+    vals = []
+    for _ in range(n_boot):
+        s = rng.integers(0, n, n)
+        if Yte[s].sum(0).min() == 0 or Yte[s].sum(0).max() == len(s):
+            continue
+        vals.append(macro_prf(Yte[s], pred[s])["macro_f1"])
+    return float(np.std(vals, ddof=1))
+
+
 # --------------------------------------------------------------------------- #
 # Feature builders. Every transform is fitted on the TRAINING corpus only.
 # --------------------------------------------------------------------------- #
@@ -312,6 +326,7 @@ def main() -> None:
         res = {}
         for name, (A, B) in arms.items():
             r = transfer_score(A, Ye, B, Yb, groups_e)
+            r["boot_sd"] = bootstrap_sd(Yb, r["_pred"])
             res[name] = r
             print(row(name, r))
         print(row("random guess (freq) [Ma .32]", b_rand))

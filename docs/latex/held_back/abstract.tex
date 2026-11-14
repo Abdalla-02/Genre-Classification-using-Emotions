@@ -1,28 +1,22 @@
-% NOTE (7 Oct 2026): the numbers in this draft are CLIP-LEVEL. The thesis now reports
-% film-level macro-F1 as the headline (results/film_level.json; docs/current_state.md,
-% section 10). Use the film-level numbers when writing the final version.
-% =============================================================================
-% HELD BACK from the thesis on 6 Oct 2026 (to be rewritten by the author).
-% Not part of the Overleaf build. Was the abstract on the title page.
-% =============================================================================
+% Since 14 Nov 2026 this abstract is on Overleaf (chapter/titlepage.tex), drafted by the
+% assistant at the author's request for the author to check and revise. The older draft
+% (clip-level numbers from before the film-level switch) is in the git history of this file.
 
-Film genre can be predicted from a soundtrack, but existing methods classify genre
-directly from audio and offer no account of why the music should reveal it. This thesis
-tests whether emotion, which film composers deliberately encode in their scores, can serve
-as an interpretable intermediate step: audio is mapped to eight perceived emotions, such as
-fear, tension and tenderness, and genre is predicted from these alone. The pipeline is
-compared with genre classifiers built directly on six audio representations (five
-pretrained embeddings and a hand-crafted feature set), and with a
-control that compresses the same audio embedding to eight meaningless principal
-components. The data are 346 clips from 43 films, rated by listeners for emotion, and an
-independent dataset of 110 films. Within the first dataset, on five genres, the pipeline
-reaches a macro-averaged F1 score of 0.417 against 0.377 for the best direct
-representation, where random guessing scores 0.308. It is ahead in every repeat of the
-cross-validation, but the margin is significant under only one of two tests and disappears
-when each genre's decision threshold is tuned. Trained on the first dataset and applied
-unchanged to the second, on six shared genres, the pipeline reaches 0.511 against 0.407
-for direct audio (random guessing: 0.292; $p=0.018$), and the reverse direction agrees.
-Each predictable genre also has a readable emotional signature, with fear the strongest single discriminator, which
-reappears on the second dataset. The advantage of the emotion intermediate is therefore
-above all one of generalisation across datasets, combined with predictions explained by
-named emotions.
+Film music is written to evoke emotions that suit a film's genre. Computational studies,
+however, predict genre straight from audio and do not explain why a soundtrack points to
+it. I study how far a soundtrack's emotions reveal a film's genre, and what changes when
+genre is predicted through them instead of from the audio itself. The data are 360
+film-music clips from 45 films, each rated by listeners for eight emotions, and a second
+set of 110 films. A random forest predicts the eight emotions from a pretrained VGGish
+audio embedding, and a logistic regression per genre predicts genre from them. On five
+genres, this emotion pipeline scored 0.460 in film-level macro-averaged $F_1$. Human
+ratings in its place scored 0.491, random guessing 0.309. It led the same embedding used
+directly in nearly every repeat, and the emotion step helped with all six audio
+representations tested. With only 40 films, though, the difference was not significant. A
+larger gap appeared when I trained on the rated films and tested on the 110 new ones:
+0.508 for the emotion pipeline, 0.403 for direct audio. Much of this gap disappeared once
+the decision threshold was tuned. Each genre also had its own emotional profile. Horror,
+for instance, was marked by fear, and most profiles held on the second dataset. The
+results suggest emotion does not make genre prediction more accurate in general. Its value
+lies in an interpretable representation that helps most when training data are scarce or
+the data change.
