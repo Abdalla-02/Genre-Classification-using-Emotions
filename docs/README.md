@@ -2315,3 +2315,9 @@ and in every in-text citation (e.g. "Hu und Downie, 2007"), although the thesis 
 it now writes "and". The third author of Lipton et al. (2014) is now spelled Narayanaswamy; the
 publisher's metadata misspells him as "Naryanaswamy", which the bibliography had kept. Overleaf
 `ef4673b`, compiled in Chrome: 0 errors, 103 pages, no "und" left in the PDF.
+
+Abstract, second version (14 Nov): an AI checker the author ran flagged six sentences; they were
+rephrased with the same facts and numbers (shorter sentences, the results split up, the
+threshold caveat in its own sentence), 249 words. Overleaf `797ca21`, 0 errors, 103 pages; the
+held-back mirror is updated. Detector scores are not a reliable test of authorship; the AI
+declaration already names the abstract as drafted by the assistant.

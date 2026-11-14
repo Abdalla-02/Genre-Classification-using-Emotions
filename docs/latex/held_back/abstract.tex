@@ -3,20 +3,20 @@
 % (clip-level numbers from before the film-level switch) is in the git history of this file.
 
 Film music is written to evoke emotions that suit a film's genre. Computational studies,
-however, classify film genre directly from audio features without a fixed meaning and offer
-no direct explanation of why a soundtrack points to a genre. This thesis examines how well
-soundtrack emotions predict film genre, and how an interpretable emotion step compares with
-classifying genre directly from audio. I used 360 film-music clips from 45 films, rated by
-listeners on eight emotion scales, and an independent dataset of 110 films. A random forest
-predicts the eight emotions from a pretrained VGGish audio embedding, and a logistic
-regression per genre predicts genre from them. On five genres, this emotion pipeline reached
-a film-level macro-averaged $F_1$ score of 0.460, against 0.491 with the human ratings and
-0.309 for a random guess. It led the same embedding used directly in nearly every repeat,
-and the emotion step helped with all six audio representations tested. On 40 films,
-however, this lead was not significant. Trained on the rated films and applied to the 110
-new ones, the emotion pipeline transferred better than direct audio (0.508 against 0.403),
-although most of this lead depended on the decision threshold. The genres showed emotional
-signatures that fit film-scoring conventions, such as fear in Horror, and these largely
-replicated on the second dataset. The results suggest that emotion does not make genre
-prediction more accurate in general. Its value lies in an interpretable representation that
-helps most when training data are scarce or the data change.
+however, predict genre straight from audio and do not explain why a soundtrack points to
+it. I study how far a soundtrack's emotions reveal a film's genre, and what changes when
+genre is predicted through them instead of from the audio itself. The data are 360
+film-music clips from 45 films, each rated by listeners for eight emotions, and a second
+set of 110 films. A random forest predicts the eight emotions from a pretrained VGGish
+audio embedding, and a logistic regression per genre predicts genre from them. On five
+genres, this emotion pipeline scored 0.460 in film-level macro-averaged $F_1$. Human
+ratings in its place scored 0.491, random guessing 0.309. It led the same embedding used
+directly in nearly every repeat, and the emotion step helped with all six audio
+representations tested. With only 40 films, though, the difference was not significant. A
+larger gap appeared when I trained on the rated films and tested on the 110 new ones:
+0.508 for the emotion pipeline, 0.403 for direct audio. Much of this gap disappeared once
+the decision threshold was tuned. Each genre also had its own emotional profile. Horror,
+for instance, was marked by fear, and most profiles held on the second dataset. The
+results suggest emotion does not make genre prediction more accurate in general. Its value
+lies in an interpretable representation that helps most when training data are scarce or
+the data change.
