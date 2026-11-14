@@ -299,6 +299,10 @@ def _genre_heatmap(ax, b, key, xlabels):
         for i in range(M.shape[0]):
             ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
                     color="white" if M[i, j] > 0.6 else "black")
+    # a gap and a line set the most-frequent baseline apart from the pipelines (author, 15 Nov)
+    dummy = [k for k, _ in rows].index("dummy")
+    ax.axhline(dummy - 0.5, color="white", lw=5)
+    ax.axhline(dummy - 0.5, color="black", lw=1.0)
     ax.set_xticks(range(len(b["genres"])), xlabels)
     ax.set_yticks(range(len(rows)), [lab for _, lab in rows])
     ax.spines[:].set_visible(False)
@@ -390,7 +394,7 @@ def fig_emotion_grid():
     R2 = np.array([[d["stage1_all_clips"]["mean_r2"][r][g] for g in regs] for r in reps])
     # Two different measures, so two different palettes and colour bars (author, 15 Nov):
     # (a) genre macro-F1 in blue, (b) Stage-1 emotion R^2 in purple, set well apart.
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 4.1),
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 3.8),
                              gridspec_kw={"width_ratios": [5, 2.4], "wspace": 0.22})
     for ax, M, vmin, vmax, labels, title, cmap, clabel in (
             (axes[0], F, 0.2, 0.55, ["direct"] + [f"emotion,\n{g}" for g in regs],

@@ -2332,3 +2332,11 @@ ran into the left panel; the gap between the panels is wider now (Overleaf `69bd
 used one blue scale for two different measures; panel (a), genre macro-F1, stays blue, panel (b),
 the Stage-1 R^2 of the emotion regressors, is purple, each has its own colour bar, and the
 legend text names the panels (Overleaf `20f5674`). Compiled in Chrome: 0 errors, 103 pages.
+
+Comments on `_thesis_14.11.pdf` (Drive, six comments; 15 Nov): Figure 5.3 no longer stands alone on
+a float page (placement `!htb`, figure 3.8 in tall, caption on one line); Figures 5.4 and 5.5 set the
+most-frequent baseline apart with a gap and a line; the abbreviation list says ML-kNN, the form
+used in Section 3.3.3, where LSTM and ML-SMOTE are used as well (the author asked where they
+occur). Three comments ask to remove parts of the AI declaration; they are open with the author,
+because Faculty Council decision 019/25 requires the AI-drafted parts to be named. Overleaf
+`51eb72c`, `7ba16db`, compiled in Chrome: 0 errors, 103 pages.
