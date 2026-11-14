@@ -2358,4 +2358,5 @@ drafted with AI (code and figures, Chapters 1 to 7, Appendix A, the abstract, so
 because Faculty Council decision 019/25 requires that and the author signs the page; the wording of
 the examples ("only language improvement", "no AI text verbatim") would not be true here. The red
 notes are gone; the date is 	oday and must be fixed at submission. Overleaf `f212d57`: 0 errors,
-103 pages.
+103 pages. The opening sentence is the original one again, without the
+decision number (author, 15 Nov); the responsibility sentence follows the table (Overleaf `6de6a02`).
