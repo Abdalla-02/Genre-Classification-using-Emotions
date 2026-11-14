@@ -18,7 +18,7 @@ comparison that was run on the five-genre subset.
 \begin{table}[tbp]
   \centering
   \small
-  \caption{All paired comparisons on the five-genre subset: film level, with the clip-level tests beside it.}
+  \caption{All paired comparisons on the five-genre subset.}
   \label{tab:power_cmp_full}
   \setlength{\tabcolsep}{3pt}
   \resizebox{\textwidth}{!}{%
@@ -79,7 +79,7 @@ Apart from the first row, all metrics are computed over clips, from the same pre
 \begin{table}[tbp]
   \centering
   \small
-  \caption{The pipelines under thirteen metrics on the five-genre subset (seed 42, mean of ten repeats).}
+  \caption{The pipelines under thirteen metrics (five genres, seed 42).}
   \label{tab:metric_family}
   \setlength{\tabcolsep}{3.5pt}
   \resizebox{\textwidth}{!}{%
@@ -121,7 +121,7 @@ the four audio pipelines.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/metric_family.pdf}
-  \caption{The four audio pipelines under seven metrics, as distance above the random guess (five genres, seed 42).}
+  \caption{The four audio pipelines under seven metrics, against the random guess (seed 42).}
   \label{fig:metric_family}
 \end{figure}
 
@@ -199,7 +199,7 @@ repeats and over five master seeds.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/stability_repeats.pdf}
-  \caption{Stability of film-level macro-$F_1$ on the five-genre subset over repeats and master seeds.}
+  \caption{Stability of film-level macro-$F_1$ over repeats and master seeds.}
   \label{fig:stability_repeats}
 \end{figure}
 
@@ -233,7 +233,7 @@ turn and tests several subsets motivated by theory (Figure~\ref{fig:ablation}).
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/ablation.pdf}
-  \caption{Emotion ablation on the five-genre subset: change in film-level macro-$F_1$ relative to all eight emotions.}
+  \caption{Emotion ablation: change in film-level macro-$F_1$ against all eight emotions.}
   \label{fig:ablation}
 \end{figure}
 
@@ -302,9 +302,9 @@ regularisation strength.
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Film- and clip-level macro-$F_1$ of every representation and emotion regressor (five genres, 40 films).}
+  \caption{Film- and clip-level macro-$F_1$ of every representation and emotion regressor.}
   \label{tab:emotion_grid}
-  \setlength{\tabcolsep}{3pt}
+  \setlength{\tabcolsep}{2pt}
   \begin{tabular}{lcccc@{\hspace{10pt}}cccc}
     \toprule
     & \multicolumn{4}{c}{Film level} & \multicolumn{4}{c}{Clip level} \\
@@ -406,7 +406,7 @@ is leave-one-film-out over the 110 films, with macro-averaged precision, recall 
 
 \begin{table}[tbp]
   \centering
-  \caption{In-domain reference performance on the Blockbuster dataset (110 films, six genres).}
+  \caption{In-domain reference performance on the 110 Blockbuster films.}
   \label{tab:blockbuster_reference}
   \small
   \setlength{\tabcolsep}{4pt}
@@ -533,7 +533,7 @@ Table~\ref{tab:app_floor} compares it with the emotion pipeline for each genre.
 \begin{table}[!htb]
   \centering
   \small
-  \caption{The all-positive reference and the emotion pipeline per genre (film level, five genres).}
+  \caption{The all-positive reference and the emotion pipeline per genre.}
   \label{tab:app_floor}
   \begin{tabular}{lrrrrrr}
     \toprule
@@ -590,7 +590,7 @@ the check. Table~\ref{tab:app_zs_threshold} gives the result.
 \begin{table}[!htb]
   \centering
   \small
-  \caption{Zero-shot transfer to the 110 Blockbuster films with default and tuned thresholds.}
+  \caption{Zero-shot transfer with default and tuned thresholds.}
   \label{tab:app_zs_threshold}
   \begin{tabular}{lrrrr}
     \toprule
@@ -634,7 +634,7 @@ Figure~\ref{fig:rating_structure} draws the scales in the plane of these two com
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=0.62\textwidth]{figures/rating_structure.pdf}
-  \caption{The eight rating scales in the plane of the first two principal components (360 rated clips).}
+  \caption{The eight rating scales in the plane of the first two principal components.}
   \label{fig:rating_structure}
 \end{figure}
 

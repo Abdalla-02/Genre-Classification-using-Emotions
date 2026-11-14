@@ -2368,3 +2368,18 @@ second set of films; where the emotion step helps and where its advantage depend
 threshold). No numbers, hedged as in the rest of the thesis. Overleaf `88f1b62`: 0 errors,
 104 pages. Nothing is held back any more; the AI declaration already names Chapter 1 as drafted
 with the assistant.
+
+## 43. Pre-submission check before the Turnitin run (15 Nov 2026)
+
+Checked by script over all chapters, Appendix A, the abstract and the declaration: no undefined
+reference, every figure and table referenced, every citation in the bibliography; the headline
+numbers (0.460, 0.491, 0.309, 0.434, 0.508/0.403, r = 0.836) and their p-values have one value
+each (the +0.093 with p = 0.001 in Appendix A is the eight-genre comparison, not the five-genre
+one); clip and film counts agree; no "route", "on par", "und", doubled words or hard-coded figure
+numbers; spelling is British throughout ("Labeled" only in the name LMTD). Fifteen captions that ran
+over one line were shortened, keeping only what the text does not already say; two connectives
+("thereby", "most importantly") were replaced. The compile log had four overfull boxes, tables up
+to 4 mm into the margin (abbreviation lists, authorship statement, emotion grid table); fixed.
+A scan for phrasing typical of machine-written English found little left after the earlier style
+passes ("significant" occurs 47 times, almost always in its statistical sense). Overleaf `6e505bd`,
+compiled in Chrome: 0 errors, 3 template warnings, no overfull box, 102 pages.
