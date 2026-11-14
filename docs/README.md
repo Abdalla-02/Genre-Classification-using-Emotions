@@ -2351,3 +2351,11 @@ against the list in Appendix B and for a spelled-out first use in reading order.
 AUC-PR and TP/FP/FN/TN; the kNN entry covers kNN (Appendix table of Ma et al.) and ML-kNN; the
 unused "NN" was removed. RMSE is now spelled out in Methods and PMEmo explained in Related Work.
 NB was already listed. Overleaf `d975498`: 0 errors, 103 pages.
+
+AI declaration (15 Nov): shortened to the length of the author's examples, one paragraph and a
+one-row table (tool, purpose, use). It still names the system, period, purpose and the parts first
+drafted with AI (code and figures, Chapters 1 to 7, Appendix A, the abstract, sources, language),
+because Faculty Council decision 019/25 requires that and the author signs the page; the wording of
+the examples ("only language improvement", "no AI text verbatim") would not be true here. The red
+notes are gone; the date is 	oday and must be fixed at submission. Overleaf `f212d57`: 0 errors,
+103 pages.
