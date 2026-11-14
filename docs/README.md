@@ -2360,3 +2360,11 @@ the examples ("only language improvement", "no AI text verbatim") would not be t
 notes are gone; the date is 	oday and must be fixed at submission. Overleaf `f212d57`: 0 errors,
 103 pages. The opening sentence is the original one again, without the
 decision number (author, 15 Nov); the responsibility sentence follows the table (Overleaf `6de6a02`).
+
+Contributions (15 Nov, author's request): the red placeholder at the end of Section 1.2 is replaced
+by a short numbered list of three contributions that match the current thesis (the emotion
+pipeline against six direct representations; the emotional signatures and their recurrence on a
+second set of films; where the emotion step helps and where its advantage depends on the
+threshold). No numbers, hedged as in the rest of the thesis. Overleaf `88f1b62`: 0 errors,
+104 pages. Nothing is held back any more; the AI declaration already names Chapter 1 as drafted
+with the assistant.
