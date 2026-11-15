@@ -2407,3 +2407,8 @@ and the Statement of Authorship on Overleaf (`ba96fcc`). Overleaf `13dcc00`: 0 e
 AI declaration page layout (15 Nov, author): centred title lower on the page, as on the Statement of
 Authorship; more space between the parts and slightly wider line spacing; the signature sits near the
 foot of the page, so the page looks filled. Wording unchanged. Overleaf `1678ce8`: 0 errors, 110 pages.
+
+Abstract page (15 Nov, author): the abstract is set in \large with line spacing 2.1 and a little space
+above, so it fills its page (text from the heading to about 9/10 of the page). Wording unchanged.
+The author briefly tried `tocdepth` 0.8 on Overleaf (an error, the counter takes whole numbers) and set
+it back to 1. Overleaf `e28de16`: 0 errors, 110 pages.
