@@ -2383,3 +2383,9 @@ to 4 mm into the margin (abbreviation lists, authorship statement, emotion grid 
 A scan for phrasing typical of machine-written English found little left after the earlier style
 passes ("significant" occurs 47 times, almost always in its statistical sense). Overleaf `6e505bd`,
 compiled in Chrome: 0 errors, 3 template warnings, no overfull box, 102 pages.
+
+Double-sided print (15 Nov, author's choice): `thesis.tex` uses the book class with `openright`, so
+every chapter, the contents, the lists, the bibliography and the AI declaration open on a right-hand
+page; a blank page is inserted only before them when needed (8 blank pages: 6, 26, 52, 68, 76, 96,
+100, 104), kept free of headers by the `emptypage` package. All other page breaks stay `\clearpage`.
+The `\let\cleardoublepage\clearpage` of 14 Nov is gone. Overleaf `40f8a56`: 0 errors, 110 pages.
