@@ -2412,3 +2412,10 @@ Abstract page (15 Nov, author): the abstract is set in \large with line spacing 
 above, so it fills its page (text from the heading to about 9/10 of the page). Wording unchanged.
 The author briefly tried `tocdepth` 0.8 on Overleaf (an error, the counter takes whole numbers) and set
 it back to 1. Overleaf `e28de16`: 0 errors, 110 pages.
+
+Front matter layout (15 Nov, author): Contents, List of Figures, List of Tables and Abbreviations and
+Notations share one title style (tocloft; no space above the title, 1.2em below; the abbreviation page
+copies it by hand) and each opens on a right-hand page. The abbreviation groups are plain tables under
+small bold headings instead of floats, so the odd gaps are gone. The abstract is back to normal: body
+text size, line spacing 1.35. Figure 4.1 sits on the first page of Chapter 4 (placement htb, 92 % of
+the text width). Overleaf `3c10cb0`: 0 errors, 110 pages.

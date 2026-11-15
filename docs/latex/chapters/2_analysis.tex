@@ -3,9 +3,9 @@
 
 The method of this thesis maps a clip of film music to eight predicted emotion ratings. It then predicts the film's genres from these eight values alone (audio $\rightarrow$ 8 emotions $\rightarrow$ genre). The main experiments compare this two-stage pipeline with two alternatives. One gives the same audio representation directly to the same genre classifier. The other is a control that compresses the representation into eight dimensions without any link to emotion. Two datasets are used. The film-music dataset of \citet{eerola2011comparison} supplies the audio and the emotion ratings. The Blockbuster dataset of \citet{ma2021computational} supplies an independent set of films for testing. This chapter covers the data and their genre labels (Section~\ref{sec:methods_data}), the audio representations (Section~\ref{sec:methods_features}), the two models of the pipeline (Sections~\ref{sec:methods_stage1} and~\ref{sec:methods_stage2}), the baselines and controls (Section~\ref{sec:methods_baselines}), the evaluation protocol (Section~\ref{sec:evaluation_protocol}) and the implementation (Section~\ref{sec:methods_implementation}). Figure~\ref{fig:pipeline} gives an overview. Chapter~\ref{ch:fundamentals} explains the underlying concepts; this chapter describes how they were applied.
 
-\begin{figure}[t]
+\begin{figure}[!htb]
   \centering
-  \resizebox{\textwidth}{!}{%
+  \resizebox{0.92\textwidth}{!}{%
   \begin{tikzpicture}[font=\footnotesize, >=stealth,
       box/.style={draw, rounded corners=2pt, align=center, inner sep=4pt}]
     % input and frozen front-end
