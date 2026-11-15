@@ -331,23 +331,6 @@ with a positive tone (Drama, Comedy) from those with a negative one (Horror, Act
 are also strong, but they rest on very few films. Adventure has no signature: its strongest
 emotion, fear, reaches only $|d|=0.25$.
 
-\subsection{Replication of the Signatures}
-\label{subsec:signature_replication}
-
-The second dataset makes it possible to test whether the signatures extend beyond
-the Eerola films. The random forest trained on the VGGish embeddings of the Eerola clips
-predicts the eight emotions for each of the 4664 Blockbuster cues. A cue is one continuous
-piece of score music as it is used in the film (Section~\ref{subsec:methods_blockbuster}).
-The same effect sizes are then computed for the six shared genres, from the Eerola ratings and from the predicted Blockbuster emotions. No emotion labels for
-Blockbuster exist or are used, so any agreement comes from transfer and not from fitting.
-
-The signatures largely replicate. Across all 48 cells of genre and emotion, the Eerola effect
-sizes and the film-level Blockbuster ones correlate at $r=0.836$, and 92\,\% of the signs
-agree. Horror is characterised by fear in both datasets. The replication is closest for Romance,
-Sci-Fi, Action and Horror. It is weakest for Comedy, whose strongest emotion changes from
-fear to happiness. The absolute effect sizes do not transfer. Averaging about 39 cues per
-film inflates $d$, and measured per cue the values are of the same order as on Eerola.
-
 % =============================================================================
 \section{Transfer between the Datasets}
 \label{sec:eval_transfer}
@@ -586,8 +569,7 @@ thresholds the pipelines converge.
 mainly through higher recall. It is weakest on Horror.
 
 \emph{Signatures.} Most genres carry an emotional signature. Fear is the strongest
-discriminator and valence the second axis. Adventure has no signature. The signatures
-largely replicate on the Blockbuster dataset from predicted emotions ($r=0.836$).
+discriminator and valence the second axis. Adventure has no signature.
 
 \emph{Transfer.} From Eerola to the 110 Blockbuster films, the emotion pipeline outperforms
 direct VGGish at the default threshold. With thresholds tuned on the source the lead shrinks to $+0.041$ ($p=0.159$),

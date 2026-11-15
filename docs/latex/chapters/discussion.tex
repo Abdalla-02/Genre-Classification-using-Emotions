@@ -26,16 +26,12 @@ agreement between two listener panels allows. This suggests that noise in the ra
 the main limitation of the regressor, and that the limit lies more in the audio
 representations and the amount of training data.
 
-\paragraph{RQ2: Which emotions characterise each genre, and how far do these signatures
-hold?} Most genres have an emotional signature that is consistent with the conventions of film
+\paragraph{RQ2: Which emotions characterise each genre?} Most genres have an emotional signature that is consistent with the conventions of film
 scoring (Section~\ref{sec:eval_signatures}). Horror is characterised mainly by fear, Comedy by the
 absence of fear together with positive valence, Drama by raised valence, and Action by high
 tension without happiness. Fear is the most discriminating emotion overall, followed by
 valence. Adventure has no signature, possibly because it occurs together with several other genres
-and shares their emotional range. The signatures largely hold on the Blockbuster films
-($r=0.836$), which suggests that the structure of the link between emotion and genre extends
-beyond the dataset in which it was first observed. One caveat remains. The Blockbuster emotions are predicted by a model
-trained on the Eerola panel, so the replication cannot show independence from that panel.
+and shares their emotional range. The signatures rest on one listener panel and one collection of films, so whether they hold elsewhere remains open.
 
 \paragraph{RQ3: How does the emotion pipeline compare with classifying genre directly from
 audio within one dataset?} The answer has two parts. At the default threshold the emotion
@@ -112,11 +108,7 @@ of the gain. The emotion pipeline nevertheless stays ahead of the control under 
 transfer the evidence is clearer in the original zero-shot run. There, compressing the
 embedding to eight principal components gains $+0.013$ ($p=0.737$), and compressing it to
 eight emotions gains $+0.106$. In a second implementation of the same direction, the lead
-over the control is not significant. A further indication that the emotions contribute more
-than a small number of dimensions comes from the replication of the signatures. The genre profiles derived from
-human ratings on Eerola reappear on Blockbuster from predicted emotions, and Horror is
-characterised by fear in both. A principal component has no predefined meaning that could replicate in this
-way.
+over the control is not significant. Beyond accuracy, the emotions carry a meaning that a principal component lacks: each can be named and related to how film music is written.
 
 \subsection{A low-dimensional genre signal}
 \label{subsec:disc_ablation}
@@ -202,7 +194,7 @@ Listeners from a different musical culture might rate the same clips differently
 
 \paragraph{The second dataset.} The Blockbuster dataset shares neither audio nor emotion
 ratings. The transfer therefore rests on a single representation (VGGish), and the
-Blockbuster emotions are checked only indirectly. No film occurs in both datasets, but some
+emotions predicted for the Blockbuster films cannot be checked against ratings. No film occurs in both datasets, but some
 composers do, so stylistic overlap across the split cannot be ruled out. The zero-shot
 comparison is a single split. Its point estimates change by a few hundredths with legitimate
 choices in the implementation, so it rests on its confidence intervals.

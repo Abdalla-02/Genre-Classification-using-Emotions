@@ -2419,3 +2419,21 @@ copies it by hand) and each opens on a right-hand page. The abbreviation groups 
 small bold headings instead of floats, so the odd gaps are gone. The abstract is back to normal: body
 text size, line spacing 1.35. Figure 4.1 sits on the first page of Chapter 4 (placement htb, 92 % of
 the text width). Overleaf `3c10cb0`: 0 errors, 110 pages. The abstract then got the body text's line spacing (1.05; Overleaf `5744679`).
+
+## 44. Comments on `_Thesis_15.11.pdf` (abstract and Chapter 1; 15 Nov 2026)
+
+Ten comments. The author decided to drop the replication of the emotional signatures on the
+Blockbuster films from the thesis: RQ2 is now only "which emotions characterise each genre";
+Section 5.5.1 "Replication of the Signatures" is removed, and so are the replication sentences in
+Methods (signature paragraph, the VGGish reason), the Chapter 5 summary, the Discussion (RQ2
+answer; the meaning-versus-compression paragraph now says the emotions carry a meaning a principal
+component lacks), Chapter 7 (RQ2, future work), the abstract and contribution 2. The analysis
+stays in the repository (`signature_replication.json`, log section 17.5). RQ3 is reworded ("how
+well genre can be predicted from emotions compared with predicting it directly from the same audio
+representation"); the paragraph on RQ2 and RQ4 sharing the second dataset is gone. The abstract
+and Section 1.2 say that all 360 clips train the emotion model while the genre experiments use the
+40 films of the five genres; the Blockbuster dataset is named where the text could be read as
+meaning both datasets. The abstract's threshold sentence now says what it means (tuned thresholds:
+the zero-shot gap shrinks to 0.041, no longer significant; Section 5.6.2, Appendix A.11); 247
+words. The lists of figures and tables have more space between entries. Overleaf `2770c95`:
+0 errors, 110 pages.

@@ -30,21 +30,15 @@ them (Section~\ref{sec:disc_rq}).
 The first research question (\textbf{RQ1}) asks \emph{how well the emotions expressed by a
 soundtrack predict its film's genre}. It concerns the strength of the signal and is answered
 twice: first with emotions rated by human listeners, then with emotions predicted from audio.
-The second (\textbf{RQ2}) asks \emph{which emotions characterise each genre, and how far
-these emotional signatures hold on a second, independent dataset}. It concerns the form of
+The second (\textbf{RQ2}) asks \emph{which emotions characterise each genre}. It concerns the form of
 the signal and examines whether the emotional step can be interpreted in the way the
-motivation above suggests. The third (\textbf{RQ3}) asks \emph{how predicting genre from
-emotions compares with predicting it directly from the same audio representation}. It is the
+motivation above suggests. The third (\textbf{RQ3}) asks \emph{how well genre can be predicted from emotions compared with predicting it directly from the same audio representation}. It is the
 central comparison of the thesis and is made within one dataset. The fourth (\textbf{RQ4})
 asks \emph{how well the two pipelines generalise when a model trained on one dataset is
-applied to another} without access to any of its labels. RQ2 and RQ4 both use the second
-dataset, but for different purposes. RQ2 asks whether the link between emotions and genres
-stays the same there, and RQ4 whether a genre classifier still works there.
+applied to another} without access to any of its labels.
 
 Two datasets are used. The first, by \citet{eerola2011comparison}, contains 360
-film-music clips from 45 films. Listeners rated each clip on eight emotion scales, and
-the genres of the films come from the Internet Movie Database (IMDb). The second, by
-\citet{ma2021computational}, contains 110 recent films. Each film is described by features of the music cues it uses, published by the authors: VGGish embeddings, a learned audio representation, and hand-crafted music information retrieval (MIR) descriptors. The dataset contains no emotion ratings and no audio. The
+film-music clips from 45 films. Listeners rated each clip on eight emotion scales, and the genres of the films come from the Internet Movie Database (IMDb). All 360 clips are used to train and test the emotion model. The genre experiments use the 40 films that carry one of five main genres (Section~\ref{subsec:genre_labels}). The second, the Blockbuster dataset of \citet{ma2021computational}, contains 110 recent films. Each film is described by features of the music cues it uses, published by the authors: VGGish embeddings, a learned audio representation, and hand-crafted music information retrieval (MIR) descriptors. The Blockbuster dataset contains no emotion ratings and no audio. The
 method has two steps. A random forest predicts the eight emotions from a pre-trained
 audio representation (VGGish in the main experiments). A logistic regression for each
 genre then predicts the genres from these emotions. This emotion pipeline is compared with
@@ -58,8 +52,8 @@ fine-tuning.
 The thesis makes three contributions:
 \begin{enumerate}
   \item I place eight rated emotions between film audio and genre and compare this pipeline with six audio representations used directly, under the same evaluation protocol.
-  \item I describe the emotional signatures of film genres and test whether they recur on a second, independent set of films.
-  \item The results suggest that the emotion step helps most when training data are scarce or the dataset changes, and they show where this advantage depends on the decision threshold.
+  \item I describe which emotions characterise each film genre in the listener ratings, which makes the predictions of the emotion step interpretable.
+  \item The results suggest that the emotion step helps most when training data are scarce or when a model trained on one dataset is applied to the Blockbuster dataset, and they show where this advantage depends on the decision threshold.
 \end{enumerate}
 
 \section{Structure of this thesis}

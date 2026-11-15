@@ -29,10 +29,7 @@ appears to be lost by predicting the emotions instead of having listeners rate t
 that is consistent with the conventions of film scoring (Section~\ref{sec:eval_signatures}).
 Horror is marked by fear ($d=+0.75$), Comedy by the absence of fear ($d=-0.61$) and Drama
 by raised valence ($d=+0.57$). Adventure has no signature. In these data, fear is
-the most discriminating single emotion, and valence forms a second axis. The signatures largely
-replicate on the Blockbuster films from predicted emotions ($r=0.836$, with 92\,\% of the signs in
-agreement). Because these emotions are predicted by a model trained on the Eerola ratings,
-the replication cannot show that the signatures are independent of that listener panel.
+the most discriminating single emotion, and valence forms a second axis. They rest on one listener panel and one collection of films.
 
 \paragraph{RQ3: emotion pipeline and direct audio within one dataset.} At the default
 threshold, the emotion pipeline is ahead of every audio representation used directly and
@@ -79,9 +76,7 @@ and genre labels would therefore be the most useful addition. It would allow the
 over the strongest direct representations to be estimated with useful precision.
 
 \paragraph{A second dataset with audio and ratings.} The Blockbuster dataset provides
-neither audio nor emotion ratings. The transfer therefore had to use VGGish, and the
-predicted Blockbuster emotions could be checked only indirectly, through the replication of
-the signatures. A second dataset with audio and its own emotion ratings would make three
+neither audio nor emotion ratings. The transfer therefore had to use VGGish, and the emotions predicted for the Blockbuster films could not be checked against ratings. A second dataset with audio and its own emotion ratings would make three
 tests possible. Stage~1 could be evaluated directly on new films. The signatures could be
 compared between two independent listener panels. Representations other than VGGish could
 be used across datasets.
