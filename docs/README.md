@@ -2398,3 +2398,8 @@ seven have no publisher DOI: two books (Gorbman, Thayer), JMLR (scikit-learn), N
 PyTorch), the Scandinavian Journal of Statistics 1979 (Holm, JSTOR only), and an ISMIR late-breaking
 demo (MusiCNN; only an arXiv DOI). The bibliography style `noon.bst` prints no DOIs. Overleaf
 `1a63ecb`: 0 errors, 110 pages.
+
+Lists in the front matter (15 Nov, author's decision): List of Figures, List of Tables and
+Abbreviations and Notations now follow the abstract (pages 7, 9, 11, Roman numbering), before Chapter 1;
+they were Appendix B. Appendix A is the only content appendix. The author also revised the AI declaration
+and the Statement of Authorship on Overleaf (`ba96fcc`). Overleaf `13dcc00`: 0 errors, 110 pages.
