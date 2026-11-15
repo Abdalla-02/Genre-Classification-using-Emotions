@@ -2418,4 +2418,4 @@ Notations share one title style (tocloft; no space above the title, 1.2em below;
 copies it by hand) and each opens on a right-hand page. The abbreviation groups are plain tables under
 small bold headings instead of floats, so the odd gaps are gone. The abstract is back to normal: body
 text size, line spacing 1.35. Figure 4.1 sits on the first page of Chapter 4 (placement htb, 92 % of
-the text width). Overleaf `3c10cb0`: 0 errors, 110 pages.
+the text width). Overleaf `3c10cb0`: 0 errors, 110 pages. The abstract then got the body text's line spacing (1.05; Overleaf `5744679`).
