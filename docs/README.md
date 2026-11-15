@@ -2403,3 +2403,7 @@ Lists in the front matter (15 Nov, author's decision): List of Figures, List of 
 Abbreviations and Notations now follow the abstract (pages 7, 9, 11, Roman numbering), before Chapter 1;
 they were Appendix B. Appendix A is the only content appendix. The author also revised the AI declaration
 and the Statement of Authorship on Overleaf (`ba96fcc`). Overleaf `13dcc00`: 0 errors, 110 pages.
+
+AI declaration page layout (15 Nov, author): centred title lower on the page, as on the Statement of
+Authorship; more space between the parts and slightly wider line spacing; the signature sits near the
+foot of the page, so the page looks filled. Wording unchanged. Overleaf `1678ce8`: 0 errors, 110 pages.
