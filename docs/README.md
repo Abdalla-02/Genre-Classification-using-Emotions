@@ -2389,3 +2389,12 @@ every chapter, the contents, the lists, the bibliography and the AI declaration 
 page; a blank page is inserted only before them when needed (8 blank pages: 6, 26, 52, 68, 76, 96,
 100, 104), kept free of headers by the `emptypage` package. All other page breaks stay `\clearpage`.
 The `\let\cleardoublepage\clearpage` of 14 Nov is gone. Overleaf `40f8a56`: 0 errors, 110 pages.
+
+DOIs (15 Nov): all 21 DOIs in `bib/library.bib` resolve at doi.org, and the registered title
+(Crossref, DataCite) matches the bib title for each. Of the 11 cited entries without a DOI, four
+ISMIR papers have official Zenodo DOIs, now added (version DOIs, checked with DataCite): Choi 2017
+10.5281/zenodo.1418015, Hu 2007 .1415126, Kim 2010 .1417945, Laurier 2009 .1415600. The other
+seven have no publisher DOI: two books (Gorbman, Thayer), JMLR (scikit-learn), NeurIPS (wav2vec 2.0,
+PyTorch), the Scandinavian Journal of Statistics 1979 (Holm, JSTOR only), and an ISMIR late-breaking
+demo (MusiCNN; only an arXiv DOI). The bibliography style `noon.bst` prints no DOIs. Overleaf
+`1a63ecb`: 0 errors, 110 pages.
