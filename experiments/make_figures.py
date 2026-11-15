@@ -43,6 +43,21 @@ plt.rcParams.update({
 })
 
 
+def light(name, top=0.62, bottom=0.0):
+    """The lighter part of a sequential colour scale, so black numbers stay readable on every
+    cell. No white text in any figure: Turnitin flags white characters as hidden text."""
+    from matplotlib.colors import LinearSegmentedColormap
+    base = plt.get_cmap(name)
+    return LinearSegmentedColormap.from_list(name + "_light", base(np.linspace(bottom, top, 256)))
+
+
+def light_div(name, cut=0.2):
+    """A diverging scale without its two darkest ends (see light)."""
+    from matplotlib.colors import LinearSegmentedColormap
+    base = plt.get_cmap(name)
+    return LinearSegmentedColormap.from_list(name + "_light", base(np.linspace(cut, 1 - cut, 256)))
+
+
 def load(name):
     p = RES / f"{name}.json"
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
@@ -291,14 +306,13 @@ def _genre_heatmap(ax, b, key, xlabels):
     """One per-genre heatmap of `key` (film level); the best real pipeline per genre is boxed."""
     rows = PER_GENRE_ROWS
     M = np.array([b["arms"][k][key] for k, _ in rows])
-    im = ax.imshow(M, cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    im = ax.imshow(M, cmap=light("Blues"), vmin=0, vmax=1, aspect="auto")
     real = [i for i, (k, _) in enumerate(rows) if k not in NOT_BOXED]
     for j in range(M.shape[1]):
         best = max(real, key=lambda i: M[i, j])
         ax.add_patch(plt.Rectangle((j - 0.5, best - 0.5), 1, 1, fill=False, ec=COL["emotion"], lw=1.8))
         for i in range(M.shape[0]):
-            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
-                    color="white" if M[i, j] > 0.6 else "black")
+            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7, color="black")
     # a gap and a line set the most-frequent baseline apart from the pipelines (author, 15 Nov)
     dummy = [k for k, _ in rows].index("dummy")
     ax.axhline(dummy - 0.5, color="white", lw=5)
@@ -356,11 +370,11 @@ def fig_stage1():
     fig, (ax, axm) = plt.subplots(1, 2, figsize=(WIDTH, 2.3), sharey=True,
                                   gridspec_kw={"width_ratios": [len(emos), 1.15], "wspace": 0.06})
     for a, D, labels in ((ax, M, emos), (axm, mean, ["mean of\nthe eight"])):
-        im = a.imshow(D, cmap="Blues", vmin=0, vmax=0.8, aspect="auto")
+        im = a.imshow(D, cmap=light("Blues"), vmin=0, vmax=0.8, aspect="auto")
         for i in range(D.shape[0]):
             for j in range(D.shape[1]):
                 a.text(j, i, f"{D[i, j]:.2f}", ha="center", va="center", fontsize=7,
-                       color="white" if D[i, j] > 0.5 else "black",
+                       color="black",
                        fontweight="bold" if a is axm else "normal")
         a.set_xticks(range(len(labels)), labels)
         a.spines[:].set_visible(False)
@@ -402,7 +416,7 @@ def fig_emotion_grid():
              "Blues", "genre macro-$F_1$ (film level)"),
             (axes[1], R2, 0.0, 0.7, [g.replace(" ", "\n") for g in regs],
              "(b) Emotions: Stage-1 $R^2$\nof the emotion regressor", "Purples", "emotion $R^2$")):
-        im = ax.imshow(M, cmap=cmap, vmin=vmin, vmax=vmax, aspect="auto")
+        im = ax.imshow(M, cmap=light(cmap), vmin=vmin, vmax=vmax, aspect="auto")
         cb = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.05, pad=0.17, aspect=25)
         cb.set_label(clabel, fontsize=7)
         cb.ax.tick_params(labelsize=6.5)
@@ -414,8 +428,7 @@ def fig_emotion_grid():
                     txt = f"{c['film_f1']:.3f}{star} $\\pm$ {c['repeat_sd']:.3f}\nclip {c['clip_f1']:.3f}"
                 else:
                     txt = f"{M[i, j]:.2f}"
-                ax.text(j, i, txt, ha="center", va="center", fontsize=6 if M is F else 7,
-                        color="white" if (M[i, j] - vmin) / (vmax - vmin) > 0.6 else "black")
+                ax.text(j, i, txt, ha="center", va="center", fontsize=6 if M is F else 7, color="black")
         ax.set_xticks(range(M.shape[1]), labels, fontsize=7)
         ax.set_yticks(range(len(reps)), [r.replace("MIR", "hand-crafted\nMIR") for r in reps])
         ax.set_title(title, fontsize=8)
@@ -463,13 +476,12 @@ def fig_signatures():
     M = np.array([[d["d"][g][e] for e in emos] for g in order])
     lim = float(np.ceil(abs(M).max() * 10) / 10)
     fig, ax = plt.subplots(figsize=(WIDTH * 0.86, 3.2))
-    im = ax.pcolormesh(M, cmap="RdBu_r", vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+    im = ax.pcolormesh(M, cmap=light_div("RdBu_r"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
     for i, g in enumerate(order):
         for j, e in enumerate(emos):
             v = M[i, j]
             r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100   # half-up, as in the text
-            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=8,
-                    color="white" if abs(v) > 0.55 * lim else "black")
+            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=8, color="black")
         k = emos.index(d["dominant"][g])
         if abs(M[i, k]) >= 0.3:          # Adventure peaks at |d| = 0.25: no signature, no box
             ax.add_patch(plt.Rectangle((k, i), 1, 1, fill=False, ec="black", lw=1.4))

@@ -2437,3 +2437,8 @@ meaning both datasets. The abstract's threshold sentence now says what it means 
 the zero-shot gap shrinks to 0.041, no longer significant; Section 5.6.2, Appendix A.11); 247
 words. The lists of figures and tables have more space between entries. Overleaf `2770c95`:
 0 errors, 110 pages.
+
+Turnitin "hidden text" (16 Nov): Turnitin flagged 718 characters on 4 pages as hidden text. They were the
+numbers printed in white on the dark cells of the heatmaps (Figures 5.1, 5.3, 5.4/5.5, 5.6). All
+figure numbers are now black, on colour scales cut before their darkest end (`light`, `light_div` in
+`make_figures.py`). A scan of the compiled PDF finds no white text left. Overleaf `8af3fd5`: 0 errors.
