@@ -2494,3 +2494,5 @@ of Chapter 7 say that one logistic regression per genre lets a film receive seve
 (Section 1.2 points to the Fundamentals subsection). Overleaf `a8e8bf7`: 0 errors, 110 pages.
 
 Correction (16 Nov, author): the supervisor meeting that sections 38 to 40 call "the meeting of 12 Nov" took place on 9 Nov; the work after it was done on 12 Nov. The supervisor last saw `_Thesis_09.11.pdf`.
+
+Sent to the supervisor (16 Nov): `_Thesis_16.11_2nd.pdf` (Overleaf `a8e8bf7`, 110 pages) shared on Drive with an email listing the changes since `_Thesis_09.11.pdf` and asking him to check the AI declaration. Next meeting 18 Nov; planned submission 20 Nov.
