@@ -2442,3 +2442,37 @@ Turnitin "hidden text" (16 Nov): Turnitin flagged 718 characters on 4 pages as h
 numbers printed in white on the dark cells of the heatmaps (Figures 5.1, 5.3, 5.4/5.5, 5.6). All
 figure numbers are now black, on colour scales cut before their darkest end (`light`, `light_div` in
 `make_figures.py`). A scan of the compiled PDF finds no white text left. Overleaf `8af3fd5`: 0 errors.
+
+## 45. Stage-2 classifier comparison on the current protocol (16 Nov 2026)
+
+Methods 4.4 says that a random forest, a multi-layer perceptron, classifier chains and gradient
+boosting were tried on the emotion features and that none outperformed the logistic regression.
+Only two of them had a saved result (`model_search.json`: chains and boosting, on eight genres,
+clip level, human ratings), and the random forest and MLP rested on the early run of section 4
+without a file. `experiments/diagnostics/exp_stage2_classifiers.py` (`stage2_classifiers.json`) re-runs all four on the
+protocol of `film_level.json`: five genres, 10x5 folds by film, seed 42, the emotion features
+predicted from VGGish by the random forest (OOF-trained), computed once per fold and shared by all
+arms. Every arm is tuned by an inner 3-fold GroupKFold on the training data (logistic regression
+and chain: C; random forest: min_samples_leaf; MLP with 32 hidden units: alpha; boosting: depth and
+learning rate). Paired film bootstrap, 2000 draws; clip level and Nadeau-Bengio beside it. The
+logistic-regression arm reproduces `film_level.json` exactly (per repeat).
+
+| classifier | predicted emotions, film (clip) | diff vs LR, p | human ratings, film (clip) | diff vs LR, p |
+|---|---|---|---|---|
+| logistic regression | 0.460 (0.405) | | 0.491 (0.416) | |
+| classifier chain | 0.417 (0.402) | -0.044, p = 0.009 | 0.423 (0.395) | -0.072, p = 0.001 |
+| MLP | 0.319 (0.343) | -0.136, p = 0.001 | 0.358 (0.367) | -0.130, p < 0.001 |
+| gradient boosting | 0.318 (0.346) | -0.141, p < 0.001 | 0.384 (0.384) | -0.109, p = 0.002 |
+| random forest | 0.192 (0.249) | -0.262, p < 0.001 | 0.175 (0.228) | -0.310, p < 0.001 |
+
+All four are lower at film level with both inputs, significantly in the film bootstrap, and the
+logistic regression wins every repeat against all of them except the chain (9 of 10). At clip
+level the chain is on par with the logistic regression on the predicted emotions (-0.004,
+Nadeau-Bengio p = 0.643), and the MLP and boosting gaps are not significant under Nadeau-Bengio on
+the ratings; the film-level gaps are larger because averaging per film rewards a classifier whose
+probabilities cross 0.5 for the right films. The random forest's collapse is largely a threshold
+effect: its vote shares for the small genres rarely reach 0.5, so it predicts few positives. The
+thesis uses the same 0.5 rule for every arm, so this is the comparison it makes, but it does not
+show that a forest with tuned thresholds would be as poor. The sentence "gradient boosting
+overfitted markedly" in Methods 4.4 is not measured here (no training scores are saved); boosting
+is simply lower.

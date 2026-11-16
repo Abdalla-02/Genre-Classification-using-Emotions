@@ -95,6 +95,8 @@ DESCRIPTIONS = {
                          "repeats, folds, films and five seeds (section 22.1)",
     "model_search": "Does any other model or feature combination beat the baseline? "
                     "(section 7d)",
+    "stage2_classifiers": "Random forest, MLP, classifier chain and gradient boosting against "
+                          "the logistic regression in Stage 2, film level (section 45)",
 }
 
 # Column axes for list-valued blocks whose meaning cannot be recovered from the file.
