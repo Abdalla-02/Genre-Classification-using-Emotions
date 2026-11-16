@@ -11,7 +11,8 @@ In this thesis I examined how well the emotional features of a film soundtrack p
 genre of the film, and how an interpretable emotion step compares with classifying genre
 directly from audio. The emotion pipeline predicts eight emotion ratings from a VGGish
 embedding with a random forest and then predicts genre from these ratings with one
-logistic regression per genre. It was evaluated on the 40 films of the five-genre Eerola
+logistic regression per genre, so that a film can receive several genres (multi-label
+classification). It was evaluated on the 40 films of the five-genre Eerola
 subset and transferred to the 110 films of the Blockbuster dataset. The four research
 questions of Section~\ref{sec:aim} can be answered as follows.
 

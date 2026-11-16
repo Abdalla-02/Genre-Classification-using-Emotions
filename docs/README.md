@@ -2485,3 +2485,10 @@ scored significantly lower at film level, with predicted emotions and with ratin
 110 pages.
 
 Comment on `_Thesis_16.11.pdf` (16 Nov, one comment): the abstract no longer uses the first person ("I study" -> "This thesis examines"; 248 words). Overleaf `13ff585`: 0 errors, 110 pages.
+
+Multi-label made visible (16 Nov, author): the title is now "Multi-Label Movie Genre Classification
+based on Emotional Features of Soundtracks" (`thesis.sty`; title page, second page, Statement of
+Authorship). The abstract says that genre prediction is multi-label because a film can have several
+genres (still 248 words: five small cuts elsewhere, no number changed); Section 1.2 and the opening
+of Chapter 7 say that one logistic regression per genre lets a film receive several genres
+(Section 1.2 points to the Fundamentals subsection). Overleaf `a8e8bf7`: 0 errors, 110 pages.
