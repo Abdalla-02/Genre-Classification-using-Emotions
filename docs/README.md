@@ -2492,3 +2492,5 @@ Authorship). The abstract says that genre prediction is multi-label because a fi
 genres (still 248 words: five small cuts elsewhere, no number changed); Section 1.2 and the opening
 of Chapter 7 say that one logistic regression per genre lets a film receive several genres
 (Section 1.2 points to the Fundamentals subsection). Overleaf `a8e8bf7`: 0 errors, 110 pages.
+
+Correction (16 Nov, author): the supervisor meeting that sections 38 to 40 call "the meeting of 12 Nov" took place on 9 Nov; the work after it was done on 12 Nov. The supervisor last saw `_Thesis_09.11.pdf`.
