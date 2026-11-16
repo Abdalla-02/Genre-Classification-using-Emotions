@@ -2483,3 +2483,5 @@ caveats. Methods 4.4 now says each alternative was tuned inside the training fol
 scored significantly lower at film level, with predicted emotions and with ratings; the unmeasured
 "gradient boosting overfitted markedly" is gone. Overleaf `e2a9721`: 0 errors, no overfull box,
 110 pages.
+
+Comment on `_Thesis_16.11.pdf` (16 Nov, one comment): the abstract no longer uses the first person ("I study" -> "This thesis examines"; 248 words). Overleaf `13ff585`: 0 errors, 110 pages.
