@@ -2476,3 +2476,10 @@ thesis uses the same 0.5 rule for every arm, so this is the comparison it makes,
 show that a forest with tuned thresholds would be as poor. The sentence "gradient boosting
 overfitted markedly" in Methods 4.4 is not measured here (no training scores are saved); boosting
 is simply lower.
+
+In the thesis (16 Nov, at the author's request): Appendix section `sec:app_stage2` "Other Classifiers
+in Stage 2" with Table `tab:app_stage2` (the table above) and the clip-level and random-forest
+caveats. Methods 4.4 now says each alternative was tuned inside the training folds and that all four
+scored significantly lower at film level, with predicted emotions and with ratings; the unmeasured
+"gradient boosting overfitted markedly" is gone. Overleaf `e2a9721`: 0 errors, no overfull box,
+110 pages.

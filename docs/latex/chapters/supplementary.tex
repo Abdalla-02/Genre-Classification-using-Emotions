@@ -381,6 +381,57 @@ also the first of 18 entries, and allowing for the 17 other comparisons would ra
 $p$-values further. Its lead is therefore not established.
 
 % =============================================================================
+\section{Other Classifiers in Stage~2}
+\label{sec:app_stage2}
+
+Table~\ref{tab:app_stage2} compares the logistic regression of Stage~2
+(Section~\ref{sec:methods_stage2}) with four more flexible classifiers. The folds, the
+emotion features predicted from VGGish and the film-level scoring are those of the main
+results, so the logistic regression reproduces the 0.460 of the emotion pipeline. Each
+alternative was tuned by the same inner cross-validation as $C$: three folds, grouped by
+film, inside each training fold. The random forest (400 trees) was tuned for its minimum
+leaf size, the multi-layer perceptron (one hidden layer of 32 units) for its weight
+penalty, and gradient boosting for its tree depth and learning rate. The classifier chain
+uses the logistic regression with the chosen $C$ and passes each genre's prediction on to
+the next genre.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Stage~2 with five classifiers: macro-$F_1$ on the five-genre subset.}
+  \label{tab:app_stage2}
+  \begin{tabular}{lcccccc}
+    \toprule
+    & \multicolumn{3}{c}{Predicted emotions} & \multicolumn{3}{c}{Ratings} \\
+    \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+    Classifier & Film & Clip & $\Delta$ film & Film & Clip & $\Delta$ film \\
+    \midrule
+    Logistic regression & \textbf{0.460} & \textbf{0.405} & -- & \textbf{0.491} & \textbf{0.416} & -- \\
+    Classifier chain & 0.417 & 0.402 & $-0.044$ & 0.423 & 0.395 & $-0.072$ \\
+    Multi-layer perceptron & 0.319 & 0.343 & $-0.136$ & 0.358 & 0.367 & $-0.130$ \\
+    Gradient boosting & 0.318 & 0.346 & $-0.141$ & 0.384 & 0.384 & $-0.109$ \\
+    Random forest & 0.192 & 0.249 & $-0.262$ & 0.175 & 0.228 & $-0.310$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:app_stage2}, ``Film'' and ``Clip'' are the film- and clip-level
+macro-$F_1$, averaged over the ten repeats, and $\Delta$ is the film-level difference from
+the logistic regression. ``Ratings'' gives every classifier the rated emotions instead of
+the predicted ones. Every difference is significant in the paired film bootstrap
+($p\le0.009$). The logistic regression is ahead of the classifier chain in nine of the ten
+repeats and ahead of the other three in all ten.
+
+Over clips the gaps are smaller. With the predicted emotions, the classifier chain is on
+par with the logistic regression ($-0.004$, Nadeau--Bengio $p=0.643$). With the ratings,
+the chain, the multi-layer perceptron and gradient boosting are not significantly behind
+under the Nadeau--Bengio test ($p\ge0.16$). The random forest scores lowest with both
+inputs. It predicts almost only Drama, and its recall for Comedy and Horror is zero. Its
+probabilities for the smaller genres appear to rarely reach the threshold of 0.5. The same
+threshold is used for every classifier, so the comparison is a fair one. It does not show,
+however, how a random forest with tuned thresholds would perform.
+
+% =============================================================================
 \section{All Eight Genres}
 \label{sec:app_eight}
 
