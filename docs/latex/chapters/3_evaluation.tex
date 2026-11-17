@@ -198,7 +198,12 @@ control scores like VGGish, and the emotion pipeline is ahead of it in the film 
 
 Third, part of the advantage depends on the decision threshold. With a threshold tuned per
 genre on the training folds (Section~\ref{subsec:protocol_altmetrics}), the pipelines
-converge over clips (0.420 to 0.433; Appendix~\ref{sec:eval_robustness}). Without any
+converge over clips (0.420 to 0.433; Appendix~\ref{sec:eval_robustness}). The emotion
+pipeline is then the lowest of the four and no longer ahead of VGGish ($-0.004$, $p=0.813$).
+A single threshold for all genres was also varied from 0.20 to 0.80 at film level. No
+threshold raises the emotion pipeline's macro precision above the 0.407 it reaches at 0.5,
+and its decisions change quickly around this value. It assigns 3.70 genres per film at 0.45
+and 0.95 at 0.55, and its macro-$F_1$ falls from 0.460 to 0.292 between 0.50 and 0.55. Without any
 threshold, the emotion pipeline's lead over VGGish in film-level ROC-AUC is $+0.071$
 ($p=0.093$). This is about as large as its lead in $F_1$, but it is not significant either.
 
@@ -239,8 +244,10 @@ representations. There it stays significant for every regressor after correcting
 smallest for MusiCNN, the strongest direct representation (0.032 to 0.049, $p\geq0.32$).
 Second, within the emotion pipeline the choice of representation has little effect. With the random
 forest, every representation is within 0.034 of VGGish, and none differs from it
-significantly ($p\geq0.15$). This holds even for wav2vec~2.0, whose emotions are the least accurate
-(Appendix~\ref{sec:app_waveform}). Third, the regressor matters most for the weaker inputs.
+significantly ($p\geq0.15$). This holds even for wav2vec~2.0, whose emotions are the least accurate. On wav2vec~2.0 the
+gain is not only a matter of compression: its own PCA-8 control reaches 0.344, and the
+emotion pipeline is 0.127 above it ($p<0.001$, in all ten repeats;
+Appendix~\ref{sec:app_waveform}). Third, the regressor matters most for the weaker inputs.
 On the four spectrogram embeddings, ridge regression and SVR differ from the random forest
 by at most 0.017, never significantly. On the hand-crafted descriptors and on wav2vec~2.0
 the random forest is best, ahead of ridge regression by 0.044 ($p=0.037$) and 0.046
@@ -330,6 +337,17 @@ from the light-hearted ones (Comedy). Valence forms a second axis. It separates 
 with a positive tone (Drama, Comedy) from those with a negative one (Horror, Action). The signatures of Biography and Documentary
 are also strong, but they rest on very few films. Adventure has no signature: its strongest
 emotion, fear, reaches only $|d|=0.25$.
+
+To test whether the genre classifier needs all eight emotions, it was trained on the eight
+ratings with each emotion left out in turn and on smaller subsets motivated by theory
+(Figure~\ref{fig:ablation}, Appendix~\ref{sec:app_ablation}). No single emotion is
+necessary. Leaving one out changes the film-level macro-$F_1$ of 0.493 by at most 0.012.
+The only nominally significant change is an increase, when tension is left out ($p=0.041$;
+over clips, Nadeau--Bengio $p=0.516$). Smaller subsets lose a little, but not
+significantly. Fear alone reaches 0.475 ($p=0.345$), valence with energy 0.487 and the
+three dimensional scales 0.479, so one to three emotions keep 96 to 99\,\% of the score.
+The eight ratings are strongly correlated with each other: fear rises with tension and
+falls with valence (Appendix~\ref{sec:app_ratings}).
 
 % =============================================================================
 \section{Transfer between the Datasets}
@@ -450,7 +468,8 @@ $+0.106$ [$+0.021$, $+0.184$] ($p=0.013$) and the PCA-8 control by $+0.093$
 in contrast, gains only $+0.013$ over the raw features ($p=0.737$). Under the other
 scaling regime the lead over direct VGGish is $+0.118$ ($p=0.001$). The lead is partly
 driven by recall. The emotion pipeline recovers more of the true genres, at a lower
-precision (Table~\ref{tab:zero_shot}). Macro-$F_1$ is the mean of the $F_1$
+precision (Table~\ref{tab:zero_shot}). Assigning every genre to every Blockbuster film
+would reach 0.438. The emotion pipeline lies above this reference and direct VGGish below it. Macro-$F_1$ is the mean of the $F_1$
 values of the genres, not the $F_1$ of the mean precision and recall. Direct VGGish is
 precise overall, but its $F_1$ on Romance and Horror is only 0.14 and 0.17. The emotion
 pipeline reaches 0.42 and 0.24 on them, and 0.61 instead of 0.38 on Sci-Fi. It makes

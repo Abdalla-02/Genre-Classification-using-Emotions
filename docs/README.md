@@ -2537,3 +2537,34 @@ Still open, for the meeting of 18 Nov: which appendix analyses move into the mai
 the appendix prose is cut (about 4,700 words now); a shorter Section 7.1 (the RQ answers are in
 6.1); the "Overall conclusion" paragraph (the author wants Ernst's opinion).
 
+### 46.1 Appendix A restructured (18 Nov)
+
+Ernst's second point, done along the research questions (Overleaf `bf3e36e`, `3dddba9`; compiled in
+Chrome: 0 errors, no overfull box, no undefined reference, 104 pages, from 112):
+- Appendix A now holds tables, figures and configurations. Each section has one sentence saying
+  why it is there, the float, its legend and at most a few sentences of results the main text does
+  not give. Prose fell from about 4,700 to about 1,700 words; every section has a float; all
+  floats are `[!htb]` so each stands next to its lead-in.
+- Into Chapter 5, motivated: the global threshold sweep (Section 5.3, third point: tuned thresholds
+  make the emotion pipeline the lowest of four, $-0.004$, $p=0.813$; probabilities near one half,
+  3.70 genres per film at 0.45, 0.95 at 0.55, $F_1$ 0.460 to 0.292); the wav2vec 2.0 compression
+  control (Section 5.3.1: its own PCA-8 control 0.344, emotion pipeline $+0.127$, $p<0.001$); the
+  ablation (Section 5.5, answering RQ2's "which emotions": none necessary, one to three keep 96 to
+  99 %); the all-positive reference on Blockbuster (0.438, above direct VGGish and below the emotion
+  pipeline in zero-shot). Methods 4.3 (`par:methods_eight`) had reported the ablation result while
+  saying that Chapter 5 tests it; it now keeps only the decision and points to Section 5.5.
+- New appendix tables from results files: `tab:app_w2v` (`w2v_diagnosis.json`) and `tab:app_eight`
+  (`film_level.json`, `full8`), replacing two text-only sections. The configuration table now also
+  lists the Stage-2 alternatives' grids and both threshold grids (in-domain 0.05 to 0.95 in steps of
+  0.05; zero-shot 0.10 to 0.90 in steps of 0.025).
+- Removed: the subsection on the Nadeau-Bengio floor (Fundamentals and Methods explain $p_{\lim}$;
+  the table shows it), the Error Analysis section (ungrouped split already in Methods 4.6, learning
+  curve in Limitations 6.4, the old single-run over-prediction figure dropped), the Hamming-loss
+  breakdown per genre, the MFCC correction history and side numbers on Blockbuster (MIR vs VGGish
+  $p=0.787$, random projection 0.487, cue vote $+0.028$), the seed-averaged ratings 0.498.
+  A script listed every number of the old appendix that no longer occurs in the thesis; the seed
+  leads over AST and the PCA-8 control and the film-level ROC-AUC leads over MusiCNN and PCA-8
+  were restored, because the Discussion relies on them.
+- References: Fundamentals now points to Appendix A.1 for $p_{\lim}$; the Discussion points to
+  Sections 5.3 and 5.5 instead of the appendix.
+

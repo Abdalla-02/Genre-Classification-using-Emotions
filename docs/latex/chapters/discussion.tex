@@ -90,7 +90,7 @@ The emotion pipeline leads mainly through recall on the rare genres
 With a threshold per genre tuned on the training folds the pipelines converge
 in-domain, and the zero-shot lead shrinks and is no longer significant. The probabilities of
 the emotion pipeline also lie close to one half, so a small shift of the threshold changes
-its decisions considerably (Appendix~\ref{sec:eval_robustness}). A model that performs well at the default
+its decisions considerably (Section~\ref{sec:eval_direct}). A model that performs well at the default
 threshold may still have a practical advantage. Tuning per genre requires labelled data, and it
 becomes unreliable for genres with only a few films. On a new dataset, too, the
 emotion pipeline changes little when the threshold is tuned, while direct audio requires the
@@ -114,7 +114,7 @@ over the control is not significant. Beyond accuracy, the emotions carry a meani
 \subsection{A low-dimensional genre signal}
 \label{subsec:disc_ablation}
 
-The ablation (Appendix~\ref{sec:app_ablation}) suggests that no single emotion is necessary.
+The ablation (Section~\ref{sec:eval_signatures}) suggests that no single emotion is necessary.
 One to three emotions keep most of the genre information. The genre signal of the ratings
 appears to lie mainly along one axis, from threat to warmth, made of fear, tension and valence.
 This may be one reason why richer representations did not extract more genre information from the music with the
