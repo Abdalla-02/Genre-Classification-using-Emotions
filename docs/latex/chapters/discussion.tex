@@ -33,8 +33,8 @@ tension without happiness. Fear is the most discriminating emotion overall, foll
 valence. Adventure has no signature, possibly because it occurs together with several other genres
 and shares their emotional range. The signatures rest on one listener panel and one collection of films, so whether they hold elsewhere remains open.
 
-\paragraph{RQ3: How does the emotion pipeline compare with classifying genre directly from
-audio within one dataset?} The answer has two parts. At the default threshold the emotion
+\paragraph{RQ3: How well can genre be predicted from emotions compared with predicting it
+directly from the same audio representation?} The answer has two parts. At the default threshold the emotion
 pipeline is consistently ahead of direct audio, in nearly every repeat and under every seed
 (Section~\ref{sec:eval_direct}). The size of its lead over the strongest direct
 representations, however, cannot be estimated reliably on 40 films. The advantage does not appear to depend on
@@ -44,7 +44,8 @@ wav2vec~2.0, whose emotions are the least accurate, gives a genre result compara
 once its output passes through the emotions. This suggests that the genre classifier does not
 depend mainly on the most accurate estimate per clip from Stage~1.
 
-\paragraph{RQ4: How well do the pipelines generalise to another dataset?} Much of the genre
+\paragraph{RQ4: How well do the two pipelines generalise when a model trained on one dataset
+is applied to another?} Much of the genre
 information transfers: trained on Eerola alone, the emotion pipeline reaches 0.508 on the 110
 Blockbuster films, about 82\,\% of what in-domain training reaches
 (Section~\ref{sec:zero_shot}). At the default threshold it transfers better than direct

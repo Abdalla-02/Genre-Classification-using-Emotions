@@ -103,7 +103,8 @@ def fig_indomain():
     label = {
         "ground-truth emotion(11) [ceiling]": "emotion from human ratings (ceiling)",
         "VGGish -> predicted emotion(11), OOF-trained": "emotion pipeline (VGGish)",
-        "wav2vec2 -> predicted emotion(11), OOF-trained": "emotion pipeline (wav2vec 2.0)",
+        # the wav2vec 2.0 emotion pipeline was dropped here (author, 17 Nov): Figure 5.3
+        # shows every emotion pipeline, so this figure keeps only the thesis pipeline
         "VGGish-128 (direct)": "direct: VGGish",
         "AST-768": "direct: AST",
         "CLAP-512": "direct: CLAP",

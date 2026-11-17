@@ -65,58 +65,58 @@ direct audio model.
 \section{Future Work}
 \label{sec:futurework}
 
-The limitations in Section~\ref{sec:disc_limitations} indicate where further research could
-improve on this thesis. The following directions follow from them.
+Several experiments could build on this thesis. Some would test the present results on more
+data, some would transfer the emotion step to new kinds of data, and some would apply it in
+other domains.
 
-\paragraph{More films with emotion ratings.} The most important limitation is probably the number of films.
-Comedy and Horror rest on four and five films, and for the borderline clip-level
-comparisons the Nadeau--Bengio test could not become significant with any number of
-repeats (Appendix~\ref{subsec:statistical_power}). The learning curves were still rising at
-the full dataset size. A larger collection of film-music clips with both emotion ratings
-and genre labels would therefore be the most useful addition. It would allow the advantage
-over the strongest direct representations to be estimated with useful precision.
+\paragraph{A larger replication with fixed decisions.} The most direct next step is a
+replication on a larger collection of film-music clips with emotion ratings and genre
+labels. The unit of evaluation, the genre set, the threshold policy and the main comparisons
+should be fixed before the data are analysed. Such a study could test two leads that this
+thesis could only observe: the advantage of the emotion pipeline over the strongest direct
+representations, and the lead of CLAP with ridge regression, which was found after the
+results were known ($+0.032$, $p=0.112$; Appendix~\ref{sec:app_grid}). The same collection
+could include a genre judgement for every single clip, which would separate errors of the
+model from the fact that IMDb labels describe whole films.
 
-\paragraph{A second dataset with audio and ratings.} The Blockbuster dataset provides
-neither audio nor emotion ratings. The transfer therefore had to use VGGish, and the emotions predicted for the Blockbuster films could not be checked against ratings. A second dataset with audio and its own emotion ratings would make three
-tests possible. Stage~1 could be evaluated directly on new films. The signatures could be
-compared between two independent listener panels. Representations other than VGGish could
-be used across datasets.
+\paragraph{Transfer with audio and ratings on both sides.} The Blockbuster dataset has
+neither audio nor emotion ratings, so the transfer in this thesis was limited to VGGish and
+could not check the predicted emotions. A second dataset with audio and its own ratings would
+allow Stage~1 to be tested on new films and any representation to be transferred. It would
+also allow a few rated clips of the new dataset to be used to adapt Stage~1 before genre is
+predicted. Comparing this adaptation with zero-shot transfer would show how much labelled
+data a new collection needs.
 
-\paragraph{A confirmatory test of other pipeline components.} CLAP with ridge regression
-was the best entry of the comparison over representations and regressors, but its lead over
-the VGGish pipeline was identified after the results were known and is not significant
-($+0.032$, $p=0.112$; Appendix~\ref{sec:app_grid}). It should be tested on films that were
-not used in this thesis, with the comparison fixed before the data are analysed.
+\paragraph{New sources of film music.} The emotion step could be transferred to other kinds
+of audiovisual music. Trailers are a natural target, because their music is edited to
+advertise the genre, and trailer audio has already been used for genre classification
+\citep{mangolin2020multimodal}. Films from other film industries and periods would show
+whether the emotional conventions of genres found here hold beyond the films of this dataset.
+Television series and video games use similar conventions and could be tested in the same
+way.
 
-\paragraph{A better emotion model for extreme ratings.} Stage~1 reaches about 62\,\% of the
-attainable $R^2$ and underestimates the strongest emotions, which appears to cause much of the
-weakness on Horror. Future work could test regressors that are less prone to regression towards the
-mean, more training clips with extreme ratings, or audio models fine-tuned on emotion
-ratings instead of frozen embeddings. Such work should report genre results as well,
+\paragraph{A stronger emotion model.} Stage~1 reaches about 62\,\% of the attainable $R^2$
+and underestimates the strongest emotions, which appears to cause much of the weakness on
+Horror. Audio models fine-tuned on emotion ratings, instead of frozen embeddings, could be
+compared with the random forest. Each such model should be evaluated on genre as well,
 because a more accurate emotion model did not reliably yield a better genre result in this
 thesis (Section~\ref{subsec:eval_grid}).
 
-\paragraph{Calibrated probabilities and the operating point.} Much of the advantage of the
-emotion pipeline depends on the default threshold of 0.5, close to which its probabilities
-lie. Calibrating the predicted probabilities, or choosing thresholds per genre in a way
-that remains reliable for rare genres \citep{lipton2014optimal}, would separate the quality
-of the ranking from the choice of the operating point. Threshold-free measures such as
-ROC-AUC should be reported beside macro-$F_1$ from the start.
+\paragraph{Calibration and thresholds as part of the design.} Much of the advantage of the
+emotion pipeline depends on the default threshold of 0.5. A future study could compare
+calibrated probabilities with thresholds chosen per genre \citep{lipton2014optimal} and
+report a threshold-free measure such as ROC-AUC beside macro-$F_1$ from the start.
 
-\paragraph{Labels and listeners.} The genre labels come from IMDb and describe the film,
-not the clip, and the ratings come from a single listener panel. Genre judgements for
-single clips, and emotion ratings from listeners of other musical cultures, could show how
-much of the remaining error comes from the labels and how general the signatures are.
+\paragraph{Emotion in multimodal models.} Audio alone is a weak source of genre information
+compared with images and text \citep{mangolin2020multimodal}. The emotion step could serve
+as an interpretable audio component beside trailer frames or the plot synopsis
+\citep{behrouzi2023multimodal}. Such a model would show whether the emotions still add
+information when stronger sources are available, and it would allow a genre prediction to
+be explained partly in terms of the music.
 
-\paragraph{Emotion as one component of a multimodal model.} Audio alone is a weak source of
-genre information compared with images and text \citep{mangolin2020multimodal}. A
-multimodal model could include the emotion step as an interpretable audio component beside
-trailer images or the plot synopsis \citep{behrouzi2023multimodal}. Such a study could show
-whether the emotions remain useful when stronger sources of information are available.
-
-\paragraph{Methodological lessons.} I made some decisions after the first results were known. I adopted film-level scoring after the clip-level analysis, and I chose the five-genre subset partly because its genres carry an emotional signature in the
-same data. Both are reported in this thesis, but further studies could avoid them. The unit
-of evaluation, the genre set, the threshold policy and the main comparisons should be fixed
-before the experiments. Cross-validation should be grouped by film from the start, and every
-score should be reported beside both chance floors, the all-positive reference and a
-threshold-free measure.
+\paragraph{Applications in other domains.} An emotion step between audio and a category
+could be useful wherever music has to fit a purpose. Examples are the search for music in
+production libraries for a scene of a given mood or genre, music recommendation that can
+state why a piece was chosen, and the tagging of music for advertising or games. In each
+case the emotions would make the decision readable for the user, which this thesis suggests
+is their main strength.

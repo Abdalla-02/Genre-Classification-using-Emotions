@@ -2496,3 +2496,44 @@ of Chapter 7 say that one logistic regression per genre lets a film receive seve
 Correction (16 Nov, author): the supervisor meeting that sections 38 to 40 call "the meeting of 12 Nov" took place on 9 Nov; the work after it was done on 12 Nov. The supervisor last saw `_Thesis_09.11.pdf`.
 
 Sent to the supervisor (16 Nov): `_Thesis_16.11_2nd.pdf` (Overleaf `a8e8bf7`, 110 pages) shared on Drive with an email listing the changes since `_Thesis_09.11.pdf` and asking him to check the AI declaration. Next meeting 18 Nov; planned submission 20 Nov.
+
+## 46. Supervisor feedback of 17 Nov and the author's comments in `_Thesis_16.11_2nd.pdf`
+
+Ernst's email (17 Nov) has four points: Future Work reads like Limitations; the appendix should
+hold results, figures, tables and model configurations, not explanations, and whatever matters
+for the research questions belongs, motivated, in the main text; hyperparameters must be given;
+the AI declaration should lie between the detailed version of 09.11 and the short one, split by
+kind of work (implementation, experiment design, ...) with the writing summarised, not per
+chapter. The author's nine comments (eight in the PDF, one only on Drive) are answered beside them.
+
+First batch (Overleaf `ce4c28f`, `14d3dee`, `92bf476`; compiled in Chrome: 0 errors, no overfull
+box, 112 pages):
+- Chapter 7.2 Future Work rewritten as future experiments: a larger replication with decisions
+  fixed in advance (tests the emotion pipeline's lead and the post-hoc CLAP + ridge lead; clip-level
+  genre judgements), transfer with audio and ratings on both sides (few-shot adaptation of Stage 1
+  against zero-shot), new sources of film music (trailers, other film industries and periods, TV,
+  games), a stronger emotion model, calibration and thresholds as part of the design, emotion in
+  multimodal models, applications in other domains (production-music search, explainable
+  recommendation, tagging for advertising and games). "Labels and listeners" and "Methodological
+  lessons" left it (both are limitations, Section 6.4). Only citations already in the thesis.
+- AI declaration: one paragraph on system, period and purpose, the four levels defined, and a table
+  by kind of work (implementation generated; experiment design and analysis assisted; figures and
+  tables generated; literature assisted; thesis text drafted, "all chapters, Appendix A and the
+  abstract", revised and modified; language edited). One page with the signature.
+- Hyperparameters: new Appendix section `sec:app_config` (last in Appendix A) with Table
+  `tab:app_config` (Stage 1 random forest, out-of-fold emotions, ridge and SVR; Stage 2 logistic
+  regression, input, PCA-8, pointer to A.6; cross-validation, bootstrap, tuned thresholds), every
+  value from the code (`exp_film_level.py`, `exp_emotion_pipeline_grid.py`,
+  `exp_zero_shot_threshold.py`, `src/models/classifiers.py`; scikit-learn 1.5.1 defaults otherwise).
+  Methods 4.7 points to it.
+- Discussion 6.1: the RQ3 and RQ4 headings now use the wording of Section 1.2.
+- Abbreviations: RQ row removed (author); the MIL row's ``bag'' quote closed.
+- Figure 5.2 without the wav2vec 2.0 emotion pipeline (author; Figure 5.3 shows every emotion
+  pipeline); `make_figures.py indomain`.
+- Table A.5 (Stage 2 classifiers) placed `[!htb]`: it now follows its first mention, and Section A.7
+  is on the same page.
+
+Still open, for the meeting of 18 Nov: which appendix analyses move into the main text and how far
+the appendix prose is cut (about 4,700 words now); a shorter Section 7.1 (the RQ answers are in
+6.1); the "Overall conclusion" paragraph (the author wants Ernst's opinion).
+

@@ -395,7 +395,7 @@ penalty, and gradient boosting for its tree depth and learning rate. The classif
 uses the logistic regression with the chosen $C$ and passes each genre's prediction on to
 the next genre.
 
-\begin{table}[tbp]
+\begin{table}[!htb]
   \centering
   \small
   \caption{Stage~2 with five classifiers: macro-$F_1$ on the five-genre subset.}
@@ -709,3 +709,39 @@ the observation that one to three emotions retain most of that signal. The secon
 sadness to happiness, and energy lies on its upper side. Figure~\ref{fig:circumplex} stays a
 schematic of the models from the literature. This section shows what these models look like in
 the ratings used here.
+
+% =============================================================================
+\section{Model Configurations}
+\label{sec:app_config}
+
+Table~\ref{tab:app_config} lists the settings of every model and of the evaluation. Settings
+that are not listed are the defaults of scikit-learn~1.5.1.
+
+\begin{table}[!htb]
+  \centering
+  \small
+  \caption{Model and evaluation settings.}
+  \label{tab:app_config}
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.67\textwidth}@{}}
+    \toprule
+    Component & Setting \\
+    \midrule
+    \multicolumn{2}{@{}l}{\textit{Stage 1: emotions from audio}} \\
+    Random forest regressor & 300 trees, all features considered at each split, minimum leaf size 1, bootstrap samples; one model for all eight emotions \\
+    Predicted emotions for training Stage~2 & Out-of-fold predictions, five inner folds grouped by film \\
+    Ridge regression & Standardised inputs; $\alpha$ from 13 values between $10^{-1}$ and $10^{5}$ (logarithmic), three inner folds grouped by film \\
+    SVR & Standardised inputs, RBF kernel, $C=10$, $\gamma$ = 1 / (number of features $\times$ variance of the inputs), $\epsilon=0.1$ \\
+    \midrule
+    \multicolumn{2}{@{}l}{\textit{Stage 2: genre}} \\
+    Input & Eight emotions and three derived features (Section~\ref{sec:methods_stage1}), or an embedding, or the PCA-8 control \\
+    Logistic regression & One per genre, L2 penalty, $C$ from $\{0.003, 0.01, 0.03, 0.1, 0.3, 1\}$ by three inner folds grouped by film (macro-$F_1$, ties to the smaller $C$), balanced class weights, standardised inputs, at most 2000 iterations, threshold 0.5 \\
+    PCA-8 control & Standardised VGGish embedding, eight principal components, fitted on the training fold \\
+    Other classifiers & Settings and grids in Appendix~\ref{sec:app_stage2} \\
+    \midrule
+    \multicolumn{2}{@{}l}{\textit{Evaluation}} \\
+    Cross-validation & Five folds grouped by film, ten repeats; master seed 42, seeds 1 to 4 for the stability check \\
+    Bootstrap & 2000 paired draws over films, two-sided \\
+    Tuned thresholds & One per genre from 0.10 to 0.90 in steps of 0.025, chosen on out-of-fold predictions of the source data (five folds grouped by film, ten repeats) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
