@@ -151,5 +151,215 @@
   "fear_overlap": {
     "rated: non-Horror clips above the Horror median": 77,
     "predicted: non-Horror clips above the Horror median": 91
+  },
+  "means_by_genre": {
+    "Action": {
+      "clips": 103,
+      "rated_mean": {
+        "valence": 3.596,
+        "energy": 4.26,
+        "tension": 4.764,
+        "anger": 2.841,
+        "fear": 3.418,
+        "happy": 1.613,
+        "sad": 2.572,
+        "tender": 2.183
+      },
+      "predicted_mean": {
+        "valence": 3.651,
+        "energy": 4.243,
+        "tension": 4.684,
+        "anger": 2.822,
+        "fear": 3.456,
+        "happy": 1.906,
+        "sad": 2.305,
+        "tender": 2.233
+      },
+      "predicted_minus_rated": {
+        "valence": 0.055,
+        "energy": -0.018,
+        "tension": -0.08,
+        "anger": -0.019,
+        "fear": 0.037,
+        "happy": 0.293,
+        "sad": -0.266,
+        "tender": 0.05
+      }
+    },
+    "Crime": {
+      "clips": 98,
+      "rated_mean": {
+        "valence": 3.661,
+        "energy": 4.343,
+        "tension": 4.635,
+        "anger": 2.688,
+        "fear": 3.5,
+        "happy": 2.144,
+        "sad": 1.994,
+        "tender": 2.184
+      },
+      "predicted_mean": {
+        "valence": 3.864,
+        "energy": 4.224,
+        "tension": 4.461,
+        "anger": 2.552,
+        "fear": 3.14,
+        "happy": 2.196,
+        "sad": 2.332,
+        "tender": 2.387
+      },
+      "predicted_minus_rated": {
+        "valence": 0.203,
+        "energy": -0.119,
+        "tension": -0.174,
+        "anger": -0.136,
+        "fear": -0.36,
+        "happy": 0.052,
+        "sad": 0.339,
+        "tender": 0.203
+      }
+    },
+    "Drama": {
+      "clips": 239,
+      "rated_mean": {
+        "valence": 4.347,
+        "energy": 4.014,
+        "tension": 3.968,
+        "anger": 2.131,
+        "fear": 2.592,
+        "happy": 2.486,
+        "sad": 2.545,
+        "tender": 2.88
+      },
+      "predicted_mean": {
+        "valence": 4.233,
+        "energy": 3.939,
+        "tension": 4.058,
+        "anger": 2.122,
+        "fear": 2.688,
+        "happy": 2.317,
+        "sad": 2.624,
+        "tender": 2.835
+      },
+      "predicted_minus_rated": {
+        "valence": -0.115,
+        "energy": -0.075,
+        "tension": 0.09,
+        "anger": -0.008,
+        "fear": 0.096,
+        "happy": -0.169,
+        "sad": 0.079,
+        "tender": -0.045
+      }
+    },
+    "Comedy": {
+      "clips": 40,
+      "rated_mean": {
+        "valence": 4.81,
+        "energy": 3.864,
+        "tension": 3.497,
+        "anger": 1.438,
+        "fear": 1.742,
+        "happy": 2.883,
+        "sad": 2.965,
+        "tender": 2.88
+      },
+      "predicted_mean": {
+        "valence": 4.649,
+        "energy": 3.852,
+        "tension": 3.636,
+        "anger": 1.529,
+        "fear": 2.045,
+        "happy": 2.869,
+        "sad": 2.721,
+        "tender": 3.034
+      },
+      "predicted_minus_rated": {
+        "valence": -0.161,
+        "energy": -0.012,
+        "tension": 0.139,
+        "anger": 0.091,
+        "fear": 0.303,
+        "happy": -0.013,
+        "sad": -0.244,
+        "tender": 0.154
+      }
+    },
+    "Horror": {
+      "clips": 28,
+      "rated_mean": {
+        "valence": 3.141,
+        "energy": 3.878,
+        "tension": 5.013,
+        "anger": 2.935,
+        "fear": 4.354,
+        "happy": 1.365,
+        "sad": 2.556,
+        "tender": 2.033
+      },
+      "predicted_mean": {
+        "valence": 3.451,
+        "energy": 4.416,
+        "tension": 4.928,
+        "anger": 2.858,
+        "fear": 3.726,
+        "happy": 1.926,
+        "sad": 2.08,
+        "tender": 1.991
+      },
+      "predicted_minus_rated": {
+        "valence": 0.31,
+        "energy": 0.539,
+        "tension": -0.086,
+        "anger": -0.077,
+        "fear": -0.628,
+        "happy": 0.56,
+        "sad": -0.475,
+        "tender": -0.042
+      }
+    },
+    "all clips": {
+      "clips": 329,
+      "rated_mean": {
+        "valence": 4.044,
+        "energy": 4.078,
+        "tension": 4.255,
+        "anger": 2.373,
+        "fear": 2.935,
+        "happy": 2.244,
+        "sad": 2.468,
+        "tender": 2.633
+      },
+      "predicted_mean": {
+        "valence": 4.029,
+        "energy": 4.061,
+        "tension": 4.278,
+        "anger": 2.368,
+        "fear": 2.946,
+        "happy": 2.202,
+        "sad": 2.489,
+        "tender": 2.617
+      },
+      "predicted_minus_rated": {
+        "valence": -0.015,
+        "energy": -0.017,
+        "tension": 0.024,
+        "anger": -0.006,
+        "fear": 0.011,
+        "happy": -0.042,
+        "sad": 0.021,
+        "tender": -0.016
+      }
+    }
+  },
+  "sd_predicted_over_sd_rated": {
+    "valence": 0.686,
+    "energy": 0.691,
+    "tension": 0.725,
+    "anger": 0.724,
+    "fear": 0.668,
+    "happy": 0.458,
+    "sad": 0.588,
+    "tender": 0.69
   }
 }

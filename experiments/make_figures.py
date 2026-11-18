@@ -496,6 +496,41 @@ def fig_signatures():
     save(fig, "signatures")
 
 
+def fig_rated_vs_predicted():
+    """Rated against predicted emotions per genre (five-genre subset, out-of-fold predictions
+    of the pipeline's random forest on VGGish; `horror_diagnosis.json`). Panel (a): predicted
+    minus rated mean in rating points; panel (b): the same for the signature, Cohen's d of the
+    predictions minus Cohen's d of the ratings. Added on 18 Nov at the author's request."""
+    d = load("horror_diagnosis")
+    if not d or "means_by_genre" not in d:
+        return
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
+    genres = [g for g in d["cohens_d_rated"]]
+    emos = list(d["cohens_d_rated"][genres[0]])
+    A = np.array([[d["means_by_genre"][g]["predicted_minus_rated"][e] for e in emos] for g in genres])
+    B = np.array([[d["cohens_d_predicted"][g][e] - d["cohens_d_rated"][g][e] for e in emos] for g in genres])
+    fig, axes = plt.subplots(2, 1, figsize=(WIDTH * 0.86, 4.1))   # compact: fits under Table A.9
+    panels = [(A, "(a) predicted $-$ rated\n(rating points)"),
+              (B, "(b) predicted $-$ rated\n(Cohen's $d$)")]
+    for ax, (M, lab) in zip(axes, panels):
+        lim = float(np.ceil(abs(M).max() * 10) / 10)
+        im = ax.pcolormesh(M, cmap=light_div("RdBu_r"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+        for i in range(M.shape[0]):
+            for j in range(M.shape[1]):
+                v = M[i, j]
+                r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
+                ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=8, color="black")
+        ax.set_xticks(np.arange(len(emos)) + 0.5, [names.get(e, e) for e in emos], rotation=35, ha="right")
+        ax.set_yticks(np.arange(len(genres)) + 0.5,
+                      [f"{g} ({d['means_by_genre'][g]['clips']})" for g in genres])
+        ax.invert_yaxis()
+        ax.tick_params(length=0)
+        ax.spines[:].set_visible(False)
+        fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label=lab)
+    fig.tight_layout(h_pad=1.2)
+    save(fig, "rated_vs_predicted")
+
+
 def fig_data_overview():
     """The Eerola data behind the genre results: clips per film, and films and clips per genre
     (eight-genre space). Drawn from the loader, not a results file: these are dataset counts."""
@@ -604,7 +639,8 @@ FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
            "ablation": fig_ablation, "signatures": fig_signatures,
            "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
            "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr,
-           "emotion_grid": fig_emotion_grid, "data_overview": fig_data_overview}
+           "emotion_grid": fig_emotion_grid, "data_overview": fig_data_overview,
+           "rated_vs_predicted": fig_rated_vs_predicted}
 
 
 def main() -> None:

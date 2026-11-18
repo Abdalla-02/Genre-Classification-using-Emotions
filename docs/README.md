@@ -2586,3 +2586,21 @@ Figure 2.1 at 55 % width and, in A.4, the Stage-1 table before the grid table, s
 A.13). Overleaf `ab34db1`: 0 errors, no overfull box, 104 pages.
 
 Section 5.4 starts on a new page (author, 18 Nov): its two figures did not fit under the heading on the page before; the page after Section 5.3 now ends with free space instead. Overleaf `dc9f02c`: 0 errors, 104 pages.
+
+### 46.2 Rated and predicted emotions for every genre (18 Nov, author's idea)
+
+The Horror table showed that Stage 1 pulls the fear of Horror clips towards the average. The author
+asked for the same comparison for every emotion and genre. `exp_horror_diagnosis.py` now also saves
+`means_by_genre` (rated and predicted mean of each emotion per genre, out-of-fold predictions of the
+pipeline's random forest on VGGish, the 10x5 folds, mean over repeats) and
+`sd_predicted_over_sd_rated`; every earlier number of `horror_diagnosis.json` is reproduced exactly.
+Over all 329 clips the means differ by at most 0.042 points, but the predictions vary less than the
+ratings (standard deviation 0.46 to 0.73 times). Horror has the largest gaps: fear $-0.63$, sadness
+$-0.48$ (unrounded $-0.475$, shown half-up), energy $+0.54$, happiness $+0.56$; Crime's fear $-0.36$;
+Comedy's fear $+0.30$. In Cohen's $d$, Comedy's happiness signature grows ($+0.49$) and Horror's
+energy flips ($+0.53$). New figure `rated_vs_predicted` (`make_figures.py rated_vs_predicted`; two
+heatmaps, predicted minus rated mean and predicted minus rated $d$; black numbers, `light_div`).
+Appendix A.9 is now "Rated and Predicted Emotions per Genre" (label `sec:app_horror` kept): the
+figure first, then the Horror fear table. Page breaks before A.12 and A.13 keep each heading with
+its float. Overleaf `204435f`: 0 errors, no overfull box, 104 pages.
+

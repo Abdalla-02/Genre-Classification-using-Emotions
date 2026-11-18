@@ -85,6 +85,24 @@ def main() -> None:
         fear_by_genre[g] = {"clips": int(m.sum()),
                             "rated_mean": round(float(E[m, fear].mean()), 3),
                             "predicted_mean": round(float(preds[:, m, fear].mean()), 3)}
+    # All eight emotions per genre (author, 18 Nov): rated and predicted means, and the gap
+    # predicted - rated in rating points. Appendix figure `rated_vs_predicted`.
+    means_by_genre = {}
+    for j, g in enumerate(genres):
+        m = Y[:, j].astype(bool)
+        rated = E[m].mean(0)
+        pred = preds[:, m].mean((0, 1))
+        means_by_genre[g] = {"clips": int(m.sum()),
+                             "rated_mean": dict(zip(emos, np.round(rated, 3).tolist())),
+                             "predicted_mean": dict(zip(emos, np.round(pred, 3).tolist())),
+                             "predicted_minus_rated": dict(zip(emos, np.round(pred - rated, 3).tolist()))}
+    all_rated, all_pred = E.mean(0), preds.mean((0, 1))
+    means_by_genre["all clips"] = {"clips": int(len(E)),
+                                   "rated_mean": dict(zip(emos, np.round(all_rated, 3).tolist())),
+                                   "predicted_mean": dict(zip(emos, np.round(all_pred, 3).tolist())),
+                                   "predicted_minus_rated": dict(zip(emos, np.round(all_pred - all_rated, 3).tolist()))}
+    sd_ratio = dict(zip(emos, np.round(preds.mean(0).std(0) / E.std(0), 3).tolist()))
+
     rest = ~horror
     fear_by_genre["all non-Horror clips"] = {
         "clips": int(rest.sum()),
@@ -111,6 +129,8 @@ def main() -> None:
         "n_clips": int(len(E)), "n_horror_clips": int(horror.sum()),
         "cohens_d_rated": d_rated, "cohens_d_predicted": d_pred,
         "fear_by_genre": fear_by_genre, "fear_within": within, "fear_overlap": overlap,
+        "means_by_genre": means_by_genre,
+        "sd_predicted_over_sd_rated": sd_ratio,
     }
     with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(out, indent=2) + "\n")

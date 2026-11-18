@@ -374,13 +374,32 @@ in-domain (0.616 against 0.557, Nadeau--Bengio $p=0.020$). In the zero-shot sett
 difference is small (0.508 against 0.502).
 
 % =============================================================================
-\section{Why Horror Is the Weakest Genre of the Emotion Pipeline}
+\section{Rated and Predicted Emotions per Genre}
 \label{sec:app_horror}
 
 On Horror, the emotion pipeline reaches a film-level $F_1$ of 0.23, and the same genre
 classifier given the ratings 0.41 (Section~\ref{sec:eval_pergenre}). The loss therefore
-arises in Stage~1. Table~\ref{tab:horror_fear} compares rated and predicted fear, with the
-emotions predicted out of fold exactly as in the pipeline.
+arises in Stage~1. Figure~\ref{fig:rated_vs_predicted} compares rated and predicted emotions
+for all five genres, with the emotions predicted out of fold exactly as in the pipeline, and
+Table~\ref{tab:horror_fear} looks at the fear of Horror in detail.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figures/rated_vs_predicted.pdf}
+  \caption{Predicted minus rated emotions per genre on the five-genre subset.}
+  \label{fig:rated_vs_predicted}
+\end{figure}
+
+In Figure~\ref{fig:rated_vs_predicted}, panel (a) gives the mean predicted minus the mean
+rated emotion over the clips of each genre, in rating points, and panel (b) the same
+difference for the signature, Cohen's $d$ of the genre against all other clips. Red marks a
+prediction above the ratings, blue one below. Over all 329 clips the two means differ by at
+most 0.04 points, but the predictions vary less than the ratings: their standard deviation
+is 0.46 to 0.73 times that of the ratings. Horror shows the largest gaps. Its fear is
+predicted 0.63 points too low and its sadness 0.48 too low, its energy and happiness 0.54
+and 0.56 too high. Crime loses part of its fear as well ($-0.36$). The signatures of Drama
+and Comedy keep their direction, and Comedy's raised happiness is stronger in the
+predictions than in the ratings ($+0.49$ in $d$).
 
 \begin{table}[H]
   \centering
@@ -482,6 +501,7 @@ of the paired film bootstrap in brackets. Bold marks $p<0.05$. The Blockbuster f
 VGGish 1.99; tuned on clips, they assign 2.85 and 3.72, and the PCA-8 control 4.73.
 
 % =============================================================================
+\clearpage
 \section{How the Ratings Relate to Each Other}
 \label{sec:app_ratings}
 
