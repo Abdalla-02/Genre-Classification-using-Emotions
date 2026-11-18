@@ -2568,3 +2568,11 @@ Chrome: 0 errors, no overfull box, no undefined reference, 104 pages, from 112):
 - References: Fundamentals now points to Appendix A.1 for $p_{\lim}$; the Discussion points to
   Sections 5.3 and 5.5 instead of the appendix.
 
+Layout and Section 7.1 (18 Nov, author): every appendix float is `[H]` (the `float` package comes
+with `algorithm`), so each table and figure stands where it is written and its legend directly
+below; in A.2 the stability figure now comes before the metric figure, and A.13 starts on a new
+page with its table. One gap is left at the foot of the page after Table A.2 (no figure fits there).
+Section 7.1 keeps one paragraph per research question but only one or two sentences with the
+deciding number each; it points to Section 6.1 for the detailed answers. Overleaf `e501f22`:
+0 errors, no overfull box, 104 pages.
+

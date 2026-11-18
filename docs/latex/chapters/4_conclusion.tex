@@ -13,44 +13,26 @@ directly from audio. The emotion pipeline predicts eight emotion ratings from a 
 embedding with a random forest and then predicts genre from these ratings with one
 logistic regression per genre, so that a film can receive several genres (multi-label
 classification). It was evaluated on the 40 films of the five-genre Eerola
-subset and transferred to the 110 films of the Blockbuster dataset. The four research
-questions of Section~\ref{sec:aim} can be answered as follows.
+subset and transferred to the 110 films of the Blockbuster dataset. Section~\ref{sec:disc_rq}
+answers the four research questions in detail. In brief:
 
 \paragraph{RQ1: predictive strength of emotion.} Emotions predict genre well above chance,
-but far from perfectly. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460,
-and the human ratings reach 0.491, against 0.309 for the base-rate random guess
-(Section~\ref{sec:eval_genre}). This margin overstates the predictive ability, because a
-classifier that assigns every genre to every film already reaches 0.434. The ranking of films
-is more informative. The emotion pipeline reaches a macro ROC-AUC of 0.655,
-whereas the all-positive classifier cannot rank the films at all (0.50). Predicted
-emotions perform only slightly worse than the ratings ($-0.032$, $p=0.277$), so little
-appears to be lost by predicting the emotions instead of having listeners rate them.
+but far from perfectly. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460 and the
+human ratings 0.491, against 0.309 for a random guess, and the emotion pipeline ranks the
+films better than chance (macro ROC-AUC 0.655).
 
-\paragraph{RQ2: emotional signatures of genres.} Most genres have an emotional signature
-that is consistent with the conventions of film scoring (Section~\ref{sec:eval_signatures}).
-Horror is marked by fear ($d=+0.75$), Comedy by the absence of fear ($d=-0.61$) and Drama
-by raised valence ($d=+0.57$). Adventure has no signature. In these data, fear is
-the most discriminating single emotion, and valence forms a second axis. They rest on one listener panel and one collection of films.
+\paragraph{RQ2: emotional signatures of genres.} Most genres have an emotional signature that
+is consistent with the conventions of film scoring. Fear is the most discriminating emotion
+and valence a second axis, and one to three emotions keep most of the genre information.
 
 \paragraph{RQ3: emotion pipeline and direct audio within one dataset.} At the default
-threshold, the emotion pipeline is ahead of every audio representation used directly and
-of the PCA-8 control (Section~\ref{sec:eval_direct}). Its lead over VGGish, its own input,
-is $+0.093$ at film level ($p=0.052$; over clips $p=0.086$ in the Nadeau--Bengio test). The
-lead appears with all six representations and all three emotion regressors
-(Section~\ref{subsec:eval_grid}), which suggests that it stems from the emotion step rather than
-from one particular model. It is significant, however, only against the weaker direct representations.
-Compression alone appears to account for part of the gain, and with thresholds tuned per genre the
-pipelines converge. On 40 films, the size of the advantage over the strongest direct
-representations cannot be estimated reliably.
+threshold the emotion pipeline is ahead of every audio representation used directly
+($+0.093$ over VGGish, $p=0.052$), but significantly only against the weaker ones. With
+thresholds tuned per genre the pipelines converge.
 
-\paragraph{RQ4: generalisation to another dataset.} Much of the genre information transfers
-between the datasets. Trained on Eerola alone, the emotion pipeline reaches 0.508 on the 110
-Blockbuster films, about 82\,\% of the in-domain result, and outperforms direct VGGish at
-the default threshold (0.403; $+0.106$, $p=0.013$; Section~\ref{sec:zero_shot}). Most of
-this lead depends on the threshold. With thresholds tuned on the source it shrinks to
-$+0.041$ ($p=0.159$). The emotion pipeline still ranks the films slightly better (ROC-AUC
-0.763 against 0.720), although this difference is not significant either ($p=0.097$). The reverse
-direction agrees in sign but is not significant ($p=0.102$), and with both datasets in training the two pipelines perform similarly.
+\paragraph{RQ4: generalisation to another dataset.} Trained on Eerola alone, the emotion
+pipeline transfers to the Blockbuster films better than direct VGGish at the default
+threshold (0.508 against 0.403, $p=0.013$). Most of this lead depends on the threshold.
 
 \paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
 genre prediction from film music more accurate in general. Its advantage appears to be limited

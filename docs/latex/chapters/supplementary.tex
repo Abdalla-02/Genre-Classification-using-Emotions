@@ -14,7 +14,7 @@ classifier. Every other pipeline ends in the same classifier (Table~\ref{tab:pip
 Table~\ref{tab:power_cmp_full} extends Table~\ref{tab:power_cmp} to every paired
 comparison that was run on the five-genre subset.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{All paired comparisons on the five-genre subset.}
@@ -62,7 +62,7 @@ ranking of the pipelines under other metrics and with tuned thresholds.
 Figure~\ref{fig:stability_repeats} shows the second: the spread over repeats and seeds.
 Chapter~\ref{ch:evaluation} reports the results.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{The pipelines under thirteen metrics (five genres, seed 42).}
@@ -108,18 +108,7 @@ baseline outperforms every trained model, which is why they are not used as the 
 (Section~\ref{subsec:protocol_metrics}). The emotion pipeline has the highest Hamming loss
 because it assigns the most genres: 2.35 per clip, against 1.54 true genres.
 
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=\textwidth]{figures/metric_family.pdf}
-  \caption{The four audio pipelines under seven metrics, against the random guess (seed 42).}
-  \label{fig:metric_family}
-\end{figure}
-
-In Figure~\ref{fig:metric_family}, each bar is a pipeline's mean score over the ten
-repeats minus the random guess of that metric. The whiskers are the standard deviation
-over the repeats.
-
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/stability_repeats.pdf}
   \caption{Stability of film-level macro-$F_1$ over repeats and master seeds.}
@@ -135,6 +124,17 @@ VGGish ($+0.076$ to $+0.132$), AST ($+0.142$ to $+0.155$) and the PCA-8 control 
 $+0.071$). Under seed 42 the re-run reproduces the per-repeat scores of the main analysis
 exactly.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/metric_family.pdf}
+  \caption{The four audio pipelines under seven metrics, against the random guess (seed 42).}
+  \label{fig:metric_family}
+\end{figure}
+
+In Figure~\ref{fig:metric_family}, each bar is a pipeline's mean score over the ten
+repeats minus the random guess of that metric. The whiskers are the standard deviation
+over the repeats.
+
 % =============================================================================
 \section{Which Emotions Are Needed?}
 \label{sec:app_ablation}
@@ -143,7 +143,7 @@ Figure~\ref{fig:ablation} shows the ablation of Section~\ref{sec:eval_signatures
 genre classifier on the eight rated emotions without the derived features (0.493 at film
 level), with one emotion left out in turn and with subsets motivated by theory.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/ablation.pdf}
   \caption{Emotion ablation: change in film-level macro-$F_1$ against all eight emotions.}
@@ -163,7 +163,7 @@ Table~\ref{tab:emotion_grid} lists the genre results of Figure~\ref{fig:emotion_
 each regressor in Stage~1, including ridge regression with its default regularisation
 strength.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Film- and clip-level macro-$F_1$ of every representation and emotion regressor.}
@@ -196,7 +196,7 @@ without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
 descriptors. Bold marks an emotion pipeline that is significantly ahead of the direct use
 of its representation (paired film bootstrap, $p<0.05$).
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \caption{Stage~1 with four regressors: mean $R^2$ over the eight emotions (360 rated clips).}
   \label{tab:app_stage1_regressors}
@@ -232,7 +232,7 @@ wav2vec~2.0 is the weakest representation used directly but gives one of the str
 emotion pipelines (Section~\ref{subsec:eval_grid}). Table~\ref{tab:app_w2v} separates the
 part of this gain that compression alone would give.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{wav2vec~2.0 used directly, compressed and through the emotion step.}
@@ -267,7 +267,7 @@ Table~\ref{tab:app_stage2} compares the logistic regression of Stage~2
 emotion features of the main results. Each was tuned in an inner loop
 (Table~\ref{tab:app_config}).
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Stage~2 with five classifiers: macro-$F_1$ on the five-genre subset.}
@@ -303,7 +303,7 @@ more than the others.
 Table~\ref{tab:app_eight} repeats the main comparison on all eight Eerola genres
 (42 films).
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Macro-$F_1$ on all eight Eerola genres.}
@@ -337,7 +337,7 @@ Table~\ref{tab:blockbuster_reference} checks the direct pipeline of this thesis 
 published results of \citet{ma2021computational}, under their protocol: leave-one-film-out
 over the 110 films, with macro-averaged precision, recall and $F_1$.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \caption{In-domain reference performance on the 110 Blockbuster films.}
   \label{tab:blockbuster_reference}
@@ -382,7 +382,7 @@ classifier given the ratings 0.41 (Section~\ref{sec:eval_pergenre}). The loss th
 arises in Stage~1. Table~\ref{tab:horror_fear} compares rated and predicted fear, with the
 emotions predicted out of fold exactly as in the pipeline.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Rated and predicted fear per genre on the five-genre subset (clip level).}
@@ -417,7 +417,7 @@ $2p/(1+p)$ per genre, where $p$ is the share of films with the genre
 (Section~\ref{sec:eval_genre}). Table~\ref{tab:app_floor} compares it with the emotion
 pipeline for each genre.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{The all-positive reference and the emotion pipeline per genre.}
@@ -455,7 +455,7 @@ with one threshold per genre, tuned on the Eerola data only (Table~\ref{tab:app_
 Tuning on the 319 clips was fixed as the main variant before the run; tuning on the 40 films
 is the check.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Zero-shot transfer with default and tuned thresholds.}
@@ -490,7 +490,7 @@ eight rating scales of the dataset relate to each other over all 360 rated clips
 of the first two principal components of their correlations (59.8\,\% and 22.6\,\% of the
 variance).
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.62\textwidth]{figures/rating_structure.pdf}
   \caption{The eight rating scales in the plane of the first two principal components.}
@@ -507,13 +507,14 @@ opposite ($r=-0.91$), energy correlates with tension ($r=0.58$) rather than with
 ($r=-0.40$), and sadness lies on the pleasant side ($r=0.32$ with valence).
 
 % =============================================================================
+\clearpage
 \section{Model Configurations}
 \label{sec:app_config}
 
 Table~\ref{tab:app_config} lists the settings of every model and of the evaluation. Settings
 that are not listed are the defaults of scikit-learn~1.5.1.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{Model and evaluation settings.}
