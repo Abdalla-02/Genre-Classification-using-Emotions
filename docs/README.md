@@ -2614,3 +2614,19 @@ the figure of Section A.9 is Figure A.9.1, A.2 holds Figures A.2.1 and A.2.2, A.
 A.4.2; the number column of the lists of figures and tables is 3.2em wide (`chapter/preamble.tex`).
 The main chapters keep numbering by chapter. Overleaf `e9e05bd`: 0 errors, no overfull box, 104 pages.
 
+### 46.3 Final check before the meeting of 18 Nov
+
+Every reference from the chapters into the appendix (and back) was read against its target, and every
+number added or moved since 16 Nov was recomputed from its results file (film_level.json: stability,
+seeds, ablation, eight genres; metrics_stability.json: tuned thresholds; threshold_sweep.json;
+w2v_diagnosis.json; per_genre_analysis.json: all-positive references and AUC leads; zero_shot_threshold.json:
+genres per film; hamming_breakdown.json: 2.35 vs 1.54; clap_ridge_posthoc.json; horror_diagnosis.json;
+the Blockbuster all-positive 0.438 recomputed from the label counts of Table 4.1). All matched. Fixed:
+six references whose target did not hold what the sentence cited (the bootstrap SE 0.027 to 0.038 is
+now in the A.2 stability legend; the +0.155 AUC test over the all-positive classifier in A.10; Section
+5.4 points to A.9 for the Stage-1 trace instead of citing it for precision and recall; Methods 4.6.4
+and A.2 no longer point at each other; Tables A.4.1 and A.4.2 together hold the numbers of Figure 5.3;
+Chapter 7 says Appendix, not Section, for A.9), "explains why" -> "shows why" in the Discussion,
+and Section 1.3 names the model configurations. Overleaf `f3cfae8`: 0 errors, 3 package warnings,
+no overfull box, no undefined reference, 104 pages. All chapter copies synced.
+

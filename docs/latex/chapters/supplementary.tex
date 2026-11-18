@@ -65,7 +65,7 @@ Section~\ref{subsec:protocol_altmetrics} describes the two checks of the main me
 Table~\ref{tab:metric_family} and Figure~\ref{fig:metric_family} show the first: the
 ranking of the pipelines under other metrics and with tuned thresholds.
 Figure~\ref{fig:stability_repeats} shows the second: the spread over repeats and seeds.
-Chapter~\ref{ch:evaluation} reports the results.
+Section~\ref{sec:eval_direct} reports the results.
 
 \begin{table}[H]
   \centering
@@ -123,8 +123,8 @@ because it assigns the most genres: 2.35 per clip, against 1.54 true genres.
 In Figure~\ref{fig:stability_repeats}, the coloured dots are the ten repeats under seed
 42, summarised by a box plot. The black dashes are the ten-repeat means under each of the
 five master seeds (42, 1, 2, 3, 4). Over the repeats, the standard deviation of film-level
-macro-$F_1$ is 0.034 to 0.045, about twice the clip-level value (0.016 to 0.019), because
-each genre's $F_1$ rests on a few films. Under every seed the emotion pipeline is ahead of
+macro-$F_1$ is 0.034 to 0.045, about twice the clip-level value (0.016 to 0.019), because each genre's $F_1$ rests on a few films. The bootstrap standard error over films is
+0.027 to 0.038. Under every seed the emotion pipeline is ahead of
 VGGish ($+0.076$ to $+0.132$), AST ($+0.142$ to $+0.155$) and the PCA-8 control ($+0.051$ to
 $+0.071$). Under seed 42 the re-run reproduces the per-repeat scores of the main analysis
 exactly.
@@ -466,7 +466,8 @@ classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$
 film-level ROC-AUC, for which the all-positive classifier scores 0.50. The films carry 1.55
 genres on average; the emotion pipeline assigns 2.27 per film, the ratings 2.21 and the
 direct representations 1.27 to 1.65. On all eight genres the reference reaches 0.338 at film level, against 0.349 for the emotion
-pipeline. In film-level macro ROC-AUC the emotion pipeline (0.655) leads direct VGGish by
+pipeline. In film-level macro ROC-AUC the emotion pipeline (0.655) is $0.155$ above the all-positive
+classifier ($p<0.001$) and leads direct VGGish by
 $+0.071$ ($p=0.093$), MusiCNN by $+0.078$ ($p=0.096$) and the PCA-8 control by $+0.071$
 ($p=0.087$).
 

@@ -269,7 +269,7 @@ Paired comparisons between two arms are reported under two tests, because they a
 \subsection{Alternative metrics and the stability of the estimates}
 \label{subsec:protocol_altmetrics}
 
-I checked two questions about the main metric on the five-genre protocol, with the same out-of-fold predictions. Section~\ref{sec:eval_robustness} reports the results.
+I checked two questions about the main metric on the five-genre protocol, with the same out-of-fold predictions. Section~\ref{sec:eval_direct} reports the results, and Appendix~\ref{sec:eval_robustness} gives the tables and figures.
 
 The first question is whether the ranking of the emotion pipeline, the direct embeddings and the PCA-8 control depends on the choice of macro-$F_1$. Every arm was also scored with the other ways of averaging $F_1$. These are micro (over all clip--genre decisions pooled), weighted by genre frequency, and per clip (``samples''). Every arm was also scored with exact match, Hamming loss and the Jaccard index. The $F_1$ score depends on where the predicted probability is cut, and $0.5$ is only a convention. Macro-$F_1$ was therefore also computed with a separate decision threshold per genre. Each threshold was chosen between $0.05$ and $0.95$ to maximise $F_1$ on out-of-fold probabilities of the training fold (an inner three-fold grouped split), so that the test fold again plays no part. Two metrics avoid the cut completely. Macro average precision (AP) is the area under the precision--recall curve of each genre. Macro ROC-AUC (Section~\ref{sec:fund_evaluation}) is the second. All of these alternatives are computed over clips, as is the clip-level macro-$F_1$ that checks the film-level headline.
 

@@ -234,7 +234,7 @@ three are the emotion pipeline with each regressor. Each cell
 gives the film-level macro-$F_1$ $\pm$ its standard deviation over the ten repeats, with the
 clip-level score below. An asterisk marks a significant lead over the direct use of the same
 representation (paired film bootstrap, $p<0.05$). Panel (b), in purple, gives the Stage-1 $R^2$ of
-each regressor, that is, how accurately it predicts the emotions. Appendix Table~\ref{tab:emotion_grid} lists the same numbers.
+each regressor, that is, how accurately it predicts the emotions. Appendix Tables~\ref{tab:app_stage1_regressors} and~\ref{tab:emotion_grid} list the same numbers.
 
 Three results stand out. First, the emotion pipeline is ahead of the direct use of its
 representation in all 18 combinations, by 0.032 to 0.209 at film level and by 0.024 to
@@ -308,8 +308,8 @@ by every pipeline, even by the most-frequent baseline. The largest difference li
 VGGish used directly rarely predicts it, whereas the emotion pipeline identifies most Comedy
 films, at a low precision. Horror is the exception. There the emotion pipeline predicts the
 genre for too many films and performs no better than VGGish. Given the listeners' ratings
-instead, the same classifier reaches 0.41 on Horror (precision 0.27, recall 0.78;
-Appendix~\ref{sec:app_horror}). Averaged over the five genres, the emotion pipeline has a
+instead, the same classifier reaches 0.41 on Horror (precision 0.27, recall 0.78). Appendix~\ref{sec:app_horror} traces the difference to
+Stage~1. Averaged over the five genres, the emotion pipeline has a
 recall of 0.64 against 0.38 for VGGish, at a precision of 0.41 against 0.36. The two rarest
 genres rest on only four or five films, and their $F_1$ values change by about 0.2 when a
 single film changes.
