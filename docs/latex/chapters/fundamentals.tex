@@ -23,9 +23,9 @@ Research on emotion in music mostly uses one of two frameworks: the \emph{dimens
 
 The dimensional model places an emotion at a point in a continuous space. Usually the space has two axes: \emph{valence}, how positive or negative an emotion is, and \emph{arousal}, how activated or calm it feels. The best-known version is the circumplex model of affect by \citet{russell1980circumplex}. Here ``happy'' is not a category of its own but the part of the space with high valence and fairly high arousal. ``Sad'' is low on both, and ``angry'' is low valence with high arousal. Much MER research has used this two-dimensional framework (surveyed in \citealp{kim2010music} and \citealp{kang2025there}). One reason is that it is comparatively easy to annotate and to model as a continuous regression target. Figure~\ref{fig:circumplex} sketches the space, with the five discrete emotions rated in the dataset used here.
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.62\textwidth]{figures/circumplex.pdf}
+  \includegraphics[width=0.55\textwidth]{figures/circumplex.pdf}
   \caption{The emotion space, adapted from Figure~1 of \citet{eerola2011comparison}.}
   \label{fig:circumplex}
 \end{figure}
@@ -65,7 +65,7 @@ A learning algorithm cannot operate on an audio file directly. A ten-second clip
 
 Almost every audio representation starts from the \emph{spectrogram}. The signal is cut into short overlapping windows (typically 10--25\,ms). For each window, a Fourier transform measures how much energy lies at each frequency. Stacking the windows gives a two-dimensional image, with time on one axis and frequency on the other. Two refinements are standard. The frequency axis is mapped onto the \emph{mel} scale, which spaces frequencies the way human hearing does: finer at low pitches, coarser at high ones. The energies are also put on a logarithmic scale, because perceived loudness grows roughly logarithmically with energy. The result, the \emph{log-mel spectrogram}, is the input to four of the five learned models used here. It drops phase and fine timing below the window length. In this way it keeps roughly the information that the ear keeps, which is one reason for its wide use. Figure~\ref{fig:spectrogram} shows both forms for one clip of the dataset used here.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/spectrogram.pdf}
   \caption{Waveform and log-mel spectrogram of a film-music clip.}
@@ -133,7 +133,7 @@ A model's performance on its own training data says little about how it generali
 
 On this dataset a naive split is invalid, and the resulting error can be measured. The 346 clips come from only 42 films. Clips from the same film share instruments and recording quality, and by definition also their genre label. If one clip from \emph{Gladiator} is in the training set and another in the test set, the model can score well on the test clip by recognising \emph{Gladiator} rather than Action. I therefore group every split \emph{by film}: all clips of a film stay on the same side. Figure~\ref{fig:grouped_cv} illustrates this for five folds, and Section~\ref{sec:evaluation_protocol} reports how large the effect of grouping is on the data used here.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \begin{tikzpicture}[x=1.1cm, y=0.62cm, font=\footnotesize]
     % grouped by film: five rounds, one fold of two films is tested in each
@@ -207,7 +207,7 @@ where
 
 \paragraph{For multi-label classification: macro-averaged $F_1$.} For one genre, each decision of a classifier falls into one of four cases (Figure~\ref{fig:confusion}). A \emph{true positive} (TP) has the genre and is assigned it. A \emph{false positive} (FP) is assigned the genre without having it. A \emph{false negative} (FN) has the genre but is not assigned it, and a \emph{true negative} (TN) neither has it nor is assigned it.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \begin{tikzpicture}[font=\footnotesize,
       cell/.style={draw, minimum width=3.0cm, minimum height=1.05cm, align=center}]
@@ -272,7 +272,7 @@ where
 
 Table~\ref{tab:auc_example} shows a small example with five films, two of which are Horror.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{A five-film example of ROC-AUC for the genre Horror.}

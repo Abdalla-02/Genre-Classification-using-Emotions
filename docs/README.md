@@ -2576,3 +2576,12 @@ Section 7.1 keeps one paragraph per research question but only one or two senten
 deciding number each; it points to Section 6.1 for the detailed answers. Overleaf `e501f22`:
 0 errors, no overfull box, 104 pages.
 
+Floats everywhere like the appendix (18 Nov, author): all 22 floats of the chapters are `[H]` too,
+each after the paragraph that introduces it and with its legend directly below (Figure 5.2 moved
+below its lead-in; every other float already sat there). `\raggedbottom` in `chapter/preamble.tex`:
+the two-sided book class stretched the space between paragraphs to fill a page when an `[H]` float
+did not fit (the large spaces the author saw on page 90); now leftover space stays at the page foot.
+Figure 2.1 at 55 % width and, in A.4, the Stage-1 table before the grid table, so that pages 20 and
+90 are full. Every page that still ends early is the last page of a chapter (or the page before
+A.13). Overleaf `ab34db1`: 0 errors, no overfull box, 104 pages.
+

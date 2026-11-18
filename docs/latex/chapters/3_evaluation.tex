@@ -38,7 +38,7 @@ $R^2$, averaged over the eight emotions, on out-of-fold predictions over all 360
 (Section~\ref{subsec:protocol_metrics}). Table~\ref{tab:waveform_stage1} ranks the six
 audio representations, and Figure~\ref{fig:stage1_r2} breaks the result down by emotion.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \caption{Emotion regression by audio representation: mean $R^2$ over the eight emotions.}
   \label{tab:waveform_stage1}
@@ -60,7 +60,7 @@ In Table~\ref{tab:waveform_stage1}, RMSE is the root-mean-square error of the pr
 ratings. The last column gives $R^2$ as a share of the ceiling of 0.897 that two
 independent listener panels allow (Section~\ref{subsec:rating_reliability}).
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/stage1_r2.pdf}
   \caption{Stage~1: $R^2$ per emotion and audio representation.}
@@ -94,13 +94,6 @@ ridge regression up to 68\,\% (AST, Appendix~\ref{sec:app_grid}).
 \section{Stage 2: Genre from Emotions}
 \label{sec:eval_genre}
 
-\begin{figure}[!htb]
-  \centering
-  \includegraphics[width=\textwidth]{figures/indomain_eerola5.pdf}
-  \caption{Film-level macro-$F_1$ of every pipeline on the five-genre Eerola subset.}
-  \label{fig:indomain_eerola5}
-\end{figure}
-
 The second stage predicts genre from the emotions with one logistic regression per genre
 (Section~\ref{sec:methods_stage2}). It is tested in two ways. Given the human ratings, it
 shows how much genre information the emotions carry at best. Given the emotions that
@@ -109,6 +102,13 @@ this and the next two sections use $10\times5$ cross-validation grouped by film,
 nested tuning of $C$ (Section~\ref{sec:evaluation_protocol}). The scores are averaged over
 the ten repeats and come with a 95\,\% interval from a bootstrap over films.
 Figure~\ref{fig:indomain_eerola5} shows every pipeline on the five-genre subset.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{figures/indomain_eerola5.pdf}
+  \caption{Film-level macro-$F_1$ of every pipeline on the five-genre Eerola subset.}
+  \label{fig:indomain_eerola5}
+\end{figure}
 
 In Figure~\ref{fig:indomain_eerola5}, filled points are film-level and hollow markers
 clip-level scores, under the master seed 42. Green is the classifier on the human ratings
@@ -153,7 +153,7 @@ and so does the PCA-8 control (Figure~\ref{fig:indomain_eerola5}).
 Table~\ref{tab:power_cmp} gives the most important comparisons, and
 Appendix~\ref{sec:app_comparisons} lists all of them.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{The main paired comparisons on the five-genre subset (40 films).}
@@ -221,7 +221,7 @@ regressors: the random forest, ridge regression and SVR (Section~\ref{sec:method
 Every entry of Figure~\ref{fig:emotion_grid} is the complete pipeline, with the same
 classifier, folds and scoring as above.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/emotion_pipeline_grid.pdf}
   \caption{The emotion pipeline for every representation and emotion regressor.}
@@ -280,7 +280,7 @@ Macro-$F_1$ averages five very different genres. Figure~\ref{fig:per_genre} show
 film-level $F_1$ of every pipeline for each genre, and Figure~\ref{fig:per_genre_pr} the
 precision and recall behind these values.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/per_genre.pdf}
   \caption{Film-level $F_1$ per genre and pipeline on the five-genre subset.}
@@ -320,7 +320,7 @@ strength. For each emotion rating, Cohen's $d$ compares the clips of a genre wit
 other clips (Section~\ref{sec:fund_evaluation}). Figure~\ref{fig:signatures}
 gives the signature of each of the eight Eerola genres, computed from the human ratings.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.9\textwidth]{figures/signatures.pdf}
   \caption{Emotional signatures (Cohen's $d$) of the eight Eerola genres.}
@@ -384,7 +384,7 @@ within the 0.61 to 0.65 they report for their VGGish models
 (Appendix~\ref{sec:app_blockbuster}). Figure~\ref{fig:blockbuster_cv} shows the dataset
 under the repeated protocol used for Eerola ($10\times5$ cross-validation over films).
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/blockbuster_cv.pdf}
   \caption{Blockbuster in-domain: macro-$F_1$ over the 110 films under $10\times5$ cross-validation.}
@@ -430,7 +430,7 @@ conservative choice. A single train--test split has no folds, so the uncertainty
 from a paired bootstrap over the 110 target films. Figure~\ref{fig:zero_shot} shows the
 result, and Table~\ref{tab:zero_shot} gives precision and recall.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/zero_shot.pdf}
   \caption{Zero-shot transfer from Eerola to the 110 Blockbuster films.}
@@ -441,7 +441,7 @@ In Figure~\ref{fig:zero_shot}, the dashed line is the plurality baseline and the
 line the base-rate random guess. The error bars are the bootstrap standard deviation over the
 110 films, and the $p$-values come from the paired bootstrap over the same films.
 
-\begin{table}[tbp]
+\begin{table}[H]
   \centering
   \caption{Zero-shot transfer from Eerola to the 110 Blockbuster films (strict regime).}
   \label{tab:zero_shot}
@@ -500,7 +500,7 @@ Eerola films. The emotion regressor is fitted on the Eerola training folds, and 
 held-out Eerola films enter neither fit. In the pooled design both datasets are in the
 training set, and cross-validation runs over both.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/cross_dataset.pdf}
   \caption{Film-level macro-$F_1$ for the three cross-dataset designs.}
@@ -542,7 +542,7 @@ Table~\ref{tab:disc_settings} collects the emotion pipeline, the PCA-8 control a
 VGGish for every setting in which all three were run. The paragraphs after it summarise the
 results along the pipeline.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{The three pipelines in every setting in which all of them were run.}

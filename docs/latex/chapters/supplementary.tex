@@ -158,10 +158,31 @@ subsets.
 \section{The Emotion Pipeline across Representations and Regressors}
 \label{sec:app_grid}
 
-Table~\ref{tab:emotion_grid} lists the genre results of Figure~\ref{fig:emotion_grid}
-(Section~\ref{subsec:eval_grid}), and Table~\ref{tab:app_stage1_regressors} the accuracy of
-each regressor in Stage~1, including ridge regression with its default regularisation
-strength.
+Table~\ref{tab:app_stage1_regressors} gives the accuracy of each regressor in Stage~1,
+including ridge regression with its default regularisation strength, and
+Table~\ref{tab:emotion_grid} the genre results of Figure~\ref{fig:emotion_grid}
+(Section~\ref{subsec:eval_grid}).
+
+\begin{table}[H]
+  \centering
+  \caption{Stage~1 with four regressors: mean $R^2$ over the eight emotions (360 rated clips).}
+  \label{tab:app_stage1_regressors}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Representation & Random forest & Ridge, $\alpha=1$ & Ridge, tuned $\alpha$ & SVR \\
+    \midrule
+    VGGish & 0.553 & 0.385 & \textbf{0.584} & 0.535 \\
+    AST & 0.545 & 0.217 & \textbf{0.606} & 0.601 \\
+    CLAP & 0.558 & 0.041 & \textbf{0.585} & 0.585 \\
+    MusiCNN & \textbf{0.512} & $-1.739$ & 0.492 & 0.479 \\
+    Hand-crafted MIR & \textbf{0.476} & 0.246 & 0.443 & 0.472 \\
+    wav2vec~2.0 & 0.299 & $-0.496$ & \textbf{0.339} & 0.335 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In Table~\ref{tab:app_stage1_regressors}, bold marks the most accurate regressor per
+representation. A negative $R^2$ is worse than predicting the mean rating.
 
 \begin{table}[H]
   \centering
@@ -195,27 +216,6 @@ same predictions over clips. ``Direct'' is the representation given to the class
 without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
 descriptors. Bold marks an emotion pipeline that is significantly ahead of the direct use
 of its representation (paired film bootstrap, $p<0.05$).
-
-\begin{table}[H]
-  \centering
-  \caption{Stage~1 with four regressors: mean $R^2$ over the eight emotions (360 rated clips).}
-  \label{tab:app_stage1_regressors}
-  \begin{tabular}{lrrrr}
-    \toprule
-    Representation & Random forest & Ridge, $\alpha=1$ & Ridge, tuned $\alpha$ & SVR \\
-    \midrule
-    VGGish & 0.553 & 0.385 & \textbf{0.584} & 0.535 \\
-    AST & 0.545 & 0.217 & \textbf{0.606} & 0.601 \\
-    CLAP & 0.558 & 0.041 & \textbf{0.585} & 0.585 \\
-    MusiCNN & \textbf{0.512} & $-1.739$ & 0.492 & 0.479 \\
-    Hand-crafted MIR & \textbf{0.476} & 0.246 & 0.443 & 0.472 \\
-    wav2vec~2.0 & 0.299 & $-0.496$ & \textbf{0.339} & 0.335 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-In Table~\ref{tab:app_stage1_regressors}, bold marks the most accurate regressor per
-representation. A negative $R^2$ is worse than predicting the mean rating.
 
 The lead of CLAP with ridge regression over the VGGish pipeline (Section~\ref{subsec:eval_grid})
 was found after the results were known, so its test is post hoc. Pooled over the 50 repeats of

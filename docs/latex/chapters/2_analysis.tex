@@ -3,7 +3,7 @@
 
 The method of this thesis maps a clip of film music to eight predicted emotion ratings. It then predicts the film's genres from these eight values alone (audio $\rightarrow$ 8 emotions $\rightarrow$ genre). The main experiments compare this two-stage pipeline with two alternatives. One gives the same audio representation directly to the same genre classifier. The other is a control that compresses the representation into eight dimensions without any link to emotion. Two datasets are used. The film-music dataset of \citet{eerola2011comparison} supplies the audio and the emotion ratings. The Blockbuster dataset of \citet{ma2021computational} supplies an independent set of films for testing. This chapter covers the data and their genre labels (Section~\ref{sec:methods_data}), the audio representations (Section~\ref{sec:methods_features}), the two models of the pipeline (Sections~\ref{sec:methods_stage1} and~\ref{sec:methods_stage2}), the baselines and controls (Section~\ref{sec:methods_baselines}), the evaluation protocol (Section~\ref{sec:evaluation_protocol}) and the implementation (Section~\ref{sec:methods_implementation}). Figure~\ref{fig:pipeline} gives an overview. Chapter~\ref{ch:fundamentals} explains the underlying concepts; this chapter describes how they were applied.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \resizebox{0.92\textwidth}{!}{%
   \begin{tikzpicture}[font=\footnotesize, >=stealth,
@@ -66,7 +66,7 @@ Genre is treated as a multi-label problem throughout (Section~\ref{sec:fund_ml})
 
 This gives three label spaces, summarised in Table~\ref{tab:label_spaces}. They differ in their genres, their clips and their chance levels, so a score from one space cannot be compared with a score from another. Every result in Chapter~\ref{ch:evaluation} is therefore given with its label space and the chance floor of that space.
 
-\begin{table}[!htb]
+\begin{table}[H]
   \centering
   \small
   \caption{The three genre label spaces.}
@@ -97,7 +97,7 @@ In Table~\ref{tab:label_spaces}, each entry is the number of clips carrying a ge
 
 \paragraph{(a) The eight-genre Eerola space.} Eight genres occur often enough in the Eerola films to be modelled: Action, Adventure, Biography, Comedy, Crime, Documentary, Drama and Horror. Together they give 346 clips from 42 films. The labels are very unbalanced: Drama applies to 239 clips, Documentary to 17. Figure~\ref{fig:data_overview} shows how the clips are spread over the films and the films over the genres.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/data_overview.pdf}
   \caption{Clips per film and films per genre in the Eerola dataset.}
@@ -116,7 +116,7 @@ A model can only be transferred between two datasets if it predicts the same cla
 
 Both pipelines start from an audio representation (Section~\ref{sec:fund_audio}). Six representations are compared, so that a conclusion about ``direct audio'' does not depend on a single, possibly unsuitable model. They cover different architectures and, above all, different training data. Five are frozen pretrained networks, and one is a hand-crafted baseline with no pretraining. The networks were pretrained on four kinds of task: general sound events (AST, VGGish), matching audio with text (CLAP), music tagging (MusiCNN) and speech (wav2vec~2.0). MusiCNN is included because several of its tags are mood words, so it is expected to be the closest of the five to emotion. wav2vec~2.0 is included because it does not start from a spectrogram. If the other four agree, it shows whether this agreement is only due to their shared mel front-end. Table~\ref{tab:representations} lists the representations used.
 
-\begin{table}[t]
+\begin{table}[H]
   \centering
   \small
   \caption{The six audio representations.}
@@ -197,7 +197,7 @@ Every result is compared with a set of reference arms. Each one addresses a spec
 
 \paragraph{Random-8 projection.} On the Blockbuster dataset in-domain, a Gaussian random projection of the VGGish embedding to eight dimensions is added below the PCA-8 control. It is the floor for the control. It shows how much of the information that eight dimensions can carry depends on choosing them well, and thus whether PCA-8 is a serious competitor or only a weak reference.
 
-\begin{table}[tbp]
+\begin{table}[H]
   \centering
   \small
   \caption{The pipelines compared in this thesis and the model used in each step.}
