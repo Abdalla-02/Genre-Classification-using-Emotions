@@ -2604,3 +2604,4 @@ Appendix A.9 is now "Rated and Predicted Emotions per Genre" (label `sec:app_hor
 figure first, then the Horror fear table. Page breaks before A.12 and A.13 keep each heading with
 its float. Overleaf `204435f`: 0 errors, no overfull box, 104 pages.
 
+Figure `rated_vs_predicted` is one panel since 18 Nov (author): the second panel, predicted minus rated Cohen's d, could be read as the d of the predictions themselves. The legend now gives the actual values where a signature change matters (Comedy happiness: d = 0.39 rated, 0.88 predicted; Horror fear and energy in the table legend). Overleaf `98eb711` (two layout experiments for A.12/A.13 reverted; each starts on its own page): 0 errors, 104 pages.
