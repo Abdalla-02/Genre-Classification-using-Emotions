@@ -2585,3 +2585,4 @@ Figure 2.1 at 55 % width and, in A.4, the Stage-1 table before the grid table, s
 90 are full. Every page that still ends early is the last page of a chapter (or the page before
 A.13). Overleaf `ab34db1`: 0 errors, no overfull box, 104 pages.
 
+Section 5.4 starts on a new page (author, 18 Nov): its two figures did not fit under the heading on the page before; the page after Section 5.3 now ends with free space instead. Overleaf `dc9f02c`: 0 errors, 104 pages.
