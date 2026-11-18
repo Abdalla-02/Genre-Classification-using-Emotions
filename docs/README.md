@@ -2630,3 +2630,4 @@ Chapter 7 says Appendix, not Section, for A.9), "explains why" -> "shows why" in
 and Section 1.3 names the model configurations. Overleaf `f3cfae8`: 0 errors, 3 package warnings,
 no overfull box, no undefined reference, 104 pages. All chapter copies synced.
 
+Numbering (18 Nov, author): every figure and table of the thesis is numbered by its section (`\counterwithin` in `chapter/preamble.tex`): Figure 5.6.3 is the third figure of Section 5.6; a float in a chapter introduction before the first section keeps the chapter number (Figure 4.1). Overleaf `8d023e2`: 0 errors, 104 pages.
