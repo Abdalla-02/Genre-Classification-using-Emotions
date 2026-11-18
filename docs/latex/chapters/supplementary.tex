@@ -1,6 +1,11 @@
 \chapter{Supplementary Results}
 \label{app:supplementary}
 
+% Figures and tables numbered by section (author, 18 Nov): the figure of Section A.9 is
+% Figure A.9.1, a second one would be A.9.2; tables are counted separately.
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
 This appendix holds the tables and figures behind checks that Chapter~\ref{ch:evaluation}
 refers to, and the model configurations. All genre scores are film-level macro-$F_1$ on the
 five-genre subset unless stated otherwise. As in Chapter~\ref{ch:evaluation}, the emotion
@@ -390,9 +395,10 @@ Table~\ref{tab:horror_fear} looks at the fear of Horror in detail.
   \label{fig:rated_vs_predicted}
 \end{figure}
 
-In Figure~\ref{fig:rated_vs_predicted}, each cell is the mean predicted minus the mean
-rated emotion over the clips of a genre, in rating points. Red marks a prediction above the
-ratings, blue one below. Over all 329 clips the two means differ by at
+In Figure~\ref{fig:rated_vs_predicted}, panel (a) gives, for each genre, the mean predicted
+minus the mean rated emotion over its clips, in rating points. Orange marks a prediction above the ratings, purple one below. Panel (b) gives the signature of the predicted emotions, Cohen's
+$d$ of the genre against all other clips, with the change from the $d$ of the ratings on the
+same clips in brackets. Over all 329 clips the two means differ by at
 most 0.04 points, but the predictions vary less than the ratings: their standard deviation
 is 0.46 to 0.73 times that of the ratings. Horror shows the largest gaps. Its fear is
 predicted 0.63 points too low and its sadness 0.48 too low, its energy and happiness 0.54

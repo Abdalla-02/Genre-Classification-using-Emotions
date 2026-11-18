@@ -2605,3 +2605,12 @@ figure first, then the Horror fear table. Page breaks before A.12 and A.13 keep 
 its float. Overleaf `204435f`: 0 errors, no overfull box, 104 pages.
 
 Figure `rated_vs_predicted` is one panel since 18 Nov (author): the second panel, predicted minus rated Cohen's d, could be read as the d of the predictions themselves. The legend now gives the actual values where a signature change matters (Comedy happiness: d = 0.39 rated, 0.88 predicted; Horror fear and energy in the table legend). Overleaf `98eb711` (two layout experiments for A.12/A.13 reverted; each starts on its own page): 0 errors, 104 pages.
+
+Figure `rated_vs_predicted` again has two panels (author, 18 Nov): (a) predicted minus rated mean in
+rating points, in purple/orange; (b) the Cohen's d of the predicted emotions themselves, with the
+change from the ratings' d on the same clips in brackets, in red/blue like every other d figure.
+Appendix figures and tables are numbered by section (`\counterwithin` in `appendix/supplementary.tex`):
+the figure of Section A.9 is Figure A.9.1, A.2 holds Figures A.2.1 and A.2.2, A.4 Tables A.4.1 and
+A.4.2; the number column of the lists of figures and tables is 3.2em wide (`chapter/preamble.tex`).
+The main chapters keep numbering by chapter. Overleaf `e9e05bd`: 0 errors, no overfull box, 104 pages.
+

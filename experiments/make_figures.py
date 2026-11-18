@@ -498,32 +498,51 @@ def fig_signatures():
 
 def fig_rated_vs_predicted():
     """Rated against predicted emotions per genre (five-genre subset, out-of-fold predictions
-    of the pipeline's random forest on VGGish; `horror_diagnosis.json`): predicted minus rated
-    mean in rating points. Added on 18 Nov at the author's request. A second panel with the
-    difference in Cohen's d was dropped the same day (author): a difference of d next to the
-    genre could be read as the d of the predictions themselves."""
+    of the pipeline's random forest on VGGish; `horror_diagnosis.json`). Panel (a): predicted
+    minus rated mean in rating points. Panel (b): the signature of the predictions themselves,
+    Cohen's d of the genre against all other clips, with the change from the ratings' d in
+    brackets (author, 18 Nov: a panel showing only the change could be read as the d)."""
     d = load("horror_diagnosis")
     if not d or "means_by_genre" not in d:
         return
     names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
     genres = [g for g in d["cohens_d_rated"]]
     emos = list(d["cohens_d_rated"][genres[0]])
-    M = np.array([[d["means_by_genre"][g]["predicted_minus_rated"][e] for e in emos] for g in genres])
-    fig, ax = plt.subplots(figsize=(WIDTH * 0.86, 2.3))
-    lim = float(np.ceil(abs(M).max() * 10) / 10)
-    im = ax.pcolormesh(M, cmap=light_div("RdBu_r"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            v = M[i, j]
-            r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
-            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=8, color="black")
-    ax.set_xticks(np.arange(len(emos)) + 0.5, [names.get(e, e) for e in emos], rotation=35, ha="right")
-    ax.set_yticks(np.arange(len(genres)) + 0.5,
-                  [f"{g} ({d['means_by_genre'][g]['clips']})" for g in genres])
-    ax.invert_yaxis()
-    ax.tick_params(length=0)
-    ax.spines[:].set_visible(False)
-    fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label="predicted $-$ rated\n(rating points)")
+    A = np.array([[d["means_by_genre"][g]["predicted_minus_rated"][e] for e in emos] for g in genres])
+    P = np.array([[d["cohens_d_predicted"][g][e] for e in emos] for g in genres])
+    C = P - np.array([[d["cohens_d_rated"][g][e] for e in emos] for g in genres])
+
+    def r2(v):                                   # half-up, as in the text
+        return np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
+
+    fig, axes = plt.subplots(2, 1, figsize=(WIDTH * 0.86, 4.9),
+                             gridspec_kw={"height_ratios": [1, 1.25]})
+    for k, ax in enumerate(axes):
+        M = A if k == 0 else P
+        lim = float(np.ceil(abs(M).max() * 10) / 10)
+        # (a) purple/orange, (b) red/blue like every Cohen's d figure (author, 18 Nov)
+        cmap = light_div("PuOr_r") if k == 0 else light_div("RdBu_r")
+        im = ax.pcolormesh(M, cmap=cmap, vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+        for i in range(M.shape[0]):
+            for j in range(M.shape[1]):
+                if k == 0:
+                    ax.text(j + 0.5, i + 0.5, f"{r2(M[i, j]):+.2f}", ha="center", va="center",
+                            fontsize=8, color="black")
+                else:
+                    ax.text(j + 0.5, i + 0.36, f"{r2(M[i, j]):+.2f}", ha="center", va="center",
+                            fontsize=8, color="black")
+                    ax.text(j + 0.5, i + 0.72, f"({r2(C[i, j]):+.2f})", ha="center", va="center",
+                            fontsize=6.5, color="black")
+        ax.set_xticks(np.arange(len(emos)) + 0.5, [names.get(e, e) for e in emos], rotation=35, ha="right")
+        ax.set_yticks(np.arange(len(genres)) + 0.5,
+                      [f"{g} ({d['means_by_genre'][g]['clips']})" for g in genres])
+        ax.invert_yaxis()
+        ax.tick_params(length=0)
+        ax.spines[:].set_visible(False)
+        lab = ("(a) predicted $-$ rated\n(rating points)" if k == 0
+               else "(b) Cohen's $d$ of the predictions\n(change from the ratings)")
+        fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label=lab)
+    fig.tight_layout(h_pad=1.0)
     save(fig, "rated_vs_predicted")
 
 
