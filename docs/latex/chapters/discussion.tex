@@ -11,7 +11,7 @@ Section~\ref{sec:disc_relatedwork} relates the results to the literature.
 \section{Answers to the Research Questions}
 \label{sec:disc_rq}
 
-\paragraph{RQ1: How well do the emotions expressed by a soundtrack predict its film's genre?}
+\paragraph{RQ1: How well do the emotions that listeners perceive in a soundtrack predict its film's genre?}
 The emotions predict genre well above chance, but far from perfectly. With the human ratings, the logistic regression
 reaches a film-level macro-$F_1$ of 0.491 on five genres, and the full emotion pipeline
 (VGGish, random forest, logistic regression) 0.460, against 0.309 for a random guess
@@ -164,7 +164,7 @@ comparisons, the Nadeau--Bengio test could not become significant with any numbe
 repeats. Only more films could resolve them. The learning curves were still rising at the
 full dataset size.
 
-\paragraph{Unit of evaluation.} I adopted scoring per film after the clip-level analysis had been done. At that point the analysis of alternative metrics suggested that it fits the
+\paragraph{Unit of evaluation.} Scoring per film was adopted after the clip-level analysis had been done. At that point the analysis of alternative metrics suggested that it fits the
 structure of the labels. A metric chosen after the results are known can favour the method
 it is chosen for. The clip-level score of the same predictions is therefore reported next
 to it. The direction of every main conclusion is the same under both. Which comparisons
@@ -183,7 +183,7 @@ difficult to outperform. It reaches 0.434 on the five-genre subset, only 0.022 b
 pipeline. On 40 films, macro-$F_1$ depends heavily on how often a pipeline assigns a genre, so the
 threshold-free results should be read beside it.
 
-\paragraph{Choice of the five-genre subset.} I chose the five headline genres partly because they carry an emotional signature in the same data. This can favour the emotion
+\paragraph{Choice of the five-genre subset.} The five headline genres were chosen partly because they carry an emotional signature in the same data. This can favour the emotion
 pipeline. The eight-genre results reduce this risk but do not remove it. There the
 advantage over VGGish and AST is of similar size and significant at film level.
 

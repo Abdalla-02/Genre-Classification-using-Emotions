@@ -7,32 +7,25 @@
 \section{Conclusions}
 \label{sec:conclusions}
 
-In this thesis I examined how well the emotional features of a film soundtrack predict the
-genre of the film, and how an interpretable emotion step compares with classifying genre
+This thesis examined how well the emotions that listeners perceive in film music predict the genre of the film, and how an interpretable emotion step compares with classifying genre
 directly from audio. The emotion pipeline predicts eight emotion ratings from a VGGish
 embedding with a random forest and then predicts genre from these ratings with one
 logistic regression per genre, so that a film can receive several genres (multi-label
 classification). It was evaluated on the 40 films of the five-genre Eerola
 subset and transferred to the 110 films of the Blockbuster dataset. Section~\ref{sec:disc_rq}
-answers the four research questions in detail. In brief:
+answers the four research questions in detail; in brief, the results are as follows.
 
-\paragraph{RQ1: predictive strength of emotion.} Emotions predict genre well above chance,
-but far from perfectly. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460 and the
-human ratings 0.491, against 0.309 for a random guess, and the emotion pipeline ranks the
-films better than chance (macro ROC-AUC 0.655).
-
-\paragraph{RQ2: emotional signatures of genres.} Most genres have an emotional signature that
-is consistent with the conventions of film scoring. Fear is the most discriminating emotion
-and valence a second axis, and one to three emotions keep most of the genre information.
-
-\paragraph{RQ3: emotion pipeline and direct audio within one dataset.} At the default
-threshold the emotion pipeline is ahead of every audio representation used directly
-($+0.093$ over VGGish, $p=0.052$), but significantly only against the weaker ones. With
-thresholds tuned per genre the pipelines converge.
-
-\paragraph{RQ4: generalisation to another dataset.} Trained on Eerola alone, the emotion
-pipeline transfers to the Blockbuster films better than direct VGGish at the default
-threshold (0.508 against 0.403, $p=0.013$). Most of this lead depends on the threshold.
+Emotions predict genre well above chance, but far from perfectly. The emotion pipeline
+reaches a film-level macro-$F_1$ of 0.460 and the human ratings 0.491, against 0.309 for a
+random guess, and the emotion pipeline ranks the films better than chance (macro ROC-AUC
+0.655). Most genres have an emotional signature that is consistent with the conventions of
+film scoring. Fear is the most discriminating emotion and valence a second axis, and one to
+three emotions keep most of the genre information. Within one dataset, the emotion pipeline
+is ahead of every audio representation used directly at the default threshold ($+0.093$
+over VGGish, $p=0.052$), but significantly only against the weaker ones, and with
+thresholds tuned per genre the pipelines converge. Trained on Eerola alone, it transfers to
+the Blockbuster films better than direct VGGish at the default threshold (0.508 against
+0.403, $p=0.013$), but most of this lead depends on the threshold.
 
 \paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
 genre prediction from film music more accurate in general. Its advantage appears to be limited

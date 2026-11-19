@@ -1,13 +1,10 @@
 \chapter{Supplementary Results}
 \label{app:supplementary}
 
-% Figures and tables are numbered by section (preamble): Figure A.9.1 is in Section A.9.
+% Figures and tables carry the number of their section (preamble): Figure A.9 is in Section A.9.
 
 This appendix holds the tables and figures behind checks that Chapter~\ref{ch:evaluation}
-refers to, and the model configurations. All genre scores are film-level macro-$F_1$ on the
-five-genre subset unless stated otherwise. As in Chapter~\ref{ch:evaluation}, the emotion
-pipeline is VGGish, the random-forest emotion regressor and the logistic-regression genre
-classifier. Every other pipeline ends in the same classifier (Table~\ref{tab:pipelines}).
+refers to, and the model configurations. All genre scores are film-level macro-$F_1$ on the five-genre subset unless stated otherwise.
 
 % =============================================================================
 \section{All Paired Comparisons}
@@ -50,19 +47,16 @@ In Table~\ref{tab:power_cmp_full}, $\Delta$ is the first pipeline minus the seco
 block scores the same predictions over clips, with the film bootstrap ($p_{\text{boot}}$)
 and the Nadeau--Bengio corrected resampled $t$-test ($p_{\text{NB}}$). $p_{\lim}$ is the
 smallest $p_{\text{NB}}$ this dataset allows with an unlimited number of repeats
-(Section~\ref{sec:fund_evaluation}). Bold marks $p<0.05$. For every borderline clip-level
-comparison of the emotion pipeline, $p_{\lim}$ lies above 0.05, so only more films could
-make it significant under this test.
+(Section~\ref{sec:fund_evaluation}). Bold marks $p<0.05$.
 
 % =============================================================================
 \section{Choice of Metric and Stability}
 \label{sec:eval_robustness}
 
-Section~\ref{subsec:protocol_altmetrics} describes the two checks of the main metric.
-Table~\ref{tab:metric_family} and Figure~\ref{fig:metric_family} show the first: the
-ranking of the pipelines under other metrics and with tuned thresholds.
-Figure~\ref{fig:stability_repeats} shows the second: the spread over repeats and seeds.
-Section~\ref{sec:eval_direct} reports the results.
+These are the two checks of the main metric described in Section~\ref{subsec:protocol_altmetrics}:
+the pipelines under other metrics and with tuned thresholds (Table~\ref{tab:metric_family},
+Figure~\ref{fig:metric_family}), and the spread over repeats and seeds
+(Figure~\ref{fig:stability_repeats}).
 
 \begin{table}[H]
   \centering
@@ -104,11 +98,7 @@ from the same predictions. ``Random'' is the base-rate random guess, ``Most freq
 most-frequent baseline and ``All yes'' assigns every genre to every clip. $\Delta$ is the
 emotion pipeline minus direct VGGish, with the paired film-bootstrap $p$-value (1000 draws,
 so the macro-$F_1$ rows can differ from Table~\ref{tab:power_cmp} in the third decimal). A
-dash means that it was not computed. For Hamming loss lower is better. Bold marks the best
-of the four audio pipelines. Under the metrics of the last block, the most-frequent
-baseline outperforms every trained model, which is why they are not used as the headline
-(Section~\ref{subsec:protocol_metrics}). The emotion pipeline has the highest Hamming loss
-because it assigns the most genres: 2.35 per clip, against 1.54 true genres.
+dash means that it was not computed. For Hamming loss lower is better. Bold marks the best of the four audio pipelines.
 
 \begin{figure}[H]
   \centering
@@ -119,12 +109,9 @@ because it assigns the most genres: 2.35 per clip, against 1.54 true genres.
 
 In Figure~\ref{fig:stability_repeats}, the coloured dots are the ten repeats under seed
 42, summarised by a box plot. The black dashes are the ten-repeat means under each of the
-five master seeds (42, 1, 2, 3, 4). Over the repeats, the standard deviation of film-level
-macro-$F_1$ is 0.034 to 0.045, about twice the clip-level value (0.016 to 0.019), because each genre's $F_1$ rests on a few films. The bootstrap standard error over films is
-0.027 to 0.038. Under every seed the emotion pipeline is ahead of
+five master seeds (42, 1, 2, 3, 4). The bootstrap standard error over films is 0.027 to 0.038. Under every seed the emotion pipeline is ahead of
 VGGish ($+0.076$ to $+0.132$), AST ($+0.142$ to $+0.155$) and the PCA-8 control ($+0.051$ to
-$+0.071$). Under seed 42 the re-run reproduces the per-repeat scores of the main analysis
-exactly.
+$+0.071$).
 
 \begin{figure}[H]
   \centering
@@ -220,10 +207,8 @@ descriptors. Bold marks an emotion pipeline that is significantly ahead of the d
 of its representation (paired film bootstrap, $p<0.05$).
 
 The lead of CLAP with ridge regression over the VGGish pipeline (Section~\ref{subsec:eval_grid})
-was found after the results were known, so its test is post hoc. Pooled over the 50 repeats of
-the five seeds, the paired film bootstrap gives $+0.032$ [$-0.007$, $+0.075$] ($p=0.112$), and
-over clips $+0.012$ ($p=0.269$). Under single seeds the film-level $p$ lies between 0.041 and
-0.389, and the Nadeau--Bengio test on the clips between 0.506 and 0.722. The seeds share the
+was found after the results were known, so its test is post hoc. Pooled over the 50 repeats of the five seeds, the paired film bootstrap gives $+0.032$
+[$-0.007$, $+0.075$] ($p=0.112$), and over clips $+0.012$ ($p=0.269$). The seeds share the
 same 40 films, and this pairing was one of 18, so its lead is not established.
 
 % =============================================================================
@@ -255,10 +240,7 @@ part of this gain that compression alone would give.
 
 In Table~\ref{tab:app_w2v}, every row except the second ends in the logistic regression. The
 PCA-8 control is ahead of the direct embedding ($+0.082$, $p=0.004$), and the emotion
-pipeline is ahead of the control ($+0.127$, $p<0.001$, all ten repeats). It is not
-significantly ahead of the VGGish pipeline ($+0.013$, $p=0.537$). A shortcut through film
-identity appears unlikely: a clip's five nearest neighbours in wav2vec~2.0 come from its own
-film in 9\,\% of cases, against 15\,\% for VGGish.
+pipeline is ahead of the control ($+0.127$, $p<0.001$, all ten repeats). It is not significantly ahead of the VGGish pipeline ($+0.013$, $p=0.537$).
 
 % =============================================================================
 \section{Other Classifiers in Stage~2}
@@ -293,10 +275,8 @@ In Table~\ref{tab:app_stage2}, ``Film'' and ``Clip'' are the film- and clip-leve
 macro-$F_1$, averaged over the ten repeats, and $\Delta$ is the film-level difference from
 the logistic regression. ``Ratings'' gives every classifier the rated emotions instead of
 the predicted ones. Every difference is significant in the paired film bootstrap
-($p\le0.009$). Over clips the gaps are smaller: the classifier chain is on par with the
-logistic regression on the predicted emotions ($-0.004$, Nadeau--Bengio $p=0.643$). The
-random forest predicts almost only Drama, so its result may depend on the threshold of 0.5
-more than the others.
+($p\le0.009$). Over clips the classifier chain is on par with the logistic regression on the predicted
+emotions ($-0.004$, Nadeau--Bengio $p=0.643$).
 
 % =============================================================================
 \section{All Eight Genres}
@@ -326,10 +306,7 @@ Table~\ref{tab:app_eight} repeats the main comparison on all eight Eerola genres
 \end{table}
 
 In Table~\ref{tab:app_eight}, bold marks the best audio pipeline. The emotion pipeline is
-ahead of VGGish ($+0.093$, $p=0.001$) and AST ($+0.107$, $p<0.001$) in all ten repeats. Over
-clips the Nadeau--Bengio test gives $p=0.022$ and $p=0.136$. Documentary (two films) is never
-predicted correctly by any pipeline, and Biography (three films) reaches an $F_1$ of 0.11.
-Adventure (ten films), the genre without an emotional signature, reaches only 0.38.
+ahead of VGGish ($+0.093$, $p=0.001$) and AST ($+0.107$, $p<0.001$) in all ten repeats. Over clips the Nadeau--Bengio test gives $p=0.022$ and $p=0.136$.
 
 % =============================================================================
 \section{Blockbuster: Reproduction and Cue-Level Prediction}
@@ -367,13 +344,14 @@ In Table~\ref{tab:blockbuster_reference}, the published values are quoted from
 film before classifying it, \emph{single attention} learns a weight for each cue, and
 \emph{Simple-MI} (simple multiple-instance learning) classifies the set of cues with
 $k$-nearest neighbours ($k$NN) or a support vector machine (SVM). The plurality label set
-gives every film the most common combination of genres. The direct pipeline lies within the
-range of their VGGish models, and both baselines reproduce to within 0.03.
+gives every film the most common combination of genres. The direct pipeline lies within the range of their VGGish models, and both baselines reproduce to within 0.03.
+Under repeated cross-validation the learned embedding (0.593) and the full set of 140
+hand-crafted MIR features (0.585) do not differ significantly ($+0.009$, Nadeau--Bengio
+$p=0.787$).
 
-The emotion model is applied per cue, the unit it was trained on. Predicting the emotions of
-each cue and averaging them outperforms predicting them once from the film-average embedding
-in-domain (0.616 against 0.557, Nadeau--Bengio $p=0.020$). In the zero-shot setting the
-difference is small (0.508 against 0.502).
+Predicting the emotions per cue, the unit the emotion model was trained on, and averaging them
+outperforms predicting them once from the film-average embedding (in-domain 0.616 against
+0.557, Nadeau--Bengio $p=0.020$; zero-shot 0.508 against 0.502).
 
 % =============================================================================
 \section{Rated and Predicted Emotions per Genre}
@@ -392,16 +370,17 @@ Table~\ref{tab:horror_fear} looks at the fear of Horror in detail.
   \label{fig:rated_vs_predicted}
 \end{figure}
 
+All values in this section are computed on the 329 clips of the five-genre subset. The $d$ of
+the ratings therefore differ slightly from Figure~\ref{fig:signatures}, which compares each
+genre with all 346 clips of the eight genres (Horror's fear: $+0.73$ here, $+0.75$ there).
+
 In Figure~\ref{fig:rated_vs_predicted}, panel (a) gives, for each genre, the mean predicted
 minus the mean rated emotion over its clips, in rating points. Orange marks a prediction above the ratings, purple one below. Panel (b) gives the signature of the predicted emotions, Cohen's
 $d$ of the genre against all other clips, with the change from the $d$ of the ratings on the
-same clips in brackets. Over all 329 clips the two means differ by at
-most 0.04 points, but the predictions vary less than the ratings: their standard deviation
-is 0.46 to 0.73 times that of the ratings. Horror shows the largest gaps. Its fear is
-predicted 0.63 points too low and its sadness 0.48 too low, its energy and happiness 0.54
-and 0.56 too high. Crime loses part of its fear as well ($-0.36$). For Comedy the gap in happiness is small, but its contrast with the other genres grows:
-Cohen's $d$ of happiness, Comedy against all other clips, is 0.39 in the ratings and 0.88 in
-the predictions.
+same clips in brackets. Over all 329 clips the two means differ by at most 0.04 points, but the predictions vary less
+than the ratings: their standard deviation is 0.46 to 0.73 times that of the ratings. A
+genre whose mean barely moves can therefore still stand out more in $d$, as Comedy does in
+happiness.
 
 \begin{table}[H]
   \centering
@@ -426,8 +405,7 @@ the predictions.
 In Table~\ref{tab:horror_fear}, a clip counts for every genre its film carries, so the rows
 overlap. Within the Horror clips, predicted fear explains only 37\,\% of the variance of the
 rated fear ($R^2=0.37$, against 0.59 over all clips) and rises by only 0.45 points per point of
-rated fear. As Cohen's $d$ against all other clips, Horror's fear falls from $+0.73$ in the
-ratings to $+0.59$ in the predictions, and its energy changes sign, from $-0.15$ to $+0.38$.
+rated fear.
 
 % =============================================================================
 \section{The All-Positive Reference}
@@ -524,8 +502,7 @@ In Figure~\ref{fig:rating_structure}, each scale is placed by its correlation wi
 components, so a scale close to the circle is described well by this plane. Scales that point
 the same way correlate positively, and scales that point in opposite directions negatively.
 The arrows are the three dimensional scales, and the grey squares are the five discrete
-emotions. The first component runs from tension, fear and anger to valence and tenderness,
-the second from sadness to happiness. Unlike in the schematic, valence and tension are almost
+emotions. Unlike in the schematic, valence and tension are almost
 opposite ($r=-0.91$), energy correlates with tension ($r=0.58$) rather than with valence
 ($r=-0.40$), and sadness lies on the pleasant side ($r=0.32$ with valence).
 

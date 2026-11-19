@@ -268,9 +268,7 @@ seed and combination, by at least 0.007 (MusiCNN with the random forest). On CLA
 regression is ahead of the random forest under every seed (by 0.010 to 0.039). CLAP with
 ridge regression is also ahead of the VGGish pipeline under every seed (0.502 against 0.469
 on average). A post-hoc test, however, does not find this lead significant: over all five
-seeds it is 0.032 and not significant ($p=0.112$; Appendix~\ref{sec:app_grid}). I
-therefore keep VGGish with the random forest, for the reasons given in
-Section~\ref{sec:methods_stage1}.
+seeds it is 0.032 and not significant ($p=0.112$; Appendix~\ref{sec:app_grid}). VGGish with the random forest is therefore kept, for the reasons given in Section~\ref{sec:methods_stage1}.
 
 % =============================================================================
 % New page (author, 18 Nov): the two figures of this section do not fit under the
@@ -367,7 +365,7 @@ Blockbuster films the base-rate random guess reaches 0.292 and the plurality bas
 On the 40 Eerola films of the shared space the random guess reaches 0.240.
 
 \paragraph{No film occurs in both datasets.} A transfer result would be inflated if the
-same film were in the training and the test data. I checked this against the IMDb identifiers of all films. None of the 42 Eerola films occurs among the 110 Blockbuster
+same film were in the training and the test data. This was checked against the IMDb identifiers of all films. None of the 42 Eerola films occurs among the 110 Blockbuster
 films, and no titles match. The Eerola films all came out before 2011, and the
 Blockbuster films between 2014 and 2019. Some composers, however, appear in both datasets.
 For example, Hans Zimmer wrote the music for \emph{The Last Samurai} in Eerola and for
@@ -375,7 +373,7 @@ For example, Hans Zimmer wrote the music for \emph{The Last Samurai} in Eerola a
 split is therefore possible, but it is not a shared film. A related problem was found inside
 the Eerola dataset and corrected before the results reported here. One film appeared under
 two spellings of its title. Grouping by film therefore treated it as two films and could
-place its clips on both sides of a split. I re-ran all Eerola experiments with the two spellings merged. This gives the 42 films (eight genres) and 40 films (five genres) used
+place its clips on both sides of a split. All Eerola experiments were re-run with the two spellings merged. This gives the 42 films (eight genres) and 40 films (five genres) used
 throughout.
 
 \subsection{Blockbuster in-domain}
@@ -480,7 +478,7 @@ little difference whether the emotions are predicted per cue or once from the fi
 embedding (0.508 against 0.502).
 
 \paragraph{Thresholds tuned on the source.} Because the lead is partly driven by recall,
-I repeated the zero-shot transfer with a separate threshold per genre. Each threshold was
+the zero-shot transfer was repeated with a separate threshold per genre. Each threshold was
 tuned on out-of-fold probabilities of the Eerola clips, as in-domain
 (Section~\ref{subsec:protocol_altmetrics}), and then applied unchanged to Blockbuster. The
 $p$-values come from the same paired bootstrap as above: the 110 Blockbuster films are drawn
@@ -518,7 +516,7 @@ regressor is trained on all 360 rated clips, because the regressor needs only ra
 genre labels, and its film vectors give every cue the same weight. Its scores therefore
 differ slightly from Figure~\ref{fig:zero_shot}: 0.503 against 0.508 for the emotion
 pipeline and 0.383 against 0.403 for direct VGGish. The zero-shot experiment stays the main
-result. I fixed it first, and it carries the further checks: both scaling regimes, the
+result. It was fixed first, and it carries the further checks: both scaling regimes, the
 ratings arm and the tuned thresholds.
 
 The emotion pipeline is ahead of direct VGGish in both transfer directions, but

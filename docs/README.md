@@ -2631,3 +2631,33 @@ and Section 1.3 names the model configurations. Overleaf `f3cfae8`: 0 errors, 3 
 no overfull box, no undefined reference, 104 pages. All chapter copies synced.
 
 Numbering (18 Nov, author): every figure and table of the thesis is numbered by its section (`\counterwithin` in `chapter/preamble.tex`): Figure 5.6.3 is the third figure of Section 5.6; a float in a chapter introduction before the first section keeps the chapter number (Figure 4.1). Overleaf `8d023e2`: 0 errors, 104 pages.
+
+## 47. Supervisor's comments of 18 Nov (meeting) and the numbering by section (19 Nov)
+
+Comments: compare the Cohen's d of the appendix with Section 5.5 (five or eight genres); the RQ
+answers in the conclusion need not be listed; one consistent voice (the author chose impersonal);
+still much text in the appendix; no "soundtrack's emotions" (a soundtrack has no emotions, listeners
+perceive them); abstract before the contents; references only to earlier chapters (except chapter
+openings and the appendix); keep to the line of argument. Done (Overleaf `49ce3d7`, `64a310a`,
+`3119356`; compiled in Chrome: 0 errors, 3 package warnings, no overfull box, no undefined reference,
+104 pages):
+- Voice: all 46 first-person sentences of Chapters 1-7 rewritten impersonally ("This thesis ...",
+  passive); the declarations keep "I". No "we" left (except the title of Kang and Herremans' paper).
+- Perceived emotions: abstract, Section 1.1 question, Section 1.2 aim and RQ1, Section 6.1 RQ1 and
+  the opening of Chapter 7 say "the emotions that listeners perceive in a soundtrack".
+- Forward references: 38 references from Chapters 2-4 to later chapters removed or pointed to the
+  appendix; only Chapter 5's opening paragraph points ahead (to Chapter 6). Related Work no longer
+  quotes results of this thesis except via Appendix A.8; A.8 again holds the VGGish vs full MIR
+  result on Blockbuster (0.593 vs 0.585, Nadeau-Bengio p = 0.787, blockbuster_deep.json); the
+  unsupported Methods sentence "the emotion features lose much less under grouping" was removed.
+- Abstract before the contents; 249 words.
+- Section 7.1: the four RQ answers are one paragraph without RQ labels.
+- Appendix A.9 says why its d differ from Figure 5.5 (329 clips of the five genres against 346
+  clips of the eight; Horror's fear +0.73 against +0.75).
+- Appendix prose trimmed again to what is needed to read each float and what the main text cites.
+- Numbering (author): every figure and table carries the number of the (sub)section it sits in
+  (Figure 4.1.3 in Section 4.1.3, Figure 5.6.2 and Table 5.6.2); where one unit holds two floats of
+  the same kind they get letters (Figures 5.4a/b, A.2a/b, Tables A.4a/b; listed by hand in
+  `chapter/preamble.tex`, check after moving a float); the pipeline overview in the introduction of
+  Chapter 4 is Figure 4. Every figure or table mentioned in the text exists as a caption.
+
