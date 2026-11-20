@@ -117,7 +117,7 @@ representation given to the classifier directly, and grey the PCA-8 control. The
 line is the most-frequent baseline and the dotted line the base-rate random guess.
 
 With the human ratings as input, the classifier reaches a film-level macro-$F_1$ of 0.491,
-and the full emotion pipeline reaches 0.460. Both lie well above the two chance floors, and
+and the full emotion pipeline reaches 0.460. Both lie above the two chance floors, and
 both are lower when the same predictions are scored over clips. On all eight genres the emotion
 pipeline reaches 0.349 against a random guess of 0.226 (Appendix~\ref{sec:app_eight}).
 
@@ -186,9 +186,7 @@ unit of scoring. At film level the film bootstrap finds the lead significant aga
 the hand-crafted descriptors and wav2vec~2.0, but not against VGGish, CLAP
 ($p=0.156$) and MusiCNN. Over clips the leads are smaller (0.037 to 0.049).
 There the same bootstrap finds the lead significant against VGGish, CLAP, MusiCNN, the
-hand-crafted descriptors and wav2vec~2.0, but not against AST ($p=0.106$). The stricter
-Nadeau--Bengio test, whose attainable $p$-value lies above 0.05 on this dataset, finds it
-only against wav2vec~2.0 (Appendix~\ref{sec:app_comparisons}).
+hand-crafted descriptors and wav2vec~2.0, but not against AST ($p=0.106$). The stricter Nadeau--Bengio test finds it only against wav2vec~2.0; for the other comparisons its attainable $p$-value on this dataset lies above 0.05 (Appendix~\ref{sec:app_comparisons}).
 
 Second, compression alone may account for part of the gain at film level. The PCA-8 control is ahead
 of VGGish by $+0.023$ ($p=0.488$, but in 7 of ten repeats and under every seed). The
@@ -208,7 +206,7 @@ threshold, the emotion pipeline's lead over VGGish in film-level ROC-AUC is $+0.
 ($p=0.093$). This is about as large as its lead in $F_1$, but it is not significant either.
 
 These values change little across seeds. Re-running the whole protocol under five master seeds changes the
-ten-repeat mean of the emotion pipeline by at most 0.019 (from 0.460 to 0.481). Its lead
+ten-repeat mean of the emotion pipeline by at most 0.021 (from 0.460 to 0.481). Its lead
 over VGGish stays positive under every seed ($+0.076$ to $+0.132$). The main source of
 uncertainty is which films the dataset happens to contain (bootstrap standard error 0.027
 to 0.038; Appendix~\ref{sec:eval_robustness}).
@@ -244,7 +242,7 @@ representations. There it stays significant for every regressor after correcting
 smallest for MusiCNN, the strongest direct representation (0.032 to 0.049, $p\geq0.32$).
 Second, within the emotion pipeline the choice of representation has little effect. With the random
 forest, every representation is within 0.034 of VGGish, and none differs from it
-significantly ($p\geq0.15$). This holds even for wav2vec~2.0, whose emotions are the least accurate. On wav2vec~2.0 the
+significantly ($p\geq0.15$). This holds even for wav2vec~2.0, whose predicted emotion ratings are the least accurate. On wav2vec~2.0 the
 gain is not only a matter of compression: its own PCA-8 control reaches 0.344, and the
 emotion pipeline is 0.127 above it ($p<0.001$, in all ten repeats;
 Appendix~\ref{sec:app_waveform}). Third, the regressor matters most for the weaker inputs.
@@ -342,7 +340,7 @@ emotion, fear, reaches only $|d|=0.25$.
 To test whether the genre classifier needs all eight emotions, it was trained on the eight
 ratings with each emotion left out in turn and on smaller subsets motivated by theory
 (Figure~\ref{fig:ablation}, Appendix~\ref{sec:app_ablation}). No single emotion is
-necessary. Leaving one out changes the film-level macro-$F_1$ of 0.493 by at most 0.012.
+necessary. Leaving one out changes the film-level macro-$F_1$ of the eight ratings (0.493, without the three derived features) by at most 0.012.
 The only nominally significant change is an increase, when tension is left out ($p=0.041$;
 over clips, Nadeau--Bengio $p=0.516$). Smaller subsets lose a little, but not
 significantly. Fear alone reaches 0.475 ($p=0.345$), valence with energy 0.487 and the
@@ -473,7 +471,7 @@ precision (Table~\ref{tab:zero_shot}). Assigning every genre to every Blockbuste
 would reach 0.438. The emotion pipeline lies above this reference and direct VGGish below it. Macro-$F_1$ is the mean of the $F_1$
 values of the genres, not the $F_1$ of the mean precision and recall. Direct VGGish is
 precise overall, but its $F_1$ on Romance and Horror is only 0.14 and 0.17. The emotion
-pipeline reaches 0.42 and 0.24 on them, and 0.61 instead of 0.38 on Sci-Fi. It makes
+pipeline reaches 0.42 and 0.24 on them, and 0.61 instead of 0.38 on Sci-Fi, a genre with only two Eerola training films. It makes
 little difference whether the emotions are predicted per cue or once from the film-average
 embedding (0.508 against 0.502).
 
@@ -562,19 +560,17 @@ results along the pipeline.
   \end{tabular}
 \end{table}
 
-In Table~\ref{tab:disc_settings}, every score is film-level macro-$F_1$, and $\Delta$ is the emotion pipeline minus direct audio. The
+In Table~\ref{tab:disc_settings}, every score is film-level macro-$F_1$, and $\Delta$ is the emotion pipeline minus direct audio. The Blockbuster in-domain row averages the 50 test folds, as in Figure~\ref{fig:blockbuster_cv}, so its random-guess floor (0.295) differs slightly from the 0.292 over all 110 films. The
 $p$-value is the paired film bootstrap unless marked $^{\mathrm{NB}}$. That mark means the
 Nadeau--Bengio (NB) corrected $t$-test over repeated folds; for the Eerola in-domain row it is
 computed on the clip-level scores of the same predictions. The zero-shot row is the strict
 regime.
 
 \emph{Stage~1.} From the best audio representations the random forest recovers about
-62\,\% of the $R^2$ that two listener panels allow. Arousal-like scales are predicted best,
-happiness and sadness worst.
+62\,\% of the $R^2$ that two listener panels allow. Tension, energy and anger are predicted best, happiness and sadness worst.
 
 \emph{Stage~2.} On the five-genre subset the emotion pipeline (VGGish embedding,
-random-forest emotion regressor, logistic-regression genre classifier) reaches a film-level
-macro-$F_1$ of 0.460, well above a random guess, and the human ratings reach 0.491.
+random-forest emotion regressor, logistic-regression genre classifier) reaches a film-level macro-$F_1$ of 0.460, above a random guess, and the human ratings reach 0.491.
 Assigning every genre to every film already reaches 0.434, but its ROC-AUC is 0.50,
 against 0.655 for the emotion pipeline.
 

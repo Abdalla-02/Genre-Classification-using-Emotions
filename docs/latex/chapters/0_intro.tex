@@ -5,7 +5,7 @@
 \label{sec:motivation}
 
 % Move 1 (CARS): establishing the research territory
-Music is one of the main means by which a film shapes the emotional response of its audience. \citet{gorbman1987unheard} describes film music as a signifier of emotion that works through a system of learned codes. Minor keys and dissonant harmony, for example, have come to signal threat or suspense, while other choices of harmony, rhythm and instrumentation are associated with romance, comedy or heroism. \citet{juslin2013everyday} place such codes within a broader account of how music conveys emotion, in which learned associations allow music to evoke emotional meanings that are shared within a culture. \citet{austin2010characterization} make a related observation from the side of film genre. Films are designed to evoke emotion, and the scores of high-intensity genres such as Action and Horror differ measurably from those of genres with a more restrained emotional expression, such as Drama and Romance. Section~\ref{sec:fund_motivation_theory} discusses these accounts in more detail.
+Music is one of the main means by which a film shapes the emotional response of its audience. \citet{gorbman1987unheard} describes film music as a signifier of emotion that works through a system of learned codes. Minor keys and dissonant harmony, for example, have come to signal threat or suspense, while other choices of harmony, rhythm and instrumentation are associated with romance, comedy or heroism. \citet{juslin2013everyday} places such codes within a broader account of how music conveys emotion, in which learned associations allow music to evoke emotional meanings that are shared within a culture. \citet{austin2010characterization} make a related observation from the side of film genre. Films are designed to evoke emotion, and the scores of high-intensity genres such as Action and Horror differ measurably from those of genres with a more restrained emotional expression, such as Drama and Romance. Section~\ref{sec:fund_motivation_theory} discusses these accounts in more detail.
 
 Two lines of computational research build on these observations. Music emotion recognition (MER) predicts the emotion that listeners perceive in a piece of music from its audio \citep{yang2012machine,kim2010music,kang2025there}. Film genre classification predicts the genres of a film from its audio, its images or its text \citep{austin2010characterization,ma2021computational,mangolin2020multimodal,behrouzi2023multimodal}. The second task has practical value. Streaming providers have a growing interest in deriving the genres of films automatically, and genre labels support the retrieval and recommendation of films \citep{mangolin2020multimodal,behrouzi2023multimodal}.
 
@@ -52,15 +52,15 @@ fine-tuning.
 The thesis makes three contributions:
 \begin{enumerate}
   \item A pipeline that places eight rated emotions between film audio and genre is compared with six audio representations used directly, under the same evaluation protocol.
-  \item The emotions that characterise each film genre in the listener ratings are described, which makes the predictions of the emotion step interpretable.
-  \item The results suggest that the emotion step helps most when training data are limited or when a model trained on one dataset is applied to the Blockbuster dataset, and they show where this advantage depends on the decision threshold.
+  \item The emotions that characterise each film genre in the listener ratings are described. They give a reference against which the emotion step can be read.
+  \item The results suggest that the lead of the emotion step appears at the default decision threshold, on the small dataset and when a model trained on one dataset is applied to the Blockbuster dataset, and that much of it disappears when the threshold is tuned per genre.
 \end{enumerate}
 
 \section{Structure of this thesis}
 \label{sec:structure}
 
 Chapter~\ref{ch:fundamentals} is written for readers new to the field. It explains the
-models of emotion, the audio representations, the two learning methods and the evaluation
+models of emotion, the audio representations, the learning methods and the evaluation
 methods. Chapter~\ref{ch:relatedwork} reviews the surveys of music emotion
 recognition, the evidence that emotion and genre are linked in music, and the four
 film-genre studies this work is compared with. Chapter~\ref{ch:methods} describes the two

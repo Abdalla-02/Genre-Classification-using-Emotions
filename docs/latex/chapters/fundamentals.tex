@@ -12,7 +12,7 @@ In this thesis, ``emotion'' does not mean a state inside the trained model, and 
 
 This matters for how the system should be understood. The model does not learn an emotional state. It learns to map acoustic features onto a number, and that number is itself an average of human judgements. ``Emotion'' here is therefore a measured label: the mean of several listeners' ratings on a fixed scale. The models of this thesis are trained to reproduce this human target. Nothing in them is an emotional process of its own.
 
-In practice, each clip in the dataset has eight numbers between 1 and 9. Three are continuous scales: \emph{valence} (unpleasant to pleasant), \emph{energy arousal} (calm to energetic) and \emph{tension arousal} (relaxed to tense). The other five say how strongly a named emotion is present: \emph{anger}, \emph{fear}, \emph{happiness}, \emph{sadness} and \emph{tenderness}. A clip from a horror score might, for example, be rated 2.1 for valence, 7.8 for tension and 7.5 for fear, and close to 1 for happiness and tenderness. These eight numbers are what this thesis means by ``emotion''. The next section discusses the two frameworks they come from.
+In practice, each clip in the dataset has eight numbers between 1 and 9. Three are continuous scales: \emph{valence} (unpleasant to pleasant), \emph{energy arousal} (calm to energetic) and \emph{tension arousal} (relaxed to tense). The other five say how strongly a named emotion is perceived: \emph{anger}, \emph{fear}, \emph{happiness}, \emph{sadness} and \emph{tenderness}. A clip from a horror score might, for example, be rated 2.1 for valence, 7.8 for tension and 7.5 for fear, and close to 1 for happiness and tenderness. These eight numbers are what this thesis means by ``emotion''. The next section discusses the two frameworks they come from.
 
 \section{Dimensional versus Categorical Emotion Models}
 \label{sec:fund_models}
@@ -54,7 +54,7 @@ The starting observation of this thesis is that soundtracks of different genres 
 
 \citet{juslin2013everyday} places this within a broader account of how music conveys and arouses emotion. In his account, mechanisms such as learned association let music call up emotional meanings that a culture has settled on. In film scoring these meanings are often bound to genre conventions. Driving, dissonant and tense cues, for example, are conventional in horror and action scores.
 
-This motivates the method. Computational studies of film genre treat the link between audio and genre as a purely statistical pattern-recognition problem \citep{austin2010characterization,ma2021computational,mangolin2020multimodal}. It predicts genre straight from audio features and does not ask why audio should predict genre at all. This thesis instead treats emotion as a possible reason for that link. Film composers put emotional signals that suit the genre into the score, and a model may be able to recover and use them. From this perspective, emotion is more than a convenient intermediate step for better predictions. It is a hypothesis about how a film's soundtrack comes to signal its genre.
+This motivates the method. Computational studies of film genre treat the link between audio and genre as a purely statistical pattern-recognition problem \citep{austin2010characterization,ma2021computational,mangolin2020multimodal}. They predict genre straight from audio features and do not ask why audio should predict genre at all. This thesis instead treats emotion as a possible reason for that link. Film composers put emotional signals that suit the genre into the score, and a model may be able to recover and use them. From this perspective, emotion is more than a convenient intermediate step for better predictions. It is a hypothesis about how a film's soundtrack comes to signal its genre.
 
 \section{From Audio to Numbers: Representations}
 \label{sec:fund_audio}
@@ -80,7 +80,7 @@ The classical approach in MIR summarises the spectrogram with descriptors design
 
 \subsection{Learned Embeddings from Pretrained Networks}
 
-The alternative is to let a neural network learn the representation. The network is first trained for some task on a very large labelled audio dataset. A network is a stack of layers, and the output of each layer is called a \emph{hidden state}. After training, the hidden state of one inner layer serves as a general description of any new audio, whether or not it looks like the training data. This is called \emph{transfer learning}. The network is not retrained for the new task, and this output vector is the embedding. A network trained on millions of sounds tends to encode properties such as instrumentation, texture and dynamics in its inner layers. These carry over well to tasks it was never trained for \citep{choi2017transfer}. The output is averaged over time (\emph{mean-pooled}) to get one vector per clip.
+The alternative is to let a neural network learn the representation. The network is first trained on a very large audio dataset, with labels, with paired text or with a self-supervised objective. A network is a stack of layers, and the output of each layer is called a \emph{hidden state}. After training, the hidden state of one inner layer serves as a general description of any new audio, whether or not it looks like the training data. This is called \emph{transfer learning}. The network is not retrained for the new task, and this output vector is the embedding. A network trained on millions of sounds tends to encode properties such as instrumentation, texture and dynamics in its inner layers. These carry over well to tasks it was never trained for \citep{choi2017transfer}. The output is averaged over time (\emph{mean-pooled}) to get one vector per clip.
 
 Five such networks are used in this thesis:
 
@@ -107,7 +107,7 @@ Two kinds of task appear in this thesis. When the output is a number on a contin
 
 A film can belong to several genres. \emph{Gladiator}, for example, is Action, Adventure and Drama at once. Genre prediction is therefore \emph{multi-label}: the target is not a single class but a binary vector with one entry per genre, and several entries can be 1. It is handled with \emph{binary relevance}, the simplest principled approach. One independent binary classifier is trained per genre, and their outputs are combined into one label vector.
 
-\subsection{The Two Models Used}
+\subsection{The Models Used}
 
 \paragraph{Logistic regression} is the genre classifier. For each genre it learns one weight per input feature. The logistic function maps the weighted sum of the features to a probability, and the clip is assigned the genre if this probability exceeds one half. It is linear and fast. Above all, it is interpretable: the weight on ``fear'' in the Horror classifier can be looked up and reported. With eleven emotion features it has eleven weights per genre. With a 768-dimensional embedding it has 768.
 

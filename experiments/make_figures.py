@@ -217,7 +217,8 @@ def fig_zero_shot():
         ax.text(v["macro_f1"] + v["boot_sd"] + 0.008, i,
                 f"{v['macro_f1']:.3f} $\\pm$ {v['boot_sd']:.3f}", va="center", fontsize=8)
     ax.set_yticks(range(len(rows)), [r[1] for r in rows[::-1]])
-    floor_line(ax, d["blockbuster_baselines"]["plurality"]["macro_f1"], "most-frequent baseline")
+    # the most common combination of genres (Ma et al.), not the per-genre most-frequent rule
+    floor_line(ax, d["blockbuster_baselines"]["plurality"]["macro_f1"], "plurality label set")
     floor_line(ax, d["blockbuster_baselines"]["random_guess"]["macro_f1"],
                "base-rate random guess", ":")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=2, frameon=False,

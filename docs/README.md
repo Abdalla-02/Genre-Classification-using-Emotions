@@ -2661,3 +2661,34 @@ openings and the appendix); keep to the line of argument. Done (Overleaf `49ce3d
   `chapter/preamble.tex`, check after moving a float); the pipeline overview in the introduction of
   Chapter 4 is Figure 4. Every figure or table mentioned in the text exists as a caption.
 
+## 48. Second examiner's report (Fable, 20 Nov): parts A and B
+
+The author had Fable review the thesis as a second examiner (33 pages, about 110 findings; PDF in
+the thesis folder outside the repository). Every factual claim was checked against the thesis and
+the results files before acting. Done (Overleaf `fa34f67`, `32506fb`; compiled: 0 errors, no overfull
+box, no undefined reference, 104 pages):
+- A, errors: seed range of the emotion pipeline 0.021, not 0.019 (film_level.json); the best grid
+  entry under seed 42 is CLAP with SVR (0.481), ridge is best only on the five-seed mean; the
+  Nadeau-Bengio limit lies above 0.05 for every comparison except wav2vec 2.0 (p_lim 0.021); the
+  bootstrap mean differs from the difference of the scores by a few thousandths, not up to 0.002;
+  Table A.2 (1000 draws) differs from Table 5.3 also in p; the Blockbuster in-domain floor 0.295 is
+  the fold mean (blockbuster_deep.json), 0.292 over all films; Figure 5.6.2 labelled the plurality
+  label set as most-frequent baseline (make_figures.py); 0.493 explained as the eight ratings without
+  derived features; the "valence problem" sentence contradicted Figure 5.1 and was rewritten; the
+  "conventional emotional identity" sentence contradicted Horror; the learning-curve sentence (no
+  curve in the thesis) removed; grammar (Juslin places, They predict, starting point of this thesis,
+  The study used, The Models Used); pretraining also self-supervised; Ma et al.: their features and
+  protocol with a simpler classifier; one account of the regressor choice; Sci-Fi rests on two
+  training films; perceived-emotion wording. Checked and correct: the reverse-direction precision
+  and recall 0.407/0.362 and 0.631/0.490 (cross_dataset_cv.json, film level).
+- B, claims: the abstract (250 words) names the all-positive reference (0.434), ROC-AUC 0.655, the
+  in-domain lead with p = 0.052 and the convergence under tuned thresholds; "helps most when training
+  data are limited" is replaced everywhere by where the lead appeared, with the cause untested;
+  interpretability is described as designed, not evaluated; RQ1 and RQ3 in 6.1 and 7.1 lead with the
+  qualified statement.
+- Not followed (conflict with the supervisor's rules or earlier decisions): RQs as a list, forward
+  references inside Chapter 1, Mangolin's year, removing the derived features, redefining the subset,
+  shortening Future Work. Open (author's choice): Stage-2 weights table, Holm or "nominal" in Table
+  A.1, results out of Chapters 2 to 4, repetitions, terminology, experiment-to-RQ table, references
+  for datasets and software.
+

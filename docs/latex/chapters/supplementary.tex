@@ -96,8 +96,7 @@ Figure~\ref{fig:metric_family}), and the spread over repeats and seeds
 In Table~\ref{tab:metric_family}, all metrics except the first row are computed over clips,
 from the same predictions. ``Random'' is the base-rate random guess, ``Most freq.'' the
 most-frequent baseline and ``All yes'' assigns every genre to every clip. $\Delta$ is the
-emotion pipeline minus direct VGGish, with the paired film-bootstrap $p$-value (1000 draws,
-so the macro-$F_1$ rows can differ from Table~\ref{tab:power_cmp} in the third decimal). A
+emotion pipeline minus direct VGGish, with the paired film-bootstrap $p$-value (1000 draws, so the differences and $p$-values of the macro-$F_1$ rows can differ slightly from Table~\ref{tab:power_cmp}). A
 dash means that it was not computed. For Hamming loss lower is better. Bold marks the best of the four audio pipelines.
 
 \begin{figure}[H]
@@ -358,8 +357,7 @@ outperforms predicting them once from the film-average embedding (in-domain 0.61
 \label{sec:app_horror}
 
 On Horror, the emotion pipeline reaches a film-level $F_1$ of 0.23, and the same genre
-classifier given the ratings 0.41 (Section~\ref{sec:eval_pergenre}). The loss therefore
-arises in Stage~1. Figure~\ref{fig:rated_vs_predicted} compares rated and predicted emotions
+classifier given the ratings 0.41 (Section~\ref{sec:eval_pergenre}). The loss therefore appears to arise mainly in Stage~1. Figure~\ref{fig:rated_vs_predicted} compares rated and predicted emotions
 for all five genres, with the emotions predicted out of fold exactly as in the pipeline, and
 Table~\ref{tab:horror_fear} looks at the fear of Horror in detail.
 
