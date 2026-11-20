@@ -1,0 +1,26 @@
+{
+  "n_clips": 329,
+  "n_films": 40,
+  "genres": [
+    "Action",
+    "Crime",
+    "Drama",
+    "Comedy",
+    "Horror"
+  ],
+  "metrics": {
+    "macro_f1": 0.4302164908377685,
+    "micro_f1": 0.47189967487227125,
+    "weighted_f1": 0.6068777019131317,
+    "samples_f1": 0.4612462006079027,
+    "macro_f1_tuned_threshold": 0.4302164908377685,
+    "macro_average_precision": 0.30881458966565345,
+    "macro_roc_auc": 0.5,
+    "film_level_macro_f1": 0.4335394074524509,
+    "macro_precision": 0.30881458966565345,
+    "macro_recall": 1.0,
+    "hamming_loss": 0.6911854103343466,
+    "exact_match": 0.0,
+    "jaccard_samples": 0.3088145896656535
+  }
+}
