@@ -2692,3 +2692,4 @@ box, no undefined reference, 104 pages):
   A.1, results out of Chapters 2 to 4, repetitions, terminology, experiment-to-RQ table, references
   for datasets and software.
 
+Abstract (20 Nov, author): the pipeline is compared with the same VGGish embedding used directly (0.367, film_level.json), not with the ratings (which measure only Stage 1), the random guess or the all-positive classifier; the lead is given with p = 0.052 and the convergence under tuned thresholds. 244 words. Overleaf `ba5a71a`: 0 errors, 104 pages.
