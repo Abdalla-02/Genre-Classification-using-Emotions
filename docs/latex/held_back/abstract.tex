@@ -10,9 +10,8 @@ Genre prediction is multi-label and covers the 40 of these films with one of fiv
 and the 110 films of the Blockbuster dataset. A random forest predicts the emotions from a VGGish audio embedding, and a logistic regression per genre predicts genre from
 them. This emotion pipeline scored 0.460 in film-level macro-averaged $F_1$, against 0.367 for the same
 embedding given directly to the classifier, and it ranked films above chance (ROC-AUC 0.655).
-This lead at the default threshold was not significant on 40 films ($p=0.052$), and with
-thresholds tuned per genre the two converged. Transferred to the Blockbuster films, it scored
-0.508 against 0.403 for direct audio, a gap that shrank to 0.041 and lost significance with
+This lead at the default threshold was not significant on 40 films, and with thresholds tuned
+per genre the two converged. Transferred to the Blockbuster films, it scored 0.508 against 0.403 for direct audio, a gap that shrank and lost significance with
 tuned thresholds. Most genres had their own emotional profile, such as fear in Horror. The
 results suggest that emotion does not make genre prediction more accurate in general. Its lead
 appeared on the small dataset and under transfer at the default threshold, and its main value
