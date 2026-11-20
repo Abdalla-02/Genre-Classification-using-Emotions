@@ -95,6 +95,8 @@ DESCRIPTIONS = {
                          "repeats, folds, films and five seeds (section 22.1)",
     "model_search": "Does any other model or feature combination beat the baseline? "
                     "(section 7d)",
+    "stage2_weights": "Weights of the Stage-2 logistic regression per genre and emotion "
+                      "(section 48)",
     "stage2_classifiers": "Random forest, MLP, classifier chain and gradient boosting against "
                           "the logistic regression in Stage 2, film level (section 45)",
 }

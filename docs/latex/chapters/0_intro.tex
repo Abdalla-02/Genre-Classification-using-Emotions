@@ -36,8 +36,8 @@ asks \emph{how well the two pipelines generalise when a model trained on one dat
 applied to another} without access to any of its labels.
 
 Two datasets are used. The first, by \citet{eerola2011comparison}, contains 360
-film-music clips from 45 films. Listeners rated each clip on eight emotion scales, and the genres of the films come from the Internet Movie Database (IMDb). All 360 clips are used to train and test the emotion model. The genre experiments use the 40 films that carry one of five main genres (Section~\ref{subsec:genre_labels}). The second, the Blockbuster dataset of \citet{ma2021computational}, contains 110 recent films. Each film is described by features of the music cues it uses, published by the authors: VGGish embeddings, a learned audio representation, and hand-crafted music information retrieval (MIR) descriptors. The Blockbuster dataset contains no emotion ratings and no audio. The
-method has two steps. A random forest predicts the eight emotions from a pre-trained
+film-music clips from 45 films. Listeners rated each clip on eight emotion scales, and the genres of the films come from the Internet Movie Database (IMDb). All 360 clips are used to train and test the emotion model. The genre experiments use the 40 films that carry at least one of five main genres (Section~\ref{subsec:genre_labels}). The second, the Blockbuster dataset of \citet{ma2021computational}, contains 110 recent films. Each film is described by features of the music cues it uses, published by the authors: VGGish embeddings, a learned audio representation, and hand-crafted music information retrieval (MIR) descriptors. The Blockbuster dataset contains no emotion ratings and no audio. The
+method has two steps. A random forest predicts the eight emotions from a pretrained
 audio representation (VGGish in the main experiments). A logistic regression for each
 genre then predicts from these emotions whether that genre applies. Because a film can
 belong to several genres at once, genre prediction is a multi-label classification problem
@@ -45,7 +45,7 @@ belong to several genres at once, genre prediction is a multi-label classificati
 classifying genre from the same audio representation directly. It is also compared with
 a control that compresses the representation into as many values as there are emotions,
 without giving those values any emotional meaning. Only the music is used, with no
-images, dialogue or plot, and the pre-trained audio models are used as they are, without
+images, dialogue or plot, and the pretrained audio models are used as they are, without
 fine-tuning.
 
 % Draft written with AI assistance (15 Nov 2026) for the author to check and revise.

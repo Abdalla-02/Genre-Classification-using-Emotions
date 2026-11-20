@@ -182,11 +182,11 @@ is the same classifier on the human ratings.
 
 Three results stand out. First, the emotion pipeline is ahead of the VGGish embedding it is computed from, and of
 every other direct representation as well. Whether a lead is significant depends on the comparison and on the
-unit of scoring. At film level the film bootstrap finds the lead significant against AST,
+unit of scoring. At film level, without correction for multiple comparisons, the film bootstrap finds the lead significant against AST,
 the hand-crafted descriptors and wav2vec~2.0, but not against VGGish, CLAP
 ($p=0.156$) and MusiCNN. Over clips the leads are smaller (0.037 to 0.049).
 There the same bootstrap finds the lead significant against VGGish, CLAP, MusiCNN, the
-hand-crafted descriptors and wav2vec~2.0, but not against AST ($p=0.106$). The stricter Nadeau--Bengio test finds it only against wav2vec~2.0; for the other comparisons its attainable $p$-value on this dataset lies above 0.05 (Appendix~\ref{sec:app_comparisons}).
+hand-crafted descriptors and wav2vec~2.0, but not against AST ($p=0.106$). The stricter Nadeau--Bengio test finds it only against wav2vec~2.0; for the other comparisons its attainable $p$-value on this dataset lies above 0.05 (Appendix~\ref{sec:app_comparisons}). With Holm's correction over the eight comparisons of the emotion pipeline, the film-level leads over AST and wav2vec~2.0 remain significant.
 
 Second, compression alone may account for part of the gain at film level. The PCA-8 control is ahead
 of VGGish by $+0.023$ ($p=0.488$, but in 7 of ten repeats and under every seed). The
@@ -230,8 +230,7 @@ Figure~\ref{fig:emotion_grid} has two panels with different measures and colour 
 In panel (a), in blue, the first column is the representation used directly, and the other
 three are the emotion pipeline with each regressor. Each cell
 gives the film-level macro-$F_1$ $\pm$ its standard deviation over the ten repeats, with the
-clip-level score below. An asterisk marks a significant lead over the direct use of the same
-representation (paired film bootstrap, $p<0.05$). Panel (b), in purple, gives the Stage-1 $R^2$ of
+clip-level score below. An asterisk marks a significant lead over the direct use of the same representation (paired film bootstrap, $p<0.05$, uncorrected). Panel (b), in purple, gives the Stage-1 $R^2$ of
 each regressor, that is, how accurately it predicts the emotions. Appendix Tables~\ref{tab:app_stage1_regressors} and~\ref{tab:emotion_grid} list the same numbers.
 
 Three results stand out. First, the emotion pipeline is ahead of the direct use of its
@@ -297,7 +296,7 @@ baseline are shown for reference and not boxed. Figure~\ref{fig:per_genre_pr} gi
 precision and recall of the same pipelines.
 
 The emotion pipeline scores highest for Action, Crime and Comedy, and it has the highest
-recall for these three genres. In precision, a direct representation is at least as good in
+recall for these three genres. On Crime and Drama it still stays below assigning the genre to every film (Appendix~\ref{sec:app_floor}). In precision, a direct representation is at least as good in
 every genre. For Drama the highest score comes from the hand-crafted MIR features used
 directly, and for Horror from direct CLAP. Drama, the most frequent genre, is predicted well
 by every pipeline, even by the most-frequent baseline. The largest difference lies in Comedy.
@@ -330,7 +329,7 @@ In Figure~\ref{fig:signatures}, red marks an emotion rated higher in the genre t
 other clips, and blue a lower one. A box marks the strongest emotion of each genre, and the
 number after a genre is its number of clips.
 
-In these data, fear is the strongest single discriminator. It separates the genres built on threat
+In these data, fear shows the largest single effects. It separates the genres associated with threat
 (Horror, with the strongest link between a genre and an emotion in the dataset, and Crime)
 from the light-hearted ones (Comedy). Valence forms a second axis. It separates the genres
 with a positive tone (Drama, Comedy) from those with a negative one (Horror, Action). The signatures of Biography and Documentary
@@ -468,7 +467,7 @@ in contrast, gains only $+0.013$ over the raw features ($p=0.737$). Under the ot
 scaling regime the lead over direct VGGish is $+0.118$ ($p=0.001$). The lead is partly
 driven by recall. The emotion pipeline recovers more of the true genres, at a lower
 precision (Table~\ref{tab:zero_shot}). Assigning every genre to every Blockbuster film
-would reach 0.438. The emotion pipeline lies above this reference and direct VGGish below it. Macro-$F_1$ is the mean of the $F_1$
+would reach 0.438. The emotion pipeline lies above this reference and direct VGGish below it; neither difference was tested. Macro-$F_1$ is the mean of the $F_1$
 values of the genres, not the $F_1$ of the mean precision and recall. Direct VGGish is
 precise overall, but its $F_1$ on Romance and Horror is only 0.14 and 0.17. The emotion
 pipeline reaches 0.42 and 0.24 on them, and 0.61 instead of 0.38 on Sci-Fi, a genre with only two Eerola training films. It makes

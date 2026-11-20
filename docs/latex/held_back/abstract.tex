@@ -6,7 +6,7 @@ predict genre from audio without explaining why a soundtrack points to it. This 
 how far the emotions that listeners perceive in a soundtrack reveal a film's genre, and what
 changes when genre is predicted through them instead of from the audio. An emotion model is
 trained on 360 film-music clips from 45 films, each rated by listeners for eight emotions.
-Genre prediction is multi-label and covers the 40 of these films with one of five main genres
+Genre prediction is multi-label and covers the 40 of these films with at least one of five main genres
 and the 110 films of the Blockbuster dataset. A random forest predicts the emotions from a VGGish audio embedding, and a logistic regression per genre predicts genre from
 them. This emotion pipeline scored 0.460 in film-level macro-averaged $F_1$, against 0.367 for the same
 embedding given directly to the classifier, and it ranked films above chance (ROC-AUC 0.655).

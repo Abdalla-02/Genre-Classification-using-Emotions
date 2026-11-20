@@ -2693,3 +2693,23 @@ box, no undefined reference, 104 pages):
   for datasets and software.
 
 Abstract (20 Nov, author): the pipeline is compared with the same VGGish embedding used directly (0.367, film_level.json), not with the ratings (which measure only Stage 1), the random guess or the all-positive classifier; the lead is given with p = 0.052 and the convergence under tuned thresholds. 244 words. Overleaf `ba5a71a`: 0 errors, 104 pages. Then lighter (author): the p-value and the tuned transfer gap in words; result numbers are 0.460 vs 0.367, ROC-AUC 0.655 and 0.508 vs 0.403. 241 words (Overleaf `b20dcf6`).
+
+### 48.1 Part C and the remaining small findings (21 Nov)
+
+- C1, interpretability shown: `experiments/genre/exp_stage2_weights.py` -> `stage2_weights.json`, the
+  standardised weights of the Stage-2 logistic regression (pipeline of film_level.json, 50 training
+  folds). The pattern: Horror rises with fear and tension and falls with valence; Comedy rises with
+  happiness and falls with fear and anger; Drama rises with valence and falls with tension; Crime has
+  the smallest weights (at most 0.04), in line with its ROC-AUC of 0.47. The weights are small (C
+  mostly 0.003); the signs of the three largest weights per genre agree in 92 to 100 % of the folds.
+  New Appendix A.4 with figure `stage2_weights` (green/brown, so it is not confused with d or the
+  rated-vs-predicted gaps); Discussion 6.3.2 and 7.1 cite it.
+- C2: p-values marked as uncorrected in Section 5.3, Table A.1, Figure 5.3.1 and Table A.5b; with
+  Holm's correction over the eight comparisons of the emotion pipeline (film_level.json) the
+  film-level leads over AST and wav2vec 2.0 remain (MIR 0.061), over clips only wav2vec 2.0.
+- Small findings: "at least one of five genres" (1.2, abstract), "pretrained", forest settings,
+  Gabrielsson "in detail", Ma's six genres, VGGish feature spaces, fear wording in 5.5, Crime and
+  Drama below the all-positive reference in 5.4, zero-shot reference untested, Table A.5a caption
+  (three regressors), IMDb "roughly in alphabetical order". The two-table unit in
+  `chapter/preamble.tex` is now A.5. Overleaf `9745a2d`: 0 errors, 106 pages.
+

@@ -125,7 +125,7 @@ VGGish and wav2vec~2.0 (Section~\ref{subsec:eval_grid}).
 
 \subsection{Interpretability of the bottleneck}
 
-Apart from accuracy, the emotion pipeline was designed to be interpretable: its predictions rest on eight emotions that can be named and inspected. This property was not evaluated directly. The signatures come from the ratings, and only the analysis of Horror (Appendix~\ref{sec:app_horror}) inspects the pipeline itself. The genres it predicts well each have an interpretable emotional signature. The results per genre
+Apart from accuracy, the emotion pipeline was designed to be interpretable: its predictions rest on eight emotions that can be named and inspected. The weights of its genre classifier show what this means in practice (Appendix~\ref{sec:app_weights}). Horror rises with fear and tension and falls with valence, Comedy rises with happiness and falls with fear and anger, and Crime, which the pipeline ranks at chance, carries the smallest weights of all genres. Whether such explanations help a user was not evaluated. The genres it predicts well each have an interpretable emotional signature. The results per genre
 show where this helps and where it does not. The emotion pipeline gains most on Comedy,
 whose signature is the absence of fear, and on Action. Drama, the genre of most films, is
 predicted well by every pipeline and separates them least. 
@@ -176,7 +176,7 @@ advantage over VGGish and AST is of similar size and significant at film level.
 
 \paragraph{Labels and listeners.} Genre labels come from IMDb and describe the film, not
 the single clip. Some clips therefore carry labels that do not describe their music. IMDb
-lists genres alphabetically, so there is no primary genre that could weight the labels. The
+lists genres roughly in alphabetical order, so there is no primary genre that could weight the labels. The
 emotion model learns perceived emotion from the ratings of one group of listeners.
 Listeners from a different musical culture might rate the same clips differently.
 

@@ -25,7 +25,7 @@ the Blockbuster films better than direct VGGish at the default threshold (0.508 
 0.403, $p=0.013$), but most of this lead depends on the threshold.
 
 \paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
-genre prediction from film music more accurate in general. Its lead appeared on the small dataset and under transfer, at the default decision threshold, and much of it depends on that threshold; whether the amount of training data is the cause was not tested. Its main value lies in interpretability: its predictions rest on eight emotions that listeners can name, and some errors can be traced to a stage of the pipeline. The weakness on Horror, for
+genre prediction from film music more accurate in general. Its lead appeared on the small dataset and under transfer, at the default decision threshold, and much of it depends on that threshold; whether the amount of training data is the cause was not tested. Its main value lies in interpretability: its predictions rest on eight emotions that listeners can name (Appendix~\ref{sec:app_weights}), and some errors can be traced to a stage of the pipeline. The weakness on Horror, for
 example, can be traced mainly to Stage~1, which shifts the extreme fear ratings of Horror clips towards the
 average (rated 4.35, predicted 3.73; Appendix~\ref{sec:app_horror}). Such an explanation can
 be checked against the practice of film scoring, which is not possible in the same way for a

@@ -547,6 +547,35 @@ def fig_rated_vs_predicted():
     save(fig, "rated_vs_predicted")
 
 
+def fig_stage2_weights():
+    """Standardised weights of the Stage-2 logistic regression in the emotion pipeline (five genres,
+    mean over the 50 training folds; `stage2_weights.json`). Green/brown so it is not confused with
+    Cohen's d (red/blue) or the rated-vs-predicted gaps (purple/orange). Added 21 Nov 2026."""
+    d = load("stage2_weights")
+    if not d:
+        return
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness",
+             "valence_x_energy": "valence $\\times$ energy", "neg_composite": "negative composite",
+             "pos_composite": "positive composite"}
+    feats, genres = d["features"], d["genres"]
+    M = np.array([[d["predicted_emotions"]["mean"][g][f] for f in feats] for g in genres])
+    lim = float(np.ceil(abs(M).max() * 20) / 20)
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.6))
+    im = ax.pcolormesh(M, cmap=light_div("BrBG"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+    for i in range(M.shape[0]):
+        for j in range(M.shape[1]):
+            v = M[i, j]
+            r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
+            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=7, color="black")
+    ax.set_xticks(np.arange(len(feats)) + 0.5, [names.get(f, f) for f in feats], rotation=40, ha="right")
+    ax.set_yticks(np.arange(len(genres)) + 0.5, genres)
+    ax.invert_yaxis()
+    ax.tick_params(length=0)
+    ax.spines[:].set_visible(False)
+    fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="standardised\nweight")
+    save(fig, "stage2_weights")
+
+
 def fig_data_overview():
     """The Eerola data behind the genre results: clips per film, and films and clips per genre
     (eight-genre space). Drawn from the loader, not a results file: these are dataset counts."""
@@ -656,7 +685,7 @@ FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
            "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
            "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr,
            "emotion_grid": fig_emotion_grid, "data_overview": fig_data_overview,
-           "rated_vs_predicted": fig_rated_vs_predicted}
+           "rated_vs_predicted": fig_rated_vs_predicted, "stage2_weights": fig_stage2_weights}
 
 
 def main() -> None:

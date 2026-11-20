@@ -62,6 +62,7 @@ the repository but left out of the thesis).
 | `w2v_layer_sweep.json` | Which wav2vec 2.0 layer to pool, the control that makes §16's negative result defensible. | yes (Methods, one sentence) | §16.2 |
 | `model_search.json` | Does any other model or feature combination beat the baseline? (No.) | yes (Methods: other classifiers tried, none better) | §7d |
 | `stage2_classifiers.json` | **Is the logistic regression the right Stage-2 classifier?** Random forest, MLP, classifier chain and gradient boosting against it on the current protocol (5 genres, film level, predicted emotions and human ratings, every arm tuned in an inner loop). All four lower. | yes (Methods 4.4: other classifiers tried, none better) | §45 |
+| `stage2_weights.json` | **What the Stage-2 classifier of the emotion pipeline uses.** Standardised logistic-regression weights per genre and feature, mean over the 50 training folds of `film_level.json` (5 genres, seed 42), their SD and the share of folds with the sign of the mean; predicted emotions and human ratings. Written by `experiments/genre/exp_stage2_weights.py`. | yes (Appendix A.4, figure `stage2_weights`; Discussion 6.3.2, Chapter 7) | §48 |
 | `box_office.json` | Does box-office gross relate to the soundtrack, or only to the genre? Eerola, exploratory, n = 37. | **no** (author's decision, 7 Oct 2026) | §20, §22.2 |
 | `box_office_blockbuster.json` | The same question on the **110 Blockbuster films**: gross against per-film classification quality under six per-film metrics (in-domain and zero-shot), predicted emotions, genre, cross-validated prediction of gross, and all 140 MIR descriptors, with Benjamini–Hochberg correction. | **no** (draft text kept in `docs/latex/held_back/box_office.tex`) | §22.3 |
 
@@ -259,6 +260,7 @@ python experiments/evaluation/exp_statistical_power.py       # statistical_power
 python experiments/genre/exp_emotion_ablation.py             # emotion_ablation.json
 python experiments/diagnostics/exp_model_search.py           # model_search.json
 python experiments/diagnostics/exp_stage2_classifiers.py    # stage2_classifiers.json  (~5 min, 12 cores)
+python experiments/genre/exp_stage2_weights.py              # stage2_weights.json  (a few minutes)
 python experiments/features/exp_waveform_vs_spectrogram.py   # waveform_vs_spectrogram.json
 python experiments/features/exp_w2v_layer_sweep.py           # w2v_layer_sweep.json  (see requirements below)
 python experiments/features/clip_length_analysis.py          # clip_length_by_genre.png  (needs raw audio)

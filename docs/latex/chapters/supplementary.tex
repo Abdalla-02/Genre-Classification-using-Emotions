@@ -47,7 +47,10 @@ In Table~\ref{tab:power_cmp_full}, $\Delta$ is the first pipeline minus the seco
 block scores the same predictions over clips, with the film bootstrap ($p_{\text{boot}}$)
 and the Nadeau--Bengio corrected resampled $t$-test ($p_{\text{NB}}$). $p_{\lim}$ is the
 smallest $p_{\text{NB}}$ this dataset allows with an unlimited number of repeats
-(Section~\ref{sec:fund_evaluation}). Bold marks $p<0.05$.
+(Section~\ref{sec:fund_evaluation}). Bold marks $p<0.05$ without correction for multiple
+comparisons. With Holm's correction over the eight comparisons of the emotion pipeline, only the
+leads over AST and wav2vec~2.0 remain significant at film level, and only the one over
+wav2vec~2.0 over clips.
 
 % =============================================================================
 \section{Choice of Metric and Stability}
@@ -143,6 +146,27 @@ Each point in Figure~\ref{fig:ablation} is the difference to all eight emotions,
 subsets.
 
 % =============================================================================
+\section{Weights of the Genre Classifier}
+\label{sec:app_weights}
+
+Figure~\ref{fig:stage2_weights} shows what the logistic regression of Stage~2 uses in the emotion
+pipeline: its weights, averaged over the 50 training folds of the main results.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\textwidth]{figures/stage2_weights.pdf}
+  \caption{Weights of the genre classifier on the predicted emotions (five genres).}
+  \label{fig:stage2_weights}
+\end{figure}
+
+In Figure~\ref{fig:stage2_weights}, each cell is the mean standardised weight, the change in the
+log-odds of a genre per standard deviation of the feature. Green raises the probability of the
+genre, brown lowers it. The weights are small because the regularisation is strong
+(Table~\ref{tab:app_config}), and three features combine the eight emotions, so correlated features
+share an effect. The signs of the three largest weights of each genre agree in 92 to 100\,\% of the
+folds.
+
+% =============================================================================
 \section{The Emotion Pipeline across Representations and Regressors}
 \label{sec:app_grid}
 
@@ -153,7 +177,7 @@ Table~\ref{tab:emotion_grid} the genre results of Figure~\ref{fig:emotion_grid}
 
 \begin{table}[H]
   \centering
-  \caption{Stage~1 with four regressors: mean $R^2$ over the eight emotions (360 rated clips).}
+  \caption{Stage~1 with three regressors (ridge twice): mean $R^2$ over the eight emotions.}
   \label{tab:app_stage1_regressors}
   \begin{tabular}{lrrrr}
     \toprule
@@ -202,8 +226,7 @@ In Table~\ref{tab:emotion_grid}, each film-level entry is the mean over the ten 
 with the standard deviation over the repeats in brackets. The clip-level entries score the
 same predictions over clips. ``Direct'' is the representation given to the classifier
 without the emotion step, ``Forest'' the random forest and MIR the hand-crafted
-descriptors. Bold marks an emotion pipeline that is significantly ahead of the direct use
-of its representation (paired film bootstrap, $p<0.05$).
+descriptors. Bold marks an emotion pipeline that is significantly ahead of the direct use of its representation (paired film bootstrap, $p<0.05$, uncorrected).
 
 The lead of CLAP with ridge regression over the VGGish pipeline (Section~\ref{subsec:eval_grid})
 was found after the results were known, so its test is post hoc. Pooled over the 50 repeats of the five seeds, the paired film bootstrap gives $+0.032$
