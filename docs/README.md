@@ -2713,3 +2713,17 @@ Abstract (20 Nov, author): the pipeline is compared with the same VGGish embeddi
   (three regressors), IMDb "roughly in alphabetical order". The two-table unit in
   `chapter/preamble.tex` is now A.5. Overleaf `9745a2d`: 0 errors, 106 pages.
 
+### 48.2 References for datasets and software (21 Nov)
+
+Item B3 of the second examiner's report. Datasets that were named without a source now cite their
+papers: YouTube-8M (Abu-El-Haija et al. 2016) and AudioSet (Gemmeke et al. 2017) at VGGish, the
+Million Song Dataset (Bertin-Mahieux et al. 2011) at MusiCNN, LibriSpeech (Panayotov et al. 2015)
+at wav2vec 2.0 (the base checkpoint was pretrained on its 960 hours; the text said only "speech"),
+all in Fundamentals. Methods 4.7 now cites TensorFlow (Abadi et al. 2016), NumPy (Harris et al.
+2020), pandas (McKinney 2010), SciPy (Virtanen et al. 2020) and Matplotlib (Hunter 2007); IMDb
+(Methods 4.1) and the torchvggish port (version 0.2, as in requirements.txt) get footnote links,
+since the bibliography style has no URL field. The two corpora themselves were already cited
+(Eerola and Vuoskoski 2011; Ma et al. 2021), as were PyTorch, scikit-learn, librosa and
+transformers. Overleaf `474e92a`: 0 errors, the three usual thesis.sty warnings, no undefined
+citation; the bibliography is one page longer (110 PDF pages).
+
