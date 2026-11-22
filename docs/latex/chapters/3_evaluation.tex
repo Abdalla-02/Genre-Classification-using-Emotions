@@ -23,7 +23,7 @@ the chance floor of its own label space: the \emph{most-frequent} baseline or th
 raised by assigning genres more often. A classifier that assigns every genre to every film
 reaches a high macro-$F_1$ but a ROC-AUC of exactly 0.5. Where a lead could come from this,
 the threshold-free ROC-AUC is given beside macro-$F_1$
-(Section~\ref{subsec:protocol_metrics}). Fourth, every $p$-value compares two pipelines and is two-sided, without correction for multiple comparisons. Unless stated otherwise, it comes from the paired bootstrap over films. The test films
+(Section~\ref{subsec:protocol_metrics}). Fourth, every $p$-value compares two pipelines and is two-sided. Unless stated otherwise, it is not corrected for multiple comparisons and comes from the paired bootstrap over films. The test films
 are drawn with replacement 2000 times, both pipelines are scored on each draw, and $p$ is twice the share of draws in which the difference is zero or
 points the other way (Section~\ref{sec:fund_evaluation}).
 

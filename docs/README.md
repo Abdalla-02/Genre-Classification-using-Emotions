@@ -2755,3 +2755,5 @@ against 0.490) are the film-level values of `cross_dataset_cv.json`, blockbuster
   new bibliography entries (full author lists not verified).
 Overleaf `e4d0045`: 0 errors, the three usual thesis.sty warnings, 108 PDF pages.
 
+
+Final check (22 Nov): Fable found one wording conflict, fixed in Overleaf `38a6eb2` (fourth convention of Chapter 5: "Unless stated otherwise, it is not corrected for multiple comparisons", because 5.3.1 reports a Holm-corrected value). Its doubt about "CLAP with ridge, the best entry on average over the five seeds" was checked and the sentence kept: in `emotion_pipeline_grid.json` (stability) CLAP with ridge has the highest five-seed mean of the 18 entries (0.502; next CLAP with SVR 0.493). The pooling sentence in 4.2 stays without numbers. 0 errors, 108 PDF pages.
