@@ -16,16 +16,15 @@ subset and transferred to the 110 films of the Blockbuster dataset. Section~\ref
 answers the four research questions in detail; in brief, the results are as follows.
 
 The emotions rank films above chance (macro ROC-AUC 0.655), but at the default threshold their macro-$F_1$ is close to that of a trivial classifier. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460 and the human ratings 0.491, against 0.309 for a random guess and 0.434 for assigning every genre to every film. Most genres have an emotional signature that is consistent with the conventions of
-film scoring. Fear is the most discriminating emotion and valence a second axis, and one to
+film scoring. Fear shows the largest single effects and valence forms a second axis, and one to
 three emotions keep most of the genre information. Within one dataset, the emotion pipeline
 is ahead of every audio representation used directly at the default threshold ($+0.093$
-over VGGish, $p=0.052$), but significantly only against the weaker ones, and with
-thresholds tuned per genre the pipelines converge. Trained on Eerola alone, it transfers to
+over VGGish, $p=0.052$), but significantly only against the weaker ones, and with thresholds tuned per genre the pipelines converge over clips. Trained on Eerola alone, it transfers to
 the Blockbuster films better than direct VGGish at the default threshold (0.508 against
 0.403, $p=0.013$), but most of this lead depends on the threshold.
 
 \paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
-genre prediction from film music more accurate in general. Its lead appeared on the small dataset and under transfer, at the default decision threshold, and much of it depends on that threshold; whether the amount of training data is the cause was not tested. Its main value lies in interpretability: its predictions rest on eight emotions that listeners can name (Appendix~\ref{sec:app_weights}), and some errors can be traced to a stage of the pipeline. The weakness on Horror, for
+genre prediction from film music more accurate in general. Its lead appeared on the small dataset and under transfer, at the default decision threshold, and much of it depends on that threshold; whether the amount of training data is the cause was not tested. What it offers by design is interpretability: its predictions rest on eight emotions that listeners can name (Appendix~\ref{sec:app_weights}), and some errors can be traced to a stage of the pipeline. The weakness on Horror, for
 example, can be traced mainly to Stage~1, which shifts the extreme fear ratings of Horror clips towards the
 average (rated 4.35, predicted 3.73; Appendix~\ref{sec:app_horror}). Such an explanation can
 be checked against the practice of film scoring, which is not possible in the same way for a

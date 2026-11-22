@@ -365,11 +365,11 @@ In Table~\ref{tab:blockbuster_reference}, the published values are quoted from
 \citet{ma2021computational}, Table~4. \emph{Average pooling} averages the cue vectors of a
 film before classifying it, \emph{single attention} learns a weight for each cue, and
 \emph{Simple-MI} (simple multiple-instance learning) classifies the set of cues with
-$k$-nearest neighbours ($k$NN) or a support vector machine (SVM). The plurality label set
-gives every film the most common combination of genres. The direct pipeline lies within the range of their VGGish models, and both baselines reproduce to within 0.03.
+$k$-nearest neighbours ($k$NN) or a support vector machine (SVM).  The direct pipeline lies within the range of their VGGish models, and both baselines reproduce to within 0.03.
 Under repeated cross-validation the learned embedding (0.593) and the full set of 140
 hand-crafted MIR features (0.585) do not differ significantly ($+0.009$, Nadeau--Bengio
-$p=0.787$).
+$p=0.787$). The Gaussian random projection of VGGish to eight dimensions reaches 0.487, below the
+PCA-8 control (0.587; Nadeau--Bengio $p=0.001$).
 
 Predicting the emotions per cue, the unit the emotion model was trained on, and averaging them
 outperforms predicting them once from the film-average embedding (in-domain 0.616 against
@@ -458,7 +458,7 @@ pipeline for each genre.
 \end{table}
 
 In Table~\ref{tab:app_floor}, $\Delta$ is the emotion pipeline minus the all-positive
-classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$. AUC is the
+classifier, with the $p$-value of the paired film bootstrap. Bold marks $p<0.05$ (uncorrected). AUC is the
 film-level ROC-AUC, for which the all-positive classifier scores 0.50. The films carry 1.55
 genres on average; the emotion pipeline assigns 2.27 per film, the ratings 2.21 and the
 direct representations 1.27 to 1.65. On all eight genres the reference reaches 0.338 at film level, against 0.349 for the emotion
@@ -498,7 +498,7 @@ is the check.
 \end{table}
 
 In Table~\ref{tab:app_zs_threshold}, the last two rows give the difference with the $p$-value
-of the paired film bootstrap in brackets. Bold marks $p<0.05$. The Blockbuster films carry
+of the paired film bootstrap in brackets. Bold marks $p<0.05$ (uncorrected). The Blockbuster films carry
 1.78 genres on average. At the default threshold the emotion pipeline assigns 2.45 and direct
 VGGish 1.99; tuned on clips, they assign 2.85 and 3.72, and the PCA-8 control 4.73.
 

@@ -2727,3 +2727,31 @@ since the bibliography style has no URL field. The two corpora themselves were a
 transformers. Overleaf `474e92a`: 0 errors, the three usual thesis.sty warnings, no undefined
 citation; the bibliography is one page longer (110 PDF pages).
 
+### 48.3 Second examiner's check of the revised thesis (22 Nov)
+
+Fable checked the version of 21 Nov against its first report (23 points). Verified before acting;
+one false alarm: the reverse-direction precision and recall in 6.2 (0.407 against 0.362, 0.631
+against 0.490) are the film-level values of `cross_dataset_cv.json`, blockbuster_to_eerola. Applied:
+- 4.5: the random guess on Blockbuster in-domain is averaged over the test folds (0.295, not 0.292);
+  the Figure 5.6.1 legend says so. "Plurality label set" everywhere (defined in 4.5, no longer in A.9).
+- Holm over clips added in 5.3; 6.4 says its clip-level list is uncorrected; the fourth convention
+  of Chapter 5 says every p-value is uncorrected; "(uncorrected)" under Tables A.11 and A.12.
+- "Converge over clips" in the abstract, 5.7, 6.1, 6.2 and 7.1 (the per-genre thresholds were
+  evaluated over clips only). "Fear shows the largest single effects" in 5.7, 6.1 and 7.1. Crime and
+  Drama below the all-positive reference in the 5.7 summary.
+- Abstract (248 words): ROC-AUC spelled out, "what it offers by design is interpretability" (also in
+  7.1), "the embedding used directly", "Transferred to Blockbuster".
+- Random-8 projection reported in A.9 from `blockbuster_deep.json` (0.487 against 0.587 for PCA-8,
+  Nadeau-Bengio p = 0.001). The sanity-check paragraph of 4.6.3 is removed: its result (about 0.22
+  accuracy against 1/12) was never saved to a results file. The pooling sentence in 4.2 stays
+  qualitative (log section 6; also not in a results file).
+- Wording: Ma et al. "reached the published range" / "for comparison with" (4.1.2, 4.6.1); "the
+  other four networks" (4.2); "leads in some settings", "at the default threshold" (Ch. 6); RQ3
+  without "two parts"; S13 sentence order; "(Appendix A.4)" in 2.5.3 and 4.4; weights at most 0.14
+  linked to the probabilities near one half (6.2); CLAP with ridge "the best entry on average over
+  the five seeds" (0.502); 6.2 heading "Where the Lead Appears: the Small Dataset and Transfer";
+  \citealp inside brackets; Gabrielsson "5(1, Suppl.)"; "port (version 0.2)"; declaration typo.
+- Not changed: Mangolin's year (kept at 2020 on purpose, see the bib comment) and "et al." in three
+  new bibliography entries (full author lists not verified).
+Overleaf `e4d0045`: 0 errors, the three usual thesis.sty warnings, 108 PDF pages.
+
