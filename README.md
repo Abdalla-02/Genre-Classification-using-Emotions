@@ -2,8 +2,7 @@
 
 Code, results and documentation of a bachelor thesis at Otto-von-Guericke University
 Magdeburg (Faculty of Computer Science, AG Data & Knowledge Engineering), **submitted on
-23 November 2026**. Examiners: Prof. Dr.-Ing. Andreas Nürnberger and M.Sc. Ernst
-Stötzner-Luu.
+23 November 2026**.
 
 Film music is written to express emotions that suit a film's genre. The thesis asks how far
 the emotions that listeners perceive in a soundtrack reveal the film's genre, and what
@@ -136,12 +135,10 @@ The stack is PyTorch-only (AST, CLAP and wav2vec 2.0 via `transformers`, VGGish 
 TensorFlow and runs in a separate environment (`.venv-musicnn`, Python 3.11); it talks to the
 project only through the embedding cache.
 
-## Note on terminology and AI use
+## Note on terminology
 
 The thesis says "pipeline"; the technical log and the names of some results fields still say
-"route" (e.g. the emotion route = the emotion pipeline). The code and documentation in this
-repository were written with the help of an AI assistant (Claude, Anthropic), as declared in
-the thesis (`docs/latex/chapters/ai_declaration.tex`).
+"route" (e.g. the emotion route = the emotion pipeline).
 
 ## License
 
