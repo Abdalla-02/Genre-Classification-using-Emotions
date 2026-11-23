@@ -3,19 +3,19 @@
 Run this after changing any experiment or any document. It checks the things that drift
 silently and are embarrassing to discover late:
 
-  1. every file path quoted in the documents (Markdown and the LaTeX snippets) resolves
+  1. every file path quoted in the current documents (not docs/archive/) resolves
      to a file that exists;
-  2. every headline number quoted in docs/briefing_full.md matches results/*.json to
-     three decimals -- this catches a table updated in one place but not another;
+  2. every headline number quoted in docs/archive/briefing_full.md matches results/*.json
+     to three decimals -- this catches a table updated in one place but not another;
      2b does the same for the round-3 results across BOTH documents, and 2c for the
-     thesis-ready snippets in docs/latex/, which are pasted into the submitted document;
+     copies of the submitted chapters in docs/latex/chapters/;
   3. the zero-shot bootstrap and the zero-shot score table use the SAME feature-scaling
      regime (they once did not, which flattered the reported margin by 0.013);
   4. the dataset still cleans to 346 / 319 clips (42 / 40 films);
   5. all five embedding caches hold 360 clips;
   6. no file in the working tree has CRLF endings (the repo is LF);
   7. every section cross-reference in the docs points at a heading that exists;
-     7c: the short briefing, docs/current_state.md, quotes its numbers correctly;
+     7c: the last short briefing, docs/archive/current_state.md, quotes its numbers correctly;
   8. every results/*.json is listed in results/README.md and named in docs/README.md;
   9. every results/*.json still renders through show_results.py, which is shape-driven
      and therefore drops an unrecognised block silently rather than failing.
@@ -27,6 +27,10 @@ Exits non-zero if anything fails, so it can be wired into a pre-commit hook.
 import io, json, re, sys, pathlib, subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+# The supervisor briefings and the other working papers of the writing phase moved to
+# docs/archive/ after submission (23 Nov 2026). Their numbers are still checked; the paths
+# they quote are not (check 1), since they refer to files of their own time.
+ARCHIVE = ROOT / 'docs' / 'archive'
 sys.path.insert(0, str(ROOT))
 problems, notes = [], []
 
@@ -34,6 +38,7 @@ problems, notes = [], []
 DOCS = list(ROOT.glob('*.md')) + list(ROOT.rglob('docs/**/*.md')) + \
        list(ROOT.rglob('experiments/**/*.md')) + list(ROOT.rglob('results/*.md')) + \
        list(ROOT.rglob('docs/latex/*.tex'))
+DOCS = [d for d in DOCS if ARCHIVE not in d.parents]
 path_re = re.compile(r'`([A-Za-z0-9_./\\-]+\.(?:py|md|tex|json|bib|csv|npy|txt))`')
 for d in DOCS:
     text = io.open(d, encoding='utf-8', newline='').read()
@@ -46,6 +51,13 @@ for d in DOCS:
                  'film_genre_master_list.csv', 'mir_feature_names.csv',
                  'mean_ratings_set1_enriched.csv', 'thesis.tex',
                  'chapter/preamble.tex', '2_analysis.tex', '3_evaluation.tex'}:
+            continue
+        # The paste-ready sections of Sept 2026, removed after submission (log section 49);
+        # the log still names them where it records their use.
+        if m.split('/')[-1] in {'cross_dataset_transfer.tex', 'emotion_genre_relationship.tex',
+                                'emotion_regression_bridge.tex', 'evaluation_protocol.tex',
+                                'genre_subset.tex', 'rating_reliability.tex',
+                                'statistical_power.tex', 'waveform_vs_spectrogram.tex'}:
             continue
         base = m.split('/')[-1].split(chr(92))[-1]
         if (ROOT / m).exists() or (d.parent / m).exists() or list(ROOT.rglob(base)):
@@ -75,7 +87,7 @@ for k, v in w['stage2']['arms'].items(): expected[f'wg:{k}'] = v['mean']
 
 # The full briefing carries every headline number; current_state.md is the short
 # update for the latest meeting and is checked separately (7c).
-cs = io.open(ROOT / 'docs' / 'briefing_full.md', encoding='utf-8', newline='').read()
+cs = io.open(ARCHIVE / 'briefing_full.md', encoding='utf-8', newline='').read()
 # Values after the duplicate-film correction of 8 Oct 2026 (log section 24). The
 # Blockbuster-only results (bb:, zs:loo) did not change.
 checks = [
@@ -240,8 +252,8 @@ for line in out:
         if b'\r' in p.read_bytes(): problems.append(f'[CRLF] {f}')
 
 # --------------------------------------------------------- 7. section refs --
-for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'briefing_full.md',
-            ROOT / 'docs' / 'current_state.md'):
+for doc in (ROOT / 'docs' / 'README.md', ARCHIVE / 'briefing_full.md',
+            ARCHIVE / 'current_state.md'):
     text = io.open(doc, encoding='utf-8', newline='').read()
     have = set(re.findall(r'^#{2,3} (\d+[a-z]?)[.b]', text, re.M)) |            set(re.findall(r'^#{2,3} (\d+\.\d+)', text, re.M)) |            set(re.findall(r'^### (\d+[a-z])\.', text, re.M))
     bases = {h.split('.')[0].rstrip('abcdef') for h in have}
@@ -254,9 +266,9 @@ for doc in (ROOT / 'docs' / 'README.md', ROOT / 'docs' / 'briefing_full.md',
 # which is now docs/briefing_full.md.
 # They cannot be regenerated here (no pandoc), so this reports rather than fails -- but
 # handing someone the PDF would hand them superseded numbers.
-md = ROOT / 'docs' / 'briefing_full.md'
+md = ARCHIVE / 'briefing_full.md'
 for ext in ('docx', 'pdf'):
-    p = ROOT / 'docs' / f'current_state.{ext}'
+    p = ARCHIVE / f'current_state.{ext}'
     if p.exists() and p.stat().st_mtime < md.stat().st_mtime:
         notes.append(f'current_state.{ext} is older than briefing_full.md -- an obsolete '
                      f'export; the Markdown is authoritative')
@@ -265,7 +277,7 @@ for ext in ('docx', 'pdf'):
 # docs/current_state.md is what the supervisor reads first. Every number it quotes is
 # pinned here against its results file, so the short version cannot drift from the full
 # one without the audit noticing.
-cur = io.open(ROOT / 'docs' / 'current_state.md', encoding='utf-8', newline='').read()
+cur = io.open(ARCHIVE / 'current_state.md', encoding='utf-8', newline='').read()
 xc = j('cross_dataset_cv')
 ms, bb = j('metrics_stability'), j('box_office_blockbuster')
 short = [

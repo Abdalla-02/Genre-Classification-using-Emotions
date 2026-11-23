@@ -3,11 +3,17 @@
 The **full technical log**: every experiment, every result, every decision with its
 justification. Kept up to date as work proceeds.
 
-> **Looking for the short version?** `current_state.md` is the update for the latest
-> supervisor meeting only. `briefing_full.md` is the complete briefing — every round of
-> notes and its status, the definitions and metrics explained, and the headline results,
-> in about a tenth of the length of this log. `results/README.md` explains what the
-> machine-readable results in `results/` contain and how to render them.
+> **The thesis was submitted on 23 November 2026.** This log is kept as written while the
+> work went on, so it records each step in the words of its time. Two things to know when
+> reading it: what the log calls the "emotion route" is the "emotion pipeline" of the
+> thesis, and early sections quote numbers that later sections correct (the corrections
+> are part of the record). Section numbers of the thesis quoted here are those of the day;
+> `results/README.md` maps every results file to its place in the submitted thesis.
+>
+> **Looking for the short version?** The supervisor briefings are in `docs/archive/`:
+> `current_state.md` is the update for the last supervisor meeting, `briefing_full.md` the
+> complete briefing (every round of notes and its status, the definitions and metrics
+> explained, and the headline results, in about a tenth of the length of this log).
 
 ---
 
@@ -2761,3 +2767,13 @@ Final check (22 Nov): Fable found one wording conflict, fixed in Overleaf `38a6e
 Date (22 Nov, author): the title page and both declarations show the fixed date November 23, 2026 instead of `\today`, so the PDF can be signed the day before submission. Overleaf `e1e7557`: 0 errors, 108 pages.
 
 Title page (22 Nov, author): the name is the one registered at the university, Abdalla Ahmed Ahmed (`\myfirstname{Abdalla Ahmed}`, `\mylastname{Ahmed}` in `thesis.sty`; Overleaf `b9cdaf7`), and `\myschool` reads "Faculty of Computer Science" instead of "Department" (author, `b4b54e2`). A NotebookLM line added to the Literature row of the AI declaration (`13afb8c`) was withdrawn by the author and reverted (`e6c3446`). 0 errors, 108 pages.
+
+Submission (23 Nov, author): the author set the name back to Abdalla Ahmed (`\myfirstname{Abdalla}`, Overleaf `aac3f7a`), so the note above no longer holds for the name. The submitted PDF (`Signed_Thesis_Abdalla_Ahmed.pdf`, outside the repository) is that version, 108 pages, with both declarations signed and inserted as scans; it was sent to the examination office, with the signed Statement of Authorship also as a separate scan, and to both supervisors. The two printed copies follow later.
+
+## 49. After submission: the repository cleaned up (23 Nov 2026)
+
+- The working papers of the writing phase moved to `docs/archive/`: the supervisor briefings (`current_state.md` with its `.docx`/`.pdf` exports, `briefing_full.md`), the meeting preparation, the review files of 16 Oct and 12 Nov, the register, claim and dedup reviews and the verification checklist. The audit still checks the numbers in the two briefings at their new paths; it no longer checks the file paths quoted in the archive, which refer to files of their own time.
+- `docs/latex/`: the eight paste-ready sections of September and the drafts held back in October were removed (all superseded; they remain in the git history). `chapters/` now holds the full submitted text: abstract, Chapters 1-7 (Related Work, `1_background.tex`, was added), Appendix A and the AI declaration. The box-office section, not in the thesis, is in `not_in_thesis/`.
+- `results/README.md`: the "in the thesis" column now names the section of the submitted thesis for every results file (four rows had lost that column).
+- The reference documents (`results/README.md`, `experiments/README.md`, `docs/evaluation_metrics.md`) say "pipeline", as the thesis does; this log keeps "route".
+- The top-level `README.md` was rewritten for readers of the finished thesis (title, research questions, main results with their reference values, how to reproduce them), and an MIT license was added.

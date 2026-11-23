@@ -1,0 +1,76 @@
+\chapter{Related Work}
+\label{ch:relatedwork}
+
+This chapter reviews earlier work in two groups. The first group is about Music Emotion Recognition (MER). It gives the background for how emotion is modelled in this thesis, and it shows that the link between emotion and genre is well documented in music research. The second group comprises four studies that classify film genre from music or from other signals taken from films. The methods of this thesis are compared with each of them.
+
+\section{Music Emotion Recognition and the Emotion--Genre Link}
+\label{sec:relwork_mer}
+
+\subsection{Kim et al. (2010) --- Music Emotion Recognition: A State of the Art Review}
+
+\citet{kim2010music} wrote one of the first broad surveys of Music Emotion Recognition (MER), presented at the 11th International Society for Music Information Retrieval Conference (ISMIR 2010). It compares the two main ways of modelling emotion in music. The \emph{categorical} model uses discrete labels such as ``anger'' or ``happiness''. The \emph{dimensional} model places emotion on continuous axes such as valence and arousal.
+
+The finding most relevant here is that arousal is consistently easier to predict from audio than valence. The MER literature has since called this gap the ``valence problem''. The authors also note that several kinds of features used together tend to outperform any single kind on its own. This is one reason why this thesis combines dimensional and categorical emotions in one feature set (see Chapter~\ref{ch:fundamentals}).
+
+\subsection{Kang and Herremans (2025) --- Are We There Yet?}
+
+\citet{kang2025there} wrote the most recent survey in the field. They list the music datasets that carry emotion labels and give an overview of the MER models published since 2020. Their figures show that the valence problem, which \citet{kim2010music} named more than ten years earlier, persists. One recent multitask model built on large pretrained music embeddings, for example, reaches $R^2 = 0.55$ for valence but $R^2 = 0.79$ for arousal on the PMEmo dataset of popular songs with emotion annotations. The survey also suggests large pretrained audio encoders, among them the Audio Spectrogram Transformer (AST), as a way to compensate for the small size of emotion datasets. This thesis follows that suggestion and uses such encoders, frozen, to extract features.
+
+\citeauthor{kang2025there} also argue that MER needs standard benchmarks, larger and more varied datasets, and models that are easier to interpret. The last point motivates one of the main ideas of this thesis. Here, predicting emotion is not the goal in itself. The predicted emotions serve as an interpretable step on the way to another task, genre classification. The thesis also examines which emotions drive which genre predictions. It does so with effect sizes (Cohen's $d$) and with an ablation that removes parts of the emotion set.
+
+\subsection{The Emotion--Genre Relationship in Music Research}
+\label{subsec:relwork_emotion_genre}
+
+The idea that emotion carries information about genre is not limited to film. It is a well-documented finding in music information retrieval, reported by independent groups and studied from both directions.
+
+\citet{hu2007exploring} started from metadata, not audio. They took mood, genre, artist and usage labels from three independent sources. An association test over 3{,}903 albums and 22 genres gave 7{,}134 pairs of genre and mood. They found that genre and mood are related in a consistent way. This led them to propose a standard set of mood clusters derived from the data. These clusters later became the ground truth of the Audio Mood Classification task of the Music Information Retrieval Evaluation eXchange (MIREX). \citet{laurier2009mood} reach a similar conclusion from social tags. They build a mood space from Last.fm data. Its main axes match the valence and arousal of \citet{russell1980circumplex}, and the mood tags in it group by musical style.
+
+\citet{eerola2011genrespecific} tested the opposite direction, namely whether models of musical emotion themselves depend on genre. The study used nine datasets of classical, film, popular and mixed music. Models trained and tested within one genre explained 43\% of the variance in valence and 62\% in arousal. Trained on one genre and applied to another, they explained only 16\% and 43\%. Emotion and genre are thus related closely enough that the mapping from audio to emotion changes with the genre. This is the premise of the present work, seen from the other side. It also indicates what to expect when a model is applied to a new dataset. An emotion model should lose accuracy there, and it should lose more on valence than on arousal. \citet{saari2016genre} exploit this dependence. Their genre-adaptive mood models outperform the same models without genre information on valence, arousal and tension.
+
+Together, these studies suggest that the link between emotion and genre holds in both directions and can be replicated. They also indicate that it depends on the kind of music and is not universal. This supports using emotion as a step towards genre. At the same time, an emotion model fitted on one dataset cannot be expected to behave the same way on another. This thesis can test that only indirectly, through genre transfer.
+
+\section{Music- and Film-Based Genre Classification}
+\label{sec:relwork_genre}
+
+\subsection{Austin et al. (2010) --- Characterization of Movie Genre Based on Music Score}
+
+\citet{austin2010characterization} were among the first to predict film genre directly from soundtrack audio. Their dataset holds 98 films in four genres (Action, Drama, Horror, Romance). From the audio they extracted 222 low-level features. Most of these describe timbre, such as Mel-Frequency Cepstral Coefficients (MFCCs), and a smaller set describes rhythm. A Support Vector Machine (SVM), tested with 10-fold cross-validation, reached 53.9\% accuracy over all four genres. Between Action and Romance alone it reached up to 81.1\%.
+
+Their main finding is that intense genres (Action, Horror) are easier to distinguish by their music than calmer, narrative-driven ones (Drama, Romance).  The authors acknowledge that assigning each film a single genre is probably too coarse, since single tracks in a film of one genre may sound like another genre.
+
+This thesis differs from \citet{austin2010characterization} in three ways. First, \citeauthor{austin2010characterization} assign each film a single genre. Here genre is a \emph{multi-label} problem, because a film can have several genres on IMDb. Second, this thesis puts emotion between audio and genre as an explicit, interpretable step, instead of classifying genre directly from low-level audio features. Third, \citeauthor{austin2010characterization} evaluate single tracks but take the labels from the films. Several tracks of one film can then appear on both sides of a cross-validation split. In this thesis the cross-validation is grouped by film to prevent this kind of leakage.
+
+\subsection{Ma et al. (2021) --- A Computational Lens into How Music Characterizes Genre in Film}
+
+\citet{ma2021computational} study 110 blockbuster films released between 2014 and 2019. They treat genre as a multi-label problem over six genres. Their main tool is the ``Score Stamper''. It identifies automatically which tracks of a soundtrack are actually used in the film (with a reported precision of 0.94). This matters because not every track on a released soundtrack album appears in the film. The authors compare hand-crafted MIR features with VGGish embeddings in a Multiple Instance Learning (MIL) setting. Each film is a ``bag'' of music cues, and an attention-pooling step learns which cues matter most. Their VGGish models reach macro-$F_1$ scores between 0.61 and 0.65, and their MIR models between 0.56 and 0.61. They evaluate whole films with leave-one-film-out cross-validation, so their design cannot leak within a film in the way described above.
+
+On the choice of representation, \citeauthor{ma2021computational} report that models on VGGish embeddings generally outperform those on the hand-crafted MIR features. This thesis evaluates a logistic regression on their published features, under their leave-one-film-out protocol and under repeated cross-validation. Under repeated cross-validation the learned embedding and the full hand-crafted feature set do not differ significantly (Appendix~\ref{sec:app_blockbuster}). This suggests that the choice of audio representation alone explains little about genre.
+
+This thesis differs from \citet{ma2021computational} by adding an explicit emotion step between audio and genre, which their pipeline does not have. It is also built on the film soundtrack dataset of \citet{eerola2011comparison}, not on commercial blockbuster soundtracks. This provides a more direct and controlled link between the music heard and its rated emotions. The Blockbuster dataset serves as an independent test set. A model trained only on the Eerola data is applied to all 110 films without any further fitting.
+
+\subsection{Mangolin et al. (2020) --- A Multimodal Approach for Multi-Label Movie Genre Classification}
+
+\citet{mangolin2020multimodal} ran the largest comparison among the studies reviewed here. It covers 10,594 films with 18 genres (multi-label, 2.4 labels per film on average) and five kinds of input: trailer audio, trailer frames, posters, subtitles and the plot synopsis. They used binary relevance and multi-label $k$-nearest-neighbour (ML-$k$NN) classifiers on 22 feature sets. Their best result (an F-score of 0.628) comes from combining two classifiers at the end. One reads the synopsis with a long short-term memory (LSTM) network. The other processes trailer frames with a convolutional neural network (CNN).
+
+Most relevant here is that audio on its own was the weakest of the five inputs (F-score of 0.334), and the synopsis text was the strongest. The authors also found that oversampling with the multi-label synthetic minority over-sampling technique (ML-SMOTE) does not clearly help when the classes are unbalanced.
+
+This result is not treated here as evidence against using audio. The weakness of raw audio is the starting point of this thesis. Raw audio features may carry too little meaning to predict genre on their own. An explicit emotion step may supply the meaning they lack. Compared with \citet{mangolin2020multimodal}, this thesis also uses much less input: only the soundtrack audio, not five kinds of data. This keeps the research question narrow.
+
+\subsection{Behrouzi et al. (2023) --- Multimodal Movie Genre Classification Using Recurrent Neural Network}
+
+\citet{behrouzi2023multimodal} combine image features from trailer keyframes with sound features. The image features come from the residual network ResNet-152, and the sound features are MFCC and Linear Predictive Coding. They feed them to a Gated Recurrent Unit (GRU) network combined with a Support Vector Machine. They test it on the Labeled Movie Trailer Dataset (LMTD, 3,500 films, 9 genres). Their best model (GRU+SVM) reaches a Hamming loss of 0.133 and a macro-averaged area under the receiver operating characteristic curve (macro-AUC) of 0.824. Adding audio lowers the Hamming loss by 10--12\% compared with images alone. Small classes such as Horror and Thriller gain the most from the audio.
+
+Unlike \citet{behrouzi2023multimodal}, this thesis uses no images at all, only soundtrack audio. It also adds an explicit emotion step, which their pipeline does not have. Nevertheless, \citeauthor{behrouzi2023multimodal} independently support one choice made here: binary relevance with a discriminative classifier works well for multi-label problems. Their headline metric, the Hamming loss, is not used here, however. With the class imbalance in the dataset of this thesis, a trivial classifier achieves a better Hamming loss than any trained model. Macro-averaged $F_1$ is reported instead.
+
+\section{Summary}
+\label{sec:relwork_summary}
+
+The four genre studies reviewed in Section~\ref{sec:relwork_genre} share three patterns, and these patterns shape the approach of this thesis.
+
+First, none of them puts an explicit, interpretable emotion step between audio and genre. Genre is always predicted directly from low-level or learned audio features, in some cases together with images or text. The models therefore give no indication of why a genre was predicted. The present work addresses this gap. Section~\ref{subsec:relwork_emotion_genre} shows that the link between emotion and genre that such a step relies on is well documented in music research.
+
+Second, two of the four (\citealp{austin2010characterization}; \citealp{mangolin2020multimodal}) report one of two problems. Either the labels are too coarse to learn (one genre for films that have several), or audio alone predicts genre poorly. Both problems suggest an emotion step as a possible remedy, rather than an ever larger audio model.
+
+Third, the risk that clips of the same film leak between training and testing is handled unevenly. It does not arise for \citet{ma2021computational}, who treat each film as one bag of music cues and test with leave-one-film-out cross-validation. Nor does it arise for \citet{mangolin2020multimodal} and \citet{behrouzi2023multimodal}, who represent each film by one trailer and score each trailer once. \citet{austin2010characterization}, however, classify the 1{,}728 single tracks of their 98 films in a ten-fold cross-validation. They do not report grouping the tracks by film, so tracks of one film can appear in both the training and the test folds. All cross-validation in this thesis is therefore grouped by film.
+
+The MER work in Section~\ref{sec:relwork_mer} adds two points. Whether to use dimensional or categorical emotions is still an open question, and how to make MER systems interpretable is a known, unsolved problem. This thesis takes up both, with a feature set that combines the two kinds of emotion (Chapter~\ref{ch:fundamentals}) and with an analysis of which emotions mark which genres. The first question can be posed more directly, namely whether the discrete emotions are needed at all, since they can be placed in the plane of valence and arousal. This thesis addresses it with an ablation (Appendix~\ref{sec:app_ablation}). Valence and energy alone would predict genre almost as well as all eight emotions. The eight are kept because the discrete categories name the function of a score. Fear is an example: it separates Horror from Action where valence and tension do not.

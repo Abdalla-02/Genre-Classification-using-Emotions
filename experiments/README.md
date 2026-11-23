@@ -28,7 +28,7 @@ See `results/README.md` for what each file contains.
 ## audit_consistency.py — check the documents against the results
 
 Also not an experiment. It re-reads every saved result and verifies that the numbers
-quoted in `docs/current_state.md`, `docs/briefing_full.md`, `docs/README.md` and the
+quoted in `docs/archive/current_state.md`, `docs/archive/briefing_full.md`, `docs/README.md` and the
 chapter copies in `docs/latex/chapters/` still match them, that every file path named in
 the documents resolves, that the dataset still cleans to the expected counts, that the
 embedding caches are complete, that no file has picked up CRLF endings, that no chapter
@@ -42,9 +42,9 @@ python experiments/audit_consistency.py
 
 ## make_figures.py, make_circumplex.py and export_current_state.py
 
-`make_figures.py` draws fourteen figures into `figures/` (PDF + PNG) from
-`results/*.json` (thirteen are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
-`docs/current_state.md` into `.docx` and `.pdf` (needs LibreOffice).
+`make_figures.py` draws seventeen figures into `figures/` (PDF + PNG) from
+`results/*.json` (sixteen are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
+`docs/archive/current_state.md` (the archived supervisor briefing) into `.docx` and `.pdf` (needs LibreOffice).
 `make_circumplex.py` draws Figure 2.1, adapted from Figure 1 of Eerola and Vuoskoski
 (2011): valence, arousal, energy and tension, with the five discrete emotions; conceptual,
 not from results.
@@ -87,7 +87,7 @@ not from results.
 | `exp_clip_length.py` | Full-clip windowed pooling vs the 10.24 s window | §6 |
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 | `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
-| `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_hamming_breakdown.py` | Why the emotion pipeline has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
 | `exp_threshold_sweep.py` | Film-level precision, recall and F1 for one global threshold from 0.20 to 0.80 | §36 |
 | `exp_all_positive_metrics.py` | The all-positive classifier under every metric of the metric table (Appendix A.2) | §35 |
 | `exp_rating_structure.py` | Correlations of the eight rating scales and a principal component analysis of them, all 360 rated clips | §33 |
@@ -113,7 +113,7 @@ not from results.
 |---|---|---|
 | `exp_statistical_power.py` | Repeated GroupKFold, confidence intervals, corrected significance tests, nested-CV tuning | §11 |
 | `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check. Now the clip-level check | §21 |
-| `exp_metrics_stability.py` | Every route under 13 metrics (tuned thresholds, AP, ROC-AUC, Hamming, ...) and the spread over repeats, folds, films and five seeds | §22.1 |
+| `exp_metrics_stability.py` | Every pipeline under 13 metrics (tuned thresholds, AP, ROC-AUC, Hamming, ...) and the spread over repeats, folds, films and five seeds | §22.1 |
 | `exp_film_level.py` | **The headline**: every in-domain genre result scored per film, clip level beside it; 5 and 8 genres, per-genre precision/recall/F1, ablation, five seeds | §23, §24 |
 
 **Which numbers to quote.** The single-run numbers printed by the older scripts in
