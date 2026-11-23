@@ -1,0 +1,55 @@
+% =============================================================================
+% Declaration on the use of generative AI.
+%
+% Required by Fakultaetsratsbeschluss 019/25 (FIN, OVGU): name the AI system, mark the parts
+% with AI-generated content, state the level of use and the reason. Shortened on 15 Nov 2026
+% to the length of the author's examples (one paragraph and a table); the parts drafted with
+% AI are still named, because the regulation requires it and the author signs this page.
+% Read every line before signing; change the date to the submission date.
+% =============================================================================
+
+% Layout (15 Nov, author): title placed like the Statement of Authorship, parts spaced out and
+% the signature near the foot of the page, so that the page looks filled.
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Declaration on the Use of Generative AI}
+\markboth{Declaration on the Use of Generative AI}{Declaration on the Use of Generative AI}
+\thispagestyle{plain}
+\begin{center}
+  \vspace*{0em}
+  \huge\textbf{Declaration on the Use of Generative AI}
+\end{center}
+\vspace{1em}
+
+{\linespread{1.05}\selectfont
+
+In accordance with the regulation of the Faculty of Computer Science on the use of generative artificial intelligence (AI) in theses, I disclose the following use of AI systems in the preparation of this thesis.
+
+\vspace{0.6em}
+\noindent I used Claude (Anthropic), models Opus~5 and Opus~5.5, from July to November 2026, through the Claude Code development environment and the Claude.ai chat interface with its connector to Overleaf. It served as a programming and writing assistant, so that the experiments could be implemented and documented faster. The table gives the level of use for each kind of work: \emph{generated} (the AI produced a first version, which I checked and revised), \emph{drafted} (the AI wrote text from my results and instructions, which I revised and modified), \emph{assisted} (the AI found, proposed or checked information) and \emph{edited} (the AI changed the wording of existing text).
+
+\vspace{1em}
+{\renewcommand{\arraystretch}{1.15}\small
+\noindent\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.55\textwidth}@{}}
+  \toprule
+  \textbf{Work} & \textbf{Level} & \textbf{Use in this thesis} \\
+  \midrule
+  Implementation & generated & All code for feature extraction, experiments, statistics and figures, written and run by the AI from my specifications. I checked the outputs against data counts and published results. \\
+  Experiment design and analysis & assisted & The AI proposed analyses and controls, from which I selected. It computed the results and drafted interpretations, which I checked against the numbers. \\
+  Figures and tables & generated & Drawn by scripts and TikZ code that the AI wrote, from the saved results. \\
+  Literature & assisted & The AI found sources and checked every bibliographic entry. I selected the sources cited. \\
+  Thesis text & drafted & First drafts of all chapters, Appendix~A and the abstract, written from my results and instructions, which I revised and modified. \\
+  Language & edited & Wording and grammar throughout. \\
+  \bottomrule
+\end{tabular}}
+
+\vspace{1em}
+\noindent The research questions, the datasets and the decisions about the experiments are mine, and I take responsibility for the entire content of this thesis.\par}
+
+\vfill
+\noindent\begin{minipage}{\linewidth}
+\begin{tabular}{p{20em}C{15em}}
+\myplace, November 23, 2026 & \dotfill\\
+& \centering (Signature)\\
+\end{tabular}
+\end{minipage}

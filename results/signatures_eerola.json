@@ -1,0 +1,127 @@
+{
+  "what": "Cohen's d of each rated emotion, clips with the genre vs all other clips (eight-genre Eerola space, human ratings, pooled SD)",
+  "n_clips": 346,
+  "n_films": 42,
+  "clips_per_genre": {
+    "Action": 103,
+    "Crime": 98,
+    "Drama": 239,
+    "Adventure": 97,
+    "Comedy": 40,
+    "Biography": 24,
+    "Documentary": 17,
+    "Horror": 28
+  },
+  "emotions": [
+    "valence",
+    "energy",
+    "tension",
+    "anger",
+    "fear",
+    "happy",
+    "sad",
+    "tender"
+  ],
+  "genres": [
+    "Action",
+    "Crime",
+    "Drama",
+    "Adventure",
+    "Comedy",
+    "Biography",
+    "Documentary",
+    "Horror"
+  ],
+  "d": {
+    "Action": {
+      "valence": -0.4242,
+      "energy": 0.2045,
+      "tension": 0.4558,
+      "anger": 0.3782,
+      "fear": 0.3505,
+      "happy": -0.4976,
+      "sad": 0.0469,
+      "tender": -0.3292
+    },
+    "Crime": {
+      "valence": -0.3569,
+      "energy": 0.2802,
+      "tension": 0.3373,
+      "anger": 0.2587,
+      "fear": 0.3978,
+      "happy": -0.0895,
+      "sad": -0.3837,
+      "tender": -0.3214
+    },
+    "Drama": {
+      "valence": 0.565,
+      "energy": -0.0796,
+      "tension": -0.4808,
+      "anger": -0.3192,
+      "fear": -0.4591,
+      "happy": 0.3741,
+      "sad": 0.0616,
+      "tender": 0.3543
+    },
+    "Adventure": {
+      "valence": 0.2086,
+      "energy": -0.1177,
+      "tension": -0.1724,
+      "anger": -0.0468,
+      "fear": -0.2522,
+      "happy": 0.0147,
+      "sad": 0.201,
+      "tender": 0.1979
+    },
+    "Comedy": {
+      "valence": 0.5198,
+      "energy": -0.1431,
+      "tension": -0.476,
+      "anger": -0.5137,
+      "fear": -0.613,
+      "happy": 0.3652,
+      "sad": 0.2722,
+      "tender": 0.1224
+    },
+    "Biography": {
+      "valence": 0.3738,
+      "energy": 0.1605,
+      "tension": -0.3786,
+      "anger": -0.3215,
+      "fear": -0.3845,
+      "happy": 0.6742,
+      "sad": -0.253,
+      "tender": 0.2314
+    },
+    "Documentary": {
+      "valence": 0.3485,
+      "energy": -0.3885,
+      "tension": -0.4109,
+      "anger": -0.5149,
+      "fear": -0.4023,
+      "happy": 0.2412,
+      "sad": 0.4349,
+      "tender": 0.229
+    },
+    "Horror": {
+      "valence": -0.6313,
+      "energy": -0.1274,
+      "tension": 0.502,
+      "anger": 0.3383,
+      "fear": 0.7506,
+      "happy": -0.5166,
+      "sad": 0.0268,
+      "tender": -0.329
+    }
+  },
+  "dominant": {
+    "Action": "happy",
+    "Crime": "fear",
+    "Drama": "valence",
+    "Adventure": "fear",
+    "Comedy": "fear",
+    "Biography": "happy",
+    "Documentary": "anger",
+    "Horror": "fear"
+  }
+}

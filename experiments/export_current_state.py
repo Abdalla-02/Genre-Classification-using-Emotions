@@ -1,4 +1,7 @@
-"""Export docs/current_state.md to docs/current_state.docx and docs/current_state.pdf.
+"""Export docs/archive/current_state.md to .docx and .pdf beside it.
+
+Used for the supervisor briefings while the thesis was written; the briefing was archived
+after submission (23 Nov 2026), so this script is kept only to reproduce the exports.
 
 The supervisor briefing is written in Markdown; this turns it into a Word document with
 python-docx (headings, paragraphs, bullet and numbered lists, tables, bold / italic /
@@ -24,7 +27,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
-DOCS = Path(__file__).resolve().parents[1] / "docs"
+DOCS = Path(__file__).resolve().parents[1] / "docs" / "archive"  # archived after submission
 SRC = DOCS / "current_state.md"
 SOFFICE_CANDIDATES = ["soffice", r"C:\Program Files\LibreOffice\program\soffice.exe"]
 

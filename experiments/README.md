@@ -28,7 +28,7 @@ See `results/README.md` for what each file contains.
 ## audit_consistency.py — check the documents against the results
 
 Also not an experiment. It re-reads every saved result and verifies that the numbers
-quoted in `docs/current_state.md`, `docs/briefing_full.md`, `docs/README.md` and the
+quoted in `docs/archive/current_state.md`, `docs/archive/briefing_full.md`, `docs/README.md` and the
 chapter copies in `docs/latex/chapters/` still match them, that every file path named in
 the documents resolves, that the dataset still cleans to the expected counts, that the
 embedding caches are complete, that no file has picked up CRLF endings, that no chapter
@@ -40,11 +40,14 @@ pre-commit hook. **Run it before committing anything that touches a number.**
 python experiments/audit_consistency.py
 ```
 
-## make_figures.py and export_current_state.py
+## make_figures.py, make_circumplex.py and export_current_state.py
 
-`make_figures.py` draws thirteen figures into `figures/` (PDF + PNG) from
-`results/*.json` (twelve are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
-`docs/current_state.md` into `.docx` and `.pdf` (needs LibreOffice).
+`make_figures.py` draws seventeen figures into `figures/` (PDF + PNG) from
+`results/*.json` (sixteen are in the thesis; `box_office` is not); give figure names to draw only some. `export_current_state.py` turns
+`docs/archive/current_state.md` (the archived supervisor briefing) into `.docx` and `.pdf` (needs LibreOffice).
+`make_circumplex.py` draws Figure 2.1, adapted from Figure 1 of Eerola and Vuoskoski
+(2011): valence, arousal, energy and tension, with the five discrete emotions; conceptual,
+not from results.
 
 ## features — dataset and features
 | Script | Purpose | Log |
@@ -84,7 +87,11 @@ python experiments/audit_consistency.py
 | `exp_clip_length.py` | Full-clip windowed pooling vs the 10.24 s window | §6 |
 | `exp_box_office.py` | Box office vs classification quality, emotions and genre (exploratory) | §20 |
 | `exp_box_office_blockbuster.py` | The same on Blockbuster (not in the thesis) | §22.3 |
-| `exp_hamming_breakdown.py` | Why the emotion route has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_hamming_breakdown.py` | Why the emotion pipeline has the worst Hamming loss: errors per genre, genres predicted per clip | §25 |
+| `exp_threshold_sweep.py` | Film-level precision, recall and F1 for one global threshold from 0.20 to 0.80 | §36 |
+| `exp_all_positive_metrics.py` | The all-positive classifier under every metric of the metric table (Appendix A.2) | §35 |
+| `exp_rating_structure.py` | Correlations of the eight rating scales and a principal component analysis of them, all 360 rated clips | §33 |
+| `exp_clap_ridge_posthoc.py` | Post-hoc paired test of CLAP with ridge regression against the VGGish pipeline, per master seed and pooled over the five seeds | §32 |
 | `exp_emotion_pipeline_grid.py` | The emotion pipeline for six representations x three emotion regressors (random forest, ridge, SVR), film level, paired against the direct pipelines and against each other | §30 |
 | `exp_per_genre_analysis.py` | What lies behind the per-genre figure: the all-positive floor (every genre for every film) as an arm on the same folds, film-level AUC per genre, per-genre paired film bootstrap, how often each genre is assigned | §29 |
 | `exp_w2v_diagnosis.py` | Why wav2vec 2.0 is weak directly but strong as the emotion input: paired test of the two emotion pipelines, PCA-8 and random-forest controls, Stage-1 profile per clip and per film, film identity | §28 |
@@ -95,6 +102,7 @@ python experiments/audit_consistency.py
 |---|---|---|
 | `exp_blockbuster.py` | VGGish vs MFCC on Ma et al. (2021) | §3 |
 | `exp_blockbuster_emotion.py` | Cross-dataset emotion bridge + PCA-8 control | §10 |
+| `exp_zero_shot_threshold.py` | Zero-shot transfer with per-genre thresholds tuned on Eerola only (clip- and film-level tuning) and the target ROC AUC; does the zero-shot lead survive? | §31 |
 | `exp_zero_shot.py` | Shared 6-genre space; train on Eerola, test on Blockbuster without training on it; replicates Ma et al. in-domain | §15 |
 | `exp_blockbuster_deep.py` | Blockbuster under the primary protocol: repeated CV, tuned C, cue-level (MIL) arms, full 140-feature MIR | §17 |
 | `exp_signature_replication.py` | Do the Eerola emotion-genre signatures reappear on Blockbuster? (RQ3 external validity) | §17.5 |
@@ -105,7 +113,7 @@ python experiments/audit_consistency.py
 |---|---|---|
 | `exp_statistical_power.py` | Repeated GroupKFold, confidence intervals, corrected significance tests, nested-CV tuning | §11 |
 | `exp_cv_corrected.py` | The same folds, re-scored with the two CV corrections (pooled per-repeat macro-F1; out-of-fold emotion training); all six representations and the ablation on one protocol; reproduces §11's old-metric numbers as a check. Now the clip-level check | §21 |
-| `exp_metrics_stability.py` | Every route under 13 metrics (tuned thresholds, AP, ROC-AUC, Hamming, ...) and the spread over repeats, folds, films and five seeds | §22.1 |
+| `exp_metrics_stability.py` | Every pipeline under 13 metrics (tuned thresholds, AP, ROC-AUC, Hamming, ...) and the spread over repeats, folds, films and five seeds | §22.1 |
 | `exp_film_level.py` | **The headline**: every in-domain genre result scored per film, clip level beside it; 5 and 8 genres, per-genre precision/recall/F1, ablation, five seeds | §23, §24 |
 
 **Which numbers to quote.** The single-run numbers printed by the older scripts in
@@ -117,7 +125,7 @@ test quoted beside it. `exp_statistical_power.py` is kept as the record of the p
 protocol, and the corrected run reproduces it exactly under the old metric. Every
 film-grouped script was re-run on 8 Oct after a duplicate film was merged (§24).
 
-Nineteen scripts write machine-readable output to `results/`; `results/README.md` lists
+Twenty-four scripts write machine-readable output to `results/`; `results/README.md` lists
 them with the command for every experiment. A run with reduced settings (`--repeats 2`,
 `--quick`, ...) writes a git-ignored `<name>.partial.json` instead, so a debug run can
 never replace the numbers the documents quote.

@@ -1,12 +1,90 @@
 \chapter{Conclusions and Future Work}
 \label{ch:conclusions}
 
+% Draft written with AI assistance (12 Nov 2026) for the author to check and revise.
+% Every number is the one reported in Chapters 5 and 6.
+
 \section{Conclusions}
 \label{sec:conclusions}
 
-\mytodo{To be written by the author: one answer per research question (Section~\ref{sec:aim}), each with the number that decides it and its caveat.}
+This thesis examined how well the emotions that listeners perceive in film music predict the genre of the film, and how an interpretable emotion step compares with classifying genre
+directly from audio. The emotion pipeline predicts eight emotion ratings from a VGGish
+embedding with a random forest and then predicts genre from these ratings with one
+logistic regression per genre, so that a film can receive several genres (multi-label
+classification). It was evaluated on the 40 films of the five-genre Eerola
+subset and transferred to the 110 films of the Blockbuster dataset. Section~\ref{sec:disc_rq}
+answers the four research questions in detail; in brief, the results are as follows.
+
+The emotions rank films above chance (macro ROC-AUC 0.655), but at the default threshold their macro-$F_1$ is close to that of a trivial classifier. The emotion pipeline reaches a film-level macro-$F_1$ of 0.460 and the human ratings 0.491, against 0.309 for a random guess and 0.434 for assigning every genre to every film. Most genres have an emotional signature that is consistent with the conventions of
+film scoring. Fear shows the largest single effects and valence forms a second axis, and one to
+three emotions keep most of the genre information. Within one dataset, the emotion pipeline
+is ahead of every audio representation used directly at the default threshold ($+0.093$
+over VGGish, $p=0.052$), but significantly only against the weaker ones, and with thresholds tuned per genre the pipelines converge over clips. Trained on Eerola alone, it transfers to
+the Blockbuster films better than direct VGGish at the default threshold (0.508 against
+0.403, $p=0.013$), but most of this lead depends on the threshold.
+
+\paragraph{Overall conclusion.} The results do not indicate that the emotion step makes
+genre prediction from film music more accurate in general. Its lead appeared on the small dataset and under transfer, at the default decision threshold, and much of it depends on that threshold; whether the amount of training data is the cause was not tested. What it offers by design is interpretability: its predictions rest on eight emotions that listeners can name (Appendix~\ref{sec:app_weights}), and some errors can be traced to a stage of the pipeline. The weakness on Horror, for
+example, can be traced mainly to Stage~1, which shifts the extreme fear ratings of Horror clips towards the
+average (rated 4.35, predicted 3.73; Appendix~\ref{sec:app_horror}). Such an explanation can
+be checked against the practice of film scoring, which is not possible in the same way for a
+direct audio model.
 
 \section{Future Work}
 \label{sec:futurework}
 
-\mytodo{To be written by the author. The Discussion points here for a zero-shot comparison with per-genre thresholds tuned on the source dataset; other candidates are more films and a second dataset with audio and emotion ratings.}
+Several experiments could build on this thesis. Some would test the present results on more
+data, some would transfer the emotion step to new kinds of data, and some would apply it in
+other domains.
+
+\paragraph{A larger replication with fixed decisions.} The most direct next step is a
+replication on a larger collection of film-music clips with emotion ratings and genre
+labels. The unit of evaluation, the genre set, the threshold policy and the main comparisons
+should be fixed before the data are analysed. Such a study could test two leads that this
+thesis could only observe: the advantage of the emotion pipeline over the strongest direct
+representations, and the lead of CLAP with ridge regression, which was found after the
+results were known ($+0.032$, $p=0.112$; Appendix~\ref{sec:app_grid}). The same collection
+could include a genre judgement for every single clip, which would separate errors of the
+model from the fact that IMDb labels describe whole films.
+
+\paragraph{Transfer with audio and ratings on both sides.} The Blockbuster dataset has
+neither audio nor emotion ratings, so the transfer in this thesis was limited to VGGish and
+could not check the predicted emotions. A second dataset with audio and its own ratings would
+allow Stage~1 to be tested on new films and any representation to be transferred. It would
+also allow a few rated clips of the new dataset to be used to adapt Stage~1 before genre is
+predicted. Comparing this adaptation with zero-shot transfer would show how much labelled
+data a new collection needs.
+
+\paragraph{New sources of film music.} The emotion step could be transferred to other kinds
+of audiovisual music. Trailers are a natural target, because their music is edited to
+advertise the genre, and trailer audio has already been used for genre classification
+\citep{mangolin2020multimodal}. Films from other film industries and periods would show
+whether the emotional conventions of genres found here hold beyond the films of this dataset.
+Television series and video games use similar conventions and could be tested in the same
+way.
+
+\paragraph{A stronger emotion model.} Stage~1 reaches about 62\,\% of the attainable $R^2$
+and underestimates the strongest emotions, which appears to cause much of the weakness on
+Horror. Audio models fine-tuned on emotion ratings, instead of frozen embeddings, could be
+compared with the random forest. Each such model should be evaluated on genre as well,
+because a more accurate emotion model did not reliably yield a better genre result in this
+thesis (Section~\ref{subsec:eval_grid}).
+
+\paragraph{Calibration and thresholds as part of the design.} Much of the advantage of the
+emotion pipeline depends on the default threshold of 0.5. A future study could compare
+calibrated probabilities with thresholds chosen per genre \citep{lipton2014optimal} and
+report a threshold-free measure such as ROC-AUC beside macro-$F_1$ from the start.
+
+\paragraph{Emotion in multimodal models.} Audio alone is a weak source of genre information
+compared with images and text \citep{mangolin2020multimodal}. The emotion step could serve
+as an interpretable audio component beside trailer frames or the plot synopsis
+\citep{behrouzi2023multimodal}. Such a model would show whether the emotions still add
+information when stronger sources are available, and it would allow a genre prediction to
+be explained partly in terms of the music.
+
+\paragraph{Applications in other domains.} An emotion step between audio and a category
+could be useful wherever music has to fit a purpose. Examples are the search for music in
+production libraries for a scene of a given mood or genre, music recommendation that can
+state why a piece was chosen, and the tagging of music for advertising or games. In each
+case the emotions would make the decision readable for the user, which this thesis suggests
+is their main strength.

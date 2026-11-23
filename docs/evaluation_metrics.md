@@ -1,7 +1,7 @@
 # The evaluation explained: every metric, why it is there, and what it showed
 
 Written 15 October 2026, for the author. It answers three questions: what Hamming loss
-means, why the emotion route scores worst on it, and why each metric of the evaluation was
+means, why the emotion pipeline scores worst on it, and why each metric of the evaluation was
 chosen. Section 2.1 explains principal component analysis and the PCA-8 control (added
 21 Oct). Section 8 holds the LaTeX paragraph that is now in Appendix A.2.
 
@@ -13,7 +13,7 @@ the ten repeats, unless stated otherwise. Sources: `results/metrics_stability.js
 
 ---
 
-## 1. Hamming loss, and why the emotion route is worst on it
+## 1. Hamming loss, and why the emotion pipeline is worst on it
 
 ### 1.1 What it measures
 
@@ -37,14 +37,14 @@ Two properties matter here:
 
 ### 1.2 The numbers
 
-| route | Hamming loss ↓ | genres predicted per clip | wrong "yes" per clip | wrong "no" per clip | macro-F1 (clips) |
+| pipeline | Hamming loss ↓ | genres predicted per clip | wrong "yes" per clip | wrong "no" per clip | macro-F1 (clips) |
 |---|---:|---:|---:|---:|---:|
 | most frequent (always "Drama") | **0.218** | 1.00 | 0.27 | 0.82 | 0.168 |
 | direct AST | 0.311 | 1.68 | 0.84 | 0.71 | 0.368 |
 | random guess (base rates) | 0.323 | 1.54 | — | — | 0.307 |
 | direct VGGish | 0.358 | 1.85 | 1.05 | 0.74 | 0.366 |
 | PCA-8 control | 0.396 | 2.04 | 1.24 | 0.75 | 0.364 |
-| **emotion route** | 0.406 | **2.35** | **1.42** | 0.62 | **0.405** |
+| **emotion pipeline** | 0.406 | **2.35** | **1.42** | 0.62 | **0.405** |
 | ratings (ceiling) | 0.427 | 2.47 | 1.54 | 0.61 | 0.416 |
 
 A clip truly has **1.54 genres** on average.
@@ -53,29 +53,29 @@ A clip truly has **1.54 genres** on average.
 (always "Drama") has the best Hamming loss and the worst macro-F1. The human ratings,
 which are the best input there is, have the best macro-F1 and the worst Hamming loss.
 That alone shows that Hamming loss and macro-F1 measure different things, not that one
-route is "worse" in general.
+pipeline is "worse" in general.
 
-### 1.3 Why the emotion route is worse on Hamming loss
+### 1.3 Why the emotion pipeline is worse on Hamming loss
 
 **1. It says "yes" more often.** It predicts 2.35 genres per clip, against 1.54 true
 genres and 1.85 for VGGish. More "yes" means more true genres found (wrong "no" 0.62
-per clip, the fewest of all routes). It also means more false alarms (wrong "yes" 1.42
-per clip, the most of the audio routes). Hamming loss counts both kinds of error the same,
+per clip, the fewest of all pipelines). It also means more false alarms (wrong "yes" 1.42
+per clip, the most of the audio pipelines). Hamming loss counts both kinds of error the same,
 so the extra false alarms outweigh the extra hits.
 
 **2. All of the difference comes from the two rare genres.** Split by genre, the share of
 wrong decisions is:
 
-| genre (clips) | emotion route | direct VGGish | difference |
+| genre (clips) | emotion pipeline | direct VGGish | difference |
 |---|---:|---:|---|
-| Action (103) | 0.371 | 0.411 | emotion route **better** |
+| Action (103) | 0.371 | 0.411 | emotion pipeline **better** |
 | Crime (98) | 0.473 | 0.468 | equal |
-| Drama (239) | 0.356 | 0.396 | emotion route **better** |
-| Comedy (40) | 0.438 | 0.286 | emotion route worse |
-| Horror (28) | 0.403 | 0.235 | emotion route worse |
+| Drama (239) | 0.356 | 0.396 | emotion pipeline **better** |
+| Comedy (40) | 0.438 | 0.286 | emotion pipeline worse |
+| Horror (28) | 0.403 | 0.235 | emotion pipeline worse |
 
-On the three common genres the emotion route makes *fewer* or equally many errors. The
-gap comes only from Comedy and Horror. The emotion route predicts Comedy for 148 clips
+On the three common genres the emotion pipeline makes *fewer* or equally many errors. The
+gap comes only from Comedy and Horror. The emotion pipeline predicts Comedy for 148 clips
 (40 are Comedy; it finds 22 of them) and Horror for 135 clips (28 are Horror; it finds
 15). VGGish predicts them for 78 and 67 clips and finds 12 and 9.
 
@@ -84,15 +84,15 @@ never predicted has F1 = 0, and in macro-F1 that zero weighs as much as Drama's 
 In Hamming loss the same genre costs only its base rate (0.085 for Horror). So the
 behaviour that wins macro-F1 (trying to find the rare genres) loses Hamming loss.
 
-### 1.4 Why the emotion route says "yes" so often
+### 1.4 Why the emotion pipeline says "yes" so often
 
 - **Class-balanced weights.** The genre classifier is a logistic regression per genre
   with `class_weight="balanced"` (`src/models/classifiers.py`). The few positive clips of
   a rare genre are weighted up (Horror positives about ×5.9, negatives about ×0.55).
   This works like lowering that genre's decision threshold. It is applied to
-  every route equally and was chosen so that rare genres are not ignored.
+  every pipeline equally and was chosen so that rare genres are not ignored.
 - **The penalty `C` is chosen for macro-F1.** An inner cross-validation on the training
-  folds picks `C` by macro-F1, so every route is tuned towards finding genres, not
+  folds picks `C` by macro-F1, so every pipeline is tuned towards finding genres, not
   towards making few errors.
 - **In emotion space the genres overlap more.** With only 11 emotion features, a tense,
   fearful crime or thriller clip looks much like a horror clip, and a light, happy drama
@@ -109,16 +109,16 @@ behaviour that wins macro-F1 (trying to find the rare genres) loses Hamming loss
 No, but it should be said openly, and the thesis already points the same way (Appendix
 A.2: "macro recall 0.566 against 0.423 for VGGish").
 
-> "The emotion route has the worst Hamming loss because it predicts more genres per
+> "The emotion pipeline has the worst Hamming loss because it predicts more genres per
 > clip: 2.35 against 1.54 true ones. That is the price of finding the rare genres. On
 > Action and Drama it actually makes fewer errors than VGGish, and the whole Hamming gap
 > comes from Comedy and Horror. Hamming loss is a poor headline here: a model that always
 > says 'Drama' wins it, and the human ratings lose it. Under the metrics that weight the
-> genres equally, the emotion route is first."
+> genres equally, the emotion pipeline is first."
 
 The honest counterpart, which the thesis also states: with **a decision threshold tuned
-per genre**, the over-prediction is corrected for every route and the routes converge
-(0.420 to 0.433 over clips; the emotion route lowest). Part of the emotion route's lead
+per genre**, the over-prediction is corrected for every pipeline and the pipelines converge
+(0.420 to 0.433 over clips; the emotion pipeline lowest). Part of the emotion pipeline's lead
 at the default threshold is therefore an operating-point effect (section 5).
 
 ---
@@ -155,26 +155,26 @@ numbers automatically:
    possible.
 
 **Why the thesis needs it.** VGGish describes each clip with 128 numbers. The emotion
-route squeezes them into 8 predicted emotions (plus 3 features derived from them) and
+pipeline squeezes them into 8 predicted emotions (plus 3 features derived from them) and
 predicts genre from those. If that helps, a sceptic can ask: does it help because the
 numbers are *emotions*, or simply because a few numbers overfit less than 128 on a small
 dataset? The PCA-8 control answers this. It compresses the same 128 VGGish numbers to
 their **8 principal components** and predicts genre from them in exactly the same way. The
-two routes differ in one thing only:
+two pipelines differ in one thing only:
 
 | | features | what they mean |
 |---|---|---|
-| emotion route | 8 emotions (+3 derived) | anger, fear, tension, … — the same meaning in any dataset |
+| emotion pipeline | 8 emotions (+3 derived) | anger, fear, tension, … — the same meaning in any dataset |
 | PCA-8 control | 8 components | mixtures of VGGish dimensions with no fixed meaning; they depend on the data PCA was fitted on |
 
-If the emotion route only helped because it is small, PCA-8 would help just as much.
+If the emotion pipeline only helped because it is small, PCA-8 would help just as much.
 
 **What happened** (film-level macro-F1; `film_level.json`, `zero_shot.json`):
 
 - **In-domain (Eerola, 5 genres):** PCA-8 (0.390) also gains over raw VGGish (0.367, under
-  every seed), so part of the emotion route's lead is plain compression. The emotion route
+  every seed), so part of the emotion pipeline's lead is plain compression. The emotion pipeline
   (0.460) is ahead of PCA-8 by +0.070, but not significantly (p = 0.089).
-- **Zero-shot (Eerola → Blockbuster):** the emotion route (0.508) beats PCA-8 (0.417)
+- **Zero-shot (Eerola → Blockbuster):** the emotion pipeline (0.508) beats PCA-8 (0.417)
   clearly, +0.093, p = 0.027, while compression alone gains almost nothing over raw VGGish
   (+0.013, p = 0.737). Here the *meaning* of the features matters, not their number.
 - **Blockbuster in-domain:** PCA-8 (0.587) is a serious baseline, far ahead of a random
@@ -238,7 +238,7 @@ floor for macro-F1 (but a hard one for Hamming loss and exact match).
 | Macro precision | 0.363 | 0.341 | when it names a genre it is right about as often as VGGish |
 | Macro recall | **0.566** | 0.423 | it finds many more of the true genres |
 
-This is *why* the emotion route wins macro-F1: recall, mostly on the rare genres. It is
+This is *why* the emotion pipeline wins macro-F1: recall, mostly on the rare genres. It is
 also why it loses Hamming loss (section 1). Reported because Ma et al. (Blockbuster)
 report them, and because F1 alone does not show whether a model over- or under-predicts.
 
@@ -249,9 +249,9 @@ report them, and because F1 alone does not show whether a model over- or under-p
 | Macro-F1, tuned threshold | each genre gets its own cut (0.05–0.95), chosen on the training folds only | 0.420 | 0.423 | 0.433 | 0.430 |
 
 **Why:** 0.5 is a convention. Rare genres rarely reach a probability of 0.5, so the
-default cut under-predicts them for some routes and not for others. Tuning the cut per
-genre gives every route its best operating point. **Result:** the routes converge and the
-emotion route is no longer ahead (−0.004, p = 0.813). So part of its lead is where it
+default cut under-predicts them for some pipelines and not for others. Tuning the cut per
+genre gives every pipeline its best operating point. **Result:** the pipelines converge and the
+emotion pipeline is no longer ahead (−0.004, p = 0.813). So part of its lead is where it
 puts its cut, not what it knows. This is the most important caveat of the in-domain
 result, and it is stated in Chapter 5 and Appendix A.2.
 
@@ -263,7 +263,7 @@ result, and it is stated in Chapter 5 and Appendix A.2.
 | Macro ROC-AUC | chance that a true clip of a genre gets a higher score than a false one; 0.5 = chance | 0.592 | 0.542 | 0.500 |
 
 **Why:** these ignore the cut entirely and ask only whether the probabilities are in the
-right order. **Result:** the emotion route ranks first on both, but not significantly
+right order. **Result:** the emotion pipeline ranks first on both, but not significantly
 (p = 0.352 and p = 0.063). Its ranking is at least as good as direct audio's, so its
 default-threshold lead is not only a threshold artefact; but it is not clearly better
 either.
@@ -282,23 +282,23 @@ either.
 **Why they are not the headline:** in five of these six, the dummy that always says
 "Drama" beats every real model. A metric under which a model that has learned nothing
 comes first cannot answer a question about Horror and Comedy. Among the real models they
-prefer AST, the route that predicts the fewest genres (1.68 per clip).
+prefer AST, the pipeline that predicts the fewest genres (1.68 per clip).
 
 **Why exact match is so low for everyone:** a clip is only counted as right if all five
-decisions are right. The emotion route predicts 2.35 genres for clips that have 1.54, so
+decisions are right. The emotion pipeline predicts 2.35 genres for clips that have 1.54, so
 it almost never hits the exact list (7 % of clips). The dummy gets every clip that is
 "Drama only" right (28 %).
 
 **Why they are still reported:** leaving them out would look like choosing the metric
 that suits the method. Showing them, together with the reason they favour the dummy, is
-more convincing. Weighted-F1 is the one exception in this block, which the emotion route
+more convincing. Weighted-F1 is the one exception in this block, which the emotion pipeline
 wins (+0.042, p = 0.008), because it still scores F1 per genre.
 
 ### 4.6 Per genre
 
 Film-level precision, recall and F1 for each genre (Chapter 5, Section 5.4). **Why:**
 macro-F1 is an average of five very different genres; the per-genre view shows *where*
-a route is strong. **Result:** the emotion route is best on Action (0.61), Crime (0.35)
+a pipeline is strong. **Result:** the emotion pipeline is best on Action (0.61), Crime (0.35)
 and Comedy (0.34); MIR on Drama (0.82); CLAP on Horror (0.43). With 4 Comedy and 5 Horror
 films, one film moves their F1 by about 0.2, so this part has no significance test.
 
@@ -308,15 +308,15 @@ films, one film moves their F1 by about 0.2, so this part has no significance te
 
 | tool | what it answers | why this one | where |
 |---|---|---|---|
-| **Paired film bootstrap** (2000 draws) | would the difference hold for another sample of films? Resamples whole films, keeps both routes' predictions paired | the only test that works at film level (a test fold holds about 8 films) | every film-level Δ and p |
+| **Paired film bootstrap** (2000 draws) | would the difference hold for another sample of films? Resamples whole films, keeps both pipelines' predictions paired | the only test that works at film level (a test fold holds about 8 films) | every film-level Δ and p |
 | **Nadeau–Bengio corrected t-test** | would the difference hold for another training set? Uses the per-fold scores, corrected for overlapping training sets | the more conservative test; quoted beside the bootstrap at clip level so the friendlier test is never the only one | clip-level p_NB |
 | p_lim | the smallest p-value Nadeau–Bengio can reach on this dataset, however many repeats | shows that more repeats cannot help, only more films (0.069–0.200 for the borderline comparisons) | Appendix A.1 |
-| Repeats won | in how many of the ten repeats one route beats the other | easy to read, independent of any test | "won" column |
+| Repeats won | in how many of the ten repeats one pipeline beats the other | easy to read, independent of any test | "won" column |
 | SD over repeats | how much the score moves when films are shuffled into other folds (film level 0.034–0.045) | stability of the protocol | Appendix A.2 |
 | Bootstrap SE | how much it depends on which films the dataset contains (0.027–0.038) | the main source of uncertainty | Appendix A.2 |
 | Five master seeds | does anything the code controls change the result? (moves the mean by at most 0.019) | reproducibility | Appendix A.2 |
 
-The main result in this frame: the emotion route is ahead of VGGish by +0.093 at film
+The main result in this frame: the emotion pipeline is ahead of VGGish by +0.093 at film
 level, in 9 of 10 repeats and under every seed, but p = 0.052. It is consistent, but on
 40 films not proven.
 
@@ -333,7 +333,7 @@ level, in 9 of 10 repeats and under every seed, but p = 0.052. It is consistent,
 Thresholds stay at 0.5 in every transfer: the target dataset has no labels that could
 tune them, which is the realistic setting. Whether a threshold tuned on the *source*
 dataset keeps the zero-shot lead (0.508 vs 0.403, p = 0.013) has not been tested; it is
-open item 3 in `current_state.md`.
+open item 3 in `docs/archive/current_state.md`.
 
 ---
 
@@ -359,13 +359,13 @@ Among the metrics that weight genres equally, …both threshold-free metrics." I
 only numbers from `metrics_stability.json` and `hamming_breakdown.json`.
 
 ```latex
-Hamming loss deserves a closer look, because under it the emotion route is the weakest
-of the four audio routes (0.406) and even falls behind the random guess (0.323). The
+Hamming loss deserves a closer look, because under it the emotion pipeline is the weakest
+of the four audio pipelines (0.406) and even falls behind the random guess (0.323). The
 reason is the number of genres it predicts: 2.35 per clip on average, against 1.54 true
 genres, 1.85 for VGGish and 1.68 for AST. Hamming loss counts each of the five decisions
 per clip equally, so an unnecessary positive costs as much as a missed genre, and for a
 rare genre the lowest loss is reached by never predicting it, which costs only the
-genre's base rate (0.085 for Horror). Split by genre, the emotion route makes fewer
+genre's base rate (0.085 for Horror). Split by genre, the emotion pipeline makes fewer
 errors than VGGish on Action (0.371 against 0.411) and Drama (0.356 against 0.396) and
 about as many on Crime; the whole difference comes from Comedy (0.438 against 0.286) and
 Horror (0.403 against 0.235). It predicts these two genres for 148 and 135 of the 329

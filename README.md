@@ -1,154 +1,146 @@
-# Bachelor Thesis: Film-Genre Classification from Emotional Features of Soundtracks
+# Multi-Label Movie Genre Classification based on Emotional Features of Soundtracks
 
-Implementation for the bachelor thesis *"Filmgenre-Klassifikation anhand emotionaler
-Merkmale von Soundtracks"* (German; "Film-genre classification from emotional features of
-soundtracks"). Only the title is German: **the thesis and everything in this repository --
-code, comments, documentation and the LaTeX sections under `docs/latex/` -- are in
-English.** The project investigates whether emotional features extracted
-from film soundtracks can predict film genre, and whether modelling emotion as an
-interpretable intermediate step offers an advantage over classifying genre directly from
-audio.
+Code, results and documentation of a bachelor thesis at Otto-von-Guericke University
+Magdeburg (Faculty of Computer Science, AG Data & Knowledge Engineering), **submitted on
+23 November 2026**.
 
-## Goal
+Film music is written to express emotions that suit a film's genre. The thesis asks how far
+the emotions that listeners perceive in a soundtrack reveal the film's genre, and what
+changes when genre is predicted through these emotions instead of directly from the audio:
 
-Analyse audio-based data for film-genre and emotion recognition. The structure keeps data,
-code, experiments, and results separate, reproducible, and easy to extend.
+```text
+audio clip ──► VGGish embedding ──► random forest ──► 8 emotions (+3 derived) ──► logistic regression per genre ──► genres
+                                └──────────────── logistic regression per genre (direct pipeline) ─────────────────┘
+```
 
-## Core Principles
+## Research questions
 
-- Reproducibility: pinned dependencies, fixed random seeds, cached embeddings.
-- Isolated environment: dependencies live in a local virtual environment, not global.
-- Clean structure: data, source code, experiments, documentation, and results separated.
-- Scientific traceability: experiments are self-contained scripts and are documented in `docs/`.
+- **RQ1** How well do the emotions that listeners perceive in a soundtrack predict its film's genre?
+- **RQ2** Which emotions characterise each genre?
+- **RQ3** How well can genre be predicted from emotions, compared with predicting it directly
+  from the same audio representation?
+- **RQ4** How well do the two pipelines generalise when a model trained on one dataset is
+  applied to another, without access to any of its labels?
 
-## Requirements
+## Main results
 
-- Python 3.11 or 3.12
-- pip (dependencies in `requirements.txt`)
-- Optional: NVIDIA GPU for faster embedding extraction (CPU works; embeddings are cached)
+Genre is multi-label. The headline metric is **film-level macro-F1**: the clip probabilities
+of a film are averaged, a genre is assigned at ≥ 0.5, and F1 is averaged over genres. Every
+value below is read from `results/*.json`; each comes with the reference it should be read
+against.
 
-## Quick Start
+**Eerola dataset, five genres, 40 films** (`results/film_level.json`; ten repeats of
+grouped 5-fold cross-validation):
 
-Create and activate a virtual environment, then install dependencies.
+| pipeline | macro-F1 (film) |
+|---|---|
+| ratings → genre (reference: Stage 1 replaced by the listener ratings) | 0.491 |
+| **VGGish → emotions → genre (emotion pipeline)** | **0.460** (clip level 0.405) |
+| best audio representation used directly (MusiCNN) | 0.396 |
+| VGGish used directly | 0.367 |
+| PCA of VGGish to 8 dimensions (control) | 0.390 |
+| all-positive reference (every genre for every film) | 0.434 |
+| random guess at the base rates / most-frequent dummy | 0.309 / 0.168 |
 
-On Windows (PowerShell):
+The emotion pipeline ranks films above chance (macro ROC-AUC 0.655). Its lead over VGGish
+used directly (+0.093) is not significant on 40 films (paired film bootstrap, p = 0.052),
+and with thresholds tuned per genre the pipelines converge over clips.
+
+**Transfer to the Blockbuster dataset** (110 films, six shared genres; `results/zero_shot.json`,
+strict regime): trained on Eerola and applied without any Blockbuster labels, the emotion
+pipeline reaches 0.508 against 0.403 for VGGish used directly (random guess 0.292); the gap
+shrinks and loses significance with tuned thresholds (`results/zero_shot_threshold.json`).
+Trained on Blockbuster itself, the direct pipeline reaches 0.620 under leave-one-film-out,
+inside the range of the VGGish models that Ma et al. (2021) published for these films
+(0.61-0.65).
+
+**In short:** the results suggest that the emotion step does not make genre prediction more
+accurate in general. Its lead appears on the small dataset and under transfer at the default
+threshold; what it offers by design is interpretability, such as fear as the signature of
+Horror (`results/signatures_eerola.json`).
+
+## Data
+
+- **Eerola & Vuoskoski (2011)**: 360 film-music clips from 45 films, each rated by listeners
+  on eight emotion scales. Genres from IMDb. Three label spaces are used and never compared
+  with each other: eight genres (346 clips, 42 films), the five-genre subset (329 clips,
+  40 films) and the six genres shared with Blockbuster (319 clips, 40 films).
+- **Blockbuster (Ma et al., 2021)**: 110 films described by published VGGish and MIR
+  features per music cue (4664 cues). There is no audio (copyright), so VGGish is the only
+  representation available on both datasets.
+- Raw data is **not redistributed** (`data/raw/` is git-ignored; see `data/raw/README.md`).
+  The per-clip embeddings derived from it are committed in `data/processed/`, so every
+  result reproduces from a clone without the audio.
+
+## Repository layout
+
+```text
+├── src/                    library code: configuration, data loading, feature extractors,
+│                           classifiers, cross-validation and metrics
+├── experiments/            one runnable script per experiment, grouped by topic
+│   ├── features/           data checks and embedding extraction
+│   ├── emotion/            Stage 1: audio → emotions
+│   ├── genre/              Stage 2: emotions → genre
+│   ├── evaluation/         film-level scoring, repeated CV, significance tests
+│   ├── cross_dataset/      transfer to and from Blockbuster
+│   ├── diagnostics/        error analyses, thresholds, per-genre checks
+│   ├── make_figures.py     draws every results figure of the thesis into figures/
+│   ├── show_results.py     renders any results file as tables
+│   └── audit_consistency.py  checks the documents against the results
+├── results/                every headline experiment's per-fold scores (JSON)
+├── figures/                the figures of the thesis (PDF + PNG)
+├── data/processed/         cached embeddings and derived tables (committed)
+└── docs/
+    ├── README.md           the technical log: every experiment and decision, in order
+    ├── evaluation_metrics.md  every metric, why it was chosen and what it showed
+    ├── latex/chapters/     the text of the submitted thesis (abstract, Ch. 1-7, Appendix A)
+    ├── defense_slides.md   material for the defense
+    ├── literature/         two short literature notes
+    └── archive/            supervisor briefings and review files from the writing phase
+```
+
+Where to start reading: `results/README.md` lists every results file, what it answers and
+where it appears in the thesis; `experiments/README.md` describes every script.
+
+## Reproducing the results
+
+Python 3.12, CPU only. From the repository root:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-If PowerShell script execution is blocked:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
-
-## Project Structure
-
-```text
-Genre-Classification-using-Emotions/
-├── requirements.txt          # Python dependencies (pip)
-├── README.md                 # This file
-├── data/
-│   ├── raw/
-│   │   ├── Eerola_DB/        # Audio + enriched rating CSVs (primary dataset)
-│   │   └── Blockbuster_DB/   # Ma et al. 2021 VGGish/MIR features (second corpus)
-│   └── processed/            # Eerola_DB/embeddings/<model>/<set>/ per-clip caches,
-│                             # Blockbuster/ derived tables (committed)
-├── src/
-│   ├── config.py             # Paths, constants, expected dataset counts
-│   ├── utils.py              # Reproducibility (seeding)
-│   ├── features/             # Data loading/cleaning + AST/CLAP/VGGish/wav2vec2/MIR/Blockbuster features
-│   ├── models/               # Multi-label genre classifiers
-│   └── evaluation/           # Metrics + cross-validated scoring
-├── experiments/              # Runnable experiments, mirroring the src/ layout
-│   ├── features/             # Data checks + embedding extraction
-│   ├── emotion/              # Stage 1: audio -> emotion
-│   ├── genre/                # Stage 2: emotion -> genre
-│   ├── diagnostics/          # Error analysis, thresholds, learning curve, clip length
-│   ├── cross_dataset/        # Transfer to the Blockbuster dataset
-│   └── evaluation/           # Repeated CV, confidence intervals, significance tests
-├── docs/                     # current_state.md (latest supervisor meeting),
-│                             # briefing_full.md (complete briefing), README.md
-│                             # (technical log), evaluation_metrics.md (every metric
-│                             # explained), verification_checklist.md, literature
-│                             # reviews, copies of the thesis chapters (docs/latex/)
-├── figures/                  # Result figures (PDF + PNG), drawn by experiments/make_figures.py
-└── results/                  # Machine-readable experiment output (JSON)
-```
-
-## Data
-
-- Raw data is **git-ignored** (not redistributed) and lives under `data/raw/`:
-  - `Eerola_DB/` — the primary dataset: clip audio + enriched rating CSVs.
-  - `Blockbuster_DB/` — Ma et al. (2021): 110 films with pre-extracted VGGish and MIR
-    features per music cue, but no audio (copyright). It is the second corpus: the
-    zero-shot test (train on Eerola, test here), cross-validation in both directions,
-    the replication of the emotion-genre signatures, and the in-domain reproduction of
-    the published result (`experiments/cross_dataset/`).
-- Derived data (per-clip embedding caches) is written to
-  `data/processed/Eerola_DB/embeddings/<model>/<set>/` and reused across runs — never
-  re-extracted per run. It is committed, so experiments run straight after a clone.
-  See `data/raw/README.md` for the raw-data download.
-- `src/config.py` resolves the data root automatically; set `THESIS_DATA_ROOT` to
-  override the Eerola root, or `BLOCKBUSTER_DIR` to override the Blockbuster location.
-
-## Running
-
-Experiments are plain Python scripts, runnable from the project root, e.g.:
-
 ```bash
-python experiments/features/verify_data.py              # load + clean + assert dataset counts
+python experiments/features/verify_data.py              # load + clean, assert the dataset counts (needs data/raw)
 python experiments/evaluation/exp_film_level.py         # the headline: every Eerola genre result per film, clip level beside it
-python experiments/evaluation/exp_cv_corrected.py       # the clip-level check (~27 min)
-python experiments/cross_dataset/exp_zero_shot.py       # train on Eerola, test on Blockbuster (zero-shot)
-python experiments/evaluation/exp_metrics_stability.py  # every route under 13 metrics; SD over repeats, folds, films, seeds
-python experiments/diagnostics/exp_hamming_breakdown.py # why the emotion route has the worst Hamming loss
-python experiments/diagnostics/exp_box_office.py        # box office vs the soundtrack (exploratory, not in the thesis)
-python experiments/make_figures.py                      # redraw every figure in figures/ from the results files
-python experiments/show_results.py                      # list every saved result; render one as tables
-python experiments/audit_consistency.py                 # check every document against the results (run before committing)
+python experiments/cross_dataset/exp_zero_shot.py       # train on Eerola, test on Blockbuster
+python experiments/make_figures.py                      # redraw every results figure from results/*.json
+python experiments/show_results.py film_level           # render a results file as tables
+python experiments/audit_consistency.py                 # check every document against the results
 ```
 
-**The command for every experiment**, grouped and with what each needs, is in
-`results/README.md` ("Running the experiments").
+The command for every experiment, grouped and with what each needs, is in
+`results/README.md` ("Running the experiments"). Re-running all Eerola experiments takes
+about two hours on a laptop CPU.
 
-Where to read:
+Reproducibility rests on a fixed seed (`SEED = 42`), pinned dependencies, committed
+embedding caches, and cross-validation grouped by film, so that no film appears in both
+training and test folds (a misspelt film name once split a film across folds and is now
+merged in the loader, `config.SOUNDTRACK_NAME_FIXES`).
 
-- `docs/current_state.md` — the update for the latest supervisor meeting.
-- `docs/briefing_full.md` — the complete supervisor briefing: every round of notes, the
-  definitions and all results.
-- `docs/README.md` — the full technical log, one section per experiment.
-- `docs/evaluation_metrics.md` — every evaluation metric, why it was chosen and what it
-  showed.
-- `results/README.md` — what each machine-readable results file contains and how to
-  render it.
-- `docs/verification_checklist.md` — what to re-read and check before submission, and
-  every correction made along the way.
+The stack is PyTorch-only (AST, CLAP and wav2vec 2.0 via `transformers`, VGGish via
+`torchvggish`, the MIR baseline via `librosa`). The one exception, MusiCNN, needs
+TensorFlow and runs in a separate environment (`.venv-musicnn`, Python 3.11); it talks to the
+project only through the embedding cache.
 
-## Reproducibility
+## Note on terminology
 
-1. Dependencies are pinned in `requirements.txt`.
-2. Random seeds are fixed everywhere (`SEED = 42`, see `src/utils.py`).
-3. Per-clip embeddings are cached to `data/processed/` and committed, so a clone
-   reproduces every result without re-running any model over the audio.
-4. Cross-validation is grouped by film (`GroupKFold` on `soundtrack`) to prevent leakage;
-   a misspelt film name would split a film across folds, so known spellings are merged in
-   the loader (`config.SOUNDTRACK_NAME_FIXES`).
-5. Genre results are scored per film (macro-F1 over films, the clip probabilities of a film
-   averaged), with the clip-level score kept beside every result.
-6. `experiments/audit_consistency.py` checks that every number in the documents matches
-   the results files.
+The thesis says "pipeline"; the technical log and the names of some results fields still say
+"route" (e.g. the emotion route = the emotion pipeline).
 
-## Dependencies and Notes
+## License
 
-The stack is PyTorch-only by design (AST, CLAP and wav2vec 2.0 via `transformers`, VGGish
-via `torchvggish`; the hand-crafted MIR baseline uses `librosa` and needs no framework), so all
-learned components share a single deep-learning framework. TensorFlow-based models are
-deliberately kept out of the main environment to prevent dependency conflicts. The one
-exception, the music-tagging model MusiCNN, runs in its own `.venv-musicnn` (Python 3.11
-+ TensorFlow) and talks to the project only through the embedding cache: nothing in
-`src/` imports TensorFlow.
+The code is released under the MIT License (`LICENSE`). The datasets are not part of this
+repository and keep their own terms.

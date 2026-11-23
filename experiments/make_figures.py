@@ -43,6 +43,21 @@ plt.rcParams.update({
 })
 
 
+def light(name, top=0.62, bottom=0.0):
+    """The lighter part of a sequential colour scale, so black numbers stay readable on every
+    cell. No white text in any figure: Turnitin flags white characters as hidden text."""
+    from matplotlib.colors import LinearSegmentedColormap
+    base = plt.get_cmap(name)
+    return LinearSegmentedColormap.from_list(name + "_light", base(np.linspace(bottom, top, 256)))
+
+
+def light_div(name, cut=0.2):
+    """A diverging scale without its two darkest ends (see light)."""
+    from matplotlib.colors import LinearSegmentedColormap
+    base = plt.get_cmap(name)
+    return LinearSegmentedColormap.from_list(name + "_light", base(np.linspace(cut, 1 - cut, 256)))
+
+
 def load(name):
     p = RES / f"{name}.json"
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
@@ -88,7 +103,8 @@ def fig_indomain():
     label = {
         "ground-truth emotion(11) [ceiling]": "emotion from human ratings (ceiling)",
         "VGGish -> predicted emotion(11), OOF-trained": "emotion pipeline (VGGish)",
-        "wav2vec2 -> predicted emotion(11), OOF-trained": "emotion pipeline (wav2vec 2.0)",
+        # the wav2vec 2.0 emotion pipeline was dropped here (author, 17 Nov): Figure 5.3
+        # shows every emotion pipeline, so this figure keeps only the thesis pipeline
         "VGGish-128 (direct)": "direct: VGGish",
         "AST-768": "direct: AST",
         "CLAP-512": "direct: CLAP",
@@ -196,10 +212,13 @@ def fig_zero_shot():
     fig, ax = plt.subplots(figsize=(WIDTH, 1.9))
     for i, (k, lab) in enumerate(rows[::-1]):
         v = z[k]
-        ax.barh(i, v["macro_f1"], color=route_colour(lab), height=0.6)
-        ax.text(v["macro_f1"] + 0.005, i, f"{v['macro_f1']:.3f}", va="center", fontsize=8)
+        ax.barh(i, v["macro_f1"], color=route_colour(lab), height=0.6,
+                xerr=v["boot_sd"], error_kw=dict(ecolor="black", lw=0.8, capsize=3))
+        ax.text(v["macro_f1"] + v["boot_sd"] + 0.008, i,
+                f"{v['macro_f1']:.3f} $\\pm$ {v['boot_sd']:.3f}", va="center", fontsize=8)
     ax.set_yticks(range(len(rows)), [r[1] for r in rows[::-1]])
-    floor_line(ax, d["blockbuster_baselines"]["plurality"]["macro_f1"], "most-frequent baseline")
+    # the most common combination of genres (Ma et al.), not the per-genre most-frequent rule
+    floor_line(ax, d["blockbuster_baselines"]["plurality"]["macro_f1"], "plurality label set")
     floor_line(ax, d["blockbuster_baselines"]["random_guess"]["macro_f1"],
                "base-rate random guess", ":")
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=2, frameon=False,
@@ -211,7 +230,7 @@ def fig_zero_shot():
             f"vs PCA-8 p = {p2:.3f}", transform=ax.transAxes, ha="right", fontsize=7)
     ax.set_xlabel("film-level macro-F1 on the 110 Blockbuster films (6 shared genres),\n"
                   "trained on Eerola only")
-    ax.set_xlim(0, 0.6)
+    ax.set_xlim(0, 0.65)
     save(fig, "zero_shot")
 
 
@@ -289,14 +308,17 @@ def _genre_heatmap(ax, b, key, xlabels):
     """One per-genre heatmap of `key` (film level); the best real pipeline per genre is boxed."""
     rows = PER_GENRE_ROWS
     M = np.array([b["arms"][k][key] for k, _ in rows])
-    im = ax.imshow(M, cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    im = ax.imshow(M, cmap=light("Blues"), vmin=0, vmax=1, aspect="auto")
     real = [i for i, (k, _) in enumerate(rows) if k not in NOT_BOXED]
     for j in range(M.shape[1]):
         best = max(real, key=lambda i: M[i, j])
         ax.add_patch(plt.Rectangle((j - 0.5, best - 0.5), 1, 1, fill=False, ec=COL["emotion"], lw=1.8))
         for i in range(M.shape[0]):
-            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
-                    color="white" if M[i, j] > 0.6 else "black")
+            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7, color="black")
+    # a gap and a line set the most-frequent baseline apart from the pipelines (author, 15 Nov)
+    dummy = [k for k, _ in rows].index("dummy")
+    ax.axhline(dummy - 0.5, color="white", lw=5)
+    ax.axhline(dummy - 0.5, color="black", lw=1.0)
     ax.set_xticks(range(len(b["genres"])), xlabels)
     ax.set_yticks(range(len(rows)), [lab for _, lab in rows])
     ax.spines[:].set_visible(False)
@@ -343,53 +365,81 @@ def fig_stage1():
     s1 = d["stage1"]
     order = sorted(s1, key=lambda k: -s1[k]["mean_r2"])
     emos = list(next(iter(s1.values()))["per_emotion_r2"])
-    M = np.array([[s1[k]["per_emotion_r2"][e] for e in emos] + [s1[k]["mean_r2"]]
-                  for k in order])
-    fig, ax = plt.subplots(figsize=(WIDTH, 2.3))
-    im = ax.imshow(M, cmap="Blues", vmin=0, vmax=0.8, aspect="auto")
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=7,
-                    color="white" if M[i, j] > 0.5 else "black",
-                    fontweight="bold" if j == M.shape[1] - 1 else "normal")
-    ax.set_xticks(range(len(emos) + 1), emos + ["mean"])
-    ax.set_yticks(range(len(order)), [k.replace("wav2vec2", "wav2vec 2.0").replace("-", " (") + ")"
-                                      for k in order])
-    ax.spines[:].set_visible(False)
-    fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="$R^2$")
+    M = np.array([[s1[k]["per_emotion_r2"][e] for e in emos] for k in order])
+    mean = np.array([[s1[k]["mean_r2"]] for k in order])
+    names = [k.replace("wav2vec2", "wav2vec 2.0").replace("-", " (") + ")" for k in order]
+    # the mean gets its own panel, set apart from the eight emotions (author, 12 Nov)
+    fig, (ax, axm) = plt.subplots(1, 2, figsize=(WIDTH, 2.3), sharey=True,
+                                  gridspec_kw={"width_ratios": [len(emos), 1.15], "wspace": 0.06})
+    for a, D, labels in ((ax, M, emos), (axm, mean, ["mean of\nthe eight"])):
+        im = a.imshow(D, cmap=light("Blues"), vmin=0, vmax=0.8, aspect="auto")
+        for i in range(D.shape[0]):
+            for j in range(D.shape[1]):
+                a.text(j, i, f"{D[i, j]:.2f}", ha="center", va="center", fontsize=7,
+                       color="black",
+                       fontweight="bold" if a is axm else "normal")
+        a.set_xticks(range(len(labels)), labels)
+        a.spines[:].set_visible(False)
+    ax.set_yticks(range(len(order)), names)
+    axm.tick_params(axis="y", length=0)
+    fig.colorbar(im, ax=[ax, axm], fraction=0.03, pad=0.02, label="$R^2$")
     save(fig, "stage1_r2")
 
 
 def fig_emotion_grid():
     """The emotion pipeline for every representation and emotion regressor: film-level
-    macro-F1 (SD over the repeats) beside the direct pipeline, and the Stage-1 R^2."""
+    macro-F1 +- SD over the repeats with the clip-level F1 below it, beside the direct
+    pipeline; * marks a significant lead over the direct pipeline (film bootstrap,
+    p < 0.05). Right: the Stage-1 R^2 of the same regressors."""
     d = load("emotion_pipeline_grid")
     if not d or "stage1_all_clips" not in d:
         return
     reps, regs = d["representations"], d["regressors"]
-    F = np.array([[d["direct"][r]["film_f1"]] + [d["grid"][r][g]["film_f1"] for g in regs]
-                  for r in reps])
-    S = np.array([[d["direct"][r]["repeat_sd"]] + [d["grid"][r][g]["repeat_sd"] for g in regs]
-                  for r in reps])
+    direct_name = {"VGGish": "VGGish-128 (direct)", "AST": "AST-768", "CLAP": "CLAP-512",
+                   "MusiCNN": "MusiCNN-200", "MIR": "MIR-103", "wav2vec 2.0": "wav2vec2-768"}
+    oof_name = {"VGGish": "VGGish -> predicted emotion(11), OOF-trained",
+                "wav2vec 2.0": "wav2vec2 -> predicted emotion(11), OOF-trained"}
+    p_vs_direct = {(c["a"], c["b"]): c["p_two_sided"] for c in d["comparisons"]}
+
+    def sig(r, g):
+        a = oof_name[r] if g == "random forest" and r in oof_name else f"{r} -> {g} -> emotion(11)"
+        return p_vs_direct[(a, direct_name[r])] < 0.05
+
+    cells = [[d["direct"][r]] + [d["grid"][r][g] for g in regs] for r in reps]
+    F = np.array([[c["film_f1"] for c in row] for row in cells])
     R2 = np.array([[d["stage1_all_clips"]["mean_r2"][r][g] for g in regs] for r in reps])
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.9), gridspec_kw={"width_ratios": [4, 3]})
-    for ax, M, vmin, vmax, labels, title in (
+    # Two different measures, so two different palettes and colour bars (author, 15 Nov):
+    # (a) genre macro-F1 in blue, (b) Stage-1 emotion R^2 in purple, set well apart.
+    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 3.8),
+                             gridspec_kw={"width_ratios": [5, 2.4], "wspace": 0.22})
+    for ax, M, vmin, vmax, labels, title, cmap, clabel in (
             (axes[0], F, 0.2, 0.55, ["direct"] + [f"emotion,\n{g}" for g in regs],
-             "genre: film-level macro-$F_1$"),
+             "(a) Genre: macro-$F_1$ at film level $\\pm$ standard deviation,\nclip level below",
+             "Blues", "genre macro-$F_1$ (film level)"),
             (axes[1], R2, 0.0, 0.7, [g.replace(" ", "\n") for g in regs],
-             "emotions: Stage-1 $R^2$")):
-        ax.imshow(M, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
+             "(b) Emotions: Stage-1 $R^2$\nof the emotion regressor", "Purples", "emotion $R^2$")):
+        im = ax.imshow(M, cmap=light(cmap), vmin=vmin, vmax=vmax, aspect="auto")
+        cb = fig.colorbar(im, ax=ax, orientation="horizontal", fraction=0.05, pad=0.17, aspect=25)
+        cb.set_label(clabel, fontsize=7)
+        cb.ax.tick_params(labelsize=6.5)
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
-                txt = f"{M[i, j]:.3f}\n({S[i, j]:.3f})" if M is F else f"{M[i, j]:.2f}"
-                ax.text(j, i, txt, ha="center", va="center", fontsize=6.5 if M is F else 7,
-                        color="white" if (M[i, j] - vmin) / (vmax - vmin) > 0.6 else "black")
+                if M is F:
+                    c = cells[i][j]
+                    star = "*" if j > 0 and sig(reps[i], regs[j - 1]) else ""
+                    txt = f"{c['film_f1']:.3f}{star} $\\pm$ {c['repeat_sd']:.3f}\nclip {c['clip_f1']:.3f}"
+                else:
+                    txt = f"{M[i, j]:.2f}"
+                ax.text(j, i, txt, ha="center", va="center", fontsize=6 if M is F else 7, color="black")
         ax.set_xticks(range(M.shape[1]), labels, fontsize=7)
         ax.set_yticks(range(len(reps)), [r.replace("MIR", "hand-crafted\nMIR") for r in reps])
-        ax.set_title(title)
+        ax.set_title(title, fontsize=8)
         ax.spines[:].set_visible(False)
     axes[0].axvline(0.5, color="white", lw=3)
     axes[1].tick_params(axis="y", labelleft=False, left=False)
+    c = d["ceiling"]
+    fig.text(0.02, -0.02, f"ratings (ceiling): {c['film_f1']:.3f} $\\pm$ {c['repeat_sd']:.3f}, "
+             f"clip {c['clip_f1']:.3f};   * ahead of direct, $p<0.05$", fontsize=7, ha="left")
     save(fig, "emotion_pipeline_grid")
 
 
@@ -413,27 +463,150 @@ def fig_ablation():
 
 
 def fig_signatures():
-    """Emotion signature of each genre (Cohen's d), Eerola vs Blockbuster side by side."""
-    d = load("signature_replication")
+    """Emotional signature of each of the eight Eerola genres (Cohen's d, human ratings).
+
+    Eerola only since 12 Nov (author's decision): the Blockbuster matrix rests on predicted
+    emotions; the replication is reported as numbers in the text. The strongest emotion of
+    each genre is boxed. Drawn as vector cells (pcolormesh) for print quality.
+    """
+    d = load("signatures_eerola")
     if not d:
         return
-    emos, genres = d["emotions"], list(d["eerola_d"])
-    A = np.array([d["eerola_d"][g] for g in genres])
-    B = np.array([d["blockbuster_d_cue"][g] for g in genres])
-    lim = float(np.ceil(max(abs(A).max(), abs(B).max()) * 10) / 10)
-    fig, axes = plt.subplots(1, 2, figsize=(WIDTH, 2.6), sharey=True)
-    for ax, M, t in ((axes[0], A, "Eerola (human ratings)"),
-                     (axes[1], B, "Blockbuster (predicted, per cue)")):
-        im = ax.imshow(M, cmap="RdBu_r", vmin=-lim, vmax=lim, aspect="auto")
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
+    emos, genres = d["emotions"], d["genres"]
+    order = sorted(genres, key=lambda g: -max(abs(v) for v in d["d"][g].values()))
+    M = np.array([[d["d"][g][e] for e in emos] for g in order])
+    lim = float(np.ceil(abs(M).max() * 10) / 10)
+    fig, ax = plt.subplots(figsize=(WIDTH * 0.86, 3.2))
+    im = ax.pcolormesh(M, cmap=light_div("RdBu_r"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+    for i, g in enumerate(order):
+        for j, e in enumerate(emos):
+            v = M[i, j]
+            r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100   # half-up, as in the text
+            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=8, color="black")
+        k = emos.index(d["dominant"][g])
+        if abs(M[i, k]) >= 0.3:          # Adventure peaks at |d| = 0.25: no signature, no box
+            ax.add_patch(plt.Rectangle((k, i), 1, 1, fill=False, ec="black", lw=1.4))
+    ax.set_xticks(np.arange(len(emos)) + 0.5, [names.get(e, e) for e in emos], rotation=35, ha="right")
+    ax.set_yticks(np.arange(len(order)) + 0.5,
+                  [f"{g} ({d['clips_per_genre'][g]})" for g in order])
+    ax.invert_yaxis()
+    ax.tick_params(length=0)
+    ax.spines[:].set_visible(False)
+    fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label="Cohen's $d$ (genre vs rest)")
+    save(fig, "signatures")
+
+
+def fig_rated_vs_predicted():
+    """Rated against predicted emotions per genre (five-genre subset, out-of-fold predictions
+    of the pipeline's random forest on VGGish; `horror_diagnosis.json`). Panel (a): predicted
+    minus rated mean in rating points. Panel (b): the signature of the predictions themselves,
+    Cohen's d of the genre against all other clips, with the change from the ratings' d in
+    brackets (author, 18 Nov: a panel showing only the change could be read as the d)."""
+    d = load("horror_diagnosis")
+    if not d or "means_by_genre" not in d:
+        return
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
+    genres = [g for g in d["cohens_d_rated"]]
+    emos = list(d["cohens_d_rated"][genres[0]])
+    A = np.array([[d["means_by_genre"][g]["predicted_minus_rated"][e] for e in emos] for g in genres])
+    P = np.array([[d["cohens_d_predicted"][g][e] for e in emos] for g in genres])
+    C = P - np.array([[d["cohens_d_rated"][g][e] for e in emos] for g in genres])
+
+    def r2(v):                                   # half-up, as in the text
+        return np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
+
+    fig, axes = plt.subplots(2, 1, figsize=(WIDTH * 0.86, 4.9),
+                             gridspec_kw={"height_ratios": [1, 1.25]})
+    for k, ax in enumerate(axes):
+        M = A if k == 0 else P
+        lim = float(np.ceil(abs(M).max() * 10) / 10)
+        # (a) purple/orange, (b) red/blue like every Cohen's d figure (author, 18 Nov)
+        cmap = light_div("PuOr_r") if k == 0 else light_div("RdBu_r")
+        im = ax.pcolormesh(M, cmap=cmap, vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
-                ax.text(j, i, f"{M[i, j]:+.1f}", ha="center", va="center", fontsize=6.5)
-        ax.set_xticks(range(len(emos)), emos, rotation=45, ha="right")
-        ax.set_title(t)
+                if k == 0:
+                    ax.text(j + 0.5, i + 0.5, f"{r2(M[i, j]):+.2f}", ha="center", va="center",
+                            fontsize=8, color="black")
+                else:
+                    ax.text(j + 0.5, i + 0.36, f"{r2(M[i, j]):+.2f}", ha="center", va="center",
+                            fontsize=8, color="black")
+                    ax.text(j + 0.5, i + 0.72, f"({r2(C[i, j]):+.2f})", ha="center", va="center",
+                            fontsize=6.5, color="black")
+        ax.set_xticks(np.arange(len(emos)) + 0.5, [names.get(e, e) for e in emos], rotation=35, ha="right")
+        ax.set_yticks(np.arange(len(genres)) + 0.5,
+                      [f"{g} ({d['means_by_genre'][g]['clips']})" for g in genres])
+        ax.invert_yaxis()
+        ax.tick_params(length=0)
         ax.spines[:].set_visible(False)
-    axes[0].set_yticks(range(len(genres)), genres)
-    fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02, label="Cohen's d (genre vs rest)")
-    save(fig, "signatures")
+        lab = ("(a) predicted $-$ rated\n(rating points)" if k == 0
+               else "(b) Cohen's $d$ of the predictions\n(change from the ratings)")
+        fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, label=lab)
+    fig.tight_layout(h_pad=1.0)
+    save(fig, "rated_vs_predicted")
+
+
+def fig_stage2_weights():
+    """Standardised weights of the Stage-2 logistic regression in the emotion pipeline (five genres,
+    mean over the 50 training folds; `stage2_weights.json`). Green/brown so it is not confused with
+    Cohen's d (red/blue) or the rated-vs-predicted gaps (purple/orange). Added 21 Nov 2026."""
+    d = load("stage2_weights")
+    if not d:
+        return
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness",
+             "valence_x_energy": "valence $\\times$ energy", "neg_composite": "negative composite",
+             "pos_composite": "positive composite"}
+    feats, genres = d["features"], d["genres"]
+    M = np.array([[d["predicted_emotions"]["mean"][g][f] for f in feats] for g in genres])
+    lim = float(np.ceil(abs(M).max() * 20) / 20)
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.6))
+    im = ax.pcolormesh(M, cmap=light_div("BrBG"), vmin=-lim, vmax=lim, edgecolors="white", linewidth=0.6)
+    for i in range(M.shape[0]):
+        for j in range(M.shape[1]):
+            v = M[i, j]
+            r = np.sign(v) * np.floor(abs(v) * 100 + 0.5 + 1e-9) / 100
+            ax.text(j + 0.5, i + 0.5, f"{r:+.2f}", ha="center", va="center", fontsize=7, color="black")
+    ax.set_xticks(np.arange(len(feats)) + 0.5, [names.get(f, f) for f in feats], rotation=40, ha="right")
+    ax.set_yticks(np.arange(len(genres)) + 0.5, genres)
+    ax.invert_yaxis()
+    ax.tick_params(length=0)
+    ax.spines[:].set_visible(False)
+    fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="standardised\nweight")
+    save(fig, "stage2_weights")
+
+
+def fig_data_overview():
+    """The Eerola data behind the genre results: clips per film, and films and clips per genre
+    (eight-genre space). Drawn from the loader, not a results file: these are dataset counts."""
+    sys.path.insert(0, str(REPO))
+    from src import config
+    from src.features import genre_matrix, load_set1
+    df = load_set1()
+    Y = genre_matrix(df)
+    genres = config.PRIMARY_GENRES
+    per_film = df.groupby("soundtrack").size()
+    films = [df.loc[Y[:, j] == 1, "soundtrack"].nunique() for j in range(len(genres))]
+    clips = [int(Y[:, j].sum()) for j in range(len(genres))]
+    order = np.argsort(films)[::-1]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(WIDTH, 2.4),
+                                 gridspec_kw={"width_ratios": [1, 1.1], "wspace": 0.75})
+    vals, counts = np.unique(per_film.to_numpy(), return_counts=True)
+    a1.bar(vals, counts, width=0.8, color=COL["direct"])
+    a1.set_xlabel("clips per film")
+    a1.set_ylabel("number of films")
+    a1.set_title(f"{len(per_film)} films, {len(df)} clips", loc="left")
+    a1.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
+    y = np.arange(len(genres))
+    a2.barh(y, [films[i] for i in order], color=COL["emotion"])
+    for k, i in enumerate(order):
+        a2.text(films[i] + 0.4, k, f"{films[i]}", va="center", fontsize=7.5)
+    a2.set_yticks(y, [genres[i] for i in order])
+    a2.invert_yaxis()
+    a2.set_xlabel("number of films")
+    a2.set_xlim(0, max(films) * 1.15)
+    a2.set_title("films per genre (one film can have several)", loc="left")
+    save(fig, "data_overview")
 
 
 def fig_box_office():
@@ -470,13 +643,49 @@ def fig_box_office():
     save(fig, "box_office_blockbuster")
 
 
+def fig_rating_structure():
+    d = load("rating_structure")
+    if d is None:
+        return
+    fig, ax = plt.subplots(figsize=(WIDTH * 0.62, WIDTH * 0.56))
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.add_patch(plt.Circle((0, 0), 1.0, fill=False, color="black", lw=0.9))
+    ax.plot([-1.08, 1.08], [0, 0], color="0.6", lw=0.7, zorder=0)
+    ax.plot([0, 0], [-1.08, 1.08], color="0.6", lw=0.7, zorder=0)
+    share = d["explained_variance"]
+    ax.text(1.12, 0, f"first\ncomponent\n({share[0]:.1%})", ha="left", va="center", fontsize=8)
+    ax.text(0, 1.1, f"second component ({share[1]:.1%})", ha="center", va="bottom", fontsize=8)
+    names = {"happy": "happiness", "sad": "sadness", "tender": "tenderness"}
+    # label offset in points, by hand: tension, anger and fear lie close together
+    offset = {"valence": (5, 6), "energy": (-5, 6), "tension": (-5, 7), "anger": (9, 8),
+              "fear": (-6, -8), "happy": (8, 3), "sad": (8, -3), "tender": (-7, -9)}
+    for s, (x, y) in d["loadings"].items():
+        dx, dy = offset[s]
+        if s in ("valence", "energy", "tension"):
+            ax.annotate("", (x, y), (0, 0), arrowprops=dict(
+                arrowstyle="-|>", color="black", lw=0.9, ls="--", mutation_scale=8))
+            style = dict(fontweight="bold")
+        else:
+            ax.plot(x, y, "s", ms=7, mfc="0.6", mec="black", mew=0.8, zorder=4)
+            style = dict(style="italic")
+        ax.annotate(names.get(s, s), (x, y), xytext=(dx, dy), textcoords="offset points",
+                    ha="left" if dx > 0 else "right", va="center", fontsize=8.5, zorder=5,
+                    **style)
+    ax.set_xlim(-1.3, 1.5)
+    ax.set_ylim(-1.15, 1.25)
+    save(fig, "rating_structure")
+
+
 FIGURES = {"indomain": fig_indomain, "stability": fig_repeat_spread,
+           "rating_structure": fig_rating_structure,
            "metrics": fig_metric_family, "zero_shot": fig_zero_shot,
            "cross_dataset": fig_cross_dataset, "stage1": fig_stage1,
            "ablation": fig_ablation, "signatures": fig_signatures,
            "box_office": fig_box_office, "blockbuster_cv": fig_blockbuster_cv,
            "per_genre": fig_per_genre, "per_genre_pr": fig_per_genre_pr,
-           "emotion_grid": fig_emotion_grid}
+           "emotion_grid": fig_emotion_grid, "data_overview": fig_data_overview,
+           "rated_vs_predicted": fig_rated_vs_predicted, "stage2_weights": fig_stage2_weights}
 
 
 def main() -> None:
