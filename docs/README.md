@@ -2505,7 +2505,7 @@ Sent to the supervisor (16 Nov): `_Thesis_16.11_2nd.pdf` (Overleaf `a8e8bf7`, 11
 
 ## 46. Supervisor feedback of 17 Nov and the author's comments in `_Thesis_16.11_2nd.pdf`
 
-Ernst's email (17 Nov) has four points: Future Work reads like Limitations; the appendix should
+The supervisor's email (17 Nov) has four points: Future Work reads like Limitations; the appendix should
 hold results, figures, tables and model configurations, not explanations, and whatever matters
 for the research questions belongs, motivated, in the main text; hyperparameters must be given;
 the AI declaration should lie between the detailed version of 09.11 and the short one, split by
@@ -2541,11 +2541,11 @@ box, 112 pages):
 
 Still open, for the meeting of 18 Nov: which appendix analyses move into the main text and how far
 the appendix prose is cut (about 4,700 words now); a shorter Section 7.1 (the RQ answers are in
-6.1); the "Overall conclusion" paragraph (the author wants Ernst's opinion).
+6.1); the "Overall conclusion" paragraph (the author wants the supervisor's opinion).
 
 ### 46.1 Appendix A restructured (18 Nov)
 
-Ernst's second point, done along the research questions (Overleaf `bf3e36e`, `3dddba9`; compiled in
+The supervisor's second point, done along the research questions (Overleaf `bf3e36e`, `3dddba9`; compiled in
 Chrome: 0 errors, no overfull box, no undefined reference, 104 pages, from 112):
 - Appendix A now holds tables, figures and configurations. Each section has one sentence saying
   why it is there, the float, its legend and at most a few sentences of results the main text does
